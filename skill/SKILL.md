@@ -115,6 +115,17 @@ Hand over the package directory. Point the user at `CONTEXT.md` (load into an ag
 (human entry). State the citation-verification rate and the falsification result plainly. Confidence
 is corpus-relative; the package is a *foundation*, not the paper.
 
+The build also emits a `knowledge.json` — the [0xLT/kpm](https://github.com/0xLT/kpm) package
+contract — so the package is **distributable by kpm with no extra work**: kp-build builds the
+content, kpm handles distribution. To share it (build once so nobody re-spends the compute):
+```
+cd <out_dir> && kpm doctor && kpm pack      # validate + write a shareable .tgz
+# or publish <out_dir> as a tagged GitHub repo; consumers then run:
+kpm add github:<owner>/<repo>#v0.1.0 && kpm compose
+```
+Override the package identity at build time with `--name @scope/name --version X.Y.Z --license …`;
+otherwise it defaults to `@kp/<topic-slug>@0.1.0` and the publisher re-tags however they like.
+
 ## What this is not
 Not a search-result list, not a one-shot report (it is a persistent, verified, reusable asset), and
 not an oracle — it is the frontier as the literature states it, with every citation checked to exist.

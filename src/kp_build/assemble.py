@@ -11,13 +11,35 @@ import json
 from pathlib import Path
 
 from .schema import (
-    Package, SCHEMA_VERSION,
+    Package, SCHEMA_VERSION, slugify,
     paper_to_md, claim_to_md, problem_to_md, debate_to_md, benchmark_to_md, paper_ref_str,
 )
 from .digest import build_context
 
 
-def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: dict | None = None) -> Path:
+def build_knowledge_json(pkg: Package, *, name: str | None, version: str, license: str) -> dict:
+    """The 0xLT/kpm package contract (`knowledge.json`) — the distribution envelope.
+
+    kp-build owns the wikillm *content*; kpm owns *distribution*. Emitting a valid knowledge.json
+    makes a wikillm package a first-class kpm package: `kpm add`/`install`/`compose`/`pack` work on
+    it directly, so "build once, share" is the existing kpm CLI, not a layer we reinvent. The field
+    set is CLOSED by the protocol (name/version/description/license/type/files/entrypoint/
+    knowledgeDependencies) — wikillm-specific metadata rides alongside in wikillm.json/index.json,
+    which the files glob carries into the package. name/version/license are publisher-overridable.
+    """
+    return {
+        "name": name or f"@kp/{slugify(pkg.topic)}",      # publisher re-tags at publish time
+        "version": version,                                # exact semver
+        "description": (pkg.scope or pkg.topic)[:300],
+        "license": license,
+        "type": "knowledge-package",
+        "files": ["**/*.md", "wikillm.json", "index.json"],
+        "entrypoint": "README.md",
+    }
+
+
+def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: dict | None = None,
+             name: str | None = None, version: str = "0.1.0", license: str = "CC-BY-4.0") -> Path:
     out = Path(out_dir)
     for sub in ("papers", "claims", "open-problems", "debates", "benchmarks"):
         (out / sub).mkdir(parents=True, exist_ok=True)
@@ -108,20 +130,33 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     }
     (out / "wikillm.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
+    # the 0xLT/kpm distribution envelope — makes this a valid, installable kpm package
+    knowledge = build_knowledge_json(pkg, name=name, version=version, license=license)
+    (out / "knowledge.json").write_text(json.dumps(knowledge, indent=2) + "\n", encoding="utf-8")
+
     (out / "CONTEXT.md").write_text(build_context(pkg, built=built), encoding="utf-8")
-    (out / "README.md").write_text(_readme(pkg, manifest), encoding="utf-8")
+    (out / "README.md").write_text(_readme(pkg, manifest, knowledge), encoding="utf-8")
     return out
 
 
-def _readme(pkg: Package, manifest: dict) -> str:
+def _readme(pkg: Package, manifest: dict, knowledge: dict | None = None) -> str:
     s = manifest["stats"]
     sp = manifest["source_span"]
     span = f"{sp['oldest']}–{sp['newest']}" if sp["oldest"] else "n/a"
-    return (f"# {pkg.topic}\n\n*wikillm knowledge package — a research-landscape foundation.*\n\n"
+    name = (knowledge or {}).get("name", "@kp/<name>")
+    distro = (
+        f"\n## Distribution\n\n"
+        f"This is a [0xLT/kpm](https://github.com/0xLT/kpm) knowledge package (`knowledge.json`). "
+        f"Publish it as a tagged GitHub repo, then any consumer installs it with kpm — no re-research:\n\n"
+        f"```bash\nkpm add github:<owner>/<repo>#v{(knowledge or {}).get('version', '0.1.0')}\n"
+        f"kpm compose            # composes into a vault; load CONTEXT.md into your agent\n```\n"
+    )
+    return (f"# {pkg.topic}\n\n*wikillm knowledge package (`{name}`) — a research-landscape foundation.*\n\n"
             f"**Scope:** {pkg.scope}\n\n"
             f"- {s['papers_verified']}/{s['papers_total']} citations verified (arXiv/Crossref); source years {span}\n"
             f"- {s['claims']} claims · {s['open_problems']} open problems · {s['debates']} debates · {s['benchmarks']} benchmarks\n"
             f"- dropped (unverified-anchored): {s['dropped']}\n\n"
             f"**Load `CONTEXT.md` into your agent** to inherit this field without re-running the research. "
-            f"`index.json` is the machine-readable graph (nodes + edges); the subdirectories hold the notes.\n\n"
+            f"`index.json` is the machine-readable graph (nodes + edges); the subdirectories hold the notes.\n"
+            f"{distro}\n"
             f"Confidence is corpus-relative (conditional on the cited sources). Built {manifest['built']}.\n")

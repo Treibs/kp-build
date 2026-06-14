@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import glob
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List
@@ -75,8 +76,44 @@ def validate(pkg_dir: str | Path) -> ValidationResult:
         errs.append("citation spine has ZERO verified papers — the package proves nothing (re-survey with real arXiv ids/DOIs)")
     if not glob.glob(str(d / "open-problems" / "*.md")):
         warns.append("no open problems — likely a coverage gap (the most valuable section is empty)")
-    for required in ("CONTEXT.md", "wikillm.json", "index.json"):
+    for required in ("CONTEXT.md", "wikillm.json", "index.json", "README.md", "knowledge.json"):
         if not (d / required).is_file():
             errs.append(f"missing {required}")
 
+    # the 0xLT/kpm distribution contract must be well-formed (else kpm pack/doctor will reject it)
+    kj = d / "knowledge.json"
+    if kj.is_file():
+        errs += _check_knowledge_json(kj)
+
     return ValidationResult(ok=not errs, errors=errs, warnings=warns)
+
+
+_NAME_RE = re.compile(r"^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$")
+_VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
+
+
+def _check_knowledge_json(path: Path) -> List[str]:
+    """Mirror 0xLT/kpm's manifest rules so a malformed envelope fails here, not only in `kpm pack`."""
+    import json
+    try:
+        m = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError) as e:
+        return [f"knowledge.json is not readable JSON: {e}"]
+    if not isinstance(m, dict):
+        return ["knowledge.json must be a JSON object"]
+    out: List[str] = []
+    if not _NAME_RE.match(str(m.get("name", ""))):
+        out.append("knowledge.json: name must be a lowercase npm-style package name")
+    if not _VERSION_RE.match(str(m.get("version", ""))):
+        out.append("knowledge.json: version must be an exact semver")
+    if m.get("type") != "knowledge-package":
+        out.append('knowledge.json: type must be "knowledge-package"')
+    files = m.get("files")
+    if not isinstance(files, list) or not files:
+        out.append("knowledge.json: files must be a non-empty list of globs")
+    ep = m.get("entrypoint", "README.md")
+    if not isinstance(ep, str) or not ep.lower().endswith(".md"):
+        out.append("knowledge.json: entrypoint must be a markdown file")
+    elif not (path.parent / ep).is_file():
+        out.append(f"knowledge.json: entrypoint '{ep}' does not exist in the package")
+    return out

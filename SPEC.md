@@ -30,18 +30,48 @@ digest plus a machine index). It is a reusable knowledge *asset*, not a report.
    corpus-relative and the claim is not independently grounded. Passage-presence checking is planned.*
 5. **Concepts** — definition/taxonomy scaffolding (least valuable; the model mostly has this).
 
-## Package schema (v1) — a portable directory
+## Package schema (v1) — a portable directory (and a valid 0xLT/kpm package)
 ```
 <topic-slug>/
-  wikillm.json            # manifest: schema_version, topic, scope, built, stats, falsification result
-  CONTEXT.md              # THE agent-loadable digest — token-bounded field briefing
-  README.md               # human entry point
+  knowledge.json          # the 0xLT/kpm package CONTRACT — the distribution envelope (see below)
+  wikillm.json            # wikillm manifest: schema_version, topic, scope, built, stats, falsification
+  CONTEXT.md              # THE agent-loadable digest — token-bounded field briefing (the payload)
+  README.md               # human entry point + kpm install snippet (kpm entrypoint)
   papers/<cite_key>.md    # one verified citation object per source paper
   claims/<id>.md          # grounded, paper-anchored claims
   open-problems/<id>.md   # the gaps register
   debates/<id>.md         # contested points
+  benchmarks/<id>.md      # reported SOTA results (method/dataset/metric/value)
   index.json              # machine-readable graph: nodes + edges (paper↔claim↔problem↔debate)
 ```
+Every note's `[[wikilink]]` is path-qualified (`[[papers/<cite_key>]]`) so kpm resolves it by exact
+package path — collision-proof, and `kpm doctor`/`kpm pack` accept it as-is.
+
+## Distribution — kp-build builds, 0xLT/kpm distributes (no reinvention)
+kp-build owns the **content** (research + verification + authoring); [`0xLT/kpm`](https://github.com/0xLT/kpm)
+owns **distribution** (install / lock / compose / pack / share). The seam is `knowledge.json`: by
+emitting the kpm package contract, a wikillm package *is* a first-class kpm package, so "build once,
+share" is the existing kpm CLI — there is no separate distribution layer to build.
+
+`knowledge.json` is the protocol's CLOSED field set (kpm rejects unknown keys):
+```json
+{ "name": "@kp/<topic-slug>", "version": "0.1.0", "description": "<scope>", "license": "CC-BY-4.0",
+  "type": "knowledge-package", "files": ["**/*.md", "wikillm.json", "index.json"], "entrypoint": "README.md" }
+```
+- `name`/`version`/`license` are **publisher-overridable** (`--name/--version/--license`); whoever
+  publishes the package tags it however they like. Default name is `@kp/<topic-slug>`, version `0.1.0`.
+- The wikillm-specific richness (verified-spine stats, coverage, falsification, the graph) can't live
+  in `knowledge.json` (closed set), so it rides alongside in `wikillm.json`/`index.json`, carried into
+  the package by the `files` glob.
+
+**The shareable lifecycle (all existing kpm commands):**
+```bash
+kp-build build -i research.json -o ./pkg     # produces a valid kpm package
+cd ./pkg && kpm doctor && kpm pack           # validates + writes a shareable .tgz
+# publish ./pkg as a tagged GitHub repo, then any consumer:
+kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — no re-research
+```
+Verified end-to-end against the real kpm CLI (doctor ok → pack → consumer add/compose).
 
 ### Citation object (`papers/<cite_key>.md` frontmatter)
 `cite_key, title, authors, year, venue, arxiv_id?, doi?, url, verified{exists, via, canonical_title, checked}, key_contributions[]`

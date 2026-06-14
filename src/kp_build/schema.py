@@ -195,7 +195,7 @@ def claim_to_md(c: Claim, *, paper_ref: str = "") -> str:
     d = asdict(c)
     if paper_ref:
         d["paper_ref"] = paper_ref           # denormalized id so the chunk resolves standalone (FMT-8)
-    tail = f"\n\n— [[{c.paper}]]" + (f" ({paper_ref})" if paper_ref else "")
+    tail = f"\n\n— [[papers/{c.paper}]]" + (f" ({paper_ref})" if paper_ref else "")
     return _fm(d, f"{c.statement}\n\n> {c.supporting_passage}{tail}")
 
 
@@ -214,14 +214,14 @@ def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:
     d = asdict(op)
     if refs:
         d["flagged_by_ids"] = [refs[k] for k in op.flagged_by if refs.get(k)]
-    links = ", ".join(f"[[{k}]]" + (f" ({refs[k]})" if refs.get(k) else "") for k in op.flagged_by)
+    links = ", ".join(f"[[papers/{k}]]" + (f" ({refs[k]})" if refs.get(k) else "") for k in op.flagged_by)
     body = f"{op.statement}\n\n**Why it matters:** {op.why_it_matters}\n\n**Flagged by:** {links}"
     return _fm(d, body)
 
 
 def benchmark_to_md(b: "Benchmark") -> str:
     body = (f"**{b.name}** — {b.method or '?'} achieves **{b.value}** {b.metric}"
-            f"{f' on {b.dataset}' if b.dataset else ''}.\n\n— [[{b.paper}]]")
+            f"{f' on {b.dataset}' if b.dataset else ''}.\n\n— [[papers/{b.paper}]]")
     return _fm(asdict(b), body)
 
 
@@ -242,7 +242,7 @@ def problem_from_md(text: str) -> OpenProblem:
 def debate_to_md(d: Debate) -> str:
     body_lines = [d.question, ""]
     for pos in d.positions:
-        links = ", ".join(f"[[{k}]]" for k in pos.papers)
+        links = ", ".join(f"[[papers/{k}]]" for k in pos.papers)
         body_lines.append(f"### {pos.stance}\n{pos.summary}\n\n*Held by:* {links}\n")
     return _fm(asdict(d), "\n".join(body_lines))
 

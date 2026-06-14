@@ -199,7 +199,8 @@ def _cmd_build(args) -> int:
         print(f"verifying {len(pkg.papers)} citations against arXiv/Crossref ...", file=sys.stderr)
         summary = verify_all(pkg.papers, today=today)
 
-    out = assemble(pkg, args.out, built=today)
+    out = assemble(pkg, args.out, built=today,
+                   name=args.name or None, version=args.version, license=args.license)
     res = validate(out)
     print("kp-build complete")
     print(f"  topic            : {pkg.topic}")
@@ -217,6 +218,8 @@ def _cmd_build(args) -> int:
     if dropped:
         print(f"  dropped (unverified-anchored): {dropped}")
     print(f"  package          : {out}")
+    kj = json.loads((out / "knowledge.json").read_text())
+    print(f"  kpm package      : {kj['name']}@{kj['version']}  (publish + `kpm add github:<owner>/<repo>#v{kj['version']}`)")
     print(f"  validation       : {'OK' if res.ok else 'FAILED'}")
     for e in res.errors:
         print(f"      ERROR  - {e}")
@@ -280,6 +283,9 @@ def main(argv=None) -> int:
     b.add_argument("--out", "-o", required=True)
     b.add_argument("--built", default="")
     b.add_argument("--no-verify", action="store_true", help="skip network citation checks (offline/testing)")
+    b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
+    b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
+    b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")
     b.set_defaults(func=_cmd_build)
     v = sub.add_parser("verify", help="citation check only")
     v.add_argument("--input", "-i", required=True)

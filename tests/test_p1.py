@@ -79,10 +79,10 @@ def test_assemble_prunes_refs_and_reports_drops(tmp_path):
     assert s["benchmarks"] == 1 and s["dropped"]["benchmarks"] == 1
     # the open problem kept, but its flagged_by pruned to verified only
     op = (out / "open-problems" / "o1.md").read_text()
-    assert "[[ok]]" in op and "bad" not in op
+    assert "[[papers/ok]]" in op and "[[papers/bad]]" not in op
     # debate kept, but the 'bad'-only position dropped
     db = (out / "debates" / "d1.md").read_text()
-    assert "ok" in db and "[[bad]]" not in db
+    assert "ok" in db and "[[papers/bad]]" not in db
     # claim's corroborated_by pruned to verified (ok2 kept, bad removed)
     assert validate(out).ok, validate(out).errors
 

@@ -26,7 +26,7 @@ def test_claim_roundtrip_and_body_has_passage_and_link():
               supporting_passage="X improves Y by 2 points.", claim_type="result",
               confidence="high", corroborated_by=["smith2020"])
     md = claim_to_md(c)
-    assert "X improves Y by 2 points." in md and "[[vaswani2017]]" in md
+    assert "X improves Y by 2 points." in md and "[[papers/vaswani2017]]" in md
     assert claim_from_md(md) == c
 
 
@@ -34,7 +34,7 @@ def test_open_problem_roundtrip():
     op = OpenProblem(id="p1", statement="Z is unsolved.", flagged_by=["vaswani2017", "smith2020"],
                      status="open", why_it_matters="It blocks scaling.")
     md = problem_to_md(op)
-    assert "[[vaswani2017]]" in md and "blocks scaling" in md
+    assert "[[papers/vaswani2017]]" in md and "blocks scaling" in md
     assert problem_from_md(md) == op
 
 
