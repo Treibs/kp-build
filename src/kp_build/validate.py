@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List
 
-from .schema import paper_from_md, claim_from_md, problem_from_md, debate_from_md
+from .schema import paper_from_md, claim_from_md, problem_from_md, debate_from_md, benchmark_from_md
 
 
 @dataclass
@@ -53,6 +53,9 @@ def validate(pkg_dir: str | Path) -> ValidationResult:
         for pos in db.positions:
             for k in pos.papers:
                 check(k, f"debate {db.id} ({pos.stance})")
+    for f in glob.glob(str(d / "benchmarks" / "*.md")):
+        b = benchmark_from_md(Path(f).read_text())
+        check(b.paper, f"benchmark {b.id}")
 
     for k in papers:
         if k not in cited:

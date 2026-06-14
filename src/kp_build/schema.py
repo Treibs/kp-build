@@ -67,6 +67,7 @@ class Paper:
     year: Optional[int] = None
     venue: str = ""
     arxiv_id: str = ""
+    arxiv_version: str = ""            # e.g. "v3" — pin the version a claim was read against
     doi: str = ""
     url: str = ""
     verified: Verification = field(default_factory=Verification)
@@ -115,6 +116,19 @@ class Debate:
 
 
 @dataclass
+class Benchmark:
+    """A reported result on a named dataset/metric — feeds the SOTA-numbers table a paper needs."""
+
+    id: str
+    name: str                          # human label, e.g. "MT-Bench wall-clock speedup"
+    dataset: str = ""
+    metric: str = ""                   # e.g. "speedup", "tokens/s", "accuracy"
+    value: str = ""                    # kept as str: "2.8x", "76.4", ...
+    method: str = ""                   # the approach this number is for
+    paper: str = ""                    # cite_key it comes from
+
+
+@dataclass
 class Package:
     """The whole knowledge package."""
 
@@ -124,6 +138,10 @@ class Package:
     claims: List[Claim] = field(default_factory=list)
     open_problems: List[OpenProblem] = field(default_factory=list)
     debates: List[Debate] = field(default_factory=list)
+    benchmarks: List[Benchmark] = field(default_factory=list)
+    #: Coverage honesty (SPEC promise): what the survey searched, so the gap is explicit.
+    #: e.g. {"sub_questions":[...], "queries":[...], "seed_papers":[...], "expansion_hops":1}
+    coverage: dict = field(default_factory=dict)
 
 
 # ── markdown (de)serialization ──────────────────────────────────────────────────
@@ -156,7 +174,7 @@ def paper_from_md(text: str) -> Paper:
     return Paper(
         cite_key=fm["cite_key"], title=fm.get("title", ""), authors=list(fm.get("authors") or []),
         year=fm.get("year"), venue=fm.get("venue", ""), arxiv_id=fm.get("arxiv_id", ""),
-        doi=fm.get("doi", ""), url=fm.get("url", ""),
+        arxiv_version=fm.get("arxiv_version", ""), doi=fm.get("doi", ""), url=fm.get("url", ""),
         verified=Verification(**{k: v.get(k) for k in
                                  ("exists", "status", "via", "canonical_title", "match_score", "checked")
                                  if k in v}),
@@ -164,9 +182,21 @@ def paper_from_md(text: str) -> Paper:
     )
 
 
-def claim_to_md(c: Claim) -> str:
-    body = f"{c.statement}\n\n> {c.supporting_passage}\n\n— [[{c.paper}]]"
-    return _fm(asdict(c), body)
+def paper_ref_str(p: "Paper") -> str:
+    """A self-contained identifier string for a paper (so a chunk resolves to a real id)."""
+    if p.arxiv_id:
+        return f"arXiv:{p.arxiv_id}{p.arxiv_version}"
+    if p.doi:
+        return f"doi:{p.doi}"
+    return ""
+
+
+def claim_to_md(c: Claim, *, paper_ref: str = "") -> str:
+    d = asdict(c)
+    if paper_ref:
+        d["paper_ref"] = paper_ref           # denormalized id so the chunk resolves standalone (FMT-8)
+    tail = f"\n\n— [[{c.paper}]]" + (f" ({paper_ref})" if paper_ref else "")
+    return _fm(d, f"{c.statement}\n\n> {c.supporting_passage}{tail}")
 
 
 def claim_from_md(text: str) -> Claim:
@@ -176,10 +206,27 @@ def claim_from_md(text: str) -> Claim:
                  corroborated_by=list(fm.get("corroborated_by") or []))
 
 
-def problem_to_md(op: OpenProblem) -> str:
-    links = ", ".join(f"[[{k}]]" for k in op.flagged_by)
+def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:
+    refs = refs or {}
+    d = asdict(op)
+    if refs:
+        d["flagged_by_ids"] = [refs[k] for k in op.flagged_by if refs.get(k)]
+    links = ", ".join(f"[[{k}]]" + (f" ({refs[k]})" if refs.get(k) else "") for k in op.flagged_by)
     body = f"{op.statement}\n\n**Why it matters:** {op.why_it_matters}\n\n**Flagged by:** {links}"
-    return _fm(asdict(op), body)
+    return _fm(d, body)
+
+
+def benchmark_to_md(b: "Benchmark") -> str:
+    body = (f"**{b.name}** — {b.method or '?'} achieves **{b.value}** {b.metric}"
+            f"{f' on {b.dataset}' if b.dataset else ''}.\n\n— [[{b.paper}]]")
+    return _fm(asdict(b), body)
+
+
+def benchmark_from_md(text: str) -> "Benchmark":
+    fm, _ = _split(text)
+    return Benchmark(id=fm["id"], name=fm.get("name", ""), dataset=fm.get("dataset", ""),
+                     metric=fm.get("metric", ""), value=str(fm.get("value", "")),
+                     method=fm.get("method", ""), paper=fm.get("paper", ""))
 
 
 def problem_from_md(text: str) -> OpenProblem:

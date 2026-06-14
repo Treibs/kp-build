@@ -16,32 +16,118 @@ import json
 import sys
 from pathlib import Path
 
-from .schema import Package, Paper, Claim, OpenProblem, Debate, Position, Verification
+from .schema import (Package, Paper, Claim, OpenProblem, Debate, Position, Benchmark, Verification,
+                     CLAIM_TYPES, CONFIDENCE, PROBLEM_STATUS)
 from .citations import verify_all
 from .assemble import assemble
 from .validate import validate
 
 
+class ResearchInputError(ValueError):
+    """Malformed research JSON — reported with all problems aggregated, not a raw traceback."""
+
+
+def _coerce_year(v, where, errs):
+    if v is None or isinstance(v, int):
+        return v
+    try:
+        return int(str(v).strip())
+    except (TypeError, ValueError):
+        errs.append(f"{where}: year {v!r} is not an integer")
+        return None
+
+
 def _load(path: str) -> Package:
-    d = json.loads(Path(path).read_text(encoding="utf-8"))
-    papers = [Paper(cite_key=p["cite_key"], title=p.get("title", ""), authors=list(p.get("authors") or []),
-                    year=p.get("year"), venue=p.get("venue", ""), arxiv_id=p.get("arxiv_id", ""),
-                    doi=p.get("doi", ""), url=p.get("url", ""),
-                    key_contributions=list(p.get("key_contributions") or []),
-                    verified=Verification()) for p in d.get("papers", [])]
-    claims = [Claim(id=c["id"], statement=c["statement"], paper=c["paper"],
-                    supporting_passage=c.get("supporting_passage", ""),
-                    claim_type=c.get("claim_type", "finding"), confidence=c.get("confidence", "medium"),
-                    corroborated_by=list(c.get("corroborated_by") or [])) for c in d.get("claims", [])]
-    problems = [OpenProblem(id=o["id"], statement=o["statement"], flagged_by=list(o.get("flagged_by") or []),
-                            status=o.get("status", "open"), why_it_matters=o.get("why_it_matters", ""))
-                for o in d.get("open_problems", [])]
-    debates = [Debate(id=db["id"], question=db.get("question", ""),
-                      positions=[Position(stance=p.get("stance", ""), papers=list(p.get("papers") or []),
-                                          summary=p.get("summary", "")) for p in db.get("positions", [])],
-                      resolved=bool(db.get("resolved", False))) for db in d.get("debates", [])]
+    try:
+        d = json.loads(Path(path).read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        raise ResearchInputError(f"{path}: not valid JSON — {e}") from None
+    if not isinstance(d, dict):
+        raise ResearchInputError(f"{path}: top level must be a JSON object")
+
+    errs: list[str] = []
+    if not d.get("topic"):
+        errs.append("missing required 'topic'")
+
+    # papers: required cite_key, no duplicates, coerced year
+    seen: dict[str, int] = {}
+    papers = []
+    for i, p in enumerate(d.get("papers") or []):
+        ck = p.get("cite_key")
+        if not ck:
+            errs.append(f"papers[{i}]: missing cite_key"); continue
+        if ck in seen:
+            errs.append(f"duplicate cite_key {ck!r} (papers[{seen[ck]}] and papers[{i}])"); continue
+        seen[ck] = i
+        papers.append(Paper(
+            cite_key=ck, title=p.get("title", ""), authors=list(p.get("authors") or []),
+            year=_coerce_year(p.get("year"), f"papers[{i}] ({ck})", errs), venue=p.get("venue", ""),
+            arxiv_id=str(p.get("arxiv_id", "")), arxiv_version=str(p.get("arxiv_version", "")),
+            doi=str(p.get("doi", "")), url=p.get("url", ""),
+            key_contributions=list(p.get("key_contributions") or []), verified=Verification()))
+    keys = set(seen)
+
+    def _ref(k, where):
+        if k and k not in keys:
+            errs.append(f"{where}: references undefined cite_key {k!r}")
+
+    claims = []
+    for i, c in enumerate(d.get("claims") or []):
+        for fld in ("id", "statement", "paper"):
+            if not c.get(fld):
+                errs.append(f"claims[{i}]: missing {fld}")
+        _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
+        if c.get("claim_type") and c["claim_type"] not in CLAIM_TYPES:
+            errs.append(f"claims[{i}]: claim_type {c['claim_type']!r} not in {CLAIM_TYPES}")
+        if c.get("confidence") and c["confidence"] not in CONFIDENCE:
+            errs.append(f"claims[{i}]: confidence {c['confidence']!r} not in {CONFIDENCE}")
+        for k in (c.get("corroborated_by") or []):
+            _ref(k, f"claims[{i}] corroborated_by")
+        claims.append(Claim(id=c.get("id", ""), statement=c.get("statement", ""), paper=c.get("paper", ""),
+                            supporting_passage=c.get("supporting_passage", ""),
+                            claim_type=c.get("claim_type", "finding"), confidence=c.get("confidence", "medium"),
+                            corroborated_by=list(c.get("corroborated_by") or [])))
+
+    problems = []
+    for i, o in enumerate(d.get("open_problems") or []):
+        if not o.get("id") or not o.get("statement"):
+            errs.append(f"open_problems[{i}]: missing id/statement")
+        if not (o.get("flagged_by") or []):
+            errs.append(f"open_problems[{i}] ({o.get('id', '?')}): flagged_by is empty")
+        for k in (o.get("flagged_by") or []):
+            _ref(k, f"open_problems[{i}]")
+        if o.get("status") and o["status"] not in PROBLEM_STATUS:
+            errs.append(f"open_problems[{i}]: status {o['status']!r} not in {PROBLEM_STATUS}")
+        problems.append(OpenProblem(id=o.get("id", ""), statement=o.get("statement", ""),
+                                    flagged_by=list(o.get("flagged_by") or []),
+                                    status=o.get("status", "open"), why_it_matters=o.get("why_it_matters", "")))
+
+    debates = []
+    for i, db in enumerate(d.get("debates") or []):
+        positions = []
+        for j, p in enumerate(db.get("positions") or []):
+            for k in (p.get("papers") or []):
+                _ref(k, f"debates[{i}].positions[{j}]")
+            positions.append(Position(stance=p.get("stance", ""), papers=list(p.get("papers") or []),
+                                      summary=p.get("summary", "")))
+        debates.append(Debate(id=db.get("id", ""), question=db.get("question", ""),
+                              positions=positions, resolved=bool(db.get("resolved", False))))
+
+    benchmarks = []
+    for i, b in enumerate(d.get("benchmarks") or []):
+        if not b.get("id") or not b.get("name"):
+            errs.append(f"benchmarks[{i}]: missing id/name")
+        _ref(b.get("paper"), f"benchmarks[{i}]")
+        benchmarks.append(Benchmark(id=b.get("id", ""), name=b.get("name", ""), dataset=b.get("dataset", ""),
+                                    metric=b.get("metric", ""), value=str(b.get("value", "")),
+                                    method=b.get("method", ""), paper=b.get("paper", "")))
+
+    if errs:
+        raise ResearchInputError("invalid research input:\n  - " + "\n  - ".join(errs))
+
     return Package(topic=d["topic"], scope=d.get("scope", ""), papers=papers, claims=claims,
-                   open_problems=problems, debates=debates)
+                   open_problems=problems, debates=debates, benchmarks=benchmarks,
+                   coverage=dict(d.get("coverage") or {}))
 
 
 def _cmd_build(args) -> int:
@@ -68,7 +154,11 @@ def _cmd_build(args) -> int:
     if summary.get("errored"):
         print(f"  ERROR reaching index (could not check — retry): {', '.join(summary['errored'])}")
     s = json.loads((out / 'wikillm.json').read_text())["stats"]
-    print(f"  shipped          : {s['claims']} claims · {s['open_problems']} open problems · {s['debates']} debates")
+    print(f"  shipped          : {s['claims']} claims · {s['open_problems']} open problems · "
+          f"{s['debates']} debates · {s['benchmarks']} benchmarks")
+    dropped = {k: v for k, v in s["dropped"].items() if v}
+    if dropped:
+        print(f"  dropped (unverified-anchored): {dropped}")
     print(f"  package          : {out}")
     print(f"  validation       : {'OK' if res.ok else 'FAILED'}")
     for e in res.errors:
@@ -147,7 +237,14 @@ def main(argv=None) -> int:
     val.add_argument("package_dir")
     val.set_defaults(func=_cmd_validate)
     args = ap.parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except ResearchInputError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+    except FileNotFoundError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":
