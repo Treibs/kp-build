@@ -39,11 +39,21 @@ def slugify(text: str, *, max_words: int = 8) -> str:
 
 @dataclass
 class Verification:
-    """Result of checking a paper against a real citation index."""
+    """Result of checking a paper against a real citation index.
+
+    ``exists`` is the SHIP gate: True only for a STRONG verification — an explicit identifier
+    (arXiv id / DOI) that resolves AND whose canonical title strictly matches the claimed title.
+    A title-only search hit is ``status='unconfirmed'`` with ``exists=False`` (it can NOT anchor a
+    shipped claim) — this is what stops the tool laundering a fabricated title against an unrelated
+    real work. ``status`` distinguishes the failure modes so they are never conflated:
+      verified | unconfirmed | id-title-mismatch | not-found | error | unverified
+    """
 
     exists: bool = False
+    status: str = "unverified"
     via: str = "unverified"           # "arxiv" | "crossref" | "unverified"
     canonical_title: str = ""
+    match_score: float = 0.0
     checked: str = ""                 # YYYY-MM-DD
 
 
@@ -147,7 +157,9 @@ def paper_from_md(text: str) -> Paper:
         cite_key=fm["cite_key"], title=fm.get("title", ""), authors=list(fm.get("authors") or []),
         year=fm.get("year"), venue=fm.get("venue", ""), arxiv_id=fm.get("arxiv_id", ""),
         doi=fm.get("doi", ""), url=fm.get("url", ""),
-        verified=Verification(**{k: v.get(k) for k in ("exists", "via", "canonical_title", "checked") if k in v}),
+        verified=Verification(**{k: v.get(k) for k in
+                                 ("exists", "status", "via", "canonical_title", "match_score", "checked")
+                                 if k in v}),
         key_contributions=list(fm.get("key_contributions") or []),
     )
 

@@ -1,29 +1,39 @@
-"""Citation verification — the hard gate against hallucinated papers.
+"""Citation verification — the SOUND hard gate against hallucinated papers.
 
-A paper is verified by checking it against a REAL index:
-1. ``arxiv_id`` → arXiv Atom API (an entry must come back, and its title must match).
-2. ``doi``      → Crossref ``/works/{doi}`` (must resolve, title must match).
-3. else ``title`` → Crossref bibliographic search (top hit's title must match closely).
+The previous version laundered fakes: its title-search fallback marked a fabricated paper
+``verified`` against an unrelated real work and backfilled a wrong DOI. This version is built so a
+fabricated citation can never earn ``exists=True``:
 
-"Match" means the claimed title and the index's canonical title are close (token Jaccard ≥ 0.6
-or one contains the other), so a real-but-different paper can't masquerade as the cited one. A
-paper that fails all three is ``exists=False`` and may not anchor a shipped claim.
+1. **An identifier's verdict is FINAL.** If an ``arxiv_id`` or ``doi`` is supplied, we resolve it and
+   either accept (it resolves AND the canonical title strictly matches the claimed title) or reject —
+   we NEVER fall through to a title search that could rescue a wrong id to a third paper.
+2. **Title-only papers are never ``verified``.** With no identifier the best we can do is a strict
+   Crossref search; a hit is recorded as ``status='unconfirmed'`` with ``exists=False`` — it cannot
+   anchor a shipped claim. (The drafter must supply an arXiv id / DOI for a shippable citation.)
+3. **Strict title match** (no ≥2-word subset shortcut): near-equality OR high coverage with a
+   ≥4 meaningful-token floor, so "Language Models" no longer matches "Large Language Models".
+4. **Transient errors (429 / timeout / 5xx) are distinguished from a real negative** and retried, so a
+   rate limit never silently turns a real paper into ``not-found`` (or a fake into a pass).
 
-HTTP is injected (``get``) so the logic is unit-testable without the network.
+HTTP is injected (``get``) so all of this is unit-testable without the network.
 """
 
 from __future__ import annotations
 
 import json
 import re
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from typing import Callable, Optional
 
 from .schema import Paper, Verification
 
-_UA = "kp-build/0.1 (research knowledge package builder)"
+_UA = "kp-build/0.2 (research knowledge package builder)"
 _TOK = re.compile(r"[a-z0-9]+")
+_STOP = frozenset("a an the of for and or via with in on to is are using based from at as".split())
+_RETRYABLE = frozenset({429, 500, 502, 503, 504})
 
 
 def _http_get(url: str, *, timeout: float = 20.0) -> str:
@@ -32,108 +42,207 @@ def _http_get(url: str, *, timeout: float = 20.0) -> str:
         return r.read().decode("utf-8", "replace")
 
 
-def _norm_tokens(s: str) -> set:
+# ── title matching ───────────────────────────────────────────────────────────────
+
+
+def _toks(s: str) -> set:
     return set(_TOK.findall(s.lower()))
 
 
+def _meaningful(s: str) -> set:
+    return {t for t in _toks(s) if t not in _STOP}
+
+
 def titles_match(a: str, b: str, *, threshold: float = 0.6) -> bool:
-    """True if two titles plausibly name the same paper."""
-    ta, tb = _norm_tokens(a), _norm_tokens(b)
+    """Loose match (token Jaccard) — used only for ranking search candidates, never to ACCEPT."""
+    ta, tb = _toks(a), _toks(b)
     if not ta or not tb:
         return False
-    # A short claimed title that is a token-subset of the canonical (or vice-versa) is the same
-    # paper cited by an abbreviated title — accept when the smaller set is meaningful (>=2 words).
-    small, big = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
-    if len(small) >= 2 and small <= big:
-        return True
-    jacc = len(ta & tb) / len(ta | tb)
-    return jacc >= threshold
+    return len(ta & tb) / len(ta | tb) >= threshold
 
 
-# ── individual index checks ─────────────────────────────────────────────────────
+def titles_match_strict(claimed: str, canonical: str) -> tuple[bool, float]:
+    """STRICT match used to ACCEPT a citation. Returns (ok, score).
+
+    Accept iff the meaningful tokens are near-equal (Jaccard >= 0.85) OR the claimed title is almost
+    entirely contained in the canonical one (coverage >= 0.85) AND has >= 4 meaningful tokens — which
+    allows a legitimately truncated subtitle but rejects short/generic titles ("Language Models",
+    "Deep Learning") and unrelated papers.
+    """
+    c, k = _meaningful(claimed), _meaningful(canonical)
+    if not c or not k:
+        return False, 0.0
+    inter = len(c & k)
+    jacc = inter / len(c | k)
+    cover = inter / len(c)
+    if c == k or jacc >= 0.85:
+        return True, max(jacc, 1.0 if c == k else jacc)
+    if cover >= 0.85 and len(c) >= 4:
+        return True, cover
+    return False, max(jacc, 0.0)
 
 
-def _arxiv_title(arxiv_id: str, get: Callable[[str], str]) -> Optional[str]:
+# ── index fetchers: return (value, err) where err in {'', 'transient'} ───────────
+
+
+def _safe(url: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
+    try:
+        return get(url), ""
+    except urllib.error.HTTPError as e:
+        return None, ("transient" if e.code in _RETRYABLE else "")
+    except (urllib.error.URLError, TimeoutError, ConnectionError, OSError):
+        return None, "transient"
+    except Exception:
+        return None, ""
+
+
+def _arxiv_title(arxiv_id: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
     aid = arxiv_id.strip().replace("arXiv:", "").strip()
-    url = f"http://export.arxiv.org/api/query?id_list={urllib.parse.quote(aid)}&max_results=1"
+    url = f"http://export.arxiv.org/api/query?id_list={urllib.parse.quote(aid, safe='')}&max_results=1"
+    raw, err = _safe(url, get)
+    if err:
+        return None, err
+    if not raw or "<entry>" not in raw:
+        return None, ""  # definitive: arXiv returned a feed with no entry → id does not exist
+    m = re.search(r"<entry>.*?<title>(.*?)</title>", raw, re.S)
+    return (re.sub(r"\s+", " ", m.group(1)).strip() if m else None), ""
+
+
+def _crossref_doi_title(doi: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
+    url = f"https://api.crossref.org/works/{urllib.parse.quote(doi.strip(), safe='')}"
+    raw, err = _safe(url, get)
+    if err:
+        return None, err
     try:
-        xml = get(url)
+        titles = json.loads(raw).get("message", {}).get("title") or []
     except Exception:
-        return None
-    if "<entry>" not in xml:
-        return None
-    # An id_list miss still returns a feed but with no <entry>. Pull the entry title.
-    m = re.search(r"<entry>.*?<title>(.*?)</title>", xml, re.S)
-    return re.sub(r"\s+", " ", m.group(1)).strip() if m else None
+        return None, ""
+    return (titles[0] if titles else None), ""
 
 
-def _crossref_doi_title(doi: str, get: Callable[[str], str]) -> Optional[str]:
-    url = f"https://api.crossref.org/works/{urllib.parse.quote(doi.strip())}"
-    try:
-        data = json.loads(get(url))
-    except Exception:
-        return None
-    titles = data.get("message", {}).get("title") or []
-    return titles[0] if titles else None
+# Crossref record types that are real works (exclude components/supplementary/datasets/etc.)
+_ARTICLE_TYPES = frozenset({
+    "journal-article", "proceedings-article", "posted-content", "book-chapter",
+    "report", "book", "monograph", "reference-entry", "dissertation",
+})
 
 
-def _crossref_search(title: str, get: Callable[[str], str]) -> Optional[tuple[str, str]]:
-    """Return (doi, canonical_title) of the best bibliographic match, else None."""
+def _crossref_search_strict(title: str, get: Callable[[str], str]) -> tuple[Optional[tuple[str, str, float]], str]:
+    """Best STRICT title match among article-type Crossref hits → (doi, canonical, score) or None."""
     url = "https://api.crossref.org/works?" + urllib.parse.urlencode(
-        {"query.bibliographic": title, "rows": 3})
+        {"query.bibliographic": title, "rows": 5})
+    raw, err = _safe(url, get)
+    if err:
+        return None, err
     try:
-        items = json.loads(get(url)).get("message", {}).get("items") or []
+        items = json.loads(raw).get("message", {}).get("items") or []
     except Exception:
-        return None
+        return None, ""
+    best = None
     for it in items:
+        if it.get("type") and it["type"] not in _ARTICLE_TYPES:
+            continue
         cand = (it.get("title") or [""])[0]
-        if cand and titles_match(title, cand):
-            return it.get("DOI", ""), cand
-    return None
+        ok, score = titles_match_strict(title, cand)
+        if ok and (best is None or score > best[2]):
+            best = (it.get("DOI", ""), cand, score)
+    return best, ""
+
+
+def _resolve(fn, *args, get, sleep, max_retries) -> tuple[Optional[object], str]:
+    """Call an index fetcher, retrying transient errors with backoff."""
+    for attempt in range(max_retries + 1):
+        val, err = fn(*args, get)
+        if err != "transient":
+            return val, err
+        if attempt < max_retries:
+            sleep(0.5 * (2 ** attempt))
+    return None, "transient"
 
 
 # ── public API ──────────────────────────────────────────────────────────────────
 
 
-def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str = "") -> Paper:
-    """Verify *p* against arXiv/Crossref; set ``p.verified`` (returns the same object).
+def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str = "",
+                 sleep: Callable[[float], None] = time.sleep, max_retries: int = 2) -> Paper:
+    """Verify *p*; set ``p.verified`` (returns the same object).
 
-    Order: arxiv_id, then doi, then a Crossref title search (which can also *backfill* a doi).
-    The title must match in every path, so a wrong/fake citation cannot pass.
+    Outcomes (``status`` / ``exists``):
+      verified           — id/doi resolved AND canonical title strictly matched   (exists=True)
+      id-title-mismatch  — id/doi resolved but the title disagrees → REJECT        (exists=False)
+      not-found          — an id/doi was supplied but the index has no such record (exists=False)
+      unconfirmed        — title-only; a strict Crossref hint exists but is unverified (exists=False)
+      error              — the index could not be reached (transient) — unknown, do NOT trust (exists=False)
+      unverified         — nothing to check / no hit                               (exists=False)
     """
-    p.verified.checked = today
+    def done(status, via="unverified", canon="", score=0.0):
+        p.verified = Verification(exists=(status == "verified"), status=status, via=via,
+                                  canonical_title=canon, match_score=round(score, 3), checked=today)
+        return p
 
+    # 1. Identifier path — its verdict is FINAL (never rescued by a title search).
     if p.arxiv_id:
-        ct = _arxiv_title(p.arxiv_id, get)
-        if ct and titles_match(p.title or ct, ct):
-            p.verified = Verification(True, "arxiv", ct, today)
+        ct, err = _resolve(_arxiv_title, p.arxiv_id, get=get, sleep=sleep, max_retries=max_retries)
+        if err == "transient":
+            return done("error", "arxiv")
+        if ct is None:
+            return done("not-found", "arxiv")
+        if not p.title:
             if not p.url:
                 p.url = f"https://arxiv.org/abs/{p.arxiv_id.replace('arXiv:', '').strip()}"
-            return p
+            return done("verified", "arxiv", ct, 1.0)
+        ok, score = titles_match_strict(p.title, ct)
+        if ok:
+            if not p.url:
+                p.url = f"https://arxiv.org/abs/{p.arxiv_id.replace('arXiv:', '').strip()}"
+            return done("verified", "arxiv", ct, score)
+        return done("id-title-mismatch", "arxiv", ct, score)
 
     if p.doi:
-        ct = _crossref_doi_title(p.doi, get)
-        if ct and titles_match(p.title or ct, ct):
-            p.verified = Verification(True, "crossref", ct, today)
-            return p
+        ct, err = _resolve(_crossref_doi_title, p.doi, get=get, sleep=sleep, max_retries=max_retries)
+        if err == "transient":
+            return done("error", "crossref")
+        if ct is None:
+            return done("not-found", "crossref")
+        if not p.title:
+            return done("verified", "crossref", ct, 1.0)
+        ok, score = titles_match_strict(p.title, ct)
+        return done("verified" if ok else "id-title-mismatch", "crossref", ct, score)
 
+    # 2. Title-only path — NEVER 'verified'. A strict hit is a candidate hint, exists=False.
     if p.title:
-        hit = _crossref_search(p.title, get)
+        hit, err = _resolve(_crossref_search_strict, p.title, get=get, sleep=sleep, max_retries=max_retries)
+        if err == "transient":
+            return done("error", "crossref")
         if hit:
-            doi, ct = hit
-            p.doi = p.doi or doi
-            p.verified = Verification(True, "crossref", ct, today)
-            return p
+            doi, canon, score = hit
+            p.doi = p.doi or doi          # a candidate, not a confirmation
+            return done("unconfirmed", "crossref", canon, score)
+        return done("not-found", "crossref")
 
-    p.verified = Verification(False, "unverified", "", today)
-    return p
+    return done("unverified")
 
 
-def verify_all(papers: list[Paper], *, get: Callable[[str], str] = _http_get, today: str = "") -> dict:
-    """Verify a list in place; return a summary ``{verified, unverified, ids}``."""
-    unv = []
+def verify_all(papers: list[Paper], *, get: Callable[[str], str] = _http_get, today: str = "",
+               sleep: Callable[[float], None] = time.sleep) -> dict:
+    """Verify a list in place; return a status breakdown."""
+    from collections import Counter
+    statuses = Counter()
+    unconfirmed, rejected, errored = [], [], []
     for p in papers:
-        verify_paper(p, get=get, today=today)
-        if not p.verified.exists:
-            unv.append(p.cite_key)
-    return {"total": len(papers), "verified": len(papers) - len(unv), "unverified": unv}
+        verify_paper(p, get=get, today=today, sleep=sleep)
+        statuses[p.verified.status] += 1
+        if p.verified.status == "unconfirmed":
+            unconfirmed.append(p.cite_key)
+        elif p.verified.status in ("id-title-mismatch", "not-found"):
+            rejected.append(p.cite_key)
+        elif p.verified.status == "error":
+            errored.append(p.cite_key)
+    return {
+        "total": len(papers),
+        "verified": statuses.get("verified", 0),
+        "by_status": dict(statuses),
+        "unconfirmed": unconfirmed,   # title-only hints — need an id/doi to ship
+        "rejected": rejected,         # not-found or id/title mismatch — likely fabricated/wrong
+        "errored": errored,           # index unreachable — unknown
+    }

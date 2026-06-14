@@ -59,13 +59,14 @@ If a subagent can't find a real handle for a paper, it does not get cited — dr
 ### 3 — Extract (per paper — grounded, INDEPENDENT of the drafter, like kpm-build)
 For each paper, dispatch extraction. Return, each tied to a **verbatim passage** from the paper:
 - **Claims** — its key results/methods/findings: `{id, statement, paper, supporting_passage,
-  claim_type, confidence}`. Scope each claim to its passage (no over-reach — same discipline as
-  kpm-build; over-reaching claims are noise).
+  claim_type, confidence}`. The `supporting_passage` MUST be a near-verbatim quote from the paper and
+  the statement must not reach past it (no added scope/numbers/certainty). **Honesty note:** the engine
+  does NOT yet independently re-check that the passage actually appears in the paper — the claim is
+  drafter-quoted, not machine-grounded. So scope claims tightly and only quote text you actually read;
+  do not present these as independently verified. (A passage-presence gate is planned.)
 - **Open problems** — what THIS paper says is unsolved / future work / a limitation:
   `{id, statement, flagged_by:[cite_key], status, why_it_matters}`. This is the highest-value output.
 - **Debate position** — if the paper takes a side on a contested question, note it.
-Ground the claims independently (a separate isolated check: does the passage entail the statement?) —
-reuse the kpm-build grounding pattern if available.
 
 ### 4 — Synthesize
 - Merge open problems that multiple papers flag (`flagged_by` grows — corroboration that it's real).
@@ -92,11 +93,22 @@ Research JSON:
 ```
 
 ### 6 — Falsify (the acceptance gate — does it actually help?)
-Run the falsification harness (`eval/falsify.py`): a KP-loaded agent vs a base agent on a held-out
-task ("write the related-work paragraph + name 3 *real* open problems for this area"), judged for
-correctness, usefulness, and ZERO hallucinated citations. **If the package doesn't beat the base
-agent, it is not useful — say so, and either deepen the survey or report the gap honestly.** Record
-the result in the manifest.
+Run the falsification harness. Build the two prompts and dispatch two answer subagents:
+```python
+from kp_build.falsify import make_prompts
+p = make_prompts(out_dir, "<the research area>")   # p["base"] (no package) and p["kp"] (CONTEXT.md injected)
+```
+Each subagent writes a related-work paragraph + 3 open problems ending in a `## Citations` block.
+Then score and RECORD the verdict into the manifest:
+```
+kp-build falsify <out_dir> --question "<area>" --base base_answer.txt --kp kp_answer.txt
+```
+This scores both answers on **precision** (cited papers that actually exist — checked live) and
+**recall** (fraction of the package's verified spine the answer used), reports an f1 verdict, and
+writes it into `wikillm.json`. **If the KP answer does not beat base on f1 — especially if base's
+hallucination rate is already ~0 because the model knows the topic — the package is not adding value;
+say so and either pick a more model-weak topic or deepen the survey.** A `kp-build falsify` run is
+also exposed via `eval/falsify.py` for convenience.
 
 ### 7 — Deliver
 Hand over the package directory. Point the user at `CONTEXT.md` (load into an agent) and `README.md`

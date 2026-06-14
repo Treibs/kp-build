@@ -57,6 +57,17 @@ def validate(pkg_dir: str | Path) -> ValidationResult:
     for k in papers:
         if k not in cited:
             warns.append(f"paper '{k}' is cited by nothing (orphan)")
+
+    # Surface the citation-spine health: anything not strongly verified is visible, never hidden.
+    nonverified = {k: p.verified.status for k, p in papers.items() if not p.verified.exists}
+    if nonverified:
+        from collections import Counter
+        warns.append(f"{len(nonverified)} paper(s) NOT verified (cannot anchor claims): "
+                     + ", ".join(f"{k}[{s}]" for k, s in sorted(nonverified.items())))
+        if any(s == "error" for s in nonverified.values()):
+            warns.append("some papers are status=error (index unreachable) — re-run verification before trusting coverage")
+    if papers and not verified:
+        errs.append("citation spine has ZERO verified papers — the package proves nothing (re-survey with real arXiv ids/DOIs)")
     if not glob.glob(str(d / "open-problems" / "*.md")):
         warns.append("no open problems — likely a coverage gap (the most valuable section is empty)")
     for required in ("CONTEXT.md", "wikillm.json", "index.json"):

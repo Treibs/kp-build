@@ -49,8 +49,9 @@ def _cmd_build(args) -> int:
     today = args.built or datetime.date.today().isoformat()
     if args.no_verify:
         for p in pkg.papers:
-            p.verified = Verification(exists=True, via="(unchecked)", checked=today)
-        summary = {"total": len(pkg.papers), "verified": len(pkg.papers), "unverified": []}
+            p.verified = Verification(exists=True, status="verified", via="(unchecked)", checked=today)
+        summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
+                   "rejected": [], "unconfirmed": [], "errored": []}
     else:
         print(f"verifying {len(pkg.papers)} citations against arXiv/Crossref ...", file=sys.stderr)
         summary = verify_all(pkg.papers, today=today)
@@ -60,8 +61,12 @@ def _cmd_build(args) -> int:
     print("kp-build complete")
     print(f"  topic            : {pkg.topic}")
     print(f"  citations        : {summary['verified']}/{summary['total']} verified")
-    if summary["unverified"]:
-        print(f"  UNVERIFIED (dropped from spine): {', '.join(summary['unverified'])}")
+    if summary.get("rejected"):
+        print(f"  REJECTED (not-found / id-title-mismatch — likely fabricated/wrong): {', '.join(summary['rejected'])}")
+    if summary.get("unconfirmed"):
+        print(f"  unconfirmed (title-only, NOT shippable — add an arXiv id/DOI): {', '.join(summary['unconfirmed'])}")
+    if summary.get("errored"):
+        print(f"  ERROR reaching index (could not check — retry): {', '.join(summary['errored'])}")
     s = json.loads((out / 'wikillm.json').read_text())["stats"]
     print(f"  shipped          : {s['claims']} claims · {s['open_problems']} open problems · {s['debates']} debates")
     print(f"  package          : {out}")
@@ -77,11 +82,37 @@ def _cmd_verify(args) -> int:
     pkg = _load(args.input)
     today = datetime.date.today().isoformat()
     summary = verify_all(pkg.papers, today=today)
-    print(f"{summary['verified']}/{summary['total']} citations verified")
+    print(f"{summary['verified']}/{summary['total']} citations verified  (by status: {summary['by_status']})")
     for p in pkg.papers:
-        mark = "OK  " if p.verified.exists else "FAIL"
-        print(f"  [{mark}] {p.cite_key}: {p.title[:60]}  ({p.verified.via})")
-    return 0 if not summary["unverified"] else 1
+        v = p.verified
+        mark = {"verified": "OK   ", "unconfirmed": "WEAK ", "id-title-mismatch": "MISM ",
+                "not-found": "FAIL ", "error": "ERR  ", "unverified": "FAIL "}.get(v.status, "FAIL ")
+        # show the CANONICAL title the index returned, so a title/canonical divergence is visible
+        canon = f"  → index: '{v.canonical_title[:50]}'" if v.canonical_title and v.status != "verified" else ""
+        print(f"  [{mark}] {p.cite_key}: {p.title[:55]}  ({v.status}, {v.via}){canon}")
+    return 0 if not (summary["rejected"] or summary["errored"]) else 1
+
+
+def _cmd_falsify(args) -> int:
+    from .falsify import score_answer, verdict
+    pkg = Path(args.package_dir)
+    index = json.loads((pkg / "index.json").read_text())
+    spine = [{"arxiv_id": p.get("arxiv_id", ""), "doi": p.get("doi", ""), "cite_key": p["cite_key"]}
+             for p in index.get("papers", []) if p.get("verified")]
+    base = score_answer(Path(args.base).read_text(), spine=spine)
+    kp = score_answer(Path(args.kp).read_text(), spine=spine)
+    v = verdict(base, kp)
+    print("falsification:")
+    print(f"  base : {base}")
+    print(f"  kp   : {kp}")
+    print(f"  VERDICT: {v}")
+    # record into the manifest
+    man = json.loads((pkg / "wikillm.json").read_text())
+    man["falsification"] = {"run": True, "question": args.question, "base": base, "kp": kp, "verdict": v}
+    (pkg / "wikillm.json").write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
+    helped = (kp.get("f1") is not None and base.get("f1") is not None and kp["f1"] > base["f1"]) or \
+             (kp["hallucination_rate"] < base["hallucination_rate"])
+    return 0 if helped else 1
 
 
 def _cmd_validate(args) -> int:
@@ -106,6 +137,12 @@ def main(argv=None) -> int:
     v = sub.add_parser("verify", help="citation check only")
     v.add_argument("--input", "-i", required=True)
     v.set_defaults(func=_cmd_verify)
+    fal = sub.add_parser("falsify", help="score base vs KP-loaded answers; record the verdict in the manifest")
+    fal.add_argument("package_dir")
+    fal.add_argument("--question", required=True)
+    fal.add_argument("--base", required=True, help="file with the base agent's answer")
+    fal.add_argument("--kp", required=True, help="file with the KP-loaded agent's answer")
+    fal.set_defaults(func=_cmd_falsify)
     val = sub.add_parser("validate", help="lint an assembled package")
     val.add_argument("package_dir")
     val.set_defaults(func=_cmd_validate)

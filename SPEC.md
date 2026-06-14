@@ -24,8 +24,10 @@ digest plus a machine index). It is a reusable knowledge *asset*, not a report.
    lives — the single most valuable section, and the hardest to fabricate.*
 3. **Debate map** — contested points: competing positions and which papers hold them. (This is
    the doctrine's "value lives in the connections," finally pointed at something real.)
-4. **Claims** — grounded findings/results/methods, each anchored to a verified paper + verbatim
-   passage + confidence. (Like axioms, but paper-anchored and confidence-labelled.)
+4. **Claims** — findings/results/methods, each anchored to a verified paper + a drafter-quoted
+   passage + confidence. (Like axioms, but paper-anchored.) *Note: the passage is the drafter's
+   quote; the engine does not yet machine-verify the passage is present in the paper — confidence is
+   corpus-relative and the claim is not independently grounded. Passage-presence checking is planned.*
 5. **Concepts** — definition/taxonomy scaffolding (least valuable; the model mostly has this).
 
 ## Package schema (v1) — a portable directory
@@ -72,12 +74,15 @@ This is what makes the package "compute-amortizing" — load it, skip the resear
 5. **Synthesize** — cluster claims by sub-problem; build the open-problems register and debate map.
 6. **Assemble + validate** — write the package; lint (cites resolve to verified papers, problems
    flagged, no orphans).
-7. **Falsify (acceptance gate)** — a KP-loaded agent vs a base agent on a held-out task
-   ("write the related-work + name 3 real open problems"), judged for correctness and ZERO
-   hallucinated citations. A package that doesn't beat base+sources is not shipped as useful.
+7. **Falsify (acceptance gate)** — `kp-build falsify <dir> --question … --base … --kp …` scores a
+   KP-loaded agent vs a base agent on a held-out task, on **precision** (cited papers that actually
+   exist) AND **recall** (spine coverage), records the f1 verdict into the manifest, and tells you
+   honestly if the package does not beat base (e.g. on a topic the model already knows).
 
 ## Non-negotiables
-- No hallucinated citations (hard gate).
+- **No hallucinated citations (hard gate).** A citation is `verified` only when an explicit arXiv id
+  or DOI resolves AND its canonical title strictly matches; title-only cites are `unconfirmed` and
+  cannot anchor a shipped claim. The gate never rescues a mismatched id via a title search.
 - Coverage is scope-relative and can be too shallow — citation-graph expansion mitigates; the
   manifest records what was searched so the gap is honest.
 - The package is stale the day a field moves; the manifest carries `built` + a re-run is a diff.
