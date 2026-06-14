@@ -34,12 +34,13 @@ _PREAMBLE = (
 )
 
 
-def _claim_line(c) -> str:
+def _claim_line(c, verified) -> str:
+    corr = [k for k in c.corroborated_by if k in verified]   # only VERIFIED corroborators count
     conf, note = c.confidence, ""
-    if c.claim_type == "result" and c.confidence == "high" and not c.corroborated_by:
+    if c.claim_type == "result" and c.confidence == "high" and not corr:
         conf, note = "medium", " (single-source)"           # FMT-2: unearned 'high' is capped on display
-    elif c.corroborated_by:
-        note = f" (corroborated by {len(c.corroborated_by)})"
+    elif corr:
+        note = f" (corroborated by {len(corr)})"
     line = f"- _{c.claim_type}_ — {_data(c.statement)} *([{c.paper}], {conf}{note})*"
     if c.confidence == "high" and c.supporting_passage:      # FMT-1: carry the grounding evidence
         line += f"\n    > {_data(c.supporting_passage)[:240]}"
@@ -119,7 +120,7 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
                         f"{_data(b.value)} | [{b.paper}] |" for b in benches]
 
     order = {"result": 0, "finding": 1, "method": 2, "definition": 3}
-    claim_items = [_claim_line(c) for c in
+    claim_items = [_claim_line(c, verified) for c in
                    sorted((c for c in pkg.claims if c.paper in verified),
                           key=lambda c: order.get(c.claim_type, 9))]
 

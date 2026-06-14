@@ -28,13 +28,46 @@ class ResearchInputError(ValueError):
 
 
 def _coerce_year(v, where, errs):
-    if v is None or isinstance(v, int):
+    if v is None:
+        return None
+    if isinstance(v, bool):                       # bool is an int subclass — reject explicitly (F4)
+        errs.append(f"{where}: year {v!r} is a boolean, not a year")
+        return None
+    if isinstance(v, int):
         return v
     try:
         return int(str(v).strip())
     except (TypeError, ValueError):
         errs.append(f"{where}: year {v!r} is not an integer")
         return None
+
+
+def _strlist(v, where, errs):
+    """A list-of-strings field. A bare string becomes a single element (never iterated char-by-char,
+    F2); a non-list/non-string is an error rather than a silent corruption."""
+    if v is None:
+        return []
+    if isinstance(v, str):
+        return [v]
+    if isinstance(v, list):
+        return [str(x) for x in v]
+    errs.append(f"{where}: expected a list, got {type(v).__name__}")
+    return []
+
+
+def _section(d, key, errs):
+    """Return d[key] as a list of dict elements; aggregate type errors instead of crashing (F1)."""
+    raw = d.get(key) or []
+    if not isinstance(raw, list):
+        errs.append(f"'{key}' must be a list, got {type(raw).__name__}")
+        return []
+    out = []
+    for i, el in enumerate(raw):
+        if not isinstance(el, dict):
+            errs.append(f"{key}[{i}]: must be an object, got {type(el).__name__}")
+        else:
+            out.append((i, el))
+    return out
 
 
 def _load(path: str) -> Package:
@@ -49,22 +82,34 @@ def _load(path: str) -> Package:
     if not d.get("topic"):
         errs.append("missing required 'topic'")
 
-    # papers: required cite_key, no duplicates, coerced year
+    node_ids: set = set()    # all node ids across kinds must be unique (chunk files share a namespace)
+
+    def _uid(nid, kind, i):
+        if not nid:
+            return
+        if nid in node_ids:
+            errs.append(f"{kind}[{i}]: duplicate node id {nid!r}")
+        node_ids.add(nid)
+
+    # papers: required hashable cite_key, no duplicates, coerced year
     seen: dict[str, int] = {}
     papers = []
-    for i, p in enumerate(d.get("papers") or []):
+    for i, p in _section(d, "papers", errs):
         ck = p.get("cite_key")
         if not ck:
             errs.append(f"papers[{i}]: missing cite_key"); continue
+        if not isinstance(ck, str):
+            errs.append(f"papers[{i}]: cite_key must be a string, got {type(ck).__name__}"); continue
         if ck in seen:
             errs.append(f"duplicate cite_key {ck!r} (papers[{seen[ck]}] and papers[{i}])"); continue
         seen[ck] = i
         papers.append(Paper(
-            cite_key=ck, title=p.get("title", ""), authors=list(p.get("authors") or []),
-            year=_coerce_year(p.get("year"), f"papers[{i}] ({ck})", errs), venue=p.get("venue", ""),
+            cite_key=ck, title=str(p.get("title", "")), authors=_strlist(p.get("authors"), f"papers[{i}].authors", errs),
+            year=_coerce_year(p.get("year"), f"papers[{i}] ({ck})", errs), venue=str(p.get("venue", "")),
             arxiv_id=str(p.get("arxiv_id", "")), arxiv_version=str(p.get("arxiv_version", "")),
-            doi=str(p.get("doi", "")), url=p.get("url", ""),
-            key_contributions=list(p.get("key_contributions") or []), verified=Verification()))
+            doi=str(p.get("doi", "")), url=str(p.get("url", "")),
+            key_contributions=_strlist(p.get("key_contributions"), f"papers[{i}].key_contributions", errs),
+            verified=Verification()))
     keys = set(seen)
 
     def _ref(k, where):
@@ -72,7 +117,8 @@ def _load(path: str) -> Package:
             errs.append(f"{where}: references undefined cite_key {k!r}")
 
     claims = []
-    for i, c in enumerate(d.get("claims") or []):
+    for i, c in _section(d, "claims", errs):
+        _uid(c.get("id"), "claims", i)
         for fld in ("id", "statement", "paper"):
             if not c.get(fld):
                 errs.append(f"claims[{i}]: missing {fld}")
@@ -81,53 +127,64 @@ def _load(path: str) -> Package:
             errs.append(f"claims[{i}]: claim_type {c['claim_type']!r} not in {CLAIM_TYPES}")
         if c.get("confidence") and c["confidence"] not in CONFIDENCE:
             errs.append(f"claims[{i}]: confidence {c['confidence']!r} not in {CONFIDENCE}")
-        for k in (c.get("corroborated_by") or []):
+        corr = _strlist(c.get("corroborated_by"), f"claims[{i}].corroborated_by", errs)
+        for k in corr:
             _ref(k, f"claims[{i}] corroborated_by")
-        claims.append(Claim(id=c.get("id", ""), statement=c.get("statement", ""), paper=c.get("paper", ""),
-                            supporting_passage=c.get("supporting_passage", ""),
-                            claim_type=c.get("claim_type", "finding"), confidence=c.get("confidence", "medium"),
-                            corroborated_by=list(c.get("corroborated_by") or [])))
+        claims.append(Claim(id=str(c.get("id", "")), statement=str(c.get("statement", "")),
+                            paper=str(c.get("paper", "")), supporting_passage=str(c.get("supporting_passage", "")),
+                            claim_type=c.get("claim_type") or "finding", confidence=c.get("confidence") or "medium",
+                            corroborated_by=corr))
 
     problems = []
-    for i, o in enumerate(d.get("open_problems") or []):
+    for i, o in _section(d, "open_problems", errs):
+        _uid(o.get("id"), "open_problems", i)
         if not o.get("id") or not o.get("statement"):
             errs.append(f"open_problems[{i}]: missing id/statement")
-        if not (o.get("flagged_by") or []):
+        flags = _strlist(o.get("flagged_by"), f"open_problems[{i}].flagged_by", errs)
+        if not flags:
             errs.append(f"open_problems[{i}] ({o.get('id', '?')}): flagged_by is empty")
-        for k in (o.get("flagged_by") or []):
+        for k in flags:
             _ref(k, f"open_problems[{i}]")
         if o.get("status") and o["status"] not in PROBLEM_STATUS:
             errs.append(f"open_problems[{i}]: status {o['status']!r} not in {PROBLEM_STATUS}")
-        problems.append(OpenProblem(id=o.get("id", ""), statement=o.get("statement", ""),
-                                    flagged_by=list(o.get("flagged_by") or []),
-                                    status=o.get("status", "open"), why_it_matters=o.get("why_it_matters", "")))
+        problems.append(OpenProblem(id=str(o.get("id", "")), statement=str(o.get("statement", "")),
+                                    flagged_by=flags, status=o.get("status") or "open",
+                                    why_it_matters=str(o.get("why_it_matters", ""))))
 
     debates = []
-    for i, db in enumerate(d.get("debates") or []):
+    for i, db in _section(d, "debates", errs):
+        _uid(db.get("id"), "debates", i)
         positions = []
-        for j, p in enumerate(db.get("positions") or []):
-            for k in (p.get("papers") or []):
+        for j, p in _section(db, "positions", errs):
+            papers_k = _strlist(p.get("papers"), f"debates[{i}].positions[{j}].papers", errs)
+            for k in papers_k:
                 _ref(k, f"debates[{i}].positions[{j}]")
-            positions.append(Position(stance=p.get("stance", ""), papers=list(p.get("papers") or []),
-                                      summary=p.get("summary", "")))
-        debates.append(Debate(id=db.get("id", ""), question=db.get("question", ""),
+            positions.append(Position(stance=str(p.get("stance", "")), papers=papers_k,
+                                      summary=str(p.get("summary", ""))))
+        debates.append(Debate(id=str(db.get("id", "")), question=str(db.get("question", "")),
                               positions=positions, resolved=bool(db.get("resolved", False))))
 
     benchmarks = []
-    for i, b in enumerate(d.get("benchmarks") or []):
+    for i, b in _section(d, "benchmarks", errs):
+        _uid(b.get("id"), "benchmarks", i)
         if not b.get("id") or not b.get("name"):
             errs.append(f"benchmarks[{i}]: missing id/name")
         _ref(b.get("paper"), f"benchmarks[{i}]")
-        benchmarks.append(Benchmark(id=b.get("id", ""), name=b.get("name", ""), dataset=b.get("dataset", ""),
-                                    metric=b.get("metric", ""), value=str(b.get("value", "")),
-                                    method=b.get("method", ""), paper=b.get("paper", "")))
+        benchmarks.append(Benchmark(id=str(b.get("id", "")), name=str(b.get("name", "")),
+                                    dataset=str(b.get("dataset", "")), metric=str(b.get("metric", "")),
+                                    value=str(b.get("value", "")), method=str(b.get("method", "")),
+                                    paper=str(b.get("paper", ""))))
+
+    cov = d.get("coverage") or {}
+    if not isinstance(cov, dict):
+        errs.append(f"'coverage' must be an object, got {type(cov).__name__}"); cov = {}
 
     if errs:
         raise ResearchInputError("invalid research input:\n  - " + "\n  - ".join(errs))
 
-    return Package(topic=d["topic"], scope=d.get("scope", ""), papers=papers, claims=claims,
+    return Package(topic=d["topic"], scope=str(d.get("scope", "")), papers=papers, claims=claims,
                    open_problems=problems, debates=debates, benchmarks=benchmarks,
-                   coverage=dict(d.get("coverage") or {}))
+                   coverage=cov)
 
 
 def _cmd_build(args) -> int:
@@ -239,11 +296,12 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     try:
         return args.func(args)
-    except ResearchInputError as e:
+    except (ResearchInputError, FileNotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
-    except FileNotFoundError as e:
-        print(f"error: {e}", file=sys.stderr)
+    except (TypeError, AttributeError, ValueError, KeyError) as e:
+        # backstop: malformed input must never surface as a raw traceback / exit 1
+        print(f"error: could not process input ({type(e).__name__}: {e})", file=sys.stderr)
         return 2
 
 

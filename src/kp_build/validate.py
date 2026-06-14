@@ -42,6 +42,8 @@ def validate(pkg_dir: str | Path) -> ValidationResult:
     for f in glob.glob(str(d / "claims" / "*.md")):
         c = claim_from_md(Path(f).read_text())
         check(c.paper, f"claim {c.id}")
+        for k in c.corroborated_by:                  # corroborators count as cited (ASSM-CONSIST-1)
+            check(k, f"claim {c.id} corroborated_by")
     for f in glob.glob(str(d / "open-problems" / "*.md")):
         op = problem_from_md(Path(f).read_text())
         if not op.flagged_by:

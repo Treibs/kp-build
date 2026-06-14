@@ -201,9 +201,12 @@ def claim_to_md(c: Claim, *, paper_ref: str = "") -> str:
 
 def claim_from_md(text: str) -> Claim:
     fm, _ = _split(text)
-    return Claim(**{k: fm.get(k) for k in
-                    ("id", "statement", "paper", "supporting_passage", "claim_type", "confidence")},
-                 corroborated_by=list(fm.get("corroborated_by") or []))
+    # use dataclass defaults for absent keys — never override with None (F3, symmetric round-trip)
+    return Claim(
+        id=fm.get("id", ""), statement=fm.get("statement", ""), paper=fm.get("paper", ""),
+        supporting_passage=fm.get("supporting_passage", ""),
+        claim_type=fm.get("claim_type") or "finding", confidence=fm.get("confidence") or "medium",
+        corroborated_by=list(fm.get("corroborated_by") or []))
 
 
 def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:
