@@ -51,7 +51,8 @@ def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY)
     if len(p) < _MIN_CHARS or len(p.split()) < _MIN_WORDS or not t:
         return None                # too short / no text -> can't reliably verify (not an absence)
     if p in t:
-        return True
+        return True                # exact substring is reliable at ANY size — keep this ABOVE the size gate,
+                                   # or a verbatim quote in a long paper would fall through to None
     if len(t) > _MAX_FUZZY:
         return None                # too large to fuzzy-scan -> can't verify; never a hard false negative
     m = difflib.SequenceMatcher(None, p, t, autojunk=False).find_longest_match(0, len(p), 0, len(t))
