@@ -31,16 +31,17 @@ def test_report_is_self_contained_html_with_sections(tmp_path):
     out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
     html = build_report(out)
     assert html.startswith("<!doctype html>") and "</html>" in html
-    assert "http" not in html.split("<style>")[0].lower() or True   # no external stylesheet link
-    assert "<link" not in html and "cdn" not in html.lower()        # zero external deps
-    # core content present
+    assert "<link" not in html and "cdn" not in html.lower() and "http-equiv" not in html  # zero external deps
+    assert "https://" not in html.split("<style>")[0]               # no remote resource before content
+    # core content present across the (now tabbed) panels
     for needle in ("Speculative decoding", "lev2023", "Optimal draft length unsolved",
                    "Tree vs linear?", "MT-Bench", "Drafting cuts latency.",
-                   "Verified citation spine", "Package graph"):
+                   "Does it help?", "Are citations real?", "Spine", "Graph"):
         assert needle in html, needle
-    # arxiv link + graph data
+    # arxiv link + graph data + tab structure
     assert "https://arxiv.org/abs/2211.17192" in html
     assert '"nodes"' in html and '"edges"' in html
+    assert 'data-tab="spine"' in html and 'id="tab-graph"' in html
 
 
 def test_report_escapes_untrusted_fields(tmp_path):
@@ -59,12 +60,22 @@ def test_report_renders_falsification_scorecard(tmp_path):
                             "kp": {"precision": 1.0, "recall": 0.84, "f1": 0.91, "spine_covered": 16, "spine_size": 19}}
     (out / "wikillm.json").write_text(json.dumps(man), encoding="utf-8")
     html = build_report(out)
-    assert "KP HELPS" in html and "verdict good" in html
-    assert "2406.07524 | wrong paper" in html              # base's mislabel surfaced
-    assert "Base agent mislabeled" in html
+    assert "verdict good" in html and "HELPS" in html       # verdict tone + word
+    assert "base f1 <b>0.37</b>" in html and "0.91" in html  # the delta line
+    assert "2406.07524 | wrong paper" in html               # base's mislabel surfaced
+    assert "Base mislabeled / fabricated" in html
+
+
+def test_report_placeholder_in_package_text_not_expanded(tmp_path):
+    # a package whose topic is literally a template token must NOT re-expand the graph JSON into it
+    out = assemble(_pkg(topic="__GRAPH__"), tmp_path / "kp", built="2026-06-14")
+    html = build_report(out)
+    assert "<title>__GRAPH__ — wikillm report</title>" in html      # topic kept as literal text
+    assert html.count('G={"nodes"') == 1                            # graph blob injected exactly once
 
 
 def test_report_handles_no_falsification(tmp_path):
     out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
     html = build_report(out)
-    assert "Not run for this package" in html
+    assert "Not measured" in html and "kp-build falsify" in html
+    assert "verdict good" not in html                        # no fabricated verdict when not run

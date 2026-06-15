@@ -11,3 +11,5 @@ __pycache__/
 
 # headless-render scratch
 .report-shot.png
+.shot-*.png
+.nofal-report.html
