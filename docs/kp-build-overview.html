@@ -161,8 +161,9 @@
   <div class="card flag">
     <span class="pill amber">the problem</span>
     <p style="margin-top:10px">We asked a model to review the sleep evidence and cite studies. It cited
-      <code>10.5665/sleep.6072</code> — confidently. That DOI resolves to nothing; it was invented. It also
-      engaged only 6 of the 23 real studies.</p>
+      <code>10.5665/sleep.6072</code> — confidently. That DOI resolves to nothing; it was invented. Nine of
+      its ten cites were real, though — which is the trap: you can't tell which one is invented without
+      checking. It also engaged only 6 of the 23 real studies.</p>
     <p>So we built a verified package on it. Every claim is backed by a real, checked study, and its core is a
       five-way <b>evidence-vs-hype map</b>:</p>
     <ul class="clean">
@@ -235,7 +236,7 @@
 <span class="g">  citations: 23/23 verified     validation: OK</span>
 <span class="g">  45 claims · 7 open problems · 5 debates</span>
 
-<span class="b">$</span> kp-build falsify pkg --base base.txt --kp pkg.txt
+<span class="b">$</span> kp-build falsify pkg --question "improving sleep" --base base.txt --kp pkg.txt
 <span class="c">  base:  cited a study that doesn't exist · covered 6/23</span>
 <span class="c">  pkg:   0 fabrications · covered 17/23</span>
 <span class="a">  VERDICT: KP HELPS — f1 0.40 → 0.85</span></pre>
@@ -255,7 +256,7 @@
       <tbody>
         <tr class="hi"><td><b>sleep-insomnia-evidence</b></td><td>everyday health — evidence vs hype</td><td class="win">yes — base fabricated a study + missed ¾ of the evidence; f1 0.40 → 0.85</td></tr>
         <tr><td>discrete-diffusion-llms</td><td>recent ML (model fabricates)</td><td class="win">yes — fixes mislabeled cites + coverage; f1 0.37 → 0.91</td></tr>
-        <tr><td>speculative-decoding-llms</td><td>ML the model knows cold</td><td class="neu">coverage only — and the tool says so</td></tr>
+        <tr><td>speculative-decoding-llms</td><td>ML the model knows cold</td><td class="neu">coverage only — precision was already perfect</td></tr>
         <tr><td>rubric-based-rl-nonverifiable</td><td>a 2026-emergent ML topic</td><td class="win">hugely — coverage 0.07 → 1.00</td></tr>
         <tr><td>glp1-incretin-obesity</td><td>biomedical (non-arXiv, by DOI)</td><td class="win">on coverage — recall 0.26 → 0.95</td></tr>
       </tbody>
