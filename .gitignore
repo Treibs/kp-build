@@ -9,7 +9,9 @@ __pycache__/
 .kpm/
 *.tgz
 
-# headless-render scratch
+# headless-render scratch (intentional docs live in docs/ and examples/, never dot-prefixed at root)
 .report-shot.png
 .shot-*.png
 .nofal-report.html
+.deep-report.html
+.*-test.html
