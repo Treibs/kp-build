@@ -51,12 +51,43 @@ is instantly shareable through KPM — there's no separate distribution layer to
 ## Install
 
 ```bash
+pip install git+https://github.com/Treibs/kp-build.git   # straight from the repo, no clone
+# or, from a clone:
 pip install -e .            # the engine + the `kp-build` CLI
 pip install -e '.[dev]'     # + pytest
 ```
 
 Python ≥ 3.10. Runtime deps: `pyyaml`, `pydantic`. Citation verification hits the public arXiv and
 Crossref APIs (no keys, no cost).
+
+## Use with Claude Code
+
+kp-build has two halves: the **engine** (the `kp-build` CLI, above) and the **`/kp-build` skill**
+(`skill/SKILL.md`) — the orchestration spec that drives the research subagents which produce a
+`research.json` for the engine to verify and assemble.
+
+The easiest way in: **paste this repo's URL to Claude Code and ask it to set up kp-build.** Everything
+it needs is here. Or do it by hand:
+
+```bash
+# 1. the engine
+pip install git+https://github.com/Treibs/kp-build.git
+
+# 2. the skill (so `/kp-build` is available in Claude Code)
+mkdir -p ~/.claude/skills/kp-build
+curl -sL https://raw.githubusercontent.com/Treibs/kp-build/master/skill/SKILL.md \
+  -o ~/.claude/skills/kp-build/SKILL.md
+```
+
+Then, in Claude Code:
+
+```
+/kp-build  the 2024-2026 frontier of <your narrow topic>
+```
+
+The skill runs the research wave (you + subagents), the engine does the verification/assembly/scoring,
+and you get a citation-verified package plus an honest verdict on whether it beats unaided recall. New
+to it? Just ask Claude: *"read skill/SKILL.md and walk me through building a package."*
 
 ## Quickstart
 
