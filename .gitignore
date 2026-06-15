@@ -19,3 +19,5 @@ __pycache__/
 # internal project review (strategic framing — keep out of any public release)
 docs/kp-build-review.html
 .review-*.png
+/dist/
+/build/
