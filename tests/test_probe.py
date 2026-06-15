@@ -24,6 +24,11 @@ def test_probe_prompt_has_topic_and_citation_block():
     assert "speculative decoding for LLM inference" in p and "## Citations" in p
 
 
+def test_probe_prompt_nudges_toward_recent_work():
+    # frontier false-negative mitigation: the probe must bias the base answer toward recent work
+    assert "RECENT" in probe_prompt("a topic")
+
+
 def test_skip_when_model_cites_cleanly():
     # 3 real papers, 0 fabrication -> the model knows the field -> SKIP (a package adds ~0 value)
     ans = ("## Citations\n2211.17192 | Fast Inference\n2310.16834 | Score Entropy Discrete Diffusion\n"
@@ -52,12 +57,31 @@ def test_build_when_no_citations():
     assert v["decision"] == "build" and v["cited"] == 0
 
 
-def test_inconclusive_when_index_unreachable(monkeypatch):
+def test_inconclusive_when_index_unreachable():
+    # real path: the index times out on every citation -> checked==0 -> INCONCLUSIVE (not a verdict)
+    def boom(u):
+        raise TimeoutError("network down")
+    v = probe_verdict("## Citations\n2211.17192 | X\n", get=boom)
+    assert v["decision"] == "inconclusive" and v["checked"] == 0
+
+
+def test_partial_transient_does_not_force_a_spurious_build(monkeypatch):
+    # MUST-FIX: 2 real confirmed + 2 unreachable. Visible real=2 < min_real, but real+unresolved=4 >=
+    # min_real, so the low count is a TRANSIENT artifact, not 'too thin' -> INCONCLUSIVE, never BUILD.
     import kp_build.falsify as F
     monkeypatch.setattr(F, "score_citations", lambda a, get=None: {
-        "cited": 2, "checked": 0, "unresolved": 2, "real": 0, "fake": 0, "fake_list": [],
-        "precision": 0.0, "hallucination_rate": None})
-    assert F.probe_verdict("## Citations\n2211.17192 | X\n")["decision"] == "inconclusive"
+        "cited": 4, "checked": 2, "unresolved": 2, "real": 2, "fake": 0, "fake_list": [],
+        "precision": 1.0, "hallucination_rate": 0.0})
+    v = F.probe_verdict("ans")
+    assert v["decision"] == "inconclusive" and "unreachable" in v["reason"]
+
+
+def test_small_sample_reads_as_thin_not_a_hallucination_rate():
+    # 1 real + 1 fake = checked 2 (< min_sample). A coarse 50% must NOT flip the call via the hall
+    # branch; it falls through to the real-count branch -> BUILD with a 'thin' reason.
+    ans = "## Citations\n2211.17192 | Fast Inference\n2499.99999 | A Fabrication\n"
+    v = probe_verdict(ans, get=_get_real)
+    assert v["decision"] == "build" and "thin" in v["reason"]
 
 
 def test_threshold_is_tunable():
@@ -82,7 +106,15 @@ def test_cli_probe_exit_codes(tmp_path, monkeypatch):
     assert main(["probe", "--answer", str(ans)]) == 0           # build -> exit 0
     monkeypatch.setattr(F, "probe_verdict", lambda *a, **k: {**base, "decision": "skip", "reason": "knows it"})
     assert main(["probe", "--answer", str(ans)]) == 1           # skip -> exit 1
+    monkeypatch.setattr(F, "probe_verdict", lambda *a, **k: {**base, "checked": 0, "decision": "inconclusive", "reason": "net"})
+    assert main(["probe", "--answer", str(ans)]) == 3           # inconclusive -> exit 3 (distinct from error)
 
 
 def test_cli_probe_requires_answer_or_prompt(capsys):
     assert main(["probe"]) == 2 and "required" in capsys.readouterr().err
+
+
+def test_cli_probe_missing_file_is_exit_2_not_3(capsys):
+    # a missing answer file is a usage/IO error (exit 2) — must be distinguishable from INCONCLUSIVE (3)
+    assert main(["probe", "--answer", "/no/such/probe-answer.txt"]) == 2
+    assert "not found" in capsys.readouterr().err

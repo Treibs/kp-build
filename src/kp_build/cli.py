@@ -292,6 +292,9 @@ def _cmd_probe(args) -> int:
         print("error: --answer FILE required (the unaided agent's answer), or use --emit-prompt "
               "to print the prompt to give that agent", file=sys.stderr)
         return 2
+    if not Path(args.answer).is_file():                 # distinct from an INCONCLUSIVE verdict (exit 3)
+        print(f"error: answer file not found: {args.answer}", file=sys.stderr)
+        return 2
     v = probe_verdict(Path(args.answer).read_text(encoding="utf-8"),
                       threshold=args.threshold, min_real=args.min_real)
     head = {"build": "BUILD — the topic is model-weak (worth packaging)",
@@ -302,7 +305,7 @@ def _cmd_probe(args) -> int:
         print(f"  unaided base agent: {v['cited']} cited · {v['real']} real · "
               f"{v['fake']} fabricated/mislabeled · hallucination {v['hallucination_rate']:.0%}")
     print(f"  -> {v['reason']}")
-    return {"build": 0, "skip": 1, "inconclusive": 2}[v["decision"]]
+    return {"build": 0, "skip": 1, "inconclusive": 3}[v["decision"]]    # 2 is reserved for usage/IO errors
 
 
 def _cmd_expand(args) -> int:

@@ -53,8 +53,12 @@ def make_prompts(pkg_dir: str | Path, question: str) -> dict:
 
 def probe_prompt(question: str) -> str:
     """The unaided base-answer task for a topic PRE-SCREEN — no package (that's the point). Dispatch
-    one agent with this; its answer reveals whether the model already knows the field or fabricates."""
-    return _TASK.format(question=question)
+    one agent with this; its answer reveals whether the model already knows the field or fabricates.
+    Nudges toward RECENT work so a model that knows the classics but not the frontier still reveals
+    weakness (it tends to fabricate recent papers) rather than getting a false SKIP on old citations."""
+    return _TASK.format(question=question) + (
+        "\nEmphasize the most RECENT work (roughly the last two years) — that is where a knowledge "
+        "package adds the most, and where an unaided model most often fabricates.\n")
 
 
 def _norm_handle(h: str) -> str:
@@ -192,27 +196,35 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get)
             "f1": round(f1, 3) if f1 is not None else None}
 
 
-def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, min_real: int = 3) -> dict:
+def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, min_real: int = 3,
+                  min_sample: int = 3) -> dict:
     """PRE-FLIGHT: should we even build a package for this topic? Score an UNAIDED agent's answer.
 
-    The value of a package appears only where the model is WEAK — and weakness shows up as the base
-    agent FABRICATING or MISLABELING citations, or being unable to ground at all. So:
-      - cited nothing, or grounded < min_real real papers  -> BUILD (the model lacks the field)
-      - hallucination rate >= threshold                    -> BUILD (the model invents/mislabels here)
-      - cites >= min_real real papers cleanly, low fabrication -> SKIP (it already knows this; a package
-        adds ~0 value — the same topics that TIED in falsification)
-      - the index was unreachable                          -> INCONCLUSIVE (re-run)
-    Returns the citation report plus {decision, reason}. Decision in {build, skip, inconclusive}."""
+    A package only helps where the model is WEAK, which shows up as the base agent FABRICATING /
+    MISLABELING citations or being unable to ground at all. Decision tree (order matters):
+      1. cited nothing                                   -> BUILD (the model lacks the field)
+      2. nothing resolvable (all transient)              -> INCONCLUSIVE (index unreachable; re-run)
+      3. fabrication >= threshold, on >= min_sample cites -> BUILD (definitive — even if some unresolved)
+      4. too few confirmed-real ONLY because cites were unreachable (real<min_real but real+unresolved>=
+         min_real) -> INCONCLUSIVE (a transient must not masquerade as 'too thin' and force a build)
+      5. genuinely grounded < min_real real papers       -> BUILD (too thin)
+      6. cites >= min_real real papers cleanly           -> SKIP (it already knows this — the TIE case)
+    The min_sample gate on (3) keeps a 0/0.5/1.0 fabrication rate from a 1-2 cite sample from flipping
+    the call. Returns the citation report plus {decision, reason}."""
     rep = score_citations(base_answer, get=get)
     cited, checked, real, fake = rep["cited"], rep["checked"], rep["real"], rep["fake"]
-    hall = rep["hallucination_rate"]
+    unresolved, hall = rep["unresolved"], rep["hallucination_rate"]
     if cited == 0:
         decision, reason = "build", "the unaided model cited no real papers at all — it lacks this field; a package will help"
     elif checked == 0:
-        decision, reason = "inconclusive", "could not reach the citation index to check the base answer — re-run"
-    elif hall >= threshold:
+        decision, reason = "inconclusive", (f"none of the {cited} base citations could be checked (index "
+                                            f"unreachable / rate-limited) — re-run")
+    elif hall >= threshold and checked >= min_sample:
         decision, reason = "build", (f"the unaided model fabricates/mislabels {fake}/{checked} citations "
                                      f"({hall:.0%}) — it is weak on this topic; a verified package will help")
+    elif real < min_real and unresolved and real + unresolved >= min_real:
+        decision, reason = "inconclusive", (f"only {real} citation(s) confirmed real, but {unresolved} were "
+                                            f"unreachable — can't tell if the model is genuinely thin; re-run")
     elif real < min_real:
         decision, reason = "build", (f"the unaided model grounded only {real} real citation(s) — too thin; "
                                      f"a package will help")
