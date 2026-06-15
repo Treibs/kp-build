@@ -27,20 +27,8 @@ doesn't help.
 - **`CONTEXT.md`** — a small briefing an agent loads to inherit the whole topic in one file
 
 It's a reusable knowledge *asset*, not a one-shot "deep research" report — persistent, structured, and
-machine-checkable.
-
-### Knowledge packages & KPM
-
-The unit kp-build produces is a **knowledge package** — a portable, self-contained directory (the verified
-spine, grounded claims, open problems, debates, a loadable `CONTEXT.md`, and a machine-readable
-`index.json`) that any agent can install and load. It isn't a kp-build-specific format: it's a valid
-**KPM** package — `kpm doctor` and `kpm pack` accept it as-is.
-
-**KPM** ([`0xLT/kpm`](https://github.com/0xLT/kpm)) is an open package manager for *knowledge* — think npm,
-but a package is verified knowledge instead of code, with `install` / `lock` / `compose` / `pack` / `share`.
-kp-build is the **authoring engine** for that ecosystem: it does the research, verification, and authoring;
-KPM handles distribution. Every build emits the KPM package contract (`knowledge.json`), so what you build
-is shareable through KPM with no separate distribution layer to stand up.
+machine-checkable. (It's also a valid **KPM** package — portable and shareable through an open package
+manager for knowledge; see [*Sharing a package through KPM*](#sharing-a-package-through-kpm) below.)
 
 ### Why not just a deep-research report, or RAG?
 
@@ -56,6 +44,9 @@ is shareable through KPM with no separate distribution layer to stand up.
 
 ## Install
 
+Two ways to use it: **run the five shipped example packages** (Quickstart) or **author a new one** with the
+`/kp-build` skill (Build your own). Either way, start with the engine:
+
 ```bash
 pip install kp-build                                     # from PyPI — the engine + the `kp-build` CLI
 # from source / for development:
@@ -66,7 +57,31 @@ pip install -e '.[dev]'                                  # from a clone, with th
 Python ≥ 3.10. Runtime deps: `pyyaml`, `pydantic`. Citation verification hits the public arXiv,
 Crossref, and OpenAlex APIs (no keys, no cost).
 
-## Use with Claude Code
+## Quickstart — run the shipped examples
+
+`examples/` ships five real packages with their inputs, so you can run the engine end-to-end on a clean
+clone (no Claude Code needed). Start with **`sleep-insomnia-evidence`** — an everyday topic ("does X
+actually help me sleep?") that shows the whole flow. The engine's input is a `research.json` (papers,
+claims, open problems, debates):
+
+```bash
+# `build` takes a research.json and writes a package DIRECTORY:
+kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg --no-verify   # offline
+kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg               # live: verify every citation
+
+# `falsify` and `report` run on a built package directory — examples/ ships pre-built ones:
+
+# did the package help? score an unaided agent vs a package-loaded one (answers shipped in examples/)
+kp-build falsify examples/sleep-insomnia-evidence \
+  --question "Evidence-based interventions to improve sleep and treat insomnia in adults" \
+  --base examples/sleep-insomnia-evidence.base-answer.txt \
+  --kp   examples/sleep-insomnia-evidence.kp-answer.txt
+
+# render a self-contained HTML report (verdict, verified spine, open problems, debates)
+kp-build report examples/sleep-insomnia-evidence
+```
+
+## Build your own package (Claude Code)
 
 kp-build has two halves: the **engine** (the `kp-build` CLI, above) and the **`/kp-build` skill**
 (`skill/SKILL.md`) — the orchestration spec that drives the research subagents which produce a
@@ -76,9 +91,7 @@ The easiest way in: **paste this repo's URL to Claude Code and ask it to set up 
 it needs is here. Or do it by hand:
 
 ```bash
-# 1. the engine
-pip install kp-build
-
+# 1. the engine — see Install above (pip install kp-build)
 # 2. the skill (so `/kp-build` is available in Claude Code)
 mkdir -p ~/.claude/skills/kp-build
 curl -sL https://raw.githubusercontent.com/Treibs/kp-build/master/skill/SKILL.md \
@@ -94,30 +107,6 @@ Then, in Claude Code:
 The skill runs the research wave (you + subagents), the engine does the verification/assembly/scoring,
 and you get a citation-verified package plus an honest verdict on whether it beats unaided recall. New
 to it? Just ask Claude: *"read skill/SKILL.md and walk me through building a package."*
-
-## Quickstart
-
-`examples/` ships five real packages with their inputs, so you can run the engine end-to-end on a
-clean clone. Start with **`sleep-insomnia-evidence`** — an everyday topic ("does X actually help me
-sleep?") that shows the whole flow. The engine's input is a `research.json` (papers, claims, open
-problems, debates):
-
-```bash
-# `build` takes a research.json and writes a package DIRECTORY:
-kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg --no-verify   # offline
-kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg               # live: verify every citation
-
-# `falsify` and `report` operate on a built package directory — examples/ ships pre-built ones:
-
-# did the package help? score an unaided agent vs a package-loaded one (answers shipped in examples/)
-kp-build falsify examples/sleep-insomnia-evidence \
-  --question "Evidence-based interventions to improve sleep and treat insomnia in adults" \
-  --base examples/sleep-insomnia-evidence.base-answer.txt \
-  --kp   examples/sleep-insomnia-evidence.kp-answer.txt
-
-# render a self-contained HTML report (verdict, verified spine, open problems, debates)
-kp-build report examples/sleep-insomnia-evidence
-```
 
 ## How it works
 
@@ -176,9 +165,11 @@ example exposed, and drove a fix for, a blind spot in the probe.
 
 ## Sharing a package through KPM
 
-Because every build emits the KPM contract (see [Knowledge packages & KPM](#knowledge-packages--kpm)
-above), "build once, share" is just the existing KPM CLI — no extra steps. (KPM is a separate tool, not
-installed by `pip install kp-build`; get it from [`0xLT/kpm`](https://github.com/0xLT/kpm).)
+**KPM** ([`0xLT/kpm`](https://github.com/0xLT/kpm)) is an open package manager for *knowledge* — think npm,
+but a package is verified knowledge instead of code (`install` / `lock` / `compose` / `pack` / `share`).
+kp-build is the **authoring engine**: it does the research, verification, and authoring; KPM handles
+distribution. Because every build emits the KPM contract (`knowledge.json`), "build once, share" is just
+the existing KPM CLI — no extra steps. (KPM is a separate tool, not installed by `pip install kp-build`.)
 
 ```bash
 kp-build build -i research.json -o ./pkg        # produces a valid kpm package
