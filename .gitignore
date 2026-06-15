@@ -21,3 +21,6 @@ docs/kp-build-review.html
 .review-*.png
 /dist/
 /build/
+docs/_demo.html
+/.demoframes/
+.demo-check.png

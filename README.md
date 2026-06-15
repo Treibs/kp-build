@@ -10,6 +10,8 @@ re-paying the research cost.
 And when the model already knows the topic, kp-build *tells you* — it won't sell you a package that
 doesn't help.
 
+![kp-build: build → falsify → report](docs/demo.gif)
+
 **What's in a package** (a small directory):
 
 - **verified citation spine** — the real papers, each checked against arXiv/Crossref (no fakes)
