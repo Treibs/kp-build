@@ -322,7 +322,7 @@ def _cmd_falsify(args) -> int:
 def _cmd_probe(args) -> int:
     """Topic-weakness pre-screen: decide whether a package is worth building BEFORE paying for it.
     Two modes: --emit-prompt prints the unaided base-answer task for the topic; --answer scores that
-    answer and returns build / skip / inconclusive (exit 0 / 1 / 2)."""
+    answer and returns build / skip / inconclusive (exit 0 / 1 / 3; usage/IO errors exit 2)."""
     from .falsify import probe_prompt, probe_verdict
     if args.emit_prompt:
         print(probe_prompt(args.question or "<the research area>"))

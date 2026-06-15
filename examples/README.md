@@ -165,8 +165,8 @@ topic pre-screen: SKIP — the model already knows this (a package adds ~0 value
 # now (hedge-aware):
 $ kp-build probe --answer examples/rubric-based-rl-nonverifiable.base-answer.txt --question "Rubrics-as-Rewards ..."
 topic pre-screen: BUILD — the topic is model-weak (worth packaging)
-  unaided base agent: 3 cited · 3 real · 0 fabricated/mislabeled · 2 hedged · hallucination 0%
-  -> the unaided model hedged on 2 citation(s) it could not recall ... it knows the frontier holds work it cannot name
+  unaided base agent: 3 cited · 3 real · 0 fabricated/mislabeled · 1 hedged · hallucination 0%
+  -> the unaided model hedged on 1 citation(s) it could not recall ... it knows the frontier holds work it cannot name
 ```
 
 The full falsification — which measures **recall**, not just precision — confirms the call.
