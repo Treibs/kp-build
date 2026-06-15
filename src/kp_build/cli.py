@@ -280,6 +280,31 @@ def _cmd_falsify(args) -> int:
     return 0 if helped else 1
 
 
+def _cmd_probe(args) -> int:
+    """Topic-weakness pre-screen: decide whether a package is worth building BEFORE paying for it.
+    Two modes: --emit-prompt prints the unaided base-answer task for the topic; --answer scores that
+    answer and returns build / skip / inconclusive (exit 0 / 1 / 2)."""
+    from .falsify import probe_prompt, probe_verdict
+    if args.emit_prompt:
+        print(probe_prompt(args.question or "<the research area>"))
+        return 0
+    if not args.answer:
+        print("error: --answer FILE required (the unaided agent's answer), or use --emit-prompt "
+              "to print the prompt to give that agent", file=sys.stderr)
+        return 2
+    v = probe_verdict(Path(args.answer).read_text(encoding="utf-8"),
+                      threshold=args.threshold, min_real=args.min_real)
+    head = {"build": "BUILD — the topic is model-weak (worth packaging)",
+            "skip": "SKIP — the model already knows this (a package adds ~0 value)",
+            "inconclusive": "INCONCLUSIVE — re-run"}[v["decision"]]
+    print(f"topic pre-screen: {head}")
+    if v["checked"]:
+        print(f"  unaided base agent: {v['cited']} cited · {v['real']} real · "
+              f"{v['fake']} fabricated/mislabeled · hallucination {v['hallucination_rate']:.0%}")
+    print(f"  -> {v['reason']}")
+    return {"build": 0, "skip": 1, "inconclusive": 2}[v["decision"]]
+
+
 def _cmd_expand(args) -> int:
     """Citation-graph expansion: list candidate neighbor papers of a built package's verified spine,
     for the orchestration to relevance-filter, verify, and fold in (deepening coverage past keywords)."""
@@ -355,6 +380,13 @@ def main(argv=None) -> int:
     fal.add_argument("--base", required=True, help="file with the base agent's answer")
     fal.add_argument("--kp", required=True, help="file with the KP-loaded agent's answer")
     fal.set_defaults(func=_cmd_falsify)
+    prb = sub.add_parser("probe", help="pre-screen a topic: is it model-weak enough to be worth building?")
+    prb.add_argument("--answer", default="", help="the unaided agent's answer to score")
+    prb.add_argument("--question", default="", help="the topic / research area")
+    prb.add_argument("--emit-prompt", action="store_true", help="print the base-answer prompt for the topic and exit")
+    prb.add_argument("--threshold", type=float, default=0.25, help="hallucination rate at/above which the topic is model-weak (build)")
+    prb.add_argument("--min-real", type=int, default=3, dest="min_real", help="fewer real citations than this = too thin (build)")
+    prb.set_defaults(func=_cmd_probe)
     exp = sub.add_parser("expand", help="list citation-graph neighbors of a package's verified spine")
     exp.add_argument("package_dir")
     exp.add_argument("--limit", type=int, default=40, help="max neighbors per seed per direction")

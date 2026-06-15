@@ -40,6 +40,21 @@ Citation verification uses arXiv + Crossref (free, no key, network required).
 
 ## Procedure
 
+### 0 — Pre-screen (is this topic even worth building?)
+A package only adds value where the model is WEAK; on topics it already knows, falsification TIES and
+you'd burn ~0.5–1.5M tokens for nothing. So gate the build BEFORE spending — it's the cheapest gate and
+it guards the largest cost:
+1. Get the probe task: `kp-build probe --emit-prompt --question "<the research area>"`.
+2. Dispatch ONE unaided agent with it (no package); save its answer to `base.txt`.
+3. Score it: `kp-build probe --answer base.txt` → **BUILD / SKIP / INCONCLUSIVE** (exit 0 / 1 / 2).
+   - **BUILD** — the unaided model fabricates/mislabels its citations or can't ground at all → it's weak
+     here → proceed to step 1.
+   - **SKIP** — it already cites real papers cleanly → a package would add ~zero value; tell the user and
+     stop, or pick a more model-weak angle. (This is the same condition that made 3 topics TIE in
+     falsification.)
+This reuses the falsification scorer (citation precision / hallucination rate) — no new judgment, ~29k
+tokens for one base answer, and it converts "build and hope" into a measured go/no-go.
+
 ### 1 — Scope (the one human step)
 Confirm with the user: the **narrow research area**, the **sub-questions** a paper's related-work
 must answer, and **in/out of scope**. Keep it tight. This defines "done."

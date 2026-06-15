@@ -51,6 +51,12 @@ def make_prompts(pkg_dir: str | Path, question: str) -> dict:
     return {"base": task, "kp": _INSTR_KP.format(context=ctx) + task}
 
 
+def probe_prompt(question: str) -> str:
+    """The unaided base-answer task for a topic PRE-SCREEN — no package (that's the point). Dispatch
+    one agent with this; its answer reveals whether the model already knows the field or fabricates."""
+    return _TASK.format(question=question)
+
+
 def _norm_handle(h: str) -> str:
     """Dedup/identity key for a citation or spine handle: strip a leading 'arxiv:' (any case),
     lowercase, and strip a trailing arXiv version (vN) — but NEVER on a DOI (a DOI contains '/' and a
@@ -184,6 +190,36 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get)
     f1 = (2 * p * recall / (p + recall)) if (recall is not None and (p + recall) > 0) else None
     return {**base, "recall": recall, "spine_covered": covered, "spine_size": len(spine) if spine else 0,
             "f1": round(f1, 3) if f1 is not None else None}
+
+
+def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, min_real: int = 3) -> dict:
+    """PRE-FLIGHT: should we even build a package for this topic? Score an UNAIDED agent's answer.
+
+    The value of a package appears only where the model is WEAK — and weakness shows up as the base
+    agent FABRICATING or MISLABELING citations, or being unable to ground at all. So:
+      - cited nothing, or grounded < min_real real papers  -> BUILD (the model lacks the field)
+      - hallucination rate >= threshold                    -> BUILD (the model invents/mislabels here)
+      - cites >= min_real real papers cleanly, low fabrication -> SKIP (it already knows this; a package
+        adds ~0 value — the same topics that TIED in falsification)
+      - the index was unreachable                          -> INCONCLUSIVE (re-run)
+    Returns the citation report plus {decision, reason}. Decision in {build, skip, inconclusive}."""
+    rep = score_citations(base_answer, get=get)
+    cited, checked, real, fake = rep["cited"], rep["checked"], rep["real"], rep["fake"]
+    hall = rep["hallucination_rate"]
+    if cited == 0:
+        decision, reason = "build", "the unaided model cited no real papers at all — it lacks this field; a package will help"
+    elif checked == 0:
+        decision, reason = "inconclusive", "could not reach the citation index to check the base answer — re-run"
+    elif hall >= threshold:
+        decision, reason = "build", (f"the unaided model fabricates/mislabels {fake}/{checked} citations "
+                                     f"({hall:.0%}) — it is weak on this topic; a verified package will help")
+    elif real < min_real:
+        decision, reason = "build", (f"the unaided model grounded only {real} real citation(s) — too thin; "
+                                     f"a package will help")
+    else:
+        decision, reason = "skip", (f"the unaided model already cites {real} real papers cleanly "
+                                    f"({hall:.0%} fabrication) — it knows this field; a package adds little value")
+    return {**rep, "decision": decision, "reason": reason, "threshold": threshold, "min_real": min_real}
 
 
 def verdict(base_report: dict, kp_report: dict) -> str:
