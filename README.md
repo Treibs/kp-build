@@ -96,23 +96,25 @@ to it? Just ask Claude: *"read skill/SKILL.md and walk me through building a pac
 ## Quickstart
 
 `examples/` ships five real packages with their inputs, so you can run the engine end-to-end on a
-clean clone. The engine's input is a `research.json` (papers, claims, open problems, debates):
+clean clone. Start with **`sleep-insomnia-evidence`** — an everyday topic ("does X actually help me
+sleep?") that shows the whole flow. The engine's input is a `research.json` (papers, claims, open
+problems, debates):
 
 ```bash
 # `build` takes a research.json and writes a package DIRECTORY:
-kp-build build -i examples/discrete-diffusion-llms.research.json -o /tmp/pkg --no-verify   # offline
-kp-build build -i examples/discrete-diffusion-llms.research.json -o /tmp/pkg --ground      # live: verify cites + ground passages
+kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg --no-verify   # offline
+kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg               # live: verify every citation
 
 # `falsify` and `report` operate on a built package directory — examples/ ships pre-built ones:
 
 # did the package help? score an unaided agent vs a package-loaded one (answers shipped in examples/)
-kp-build falsify examples/discrete-diffusion-llms \
-  --question "2024-2026 frontier of discrete/masked diffusion LMs" \
-  --base examples/discrete-diffusion-llms.base-answer.txt \
-  --kp   examples/discrete-diffusion-llms.kp-answer.txt
+kp-build falsify examples/sleep-insomnia-evidence \
+  --question "Evidence-based interventions to improve sleep and treat insomnia in adults" \
+  --base examples/sleep-insomnia-evidence.base-answer.txt \
+  --kp   examples/sleep-insomnia-evidence.kp-answer.txt
 
 # render a self-contained HTML report (verdict, verified spine, open problems, debates)
-kp-build report examples/discrete-diffusion-llms
+kp-build report examples/sleep-insomnia-evidence
 ```
 
 ## How it works
@@ -143,17 +145,17 @@ assemble, ground, lint, score. Two hard gates run at build time:
 
 ## The example packages
 
-`examples/` ships five real packages built end-to-end (also kept as regression fixtures). The first three
-show exactly what the probe and the falsification check discriminate; the fourth shows kp-build works
-**beyond arXiv** (journal papers verified via Crossref/DOI):
+`examples/` ships five real packages built end-to-end (also kept as regression fixtures). Start with the
+first — an everyday health question anyone can relate to; the others map what the probe and falsification
+check discriminate, and show kp-build works **beyond arXiv** (journal papers verified via Crossref/DOI):
 
-| package | the model is… | `probe` | did it help? |
+| package | the topic | `probe` | did it help? |
 |---|---|---|---|
-| `discrete-diffusion-llms` | **weak** (it *fabricates* cites) | BUILD | **yes** — fixes mislabeled cites (precision) **and** coverage (recall) |
-| `speculative-decoding-llms` | **strong** (knows it cold) | SKIP | only on coverage — precision was already perfect |
-| `rubric-based-rl-nonverifiable` | **weak** (it *hedges*, 2026 topic) | BUILD | **hugely** — spine coverage 0.07 → 1.00 |
+| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | SKIP | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
+| `discrete-diffusion-llms` | model **fabricates** cites (recent ML) | BUILD | **yes** — fixes mislabeled cites (precision) **and** coverage (recall) |
+| `speculative-decoding-llms` | model **knows it cold** | SKIP | only on coverage — precision was already perfect |
+| `rubric-based-rl-nonverifiable` | model **hedges** (post-cutoff 2026) | BUILD | **hugely** — spine coverage 0.07 → 1.00 |
 | `glp1-incretin-obesity` | **biomedical** (non-arXiv, Crossref/DOI) | SKIP | on coverage — recall 0.26 → 0.95 with verifiable DOIs |
-| `sleep-insomnia-evidence` | **everyday health** (evidence-vs-hype) | SKIP | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
 
 See [`examples/README.md`](examples/README.md) for the full story — including how the rubric-RL example
 exposed, and drove a fix for, a blind spot in the probe.
