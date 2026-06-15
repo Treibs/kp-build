@@ -167,6 +167,47 @@ def test_arxiv_ym_extracts_year_month():
     assert _arxiv_ym("arXiv:1706.03762") == 2017 * 12 + 6
     assert _arxiv_ym("2513.00001") is None                  # month 13 is invalid
     assert _arxiv_ym("10.1056/nejmoa2032183") is None       # a DOI carries no month
+    assert _arxiv_ym("2503.01840v2") == 2025 * 12 + 3       # a version suffix is tolerated (load-bearing for newest_real_ym)
+    assert _arxiv_ym("arXiv:2503.01840v2") == 2025 * 12 + 3
+
+
+def test_as_of_months_validates_month():
+    from kp_build.falsify import _as_of_months
+    assert _as_of_months("2026-06") == 2026 * 12 + 6
+    assert _as_of_months("2026-13") is None and _as_of_months("2026-00") is None   # bad month abstains, no shift
+    assert _as_of_months("") is None and _as_of_months(None) is None
+
+
+def test_newest_real_ym_from_versioned_block_cite():
+    from kp_build.falsify import score_citations
+    def get(u):
+        return _hit("A 2025 Frontier Paper") if "2503.01840" in u else "<feed></feed>"
+    rep = score_citations("## Citations\n2503.01840v2 | A 2025 Frontier Paper\n", get=get)
+    assert rep["real"] == 1 and rep["newest_real_ym"] == 2025 * 12 + 3
+
+
+def test_stale_fires_under_broadly_known_when_all_old(monkeypatch):
+    # >=2*min_real real cites, all OLD, plus an incidental hedge: the hedge branch is skipped (real>=2*min_real),
+    # so the verdict BUILDs on STALENESS (reason says 'stale', not 'hedged') — pins the branch-6-vs-7 interaction
+    import kp_build.falsify as F
+    monkeypatch.setattr(F, "score_citations", lambda a, get=None, **kw: {
+        "cited": 6, "checked": 6, "unresolved": 0, "real": 6, "fake": 0, "fake_list": [],
+        "newest_real_ym": 2022 * 12 + 1, "precision": 1.0, "hallucination_rate": 0.0})
+    v = F.probe_verdict("broadly known but old, with one arXiv:2510.xxxxx placeholder", as_of="2026-06")
+    assert v["decision"] == "build" and v["stale"] is True and "stale" in v["reason"] and "hedged" not in v["reason"]
+
+
+def test_recency_boundary_is_strict(monkeypatch):
+    # exactly recency_months old -> NOT stale (strict '>'); one month older -> stale
+    import kp_build.falsify as F
+    asof = 2026 * 12 + 6
+    def rep(newest):
+        return lambda a, get=None, **kw: {"cited": 3, "checked": 3, "unresolved": 0, "real": 3, "fake": 0,
+                                          "fake_list": [], "newest_real_ym": newest, "precision": 1.0, "hallucination_rate": 0.0}
+    monkeypatch.setattr(F, "score_citations", rep(asof - 30))
+    assert F.probe_verdict("x", as_of="2026-06", recency_months=30)["stale"] is False
+    monkeypatch.setattr(F, "score_citations", rep(asof - 31))
+    assert F.probe_verdict("x", as_of="2026-06", recency_months=30)["stale"] is True
 
 
 def test_build_when_cites_are_all_stale():
@@ -236,9 +277,9 @@ def test_cli_probe_shows_hedged_count(tmp_path, monkeypatch, capsys):
     assert "2 hedged" in capsys.readouterr().out
 
 
-def test_cli_probe_passes_as_of(tmp_path, monkeypatch):
-    # the CLI defaults the recency reference to today (YYYY-MM) and honors --as-of
-    import re as _re
+def test_cli_probe_recency_is_opt_in(tmp_path, monkeypatch):
+    # recency is OPT-IN: without --as-of the CLI passes as_of=None (off, so settled topics aren't flagged);
+    # --as-of enables it. (A bare absolute-age signal over-triggers on mature topics, so it is not default-on.)
     import kp_build.falsify as F
     ans = tmp_path / "a.txt"; ans.write_text("x", encoding="utf-8")
     seen = {}
@@ -246,9 +287,9 @@ def test_cli_probe_passes_as_of(tmp_path, monkeypatch):
         "checked": 1, "cited": 1, "real": 1, "fake": 0, "hedged": 0, "hallucination_rate": 0.0,
         "decision": "skip", "reason": "x"})
     main(["probe", "--answer", str(ans)])
-    assert _re.match(r"\d{4}-\d{2}$", seen.get("as_of", ""))          # defaulted to today
+    assert seen.get("as_of") is None                                 # off by default
     main(["probe", "--answer", str(ans), "--as-of", "2030-01"])
-    assert seen["as_of"] == "2030-01"                                 # override honored
+    assert seen["as_of"] == "2030-01"                                 # enabled by the flag
 
 
 def test_cli_probe_requires_answer_or_prompt(capsys):

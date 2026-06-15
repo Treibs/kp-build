@@ -21,6 +21,10 @@ def test_parse_citations_doi_edge_cases():
     # an em-dash (or trailing prose) attached to a DOI must not be swallowed into the handle
     h3 = [x for x, _ in parse_citations("GI events (10.1111/dom.14551)—and discontinuation")]
     assert h3 == ["10.1111/dom.14551"]
+    # trailing prose/quote punctuation (colon, quote, period) must be stripped off an inline DOI
+    h4 = [x for x, _ in parse_citations('Key result: 10.1056/nejmoa2032183: the trial, and "10.1111/dom.14551".')]
+    assert "10.1056/nejmoa2032183" in h4 and "10.1111/dom.14551" in h4
+    assert all(not x[-1] in ":;.,\"'" for x in h4)
 
 
 def test_score_citations_flags_fakes_mocked():

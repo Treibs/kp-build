@@ -334,7 +334,7 @@ def _cmd_probe(args) -> int:
     if not Path(args.answer).is_file():                 # distinct from an INCONCLUSIVE verdict (exit 3)
         print(f"error: answer file not found: {args.answer}", file=sys.stderr)
         return 2
-    as_of = args.as_of or datetime.date.today().strftime("%Y-%m")    # recency check is relative to "now" (overridable)
+    as_of = args.as_of or None        # recency check is OPT-IN (--as-of): a settled topic's old cites are not weakness
     v = probe_verdict(Path(args.answer).read_text(encoding="utf-8"),
                       threshold=args.threshold, min_real=args.min_real, throttle=0.2, as_of=as_of)
     head = {"build": "BUILD — the topic is model-weak (worth packaging)",
@@ -434,7 +434,7 @@ def main(argv=None) -> int:
     prb.add_argument("--emit-prompt", action="store_true", help="print the base-answer prompt for the topic and exit")
     prb.add_argument("--threshold", type=float, default=0.25, help="hallucination rate at/above which the topic is model-weak (build)")
     prb.add_argument("--min-real", type=int, default=3, dest="min_real", help="fewer real citations than this = too thin (build)")
-    prb.add_argument("--as-of", default="", dest="as_of", help="recency reference YYYY-MM (default: today); flags an answer that cites only old work as stale on the frontier")
+    prb.add_argument("--as-of", default="", dest="as_of", help="OPT-IN recency check at this YYYY-MM (e.g. today): flag an answer citing only work older than ~30mo as stale on the frontier — for known fast-moving topics")
     prb.set_defaults(func=_cmd_probe)
     exp = sub.add_parser("expand", help="list citation-graph neighbors of a package's verified spine")
     exp.add_argument("package_dir")

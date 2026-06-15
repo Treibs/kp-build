@@ -132,7 +132,7 @@ def parse_citations(answer: str) -> list[tuple[str, str]]:
     # in '10.1001/jama.2021.23619') is not then mis-read by the arXiv scan as a fabricated arXiv id.
     masked = list(answer)
     for mobj in _DOI_RE.finditer(answer):
-        add(mobj.group(1).rstrip(".,);"), "")
+        add(mobj.group(1).rstrip(".,;:)]'\"!?>}"), "")    # strip trailing prose/quote punctuation, not DOI chars
         masked[mobj.start():mobj.end()] = " " * (mobj.end() - mobj.start())
     for mobj in _ARXIV_RE.finditer("".join(masked)):
         add(mobj.group(1), "")
@@ -246,9 +246,13 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get,
 
 
 def _as_of_months(s) -> "int | None":
-    """Absolute month index for a YYYY-MM[-DD] reference date, else None (recency signal abstains)."""
+    """Absolute month index for a YYYY-MM[-DD] reference date, else None (recency signal abstains). Validates the
+    month (01-12) and abstains on a bad one — mirrors _arxiv_ym, so a typo'd --as-of can't shift the reference."""
     m = re.match(r"\s*(\d{4})-(\d{2})", s or "")
-    return int(m.group(1)) * 12 + int(m.group(2)) if m else None
+    if not m:
+        return None
+    mm = int(m.group(2))
+    return int(m.group(1)) * 12 + mm if 1 <= mm <= 12 else None
 
 
 def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, min_real: int = 3,
@@ -299,7 +303,8 @@ def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, m
                                      f"(placeholder ids like 'arXiv:2510.xxxxx') while grounding only {real} real "
                                      f"— it knows the frontier holds work it cannot name; a package will help")
     elif stale and real >= min_real:
-        decision, reason = "build", (f"the unaided model's most recent real citation is ~{stale_by // 12}y old "
+        age = f"~{stale_by} months" if stale_by < 24 else f"~{stale_by // 12}y"
+        decision, reason = "build", (f"the unaided model's most recent real citation is {age} old "
                                      f"(nothing in the last {recency_months} months) — it cites only older work and "
                                      f"is stale on the recent frontier; a package adds the current literature")
     else:
