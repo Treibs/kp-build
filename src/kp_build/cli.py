@@ -221,8 +221,8 @@ def _cmd_build(args) -> int:
                     old = paper_from_md(Path(f).read_text(encoding="utf-8"))
                 except (OSError, ValueError, KeyError, yaml.YAMLError):
                     continue                        # one corrupt file must not abort the whole reuse
-                if old.verified.exists:
-                    cache[old.cite_key] = old
+                if old.verified.exists and old.verified.via != "(unchecked)":
+                    cache[old.cite_key] = old      # only reuse REAL index verdicts, never --no-verify stamps
             for p in pkg.papers:
                 old = cache.get(p.cite_key)
                 # ONLY reuse when the identity still matches — else the input was edited and the prior

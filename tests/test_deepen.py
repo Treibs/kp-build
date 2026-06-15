@@ -172,10 +172,16 @@ def test_verify_all_throttle_zero_decays_back_to_zero(monkeypatch):
     assert sleeps == [2.0]            # error bumps to 2.0 once, then recovery returns to 0 (no sticky sleep)
 
 
+def _spy_verify(hits):
+    # a stub standing in for a REAL index verification (via="arxiv"), recording every paper it checks
+    from kp_build.schema import Verification
+    return lambda p, **k: (hits.append(p.cite_key),
+                           setattr(p, "verified", Verification(exists=True, status="verified", via="arxiv")))
+
+
 def test_cli_reuse_verification_skips_and_reverifies_changed_identity(tmp_path, monkeypatch):
     import json
     import kp_build.citations as C
-    from kp_build.schema import Verification
     from kp_build.cli import main
     inp = tmp_path / "r.json"
 
@@ -185,11 +191,12 @@ def test_cli_reuse_verification_skips_and_reverifies_changed_identity(tmp_path, 
     write([{"cite_key": "a", "title": "Paper A", "arxiv_id": "2401.00001"},
            {"cite_key": "b", "title": "Paper B", "arxiv_id": "2401.00002"}])
     out = tmp_path / "pkg"
-    assert main(["build", "-i", str(inp), "-o", str(out), "--no-verify"]) == 0    # both stamped verified
     hits = []
-    monkeypatch.setattr(C, "verify_paper",
-                        lambda p, **k: (hits.append(p.cite_key), setattr(p, "verified", Verification(exists=True, status="verified"))))
-    # unchanged input -> both reused, ZERO network checks
+    monkeypatch.setattr(C, "verify_paper", _spy_verify(hits))
+    assert main(["build", "-i", str(inp), "-o", str(out)]) == 0    # first REAL verify -> both checked
+    assert sorted(hits) == ["a", "b"]
+    hits.clear()
+    # unchanged input -> both reused (via=arxiv), ZERO network checks
     main(["build", "-i", str(inp), "-o", str(out), "--reuse-verification"])
     assert hits == []
     # change a's identity (same cite_key, new id+title) -> a MUST be re-checked, not inherit the stale verdict
@@ -198,6 +205,24 @@ def test_cli_reuse_verification_skips_and_reverifies_changed_identity(tmp_path, 
     hits.clear()
     main(["build", "-i", str(inp), "-o", str(out), "--reuse-verification"])
     assert hits == ["a"]             # a re-verified (identity changed); b reused (unchanged)
+
+
+def test_reuse_verification_does_not_reuse_unchecked_no_verify_stamps(tmp_path, monkeypatch):
+    # a --no-verify build stamps via="(unchecked)"; --reuse-verification must NOT treat those as
+    # verified-and-reusable — an unchecked paper gets a real re-check, never masquerading as verified.
+    import json
+    import kp_build.citations as C
+    from kp_build.cli import main
+    inp = tmp_path / "r.json"
+    inp.write_text(json.dumps({"topic": "T", "papers": [
+        {"cite_key": "a", "title": "A", "arxiv_id": "2401.00001"},
+        {"cite_key": "b", "title": "B", "arxiv_id": "2401.00002"}]}), encoding="utf-8")
+    out = tmp_path / "pkg"
+    assert main(["build", "-i", str(inp), "-o", str(out), "--no-verify"]) == 0   # via="(unchecked)"
+    hits = []
+    monkeypatch.setattr(C, "verify_paper", _spy_verify(hits))
+    main(["build", "-i", str(inp), "-o", str(out), "--reuse-verification"])
+    assert sorted(hits) == ["a", "b"]     # unchecked stamps not reused -> both really checked
 
 
 def test_score_citations_throttles_between_cites():
