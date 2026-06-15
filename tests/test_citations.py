@@ -24,6 +24,15 @@ def _crossref_doi(title):
     return json.dumps({"message": {"title": [title]}})
 
 
+def _crossref_doi_miss():
+    return '{"message": {}}'          # Crossref reached, but no record for this DOI
+
+
+def _openalex(title):
+    import json
+    return json.dumps({"title": title, "display_name": title})
+
+
 def _raises(code):
     def g(url):
         raise urllib.error.HTTPError(url, code, "err", {}, io.BytesIO(b""))
@@ -89,6 +98,70 @@ def test_doi_path_verifies_and_mismatch_rejects():
     q = Paper(cite_key="b", title="Something Unrelated Entirely Here", doi="10.1/b")
     verify_paper(q, get=lambda u: _crossref_doi("Attention Is All You Need"), today="2026-06-14")
     assert not q.verified.exists and q.verified.status == "id-title-mismatch"
+
+
+# ── DOI backends: Crossref first, OpenAlex fallback (broaden reach, soundness unchanged) ──────────
+
+
+def _route(crossref, openalex):
+    """A stub get() that serves different bodies to the Crossref vs OpenAlex hosts."""
+    def g(u):
+        if "crossref.org" in u:
+            return crossref() if callable(crossref) else crossref
+        if "openalex.org" in u:
+            return openalex() if callable(openalex) else openalex
+        return "{}"
+    return g
+
+
+def test_openalex_doi_title_parses():
+    from kp_build.citations import _openalex_doi_title
+    t, err = _openalex_doi_title("10.1/x", lambda u: _openalex("Some Real Paper"))
+    assert t == "Some Real Paper" and err == ""
+
+
+def test_doi_uses_crossref_first_no_openalex_call():
+    # Crossref resolves -> we never touch OpenAlex
+    seen = {"openalex": False}
+    def g(u):
+        if "openalex.org" in u:
+            seen["openalex"] = True
+        return _crossref_doi("Attention Is All You Need") if "crossref.org" in u else "{}"
+    p = Paper(cite_key="a", title="Attention Is All You Need", doi="10.1/x")
+    verify_paper(p, get=g, today="2026-06-14")
+    assert p.verified.exists and p.verified.via == "crossref" and seen["openalex"] is False
+
+
+def test_doi_falls_back_to_openalex_when_crossref_has_no_record():
+    # a real DataCite/preprint DOI: Crossref has no record -> OpenAlex resolves -> verified via openalex
+    p = Paper(cite_key="a", title="Attention Is All You Need", doi="10.5555/datacite")
+    verify_paper(p, get=_route(_crossref_doi_miss, _openalex("Attention Is All You Need")), today="2026-06-14")
+    assert p.verified.exists and p.verified.status == "verified" and p.verified.via == "openalex"
+
+
+def test_doi_falls_back_to_openalex_when_crossref_transient():
+    # Crossref rate-limited (429) but OpenAlex authoritatively resolves the DOI -> verified via openalex
+    def g(u):
+        if "crossref.org" in u:
+            raise urllib.error.HTTPError(u, 429, "x", {}, io.BytesIO(b""))
+        return _openalex("Attention Is All You Need")
+    p = Paper(cite_key="a", title="Attention Is All You Need", doi="10.1/x")
+    verify_paper(p, get=g, today="2026-06-14", sleep=lambda _s: None, max_retries=1)
+    assert p.verified.exists and p.verified.via == "openalex"
+
+
+def test_doi_openalex_wrong_title_is_still_a_mismatch():
+    # SOUNDNESS: a DOI that resolves in OpenAlex to a DIFFERENT paper is rejected, not laundered
+    p = Paper(cite_key="a", title="Attention Is All You Need", doi="10.5555/x")
+    verify_paper(p, get=_route(_crossref_doi_miss, _openalex("A Completely Different Paper")), today="2026-06-14")
+    assert not p.verified.exists and p.verified.status == "id-title-mismatch" and p.verified.via == "openalex"
+
+
+def test_doi_absent_from_both_is_not_found():
+    # fabricated DOI: neither index has it -> not-found (not rescued)
+    p = Paper(cite_key="a", title="Imaginary Paper", doi="10.9999/fake")
+    verify_paper(p, get=_route(_crossref_doi_miss, "{}"), today="2026-06-14")
+    assert not p.verified.exists and p.verified.status == "not-found"
 
 
 # ── title-only path: NEVER verified (the laundering fix) ─────────────────────────

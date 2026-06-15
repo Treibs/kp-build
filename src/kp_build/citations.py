@@ -4,9 +4,10 @@ The previous version laundered fakes: its title-search fallback marked a fabrica
 ``verified`` against an unrelated real work and backfilled a wrong DOI. This version is built so a
 fabricated citation can never earn ``exists=True``:
 
-1. **An identifier's verdict is FINAL.** If an ``arxiv_id`` or ``doi`` is supplied, we resolve it and
-   either accept (it resolves AND the canonical title strictly matches the claimed title) or reject —
-   we NEVER fall through to a title search that could rescue a wrong id to a third paper.
+1. **An identifier's verdict is FINAL.** If an ``arxiv_id`` or ``doi`` is supplied, we resolve it (a DOI
+   against Crossref, then OpenAlex for the DataCite/preprint DOIs Crossref does not register) and either
+   accept (it resolves AND the canonical title strictly matches the claimed title) or reject — we NEVER
+   fall through to a title search that could rescue a wrong id to a third paper.
 2. **Title-only papers are never ``verified``.** With no identifier the best we can do is a strict
    Crossref search; a hit is recorded as ``status='unconfirmed'`` with ``exists=False`` — it cannot
    anchor a shipped claim. (The drafter must supply an arXiv id / DOI for a shippable citation.)
@@ -142,6 +143,22 @@ def _crossref_doi_title(doi: str, get: Callable[[str], str]) -> tuple[Optional[s
     return (titles[0] if titles else None), ""
 
 
+def _openalex_doi_title(doi: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
+    """OpenAlex resolution of a DOI -> canonical title. Broader than Crossref (it also serves DataCite /
+    preprint / institutional DOIs Crossref does not register) and keyless — used as a FALLBACK so a real
+    non-Crossref DOI still verifies. Soundness is unchanged: the caller still strict-title-matches it."""
+    url = f"https://api.openalex.org/works/doi:{urllib.parse.quote(doi.strip(), safe='')}"
+    raw, err = _safe(url, get)
+    if err:
+        return None, err
+    try:
+        d = json.loads(raw)
+    except Exception:
+        return None, ""
+    t = d.get("title") or d.get("display_name")
+    return (t if isinstance(t, str) and t.strip() else None), ""
+
+
 # Crossref record types that are real works (exclude components/supplementary/datasets/etc.)
 _ARTICLE_TYPES = frozenset({
     "journal-article", "proceedings-article", "posted-content", "book-chapter",
@@ -180,6 +197,21 @@ def _resolve(fn, *args, get, sleep, max_retries) -> tuple[Optional[object], str]
         if attempt < max_retries:
             sleep(0.5 * (2 ** attempt))
     return None, "transient"
+
+
+def _resolve_doi(doi: str, *, get: Callable[[str], str], sleep, max_retries: int) -> tuple[Optional[str], str, str]:
+    """Resolve a DOI to its canonical title: Crossref first (the authoritative DOI registry), then OpenAlex
+    (broader reach) only if Crossref has no record or is unreachable. Returns (title, err, via). OpenAlex
+    just ADDS coverage for DOIs Crossref can't serve — the caller still strict-title-matches whatever
+    resolves, so a fabricated DOI cannot earn a pass (it resolves nowhere, or resolves to a different paper
+    and is rejected as a mismatch)."""
+    ct, err = _resolve(_crossref_doi_title, doi, get=get, sleep=sleep, max_retries=max_retries)
+    if ct is not None:
+        return ct, "", "crossref"
+    ct2, err2 = _resolve(_openalex_doi_title, doi, get=get, sleep=sleep, max_retries=max_retries)
+    if ct2 is not None:
+        return ct2, "", "openalex"
+    return None, ("transient" if "transient" in (err, err2) else ""), "crossref+openalex"
 
 
 # ── public API ──────────────────────────────────────────────────────────────────
@@ -221,15 +253,15 @@ def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str 
         return done("id-title-mismatch", "arxiv", ct, score)
 
     if p.doi:
-        ct, err = _resolve(_crossref_doi_title, p.doi, get=get, sleep=sleep, max_retries=max_retries)
+        ct, err, via = _resolve_doi(p.doi, get=get, sleep=sleep, max_retries=max_retries)
         if err == "transient":
-            return done("error", "crossref")
+            return done("error", via)
         if ct is None:
-            return done("not-found", "crossref")
+            return done("not-found", via)
         if not p.title:
-            return done("verified", "crossref", ct, 1.0)
+            return done("verified", via, ct, 1.0)
         ok, score = titles_match_strict(p.title, ct)
-        return done("verified" if ok else "id-title-mismatch", "crossref", ct, score)
+        return done("verified" if ok else "id-title-mismatch", via, ct, score)
 
     # 2. Title-only path — NEVER 'verified'. A strict hit is a candidate hint, exists=False.
     if p.title:
