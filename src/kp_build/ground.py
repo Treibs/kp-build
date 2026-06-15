@@ -38,22 +38,22 @@ def _norm(s: str) -> str:
     return " ".join(_WORD.findall(s.lower()))
 
 
-def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY) -> bool:
-    """Is the passage present in the text? Sound by construction — a fabricated or generic passage must
-    NOT ground:
-      - too short (< _MIN_CHARS / _MIN_WORDS) -> never grounds (a few common words match by coincidence);
-      - an exact normalized substring -> grounds (a genuine verbatim quote);
-      - otherwise the SINGLE longest contiguous match must cover >= *contiguity* of the passage. We use
-        the longest block (not the SUM of scattered blocks) so a word-salad whose tokens merely appear
-        scattered across the text does NOT clear the bar — only a near-verbatim quote with one small edit
-        has a long contiguous run."""
+def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY):
+    """Is the passage present in the text? Tri-state — True / False / None:
+      - None  = COULD NOT verify (passage too short to check reliably, or text too large to fuzzy-scan).
+                The caller must treat this as 'unconfirmed', never as an absence/failure.
+      - True  = present: an exact normalized substring, or the SINGLE longest contiguous match covers
+                >= *contiguity* of the passage (the longest BLOCK, not the SUM of scattered blocks, so a
+                word-salad whose tokens merely appear scattered across the text does NOT clear the bar).
+      - False = CHECKED a manageable text and the passage is genuinely absent (only this earns a hard
+                'ungrounded' verdict in fulltext mode)."""
     p, t = _norm(passage), _norm(text)
     if len(p) < _MIN_CHARS or len(p.split()) < _MIN_WORDS or not t:
-        return False
+        return None                # too short / no text -> can't reliably verify (not an absence)
     if p in t:
         return True
     if len(t) > _MAX_FUZZY:
-        return False
+        return None                # too large to fuzzy-scan -> can't verify; never a hard false negative
     m = difflib.SequenceMatcher(None, p, t, autojunk=False).find_longest_match(0, len(p), 0, len(t))
     return m.size / len(p) >= contiguity
 
@@ -93,12 +93,13 @@ def ground_claims(papers, claims, *, get: Callable[[str], str] = _http_get, full
         if c.paper not in verified:
             continue                            # anchored to an unverified paper — will be dropped anyway
         text, src = texts.get(c.paper, ("", ""))
-        if not c.supporting_passage or not text:
-            c.grounded = "unconfirmed"          # no passage, or couldn't fetch the source
-        elif passage_in_text(c.supporting_passage, text):
+        r = passage_in_text(c.supporting_passage, text)
+        if r is True:
             c.grounded = "grounded"
-        else:
+        elif r is False:                        # CHECKED and absent -> a real failure only in fulltext
             c.grounded = "ungrounded" if src == "fulltext" else "unconfirmed"
+        else:                                   # None: couldn't fetch / too short / too large -> soft
+            c.grounded = "unconfirmed"
         counts[c.grounded] += 1
     return {"by_status": dict(counts), "grounded": counts.get("grounded", 0),
             "ungrounded": counts.get("ungrounded", 0), "unconfirmed": counts.get("unconfirmed", 0)}

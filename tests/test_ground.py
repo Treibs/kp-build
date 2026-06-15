@@ -33,15 +33,23 @@ def test_passage_misquote_mid_edit_not_grounded():
 
 
 def test_passage_scattered_words_not_grounded():
-    # a generic phrase whose words appear SCATTERED across the abstract must NOT ground (false-positive guard)
-    assert not passage_in_text("our model achieves state of the art",
-                               "in this paper our system achieves strong results improving the state of the art performance")
+    # a generic phrase whose words appear SCATTERED across the abstract must NOT ground (false-positive guard).
+    # CHECKED + absent -> False (a real absence), distinct from None (couldn't check).
+    assert passage_in_text("our model achieves state of the art",
+                           "in this paper our system achieves strong results improving the state of the art performance") is False
 
 
-def test_passage_too_short_not_grounded():
-    # a short/generic passage must never ground — it would match by coincidence
-    assert not passage_in_text("clear improvements", "We show clear improvements over prior baselines.")
-    assert not passage_in_text("we show that", "we show that diffusion language models scale well.")
+def test_passage_too_short_is_none_not_false():
+    # a short/generic passage can't be reliably verified -> None ("couldn't check"), never a False absence
+    assert passage_in_text("clear improvements", "We show clear improvements over prior baselines.") is None
+    assert passage_in_text("we show that", "we show that diffusion language models scale well.") is None
+
+
+def test_passage_oversized_text_is_none():
+    # a >200k-char body can't be fuzzy-scanned -> None (never a hard False that would flag a real quote)
+    big = "diffusion sampling decoding strategies in fine detail again " * 5000
+    assert len(big) > 200000
+    assert passage_in_text("we observe a notable speedup in inference latency overall here", big) is None
 
 
 def test_passage_grounds_in_long_body_above_old_cutoff():
@@ -57,8 +65,8 @@ def test_passage_fabricated_not_found():
                                "We study masked diffusion language models and their sampling.")
 
 
-def test_passage_empty_inputs():
-    assert not passage_in_text("", "anything") and not passage_in_text("a short one", "")
+def test_passage_empty_inputs_are_none():
+    assert passage_in_text("", "anything") is None and passage_in_text("a long enough passage here", "") is None
 
 
 # ── fetch ────────────────────────────────────────────────────────────────────────
@@ -106,6 +114,47 @@ def test_ground_fulltext_miss_is_ungrounded():
     claims = [Claim(id="c1", statement="s", paper="a", supporting_passage="the model reaches 99 percent accuracy on imagenet")]
     ground_claims([p], claims, get=g, fulltext=True)
     assert claims[0].grounded == "ungrounded"      # fulltext checked, passage absent -> real failure
+
+
+def test_ground_oversized_fulltext_is_unconfirmed_not_ungrounded():
+    # a >200k-char fulltext can't be fuzzy-checked -> 'unconfirmed' (soft), NEVER a false 'ungrounded'
+    p = Paper(cite_key="a", title="T", arxiv_id="2401.1", verified=_V())
+    big = "diffusion sampling decoding strategies in fine detail again " * 5000
+    def g(u):
+        return f"<html><body><p>{big}</p></body></html>" if "ar5iv" in u else "<feed></feed>"
+    claims = [Claim(id="c1", statement="s", paper="a",
+                    supporting_passage="we observe a notable speedup in inference latency overall here")]
+    ground_claims([p], claims, get=g, fulltext=True)
+    assert claims[0].grounded == "unconfirmed"
+
+
+def test_arxiv_abstract_unescapes_entities():
+    feed = "<feed><entry><summary>We show that x &gt; 10 holds in all cases.</summary></entry></feed>"
+    summary, err = _arxiv_abstract("2401.1", get=lambda u: feed)
+    assert err == "" and "x > 10" in summary and "&gt;" not in summary
+
+
+def test_fetch_fulltext_unescapes_entities():
+    body = "Here we prove that x &gt; y always holds in the limiting case for every input. " * 10
+    def g(u):
+        return f"<html><body><p>{body}</p></body></html>" if "ar5iv" in u else "<feed></feed>"
+    text, src = fetch_paper_text(Paper(cite_key="a", title="T", arxiv_id="2401.1"), get=g, fulltext=True)
+    assert src == "fulltext" and "x > y" in text and "&gt;" not in text
+
+
+def test_cli_ground_with_no_verify_warns_and_skips(tmp_path, monkeypatch, capsys):
+    import json
+    import kp_build.ground as G
+    from kp_build.cli import main
+    inp = tmp_path / "r.json"
+    inp.write_text(json.dumps({"topic": "T", "papers": [{"cite_key": "a", "title": "A", "arxiv_id": "2401.1"}],
+                               "claims": [{"id": "c1", "statement": "s", "paper": "a", "supporting_passage": "a passage here"}]}),
+                   encoding="utf-8")
+    called = []
+    monkeypatch.setattr(G, "ground_claims", lambda *a, **k: called.append(1) or {"grounded": 0, "unconfirmed": 0, "ungrounded": 0})
+    main(["build", "-i", str(inp), "-o", str(tmp_path / "o"), "--no-verify", "--ground"])
+    err = capsys.readouterr().err
+    assert called == [] and "warn" in err and "ground" in err.lower()    # skipped + warned
 
 
 def test_ground_skips_unverified_paper():
