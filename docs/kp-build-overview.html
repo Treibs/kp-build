@@ -7,105 +7,228 @@
 <meta name="description" content="An open-source tool that builds verified, citation-checked knowledge packages an AI agent can load — so it answers from real, checked sources instead of guessing.">
 <style>
   :root{
-    --ink:#11161d; --muted:#5b6675; --line:#e4e8ee; --bg:#f6f8fb; --card:#fff;
-    --accent:#3b4a8c; --good:#1c8b53; --good-bg:#eaf7f0; --amber:#b4791a; --amber-bg:#fdf6ea;
-    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --ink:#0f1722; --ink-2:#33414f; --muted:#69788a; --faint:#9aa7b5;
+    --line:#e6eaf0; --line-2:#eef1f6; --bg:#fbfcfe; --card:#ffffff;
+    --brand:#2f5bd0; --brand-d:#21459e; --brand-bg:#eef3fe;
+    --good:#137a4a; --good-bg:#e9f7ef; --good-line:#bfe6cf;
+    --amber:#a9711a; --amber-bg:#fdf5e7; --amber-line:#f0dcb4;
+    --ink-grad:linear-gradient(155deg,#101826 0%,#16243b 60%,#1d3358 100%);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.05);
   }
-  *{box-sizing:border-box} html{scroll-behavior:smooth}
-  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6;font-size:16px}
-  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
-  code{font-family:var(--mono);font-size:.86em;background:#eef1f5;padding:.1em .38em;border-radius:5px}
-  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
-  header.hero{background:linear-gradient(160deg,#161c27,#1f2940 72%,#26324f);color:#fff;padding:46px 0 40px}
-  h1{font-size:32px;margin:.1em 0 .12em;letter-spacing:-.01em}
-  .tag{color:#c7d2e6;font-size:18px;max-width:660px;margin:.2em 0 0}
-  .badges{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px}
-  .badge{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#eaf0fb;font-size:13px;padding:5px 11px;border-radius:999px}
-  .badge b{color:#fff}
-  section{padding:30px 0 4px}
-  h2{font-size:23px;margin:14px 0 4px;letter-spacing:-.01em}
-  h3{font-size:16.5px;margin:20px 0 4px}
-  .lede{color:var(--muted);font-size:17px;margin:.2em 0 14px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px 22px;margin:14px 0;box-shadow:0 1px 2px rgba(20,30,50,.04)}
-  .card.flag{border-left:4px solid var(--amber)}
-  ul.clean{margin:8px 0;padding-left:18px} ul.clean li{margin:6px 0}
-  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px}
-  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-  tbody tr:last-child td{border-bottom:none}
+  *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+  a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.85em;background:#eef1f6;color:#24405f;padding:.12em .4em;border-radius:5px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);font-weight:700}
+
+  /* hero */
+  header.hero{background:var(--ink-grad);color:#fff;padding:54px 0 46px;position:relative;overflow:hidden}
+  header.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(900px 300px at 78% -10%,rgba(80,130,255,.18),transparent 60%);pointer-events:none}
+  header.hero .eyebrow{color:#8fb2ff}
+  h1{font-size:38px;line-height:1.08;margin:.18em 0 .14em;letter-spacing:-.02em;font-weight:800}
+  .tag{color:#cdd9ec;font-size:19px;line-height:1.5;max-width:680px;margin:.2em 0 0}
+  .tag b{color:#fff}
+  .badges{margin-top:24px;display:flex;flex-wrap:wrap;gap:9px}
+  .badge{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#e8eefb;font-size:12.5px;padding:6px 12px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+  .badge b{color:#fff;font-weight:700} .badge code{background:rgba(255,255,255,.12);color:#dbe6fb}
+
+  section{padding:40px 0 6px} section.tight{padding-top:26px}
+  h2{font-size:25px;line-height:1.2;margin:6px 0 6px;letter-spacing:-.015em;font-weight:750}
+  h3{font-size:16px;margin:0 0 5px;font-weight:700;letter-spacing:-.01em}
+  .lede{color:var(--muted);font-size:17.5px;line-height:1.55;margin:.1em 0 18px;max-width:740px}
+  p{margin:.6em 0} .sub{color:var(--muted);font-size:14px}
+  ul.clean{margin:10px 0;padding-left:20px} ul.clean li{margin:7px 0}
+  hr.div{border:0;border-top:1px solid var(--line);margin:34px 0 0}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin:16px 0;box-shadow:var(--shadow)}
+  .card.flag{border:1px solid var(--amber-line);background:linear-gradient(180deg,#fffdf8,#fff)}
+  .pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:6px;vertical-align:2px}
+  .pill.amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-line)}
+
+  .grid{display:grid;gap:16px} .g3{grid-template-columns:1fr 1fr 1fr} .g2{grid-template-columns:1fr 1fr}
+  @media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 19px;box-shadow:var(--shadow)}
+  .feat .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--brand-bg);color:var(--brand-d);font-weight:800;font-size:13px;margin-bottom:9px}
+  .feat p{font-size:14.5px;color:var(--ink-2);margin:.2em 0 0}
+
+  pre{background:#0c1320;color:#cfd8e3;border-radius:12px;padding:16px 18px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.62;border:1px solid #1b2740}
+  pre .g{color:#56d29a} pre .a{color:#e0ad3f;font-weight:600} pre .c{color:#8595aa} pre .b{color:#6ea8ff}
+
+  .quote{border-left:3px solid var(--brand);background:var(--brand-bg);padding:13px 18px;border-radius:0 10px 10px 0;margin:16px 0;color:#274064;font-size:15.5px}
+
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+  tbody tr:last-child td{border-bottom:none} tbody tr.hi td{background:var(--amber-bg)}
   .win{color:var(--good);font-weight:600} .neu{color:var(--muted)}
-  pre{background:#0d1117;color:#c9d1d9;border-radius:10px;padding:14px 16px;overflow:auto;font-family:var(--mono);font-size:13.5px;line-height:1.5}
-  pre .g{color:#3fb950} pre .a{color:#d29922} pre .c{color:#8b949e} pre .b{color:#58a6ff}
-  .grid{display:grid;gap:14px} .g3{grid-template-columns:1fr 1fr 1fr} @media(max-width:720px){.g3{grid-template-columns:1fr}}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
-  .stat .n{font-size:23px;font-weight:700;line-height:1.1} .stat .l{font-size:13px;color:var(--muted);margin-top:3px}
-  .stat.good .n{color:var(--good)}
-  .quote{border-left:3px solid var(--accent);background:#f0f3fa;padding:11px 16px;border-radius:0 8px 8px 0;margin:14px 0;color:#2b3550}
-  footer{color:var(--muted);font-size:13.5px;padding:28px 0 48px;border-top:1px solid var(--line);margin-top:30px}
+
+  /* ── pipeline diagram ── */
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:6px 0 8px}
+  .flow .stage{flex:1 1 0;min-width:96px;border-radius:11px;padding:11px 10px 10px;text-align:center;position:relative;border:1px solid var(--line)}
+  .flow .stage+.stage:before{content:"";position:absolute;left:-12px;top:50%;width:9px;height:9px;border-top:2px solid #c3ccd8;border-right:2px solid #c3ccd8;transform:translateY(-50%) rotate(45deg)}
+  .flow .stage .s{font-weight:700;font-size:13.5px;letter-spacing:-.01em} .flow .stage .t{font-size:10.5px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+  .flow .judg{background:var(--brand-bg);border-color:#cfdcfb} .flow .judg .s{color:var(--brand-d)}
+  .flow .eng{background:#f3f6fb} .flow .gate{background:var(--good-bg);border-color:var(--good-line)} .flow .gate .s{color:var(--good)}
+  .flow .out{background:var(--amber-bg);border-color:var(--amber-line)} .flow .out .s{color:var(--amber)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+  .legend span{display:inline-flex;align-items:center;gap:6px} .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* ── package-structure diagram ── */
+  .pkg{display:grid;grid-template-columns:1.35fr auto .9fr;gap:18px;align-items:center;margin:8px 0}
+  @media(max-width:680px){.pkg{grid-template-columns:1fr}}
+  .pkgbox{border:1.5px solid var(--line);border-radius:14px;padding:14px;background:#fff;box-shadow:var(--shadow)}
+  .pkgbox .hd{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:9px}
+  .pkgrow{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:6px 0;border-top:1px dashed var(--line-2)}
+  .pkgrow:first-of-type{border-top:0}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .arrow{display:flex;flex-direction:column;align-items:center;color:var(--muted);font-size:12px}
+  .arrow svg{display:block}
+  .loadbox{border:1.5px dashed #c7d0db;border-radius:14px;padding:16px 14px;text-align:center;background:#f7f9fc}
+
+  /* ── falsify bars ── */
+  .bars{display:grid;gap:13px;margin:6px 0}
+  .barrow{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center}
+  .barrow .lbl{font-size:13px;color:var(--ink-2);font-weight:600;text-align:right}
+  .track{position:relative;height:30px}
+  .bar{position:absolute;top:0;height:13px;border-radius:7px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap}
+  .bar.base{top:0;background:#aeb8c6} .bar.kp{top:16px;background:var(--good)}
+  .barkey{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:2px}
+  .barkey i{width:11px;height:11px;border-radius:3px;display:inline-block;vertical-align:-1px;margin-right:5px}
+
+  footer{color:var(--muted);font-size:13.5px;padding:30px 0 52px;border-top:1px solid var(--line);margin-top:36px}
+  footer a{color:var(--ink-2)}
 </style>
 </head>
 <body>
 
 <header class="hero"><div class="wrap">
+  <div class="eyebrow">open-source · MIT</div>
   <h1>kp-build</h1>
-  <p class="tag">An open-source tool that builds <b>verified, citation-checked knowledge packages</b> an AI
-    agent can load — so it answers from real, checked sources instead of guessing.</p>
+  <p class="tag">Builds <b>verified, citation-checked knowledge packages</b> an AI agent can load — so it
+    answers from real, checked sources instead of guessing.</p>
   <div class="badges">
-    <span class="badge">open-source · MIT</span>
     <span class="badge"><code>pip install kp-build</code></span>
     <span class="badge"><b>0</b> hallucinated citations — by construction</span>
     <span class="badge"><b>$0</b> — verification is free public APIs</span>
+    <span class="badge">Python 3.10+</span>
   </div>
 </div></header>
 
 <div class="wrap">
 
+<!-- intro + package structure -->
 <section>
   <p class="lede">Ask an AI assistant about something that matters — a health question, recent research, a
     decision — and it sounds completely confident. Sometimes it's completely wrong. It will even cite a study
     that doesn't exist.</p>
   <p>kp-build fixes that for a given topic. It produces a <b>knowledge package</b>: a small, self-contained
-    folder of the real literature on a narrow subject —</p>
-  <ul class="clean">
-    <li>a <b>verified citation spine</b> — every paper checked live against arXiv / Crossref / OpenAlex; the ones that don't check out are dropped, not kept;</li>
-    <li><b>claims</b> — the key findings, each tied to a quoted line from its source;</li>
-    <li>the <b>open questions</b> the papers themselves flag as unsolved;</li>
-    <li>a <b>debate map</b> — the contested points, what's settled vs. what's hype;</li>
-    <li>and a small <b>briefing file</b> an agent loads to inherit the whole topic at once.</li>
-  </ul>
-  <p>An agent loads it and works from checked knowledge. It's a reusable, machine-checkable asset — not a
-    one-shot answer.</p>
+    folder of the real literature on a narrow subject, that any agent loads to inherit the field at once.</p>
+
+  <div class="pkg">
+    <div class="pkgbox">
+      <div class="hd">📦 a knowledge package/</div>
+      <div class="pkgrow"><span class="dot" style="background:#137a4a"></span><b style="font-weight:650">verified citation spine</b> — real papers, each checked live</div>
+      <div class="pkgrow"><span class="dot" style="background:#2f5bd0"></span><b style="font-weight:650">claims</b> — findings tied to a quoted source line</div>
+      <div class="pkgrow"><span class="dot" style="background:#a9711a"></span><b style="font-weight:650">open problems</b> — what the papers flag as unsolved</div>
+      <div class="pkgrow"><span class="dot" style="background:#8a4fd0"></span><b style="font-weight:650">debate map</b> — contested points: settled vs. hype</div>
+      <div class="pkgrow"><span class="dot" style="background:#0e7490"></span><b style="font-weight:650">CONTEXT.md</b> — one briefing file an agent loads</div>
+    </div>
+    <div class="arrow">
+      <svg width="40" height="22" viewBox="0 0 40 22" fill="none"><path d="M2 11h33m0 0l-7-6m7 6l-7 6" stroke="#9aa7b5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="margin-top:4px">loads</span>
+    </div>
+    <div class="loadbox">
+      <div style="font-size:30px;line-height:1">🤖</div>
+      <div style="font-size:13.5px;font-weight:600;margin-top:6px">any AI agent</div>
+      <div class="sub" style="margin-top:3px">answers from checked<br>knowledge, not guesses</div>
+    </div>
+  </div>
+  <p class="sub">A reusable, machine-checkable asset — not a one-shot answer. Verified once; shared; reused.</p>
 </section>
 
+<hr class="div">
+
+<!-- sleep example -->
 <section>
-  <h2>A worked example: what actually improves sleep?</h2>
+  <div class="eyebrow">a worked example</div>
+  <h2>What actually improves sleep?</h2>
   <p class="lede">An everyday question, and a good test — the kind of thing people ask AI all the time, where
     being wrong matters and the internet is full of hype.</p>
+
   <div class="card flag">
-    <p style="margin-top:0">We asked a model to review the sleep evidence and cite studies. It cited
+    <span class="pill amber">the problem</span>
+    <p style="margin-top:10px">We asked a model to review the sleep evidence and cite studies. It cited
       <code>10.5665/sleep.6072</code> — confidently. That DOI resolves to nothing; it was invented. It also
       engaged only about a quarter of the real evidence.</p>
-    <p>So we built a verified package on it. Every claim is backed by a real, checked study, and the package's
-      core is a five-way <b>evidence-vs-hype map</b>:</p>
+    <p>So we built a verified package on it. Every claim is backed by a real, checked study, and its core is a
+      five-way <b>evidence-vs-hype map</b>:</p>
     <ul class="clean">
       <li><b>CBT-I</b> (behavioral therapy) is the first-line, best-evidence treatment.</li>
       <li><b>Low-dose melatonin</b>, timed right, has a small real effect; higher doses don't help more — and most supplements are mislabeled.</li>
-      <li><b>Mouth-taping, blue-light-blocking glasses, and tracker-driven "optimization"</b> are mostly hype — with the studies behind each call (sleep trackers can even feed insomnia, an effect researchers named "orthosomnia").</li>
+      <li><b>Mouth-taping, blue-light glasses, and tracker-driven "optimization"</b> are mostly hype, with the studies behind each call (sleep trackers can even feed insomnia — researchers named it "orthosomnia").</li>
     </ul>
-    <p style="margin-bottom:0"><b>Does the package help?</b> The tool measures it: a model with the package vs.
-      one without, on a held-out question. Unaided: <b>f1 0.40</b> (1 fabricated citation, 6 of 23 studies
-      covered). With the package: <b>0 fabrications, 17 of 23, f1 0.85</b>.</p>
   </div>
-  <p style="font-size:14.5px;color:var(--muted)">The package is public — any agent can install it:
+
+  <div class="card">
+    <h3 style="margin-bottom:2px">Does the package actually help? It measures it.</h3>
+    <p class="sub" style="margin:0 0 14px">A model <i>with</i> the package vs. one <i>without</i>, on a held-out
+      question — scored on citation precision and how much of the evidence it covered.</p>
+    <div class="bars">
+      <div class="barrow"><div class="lbl">precision</div><div class="track">
+        <div class="bar base" style="width:90%">base 0.90</div><div class="bar kp" style="width:100%">package 1.00</div></div></div>
+      <div class="barrow"><div class="lbl">coverage</div><div class="track">
+        <div class="bar base" style="width:26%">0.26</div><div class="bar kp" style="width:74%">0.74</div></div></div>
+      <div class="barrow"><div class="lbl">f1</div><div class="track">
+        <div class="bar base" style="width:40%">0.40</div><div class="bar kp" style="width:85%">0.85</div></div></div>
+    </div>
+    <div class="barkey"><span><i style="background:#aeb8c6"></i>unaided model</span><span><i style="background:#137a4a"></i>with the package</span></div>
+    <p class="sub" style="margin:14px 0 0">Unaided, it fabricated 1 citation and covered 6 of 23 studies. With
+      the package: 0 fabrications, 17 of 23. And when a package <i>doesn't</i> help, the tool says so.</p>
+  </div>
+  <p class="sub">The package is public — any agent can install it:
     <code>kpm add github:Treibs/kp-sleep-insomnia-evidence#v0.1.0</code></p>
 </section>
 
+<hr class="div">
+
+<!-- how it works -->
 <section>
-  <h2>How it works</h2>
-  <p class="lede">A research skill (you + AI subagents) gathers and drafts; a deterministic engine verifies,
-    assembles, and scores. The engine never trusts the drafting — it checks everything.</p>
-  <pre><span class="b">$</span> kp-build build -i sleep.research.json -o pkg
+  <div class="eyebrow">how it works</div>
+  <h2>Judgment proposes, the engine verifies</h2>
+  <p class="lede">A research skill (you + AI subagents) gathers and drafts. A deterministic engine then verifies,
+    assembles, and scores — it never trusts the drafting; it checks everything.</p>
+
+  <div class="card" style="padding:20px 22px 16px">
+    <div class="flow">
+      <div class="stage judg"><div class="s">research</div><div class="t">find + draft</div></div>
+      <div class="stage eng"><div class="s">verify</div><div class="t">every cite</div></div>
+      <div class="stage eng"><div class="s">ground</div><div class="t">passages</div></div>
+      <div class="stage eng"><div class="s">assemble</div><div class="t">+ lint</div></div>
+      <div class="stage gate"><div class="s">falsify</div><div class="t">does it help?</div></div>
+      <div class="stage out"><div class="s">report</div><div class="t">verdict</div></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--brand-bg);border:1px solid #cfdcfb"></i>judgment — the skill + AI subagents</span>
+      <span><i style="background:#f3f6fb;border:1px solid var(--line)"></i>engine — deterministic, checkable</span>
+      <span><i style="background:var(--good-bg);border:1px solid var(--good-line)"></i>the honesty gate</span>
+    </div>
+  </div>
+
+  <div class="grid g3" style="margin-top:16px">
+    <div class="feat"><div class="num">1</div><h3>No fake citations</h3><p>A paper is kept only when an explicit
+      arXiv id or DOI resolves <i>and</i> its real title matches. A "real id, wrong paper" mislabel is rejected;
+      the gate never rescues a bad id with a fuzzy search.</p></div>
+    <div class="feat"><div class="num">2</div><h3>Grounded claims</h3><p>Where the source text is reachable,
+      each claim's quoted passage is machine-confirmed to actually appear in the paper — not just asserted.</p></div>
+    <div class="feat"><div class="num">3</div><h3>It checks itself</h3><p>A <b>probe</b> first asks whether the
+      model is even weak on the topic. After building, <b>falsify</b> measures whether the package beats an
+      unaided agent — and says so plainly when it doesn't.</p></div>
+  </div>
+
+  <pre style="margin-top:16px"><span class="b">$</span> kp-build build -i sleep.research.json -o pkg
 <span class="c">verifying 23 citation(s) against Crossref / OpenAlex ...</span>
 <span class="g">  citations: 23/23 verified     validation: OK</span>
 <span class="g">  45 claims · 7 open problems · 5 debates</span>
@@ -114,67 +237,68 @@
 <span class="c">  base:  cited a study that doesn't exist · covered 6/23</span>
 <span class="c">  pkg:   0 fabrications · covered 17/23</span>
 <span class="a">  VERDICT: KP HELPS — f1 0.40 → 0.85</span></pre>
-  <div class="grid g3">
-    <div class="card"><h3>① No fake citations</h3><p style="font-size:14.5px">A paper is kept only when an
-      explicit arXiv id or DOI resolves <i>and</i> its real title matches. A "real id, wrong paper" mislabel is
-      rejected. The gate never rescues a bad id with a fuzzy search.</p></div>
-    <div class="card"><h3>② Grounded claims</h3><p style="font-size:14.5px">Where the source text is reachable,
-      each claim's quoted passage is machine-confirmed to actually appear in the paper — not just asserted.</p></div>
-    <div class="card"><h3>③ It checks itself</h3><p style="font-size:14.5px">A <b>probe</b> first asks whether the
-      model is even weak on the topic (skip it if not). After building, <b>falsify</b> measures whether the
-      package actually beats an unaided agent — and says so honestly when it doesn't.</p></div>
+</section>
+
+<hr class="div">
+
+<!-- more examples -->
+<section>
+  <div class="eyebrow">more examples</div>
+  <h2>Five packages, built end-to-end</h2>
+  <p class="lede">Together they show what the checks discriminate — and that kp-build works beyond arXiv
+    (journal papers verified by DOI).</p>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <thead><tr><th>package</th><th>topic</th><th>did the package help?</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td><b>sleep-insomnia-evidence</b></td><td>everyday health — evidence vs hype</td><td class="win">yes — base fabricated a study + missed ¾ of the evidence; f1 0.40 → 0.85</td></tr>
+        <tr><td>discrete-diffusion-llms</td><td>recent ML (model fabricates)</td><td class="win">yes — fixes mislabeled cites + coverage; f1 0.37 → 0.91</td></tr>
+        <tr><td>speculative-decoding-llms</td><td>ML the model knows cold</td><td class="neu">coverage only — and the tool says so</td></tr>
+        <tr><td>rubric-based-rl-nonverifiable</td><td>a 2026-emergent ML topic</td><td class="win">hugely — coverage 0.07 → 1.00</td></tr>
+        <tr><td>glp1-incretin-obesity</td><td>biomedical (non-arXiv, by DOI)</td><td class="win">on coverage — recall 0.26 → 0.95</td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
-<section>
-  <h2>More examples</h2>
-  <p class="lede">Five packages built end-to-end. Together they show what the checks discriminate — and that
-    kp-build works beyond arXiv (journal papers verified by DOI).</p>
-  <div class="card"><table>
-    <thead><tr><th>package</th><th>topic</th><th>did the package help?</th></tr></thead>
-    <tbody>
-      <tr><td><b>sleep-insomnia-evidence</b></td><td>everyday health — evidence vs hype</td><td class="win">yes — base fabricated a study + missed ¾ of the evidence; f1 0.40 → 0.85</td></tr>
-      <tr><td>discrete-diffusion-llms</td><td>recent ML (model fabricates)</td><td class="win">yes — fixes mislabeled cites and coverage; f1 0.37 → 0.91</td></tr>
-      <tr><td>speculative-decoding-llms</td><td>ML the model knows cold</td><td class="neu">on coverage only — and the tool says so</td></tr>
-      <tr><td>rubric-based-rl-nonverifiable</td><td>a 2026-emergent ML topic</td><td class="win">hugely — coverage 0.07 → 1.00</td></tr>
-      <tr><td>glp1-incretin-obesity</td><td>biomedical (non-arXiv, by DOI)</td><td class="win">on coverage — recall 0.26 → 0.95</td></tr>
-    </tbody>
-  </table></div>
-</section>
+<hr class="div">
 
+<!-- honest + use -->
 <section>
-  <h2>Honest about what it is</h2>
-  <ul class="clean">
-    <li><b>It pays off where the model is weak</b> — recent, niche, or fast-moving topics. On something the
-      model already knows cold, a package adds traceability and completeness, not accuracy — and the falsify
-      check will tell you that plainly instead of selling a hollow win.</li>
-    <li><b>Confidence is corpus-relative.</b> A claim is only as good as its sources; the package says so rather
-      than asserting absolute truth.</li>
-    <li><b>A package is a snapshot.</b> It carries the date it was built; when a field moves, a rebuild is a diff.</li>
-    <li><b>It's a foundation, not an oracle</b> — the verified state of the literature, with every citation checked to exist.</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Use it</h2>
-  <pre><span class="c"># install the engine</span>
+  <div class="grid g2">
+    <div>
+      <div class="eyebrow">honest about what it is</div>
+      <h2 style="margin-bottom:10px">No overclaiming</h2>
+      <ul class="clean">
+        <li><b>It pays off where the model is weak</b> — recent, niche, fast-moving. On something the model knows
+          cold, a package adds traceability and completeness, not accuracy — and falsify will say so.</li>
+        <li><b>Confidence is corpus-relative.</b> A claim is only as good as its sources; the package says so.</li>
+        <li><b>A package is a snapshot.</b> It carries its build date; when a field moves, a rebuild is a diff.</li>
+        <li><b>A foundation, not an oracle</b> — the verified state of the literature, every citation checked to exist.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">use it</div>
+      <h2 style="margin-bottom:10px">Two lines to start</h2>
+      <pre><span class="c"># install the engine</span>
 <span class="b">$</span> pip install kp-build
 
-<span class="c"># or hand the repo to Claude Code and ask it to set up the /kp-build skill, then:</span>
-<span class="b">/kp-build</span>  the evidence on &lt;your everyday or research topic&gt;</pre>
-  <p>The engine is Python (stdlib-heavy; two small dependencies). Verification uses free public APIs — no keys,
-    no cost. Packages are shared through <a href="https://github.com/0xLT/kpm">KPM</a>, an open package manager
-    for knowledge — think npm, but the package is verified knowledge instead of code. Build a package once;
-    anyone's agent can install and load it.</p>
-  <div class="quote">The bet: verified knowledge as shareable packages. Build it once, checked, and nobody's
-    agent has to re-research — or re-hallucinate — the same field again.</div>
+<span class="c"># in Claude Code, with the /kp-build skill:</span>
+<span class="b">/kp-build</span>  the evidence on
+          &lt;your everyday or research topic&gt;</pre>
+      <p class="sub">Python, two small dependencies. Verification uses free public APIs — no keys, no cost.</p>
+    </div>
+  </div>
+  <div class="quote">Packages are shared through <a href="https://github.com/0xLT/kpm">KPM</a> — an open package
+    manager for knowledge, like npm but the package is verified knowledge instead of code. Build a package once,
+    checked, and nobody's agent has to re-research — or re-hallucinate — the same field again.</div>
 </section>
 
 </div>
 
 <footer><div class="wrap">
-  kp-build · open-source (MIT) · <a href="https://github.com/Treibs/kp-build">github.com/Treibs/kp-build</a> ·
-  example package: <a href="https://github.com/Treibs/kp-sleep-insomnia-evidence">kp-sleep-insomnia-evidence</a>
+  kp-build · open-source (MIT) · <a href="https://github.com/Treibs/kp-build">github.com/Treibs/kp-build</a>
+  · example package: <a href="https://github.com/Treibs/kp-sleep-insomnia-evidence">kp-sleep-insomnia-evidence</a>
 </div></footer>
 
 </body>
