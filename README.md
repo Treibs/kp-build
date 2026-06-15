@@ -20,7 +20,7 @@ doesn't help.
 
 **What's in a package** (a small directory):
 
-- **verified citation spine** — the real papers, each checked against arXiv / Crossref / OpenAlex (no fakes)
+- **verified citation spine** (the core set of real papers the package is built on) — each checked against arXiv / Crossref / OpenAlex (no fakes)
 - **claims** — findings / methods, each tied to a real quoted passage from its paper
 - **open-problems register** — the gaps the papers flag as unsolved (where new work goes)
 - **debate map** — the contested points, and which papers take which side
@@ -44,7 +44,7 @@ is shareable through KPM with no separate distribution layer to stand up.
 
 ### Why not just a deep-research report, or RAG?
 
-| | deep-research report | RAG over a paper dump | **kp-build** |
+| what you get | deep-research report | RAG over a paper dump | **kp-build** |
 |---|---|---|---|
 | **citations** | can be hallucinated | only what you indexed | **every cite verified, or dropped** |
 | **reuse** | one-shot, per question | per-query retrieval | **built once, loaded by any agent** |
@@ -88,7 +88,7 @@ curl -sL https://raw.githubusercontent.com/Treibs/kp-build/master/skill/SKILL.md
 Then, in Claude Code:
 
 ```
-/kp-build  the 2024-2026 frontier of <your narrow topic>
+/kp-build  the recent research on <your narrow topic>
 ```
 
 The skill runs the research wave (you + subagents), the engine does the verification/assembly/scoring,
@@ -151,19 +151,22 @@ assemble, ground, lint, score. Two hard gates run at build time:
 first — an everyday health question anyone can relate to; the others map what the probe and falsification
 check discriminate, and show kp-build works **beyond arXiv** (journal papers verified via Crossref/DOI):
 
-| package | the topic | `probe` | did it help? |
+| package | the topic | pre-screen (cheap check: build or skip?) | did the package actually help? |
 |---|---|---|---|
-| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | SKIP\* (under-fired) | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
-| `discrete-diffusion-llms` | model **fabricates** cites (recent ML) | BUILD | **yes** — fixes mislabeled cites (precision **0.62→1.00**) **and** coverage; f1 0.37 → 0.91 |
-| `speculative-decoding-llms` | model **knows it cold** | SKIP | only on coverage — precision was already perfect |
-| `rubric-based-rl-nonverifiable` | model **hedges** (post-cutoff 2026) | BUILD | **yes** — spine coverage 0.07 → 1.00 |
-| `glp1-incretin-obesity` | **biomedical** (non-arXiv, Crossref/DOI) | SKIP | on coverage — recall 0.26 → 0.95 with verifiable DOIs |
+| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | skip\* — *but wrong* | **yes** — the cheap check missed it; the real falsify caught that the unaided model *fabricated* a study + missed ¾ of the evidence (covered just 6/23); f1 0.40 → 0.85 |
+| `discrete-diffusion-llms` | recent ML the model **gets wrong** | build (model looks weak) | **yes** — kills mislabeled cites (precision **0.62 → 1.00**) **and** adds coverage; f1 0.37 → 0.91 |
+| `speculative-decoding-llms` | ML the model **knows cold** | skip (model looks fine) | helped on **coverage only** — precision was already perfect |
+| `rubric-based-rl-nonverifiable` | a 2026 topic the model **can't name** (post-cutoff) | build (model looks weak) | **yes** — coverage 0.07 → 1.00 |
+| `glp1-incretin-obesity` | **biomedical** (non-arXiv, verified by DOI) | skip (model looks fine) | helped on **coverage** — recall 0.26 → 0.95 |
 
-\* **The probe under-fired on sleep — and that's the point.** The probe is a cheap *precision-only*
-pre-screen; the model cited sleep cleanly enough to pass it (9 of 10 real). But it still *fabricated*
-one citation (`10.5665/sleep.6072` — doesn't exist) and missed most of the evidence — and you can't tell
-which of its confident claims are real without checking. The recall-aware **falsify** caught the gap the
-probe missed. (Same probe blind spot the rubric-RL example documents, here on an everyday topic.)
+*Scores are 0–1, higher is better. **precision** = of the papers it cited, how many are real and correctly
+labeled; **coverage** (recall) = how much of the verified paper set it found; **f1** = the two combined.*
+
+\* `pre-screen` is the cheap up-front guess at whether a package will help; `falsify` is the after-the-fact
+measurement. **They can disagree — that's the point of the ⭐ row.** On sleep the cheap check guessed *skip*
+and was wrong: the model cited cleanly enough to pass a precision-only screen (9 of 10 real), so the one
+fabricated citation (`10.5665/sleep.6072`) stayed under its floor. The recall-aware falsify caught the gap —
+see [`examples/README.md`](examples/README.md) for the same blind spot dissected on the rubric-RL package.
 
 Each is also a public, installable **KPM package** — load one into any agent's vault with
 `kpm add github:Treibs/kp-<slug>#v0.1.0` (e.g. the flagship

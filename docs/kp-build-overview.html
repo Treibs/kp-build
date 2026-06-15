@@ -130,11 +130,11 @@
   <div class="pkg">
     <div class="pkgbox">
       <div class="hd">📦 a knowledge package/</div>
-      <div class="pkgrow"><span class="dot" style="background:#137a4a"></span><b style="font-weight:650">verified citation spine</b> — real papers, each checked live (arXiv / Crossref / OpenAlex)</div>
-      <div class="pkgrow"><span class="dot" style="background:#2f5bd0"></span><b style="font-weight:650">claims</b> — findings tied to a quoted source line</div>
-      <div class="pkgrow"><span class="dot" style="background:#a9711a"></span><b style="font-weight:650">open problems</b> — what the papers flag as unsolved</div>
-      <div class="pkgrow"><span class="dot" style="background:#8a4fd0"></span><b style="font-weight:650">debate map</b> — contested points: settled vs. hype</div>
-      <div class="pkgrow"><span class="dot" style="background:#0e7490"></span><b style="font-weight:650">CONTEXT.md</b> — one briefing file an agent loads</div>
+      <div class="pkgrow"><span class="dot" style="background:var(--faint)"></span><b style="font-weight:650">verified citation spine</b> (the core set of real papers) — each checked live (arXiv / Crossref / OpenAlex)</div>
+      <div class="pkgrow"><span class="dot" style="background:var(--faint)"></span><b style="font-weight:650">claims</b> — findings tied to a quoted source line</div>
+      <div class="pkgrow"><span class="dot" style="background:var(--faint)"></span><b style="font-weight:650">open problems</b> — what the papers flag as unsolved</div>
+      <div class="pkgrow"><span class="dot" style="background:var(--faint)"></span><b style="font-weight:650">debate map</b> — contested points: settled vs. hype</div>
+      <div class="pkgrow"><span class="dot" style="background:var(--faint)"></span><b style="font-weight:650">CONTEXT.md</b> — one briefing file an agent loads</div>
     </div>
     <div class="arrow">
       <svg width="40" height="22" viewBox="0 0 40 22" fill="none"><path d="M2 11h33m0 0l-7-6m7 6l-7 6" stroke="#9aa7b5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -179,9 +179,9 @@
       question — scored on citation precision and how much of the evidence it covered.</p>
     <div class="bars">
       <div class="barrow"><div class="lbl">precision</div><div class="track">
-        <div class="bar base" style="width:90%">base 0.90</div><div class="bar kp" style="width:100%">package 1.00</div></div></div>
+        <div class="bar base" style="width:90%">0.90</div><div class="bar kp" style="width:100%">1.00</div></div></div>
       <div class="barrow"><div class="lbl">coverage</div><div class="track">
-        <div class="bar base" style="width:26%">0.26</div><div class="bar kp" style="width:74%">0.74</div></div></div>
+        <div class="bar base" style="width:26%">6/23 (0.26)</div><div class="bar kp" style="width:74%">17/23 (0.74)</div></div></div>
       <div class="barrow"><div class="lbl">f1</div><div class="track">
         <div class="bar base" style="width:40%">0.40</div><div class="bar kp" style="width:85%">0.85</div></div></div>
     </div>
@@ -216,7 +216,8 @@
     <div class="legend">
       <span><i style="background:var(--brand-bg);border:1px solid #cfdcfb"></i>judgment — the skill + AI subagents</span>
       <span><i style="background:#f3f6fb;border:1px solid var(--line)"></i>engine — deterministic, checkable</span>
-      <span><i style="background:var(--good-bg);border:1px solid var(--good-line)"></i>the honesty gate</span>
+      <span><i style="background:var(--good-bg);border:1px solid var(--good-line)"></i>honesty gate — does it help?</span>
+      <span><i style="background:var(--amber-bg);border:1px solid var(--amber-line)"></i>output — the report + verdict</span>
     </div>
   </div>
 
@@ -261,6 +262,7 @@
         <tr><td>glp1-incretin-obesity</td><td>biomedical (non-arXiv, by DOI)</td><td class="win">on coverage — recall 0.26 → 0.95</td></tr>
       </tbody>
     </table>
+    <p class="sub" style="margin:8px 4px 2px">Scores are 0–1, higher is better; f1 combines citation precision (cites that are real and correctly labeled) with coverage (how much of the verified paper set was found).</p>
   </div>
 </section>
 

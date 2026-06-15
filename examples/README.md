@@ -4,18 +4,26 @@ Real packages built by `kp-build`, kept as reference output and regression fixtu
 
 Five packages — three show what the `probe` pre-screen and the falsification gate discriminate (and the
 blind spot one drove a fix for); the fourth shows kp-build works **beyond arXiv** (Crossref/DOI); the fifth
-is the **flagship** — an everyday-health topic anyone can use, with the evidence separated from the hype:
+is the **flagship** — an everyday-health topic anyone can use, with the evidence separated from the hype.
 
-| package | topic regime | `probe` | falsification verdict |
+Each row is one package. **`probe`** is kp-build's cheap up-front guess at whether building will help (BUILD
+vs SKIP); the **after-build test** is the real, measured falsification verdict. **KP** = the knowledge
+package; the **spine** = the package's set of verified, real papers.
+
+| package | what kind of topic | `probe` | did the package help? (after-build test) |
 |---|---|---|---|
-| [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | model-**weak**, model *fabricates* | BUILD | **KP HELPS** — wins on *precision* (kills mislabeled cites) **and** recall |
-| [`speculative-decoding-llms/`](#speculative-decoding-llms) | model-**known** | SKIP | **KP HELPS on coverage only** — precision already 1.0; the win is pure recall |
-| [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | BUILD† | **KP HELPS** — recall 0.07→1.00 |
-| [`glp1-incretin-obesity/`](#glp1-incretin-obesity) | **biomedical** (non-arXiv; Crossref/DOI) | SKIP | **KP HELPS on coverage** — recall 0.26→0.95 with verifiable DOIs |
-| [`sleep-insomnia-evidence/`](#sleep-insomnia-evidence) | **everyday health** (evidence-vs-hype) | SKIP | **KP HELPS** — base *fabricated* a study + missed ¾ of evidence; precision 0.90→1.00, recall 0.26→0.74, f1 0.40→0.85 |
+| [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | recent ML — model **gets cites wrong** | BUILD | **helps** — wins on *precision* (kills mislabeled cites) **and** coverage |
+| [`speculative-decoding-llms/`](#speculative-decoding-llms) | ML the model **knows cold** | SKIP | **helps on coverage only** — precision was already 1.0 |
+| [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | a 2026 topic the model **can't name** (post-cutoff) | BUILD† | **helps** — coverage 0.07 → 1.00 |
+| [`glp1-incretin-obesity/`](#glp1-incretin-obesity) | **biomedical** (non-arXiv; Crossref/DOI) | SKIP | **helps on coverage** — recall 0.26 → 0.95 with verifiable DOIs |
+| [`sleep-insomnia-evidence/`](#sleep-insomnia-evidence) | **everyday health** (evidence vs hype) | SKIP | **helps** — base *fabricated* a study + missed ¾ of the evidence; precision 0.90 → 1.00, recall 0.26 → 0.74, f1 0.40 → 0.85 |
+
+*Scores are 0–1, higher is better. **precision** = of the papers it cited, how many are real and correctly
+labeled; **coverage** (recall) = how much of the verified spine it found; **f1** = the two combined.*
 
 † **This package exposed a probe blind spot and drove a fix.** The probe was originally *precision-only* — it
-greenlit a build only when the unaided model *fabricated* citations. A well-calibrated model that *hedges*
+greenlit a build only when the unaided model *fabricated* citations above a threshold rate (a single stray
+cite stayed under its floor). A well-calibrated model that *hedges*
 (cites a few real foundational papers but writes a placeholder like `arXiv:2510.xxxxx` for the frontier it
 can't recall) cleared the "enough real cites" floor and wrongly read as **SKIP**, even while covering almost
 none of the actual frontier. The probe now also **counts hedges** — a masked id is proof the model knows the
@@ -32,7 +40,7 @@ with `kpm add github:Treibs/kp-<slug>#v0.1.0`:
 
 ## `discrete-diffusion-llms/`
 
-A wikillm knowledge package on **discrete / masked diffusion language models for text generation**
+A knowledge package on **discrete / masked diffusion language models for text generation**
 — deliberately a *model-weak* frontier topic (roughly half the citation spine is post-training-cutoff:
 e.g. `2511.19152`, `2512.10858`, `2512.15745`, `2602.15014`, `2603.01367`).
 
@@ -41,7 +49,7 @@ sub-question, then the engine **verified every citation live against arXiv/Cross
 assembling. It is a valid [0xLT/kpm](https://github.com/0xLT/kpm) package (`knowledge.json` +
 wiki-linked notes) — `kpm doctor` / `kpm pack` accept it as-is.
 
-| | value |
+| package facts | value |
 |---|---|
 | citations verified | **19 / 19** (live, `match_score` 1.0) |
 | claims / open problems / debates / benchmarks | 37 / 8 / 3 / 13 |
@@ -61,10 +69,10 @@ Held-out task: *write a related-work section on the 2024–2026 diffusion-LLM fr
 citations.* A **base** agent (unaided recall) vs a **KP-loaded** agent (given `CONTEXT.md`), scored on
 citation precision (does each cited id resolve **and** match the paper named?) and spine recall:
 
-| | base (memory) | KP-loaded |
+| metric | base (no package) | with package |
 |---|---|---|
 | precision | 0.62 | **1.00** |
-| recall (spine coverage) | 0.26 (5/19) | **0.84 (16/19)** |
+| coverage (papers found) | 0.26 (5/19) | **0.84 (16/19)** |
 | **f1** | **0.37** | **0.91** |
 
 **Verdict: KP HELPS.** Unaided, the base agent recalled only ~5 of the 19 frontier papers and
@@ -83,7 +91,7 @@ kp-build falsify examples/discrete-diffusion-llms \
 
 ## `speculative-decoding-llms/`
 
-A wikillm knowledge package on **speculative decoding for fast LLM inference** (draft-then-verify
+A knowledge package on **speculative decoding for fast LLM inference** (draft-then-verify
 acceleration: EAGLE-1/2/3, Medusa, Lookahead/Jacobi, SpecInfer-style tree verification, and the
 2024–2026 serving-regime frontier — `2509.04474`, `2505.13204`, `2603.12617`, `2605.08632`).
 
@@ -100,7 +108,7 @@ We built it anyway as a fixture, to show what the falsification gate honestly re
 model *isn't* weak. Every citation was verified live and **every claim passage was machine-grounded**
 against its paper's abstract (the grounding gate, abstract-level):
 
-| | value |
+| package facts | value |
 |---|---|
 | citations verified | **17 / 17** (live) |
 | claims grounded | **37 / 37** (`--ground`, 0 unconfirmed, 0 ungrounded) |
@@ -120,10 +128,10 @@ kp-build build -i examples/speculative-decoding-llms.research.json -o /tmp/spec 
 Held-out task: *write a related-work section on the 2024–2026 speculative-decoding frontier, with
 arXiv citations.* Base (unaided recall) vs KP-loaded (given `CONTEXT.md`):
 
-| | base (memory) | KP-loaded |
+| metric | base (no package) | with package |
 |---|---|---|
 | precision | **1.00** | **1.00** |
-| recall (spine coverage) | 0.47 (8/17) | **1.00 (17/17)** |
+| coverage (papers found) | 0.47 (8/17) | **1.00 (17/17)** |
 | **f1** | **0.64** | **1.00** |
 
 **Verdict: KP HELPS — but on *coverage*, not accuracy.** Unaided, the model cites cleanly (0%
@@ -143,7 +151,7 @@ kp-build falsify examples/speculative-decoding-llms \
 
 ## `rubric-based-rl-nonverifiable/`
 
-A wikillm knowledge package on **rubrics-as-rewards: LLM-graded structured rubrics as the RL reward
+A knowledge package on **rubrics-as-rewards: LLM-graded structured rubrics as the RL reward
 signal for post-training in non-verifiable/open-ended domains** — a genuinely **2026-emergent** subfield
 (RaR was coined mid-2025; the named-method wave — QUBRIC, RUBRIC-ARROW, EvoRubric, OpenRS, SRaR, RLCER,
 AMARIS — and its reward-hacking failure literature crystallized in 2026). **14 of 15 spine papers carry
@@ -153,7 +161,7 @@ This is the case that **exposed — and fixed — a probe blind spot** (read the
 The topic was found by *browsing arXiv for what's new since the cutoff* — exactly because a model can't
 name from memory what it was never trained on.
 
-| | value |
+| package facts | value |
 |---|---|
 | citations verified | **15 / 15** (live, 14 of them 2026 ids) |
 | claims grounded | **42 / 43** (`--ground`; 1 unconfirmed, 0 ungrounded) |
@@ -195,10 +203,10 @@ kp-build build -i examples/rubric-based-rl-nonverifiable.research.json -o /tmp/r
 Held-out task: *write the related-work section for a 2026 self-evolving rubric-RL paper, citing the named
 2026 systems and the reward-hacking literature.* Base (unaided recall) vs KP-loaded (given `CONTEXT.md`):
 
-| | base (memory) | KP-loaded |
+| metric | base (no package) | with package |
 |---|---|---|
 | precision | **1.00** | **1.00** |
-| recall (spine coverage) | **0.07 (1/15)** | **1.00 (15/15)** |
+| coverage (papers found) | **0.07 (1/15)** | **1.00 (15/15)** |
 | **f1** | **0.12** | **1.00** |
 
 **Verdict: KP HELPS — massively, on recall.** The base agent, hedging honestly, engaged just **one** of the
@@ -222,7 +230,7 @@ cardiometabolic disease** — the proof that kp-build is **not arXiv-only**. Eve
 article (NEJM, Lancet, JAMA, Cell Metabolism, …) identified by **DOI and verified live against Crossref**,
 exactly the same hard gate, different index.
 
-| | value |
+| package facts | value |
 |---|---|
 | citations verified | **19 / 19** (live, Crossref/DOI) |
 | claims / open problems / debates / benchmarks | 41 / 6 / 2 / 12 |
@@ -238,10 +246,10 @@ non-arXiv source. (It was removed from the input here so the fixture builds a cl
 Held-out task: *write a background section on the 2023–2026 incretin-for-obesity frontier, citing papers by
 DOI.* Base (unaided recall) vs KP-loaded:
 
-| | base (memory) | KP-loaded |
+| metric | base (no package) | with package |
 |---|---|---|
 | precision | **1.00** | **1.00** |
-| recall (spine coverage) | 0.26 (5/19) | **0.95 (18/19)** |
+| coverage (papers found) | 0.26 (5/19) | **0.95 (18/19)** |
 | **f1** | **0.42** | **0.97** |
 
 **Verdict: KP HELPS on coverage.** The model recalls the famous trials (STEP-1, SURMOUNT-1, SELECT) and
@@ -266,7 +274,7 @@ debate map**: melatonin (low physiologic vs high dose), blue-light-blocking glas
 sleep trackers (useful vs orthosomnia), behavioral-vs-medication first-line, and mouth-taping (aid vs
 unsafe fad).
 
-| | value |
+| package facts | value |
 |---|---|
 | citations verified | **23 / 23** (live, Crossref/DOI) |
 | claims / open problems / **debates** / benchmarks | 45 / 7 / **5** / 16 |
@@ -277,10 +285,10 @@ unsafe fad).
 Held-out task: *review the evidence on improving sleep / treating insomnia — CBT-I, supplements, light,
 and the contested consumer interventions — citing studies by DOI.* Base (unaided) vs KP-loaded:
 
-| | base (memory) | KP-loaded |
+| metric | base (no package) | with package |
 |---|---|---|
 | precision | 0.90 | **1.00** |
-| recall (spine coverage) | 0.26 (6/23) | **0.74 (17/23)** |
+| coverage (papers found) | 0.26 (6/23) | **0.74 (17/23)** |
 | **f1** | **0.40** | **0.85** |
 
 **Verdict: KP HELPS — on precision *and* coverage.** Unaided, the model **fabricated a study**
