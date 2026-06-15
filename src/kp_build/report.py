@@ -85,12 +85,14 @@ def _donut(verified: int, total: int) -> str:
 
 def _tile_help(man: dict) -> str:
     f = man.get("falsification") or {}
-    if not f.get("run"):
+    b, k = f.get("base") or {}, f.get("kp") or {}
+    # ALWAYS show the "Not measured + run kp-build falsify" guidance unless there is a genuine measured
+    # result (a real run with a verdict or base/kp data) — never an empty/half verdict tile.
+    if not (f.get("run") and (f.get("verdict") or b or k)):
         return ('<div class="tile"><div class="tile-h">Does it help?</div>'
                 '<div class="verdict neutral">Not measured</div>'
                 '<div class="tile-sub">Run <code>kp-build falsify</code> to compare a package-loaded '
                 'agent against unaided recall.</div></div>')
-    b, k = f.get("base", {}), f.get("kp", {})
     verdict = str(f.get("verdict", ""))
     tone = "good" if "HELPS" in verdict else ("bad" if ("DID NOT" in verdict or "HURT" in verdict) else "warn")
     bf, kf = _num(b.get("f1")), _num(k.get("f1"))

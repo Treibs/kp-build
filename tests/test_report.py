@@ -79,3 +79,14 @@ def test_report_handles_no_falsification(tmp_path):
     html = build_report(out)
     assert "Not measured" in html and "kp-build falsify" in html
     assert "verdict good" not in html                        # no fabricated verdict when not run
+
+
+def test_report_falsify_cta_always_shown_when_unmeasured(tmp_path):
+    # run flag set but NO verdict/base/kp data -> still the "Not measured / Run kp-build falsify" CTA
+    out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
+    man = json.loads((out / "wikillm.json").read_text())
+    man["falsification"] = {"run": True}
+    (out / "wikillm.json").write_text(json.dumps(man), encoding="utf-8")
+    html = build_report(out)
+    assert "Not measured" in html and "Run <code>kp-build falsify</code>" in html
+    assert "verdict good" not in html
