@@ -21,6 +21,19 @@ doesn't help.
 It's a reusable knowledge *asset*, not a one-shot "deep research" report — persistent, structured, and
 machine-checkable.
 
+### Knowledge packages & KPM
+
+The unit kp-build produces is a **knowledge package** — a portable, self-contained directory (the verified
+spine, grounded claims, open problems, debates, a loadable `CONTEXT.md`, and a machine-readable
+`index.json`) that any agent can install and load. It isn't a kp-build-specific format: it's a valid
+**KPM** package — `kpm doctor` and `kpm pack` accept it as-is.
+
+**KPM** ([`0xLT/kpm`](https://github.com/0xLT/kpm)) is an open package manager for *knowledge* — think npm,
+but a package is verified knowledge instead of code, with `install` / `lock` / `compose` / `pack` / `share`.
+kp-build is the **authoring engine** for that ecosystem: it does the research, verification, and authoring;
+KPM handles distribution. Every build emits the KPM package contract (`knowledge.json`), so what you build
+is instantly shareable through KPM — there's no separate distribution layer to stand up.
+
 ### Why not just a deep-research report, or RAG?
 
 | | deep-research report | RAG over a paper dump | **kp-build** |
@@ -105,14 +118,11 @@ show exactly what the probe and the falsification check discriminate:
 See [`examples/README.md`](examples/README.md) for the full story — including how the rubric-RL example
 exposed, and drove a fix for, a blind spot in the probe.
 
-## Distribution — kp-build builds, kpm distributes
+## Sharing a package through KPM
 
-kp-build owns the **content** (research + verification + authoring); [`0xLT/kpm`](https://github.com/0xLT/kpm) —
-an open package manager for knowledge, think npm but for knowledge packages — owns **distribution**
-(install / lock / compose / pack / share). The seam is `knowledge.json`: every build emits the kpm
-package contract, so a package *is* a first-class kpm package. There's no separate distribution layer to
-build — "build once, share" is the existing kpm CLI. (kpm is a separate tool, not installed by
-`pip install kp-build`; get it from the linked repo.)
+Because every build emits the KPM contract (see [Knowledge packages & KPM](#knowledge-packages--kpm)
+above), "build once, share" is just the existing KPM CLI — no extra steps. (KPM is a separate tool, not
+installed by `pip install kp-build`; get it from [`0xLT/kpm`](https://github.com/0xLT/kpm).)
 
 ```bash
 kp-build build -i research.json -o ./pkg        # produces a valid kpm package
