@@ -1,18 +1,37 @@
 # kp-build — citation-verified knowledge packages for agents
 
-Build a **portable, citation-verified, agent-loadable** research-landscape package — the literature
-foundation an agent needs to *begin* a PhD-level paper on a narrow topic. Built once, shared, so
-nobody's agent re-spends the compute to reconstruct the field.
+An LLM agent working on a niche or recent topic burns compute reconstructing the field from scratch
+every time — and routinely cites papers that don't exist. **kp-build builds that foundation once:** a
+small, verified knowledge package an agent loads to actually *know* a narrow research area — deep enough
+to write the related-work section of a paper on it — with every citation checked live against
+arXiv/Crossref so none are hallucinated. Build it once, share it, and any agent reuses it instead of
+re-paying the research cost.
 
-A package is a small directory: a **verified citation spine** (every paper checked live against
-arXiv/Crossref — no hallucinated cites), an **open-problems register**, a **debate map**, **claims**
-each anchored to a real source passage, and a token-bounded **`CONTEXT.md`** an agent loads to inherit
-the topic. It's a reusable knowledge *asset*, not a one-shot "deep research" report — persistent,
-structured, and machine-checkable.
+And when the model already knows the topic, kp-build *tells you* — it won't sell you a package that
+doesn't help.
 
-> **When it pays off:** topics the model is *weak* on — recent / niche / post-training-cutoff. For
-> topics the model already knows, a package adds traceability and reuse but not accuracy — and the
-> built-in falsification gate will tell you so honestly, rather than sell you a hollow win.
+**What's in a package** (a small directory):
+
+- **verified citation spine** — the real papers, each checked against arXiv/Crossref (no fakes)
+- **claims** — findings / methods, each tied to a real quoted passage from its paper
+- **open-problems register** — the gaps the papers flag as unsolved (where new work goes)
+- **debate map** — the contested points, and which papers take which side
+- **`CONTEXT.md`** — a small briefing an agent loads to inherit the whole topic in one file
+
+It's a reusable knowledge *asset*, not a one-shot "deep research" report — persistent, structured, and
+machine-checkable.
+
+### Why not just a deep-research report, or RAG?
+
+| | deep-research report | RAG over a paper dump | **kp-build** |
+|---|---|---|---|
+| **citations** | can be hallucinated | only what you indexed | **every cite verified, or dropped** |
+| **reuse** | one-shot, per question | per-query retrieval | **built once, loaded by any agent** |
+| **honesty** | asserts | asserts | **measures whether it helps — and says when it doesn't** |
+
+> **When it pays off:** topics the model is *weak* on — recent, niche, or post-training-cutoff. On a
+> topic the model already knows, a package adds traceability and reuse but not accuracy — and the
+> falsification check (below) will say so honestly rather than sell you a hollow win.
 
 ## Install
 
@@ -20,8 +39,9 @@ structured, and machine-checkable.
 pip install -e .            # the engine + the `kp-build` CLI
 pip install -e '.[dev]'     # + pytest
 ```
-Python ≥ 3.10. Runtime deps: `pyyaml`, `pydantic`. Citation verification hits the public
-arXiv and Crossref APIs (no keys, no cost).
+
+Python ≥ 3.10. Runtime deps: `pyyaml`, `pydantic`. Citation verification hits the public arXiv and
+Crossref APIs (no keys, no cost).
 
 ## Quickstart
 
@@ -29,13 +49,13 @@ arXiv and Crossref APIs (no keys, no cost).
 clean clone. The engine's input is a `research.json` (papers, claims, open problems, debates):
 
 ```bash
-# offline — assemble + lint without the network
-kp-build build -i examples/discrete-diffusion-llms.research.json -o /tmp/pkg --no-verify
+# `build` takes a research.json and writes a package DIRECTORY:
+kp-build build -i examples/discrete-diffusion-llms.research.json -o /tmp/pkg --no-verify   # offline
+kp-build build -i examples/discrete-diffusion-llms.research.json -o /tmp/pkg --ground      # live: verify cites + ground passages
 
-# live — verify every citation against arXiv/Crossref, and machine-ground each claim's passage
-kp-build build -i examples/discrete-diffusion-llms.research.json -o /tmp/pkg --ground
+# `falsify` and `report` operate on a built package directory — examples/ ships pre-built ones:
 
-# does the package actually help? score an unaided agent vs a KP-loaded agent (shipped answers)
+# did the package help? score an unaided agent vs a package-loaded one (answers shipped in examples/)
 kp-build falsify examples/discrete-diffusion-llms \
   --question "2024-2026 frontier of discrete/masked diffusion LMs" \
   --base examples/discrete-diffusion-llms.base-answer.txt \
@@ -45,47 +65,54 @@ kp-build falsify examples/discrete-diffusion-llms \
 kp-build report examples/discrete-diffusion-llms
 ```
 
-Producing *your own* `research.json` for a new topic is the job of the **`/kp-build` skill**
-(`skill/SKILL.md`), which orchestrates research subagents; the engine then does the mechanical,
-deterministic part — verify, assemble, ground, lint, score.
+## How it works
 
-## What the engine guarantees
+The **`/kp-build` skill** (`skill/SKILL.md`) orchestrates research subagents to gather papers and draft
+claims into a `research.json`. The **engine** then does the mechanical, deterministic part — verify,
+assemble, ground, lint, score. Two hard gates run at build time:
 
-- **No hallucinated citations (hard gate).** A paper is `verified` only when an explicit arXiv id or
-  DOI resolves **and** its canonical title strictly matches. A "real id, wrong paper" mislabel fails.
-  A title-only cite is `unconfirmed` and may not anchor a shipped claim. The gate never rescues a
-  mismatched id with a title search.
-- **Passage grounding (`--ground`).** Each claim quotes a source passage; grounding confirms that
-  passage actually appears in the paper (the arXiv abstract for free, or ar5iv fulltext) — marking it
-  `grounded`, `unconfirmed`, or `ungrounded` (fulltext-checked and absent → capped + flagged).
-- **Falsification (the acceptance gate).** `kp-build falsify` scores a KP-loaded agent against an
-  unaided base agent on a held-out task — on **precision** (cited papers that exist *and* match) and
-  **recall** (coverage of the verified spine) → an f1 verdict recorded into the manifest. It refuses
-  to claim a win the package didn't earn.
-- **Topic-weakness probe (the go/no-go pre-screen).** `kp-build probe` scores one unaided base answer
-  *before* you pay for a build: BUILD if the model fabricates, hedges (writes placeholder ids like
-  `arXiv:2510.xxxxx` for work it can't recall), or is too thin; SKIP if it already cites cleanly.
+- **No hallucinated citations.** *The promise:* every shipped paper is real and correctly identified.
+  *How:* a citation is `verified` only when an explicit arXiv id or DOI resolves **and** its canonical
+  title strictly matches — a "real id, wrong paper" mislabel fails, and a title-only cite can't anchor
+  a claim.
+- **Grounded passages (`--ground`).** *The promise:* a claim's quote actually appears in the paper it
+  cites. *How:* the passage is matched against the arXiv abstract (free) or the paper's ar5iv fulltext
+  (arXiv's HTML rendering), marking each claim `grounded`, `unconfirmed`, or `ungrounded`
+  (fulltext-checked and absent → flagged).
+
+### Two honesty checks: one before, one after
+
+- **`probe` — *should we even build this?*** (before) Scores one unaided answer from the model. If it
+  fabricates, **hedges** (writes placeholder ids like `arXiv:2510.xxxxx` for work it can't recall), or is
+  too thin → **BUILD** (the model is weak here, so a package will help). If it already cites cleanly →
+  **SKIP** (don't spend the compute).
+- **`falsify` — *did it actually help?*** (after) Tries to *disprove* the package's value: it scores a
+  package-loaded agent against an unaided one on a held-out task, on **precision** (cites that exist and
+  match) and **recall** (coverage of the verified spine). Survive that, and it's a real, recorded win;
+  fail, and it says so.
 
 ## The three example packages
 
-`examples/` ships three real packages built end-to-end, kept as reference output and regression
-fixtures. Together they show what the probe and the falsification gate actually discriminate:
+`examples/` ships three real packages built end-to-end (also kept as regression fixtures). Together they
+show exactly what the probe and the falsification check discriminate:
 
-| package | topic regime | probe | falsification |
+| package | the model is… | `probe` | did it help? |
 |---|---|---|---|
-| `discrete-diffusion-llms` | model-**weak**, *fabricates* | BUILD | KP HELPS — wins on precision (kills mislabeled cites) **and** recall |
-| `speculative-decoding-llms` | model-**known** | SKIP | KP helps on coverage only — precision already 1.0 |
-| `rubric-based-rl-nonverifiable` | model-**weak**, *hedges* (2026) | BUILD | KP HELPS hugely — recall 0.07→1.00 |
+| `discrete-diffusion-llms` | **weak** (it *fabricates* cites) | BUILD | **yes** — fixes mislabeled cites (precision) **and** coverage (recall) |
+| `speculative-decoding-llms` | **strong** (knows it cold) | SKIP | only on coverage — precision was already perfect |
+| `rubric-based-rl-nonverifiable` | **weak** (it *hedges*, 2026 topic) | BUILD | **hugely** — spine coverage 0.07 → 1.00 |
 
-See [`examples/README.md`](examples/README.md) for the full story (including how the rubric-RL example
-exposed — and drove a fix for — a blind spot in the probe).
+See [`examples/README.md`](examples/README.md) for the full story — including how the rubric-RL example
+exposed, and drove a fix for, a blind spot in the probe.
 
-## Distribution — kp-build builds, [0xLT/kpm](https://github.com/0xLT/kpm) distributes
+## Distribution — kp-build builds, kpm distributes
 
-kp-build owns the **content** (research + verification + authoring); the open `0xLT/kpm` manager owns
-**distribution** (install / lock / compose / pack / share). The seam is `knowledge.json`: every build
-emits the kpm package contract, so a package *is* a first-class kpm package — "build once, share" is
-the existing kpm CLI, no separate distribution layer.
+kp-build owns the **content** (research + verification + authoring); [`0xLT/kpm`](https://github.com/0xLT/kpm) —
+an open package manager for knowledge, think npm but for knowledge packages — owns **distribution**
+(install / lock / compose / pack / share). The seam is `knowledge.json`: every build emits the kpm
+package contract, so a package *is* a first-class kpm package. There's no separate distribution layer to
+build — "build once, share" is the existing kpm CLI. (kpm is a separate tool, not installed by
+`pip install kp-build`; get it from the linked repo.)
 
 ```bash
 kp-build build -i research.json -o ./pkg        # produces a valid kpm package
@@ -98,23 +125,24 @@ kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — 
 
 ```
 src/kp_build/      the engine (scope→survey→extract→verify→ground→assemble→falsify→report)
-skill/SKILL.md     the /kp-build orchestration spec (drives research subagents)
+skill/SKILL.md     the /kp-build orchestration spec (drives the research subagents)
 examples/          three real built packages + their research.json inputs and falsification evidence
 docs/              explainer / metrics / orchestration (HTML)
 SPEC.md            the package format + pipeline, in full
 ```
 
-## Notes
+## Good to know
 
-- **Confidence is corpus-relative.** Every claim's confidence is conditional on its sources being
-  right; the package says so rather than asserting absolute truth.
-- **Coverage is scope-relative** and can be too shallow; citation-graph expansion mitigates it, and the
-  manifest records what was searched so the gap is honest.
-- A package is stale the day its field moves; the manifest carries `built`, and a re-run is a diff.
+- **Confidence is corpus-relative.** A claim's confidence is conditional on its sources being right; the
+  package says so, rather than asserting absolute truth.
+- **Coverage is scope-relative** and can be too shallow; citation-graph expansion (following papers'
+  references and citations to catch what keyword search misses) mitigates it, and the manifest records
+  what was searched so the gap stays honest.
+- A package is stale the day its field moves; the manifest carries its `built` date, and a re-run is a diff.
 
 See [`SPEC.md`](SPEC.md) for the complete package format, schema, and pipeline.
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE). (Knowledge packages the tool *produces* default to CC-BY-4.0, set in
-each package's `knowledge.json` and publisher-overridable.)
+MIT — see [`LICENSE`](LICENSE). (Knowledge packages the tool *produces* default to CC-BY-4.0, set in each
+package's `knowledge.json` and publisher-overridable.)
