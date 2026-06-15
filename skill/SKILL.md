@@ -122,9 +122,16 @@ say so and either pick a more model-weak topic or deepen the survey.** A `kp-bui
 also exposed via `eval/falsify.py` for convenience.
 
 ### 7 — Deliver
-Hand over the package directory. Point the user at `CONTEXT.md` (load into an agent) and `README.md`
-(human entry). State the citation-verification rate and the falsification result plainly. Confidence
-is corpus-relative; the package is a *foundation*, not the paper.
+**Falsify BEFORE you report — always.** Step 6 is a prerequisite for the human report: `kp-build
+report` refuses to render a package that has no falsification result (the report's headline is "does
+it help?", and a report that can't answer it is incomplete). So the order is fixed: run the
+falsification test (step 6) → then generate the report:
+```
+kp-build report <out_dir> -o report.html      # errors unless step 6 has been run
+```
+Hand over the package directory + the report. Point the user at `CONTEXT.md` (load into an agent) and
+`report.html` / `README.md` (human entry). State the citation-verification rate and the falsification
+verdict plainly. Confidence is corpus-relative; the package is a *foundation*, not the paper.
 
 The build also emits a `knowledge.json` — the [0xLT/kpm](https://github.com/0xLT/kpm) package
 contract — so the package is **distributable by kpm with no extra work**: kp-build builds the

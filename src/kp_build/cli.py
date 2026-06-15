@@ -303,8 +303,21 @@ def _cmd_expand(args) -> int:
 
 def _cmd_report(args) -> int:
     from .report import build_report
-    out = Path(args.output or (Path(args.package_dir) / "report.html"))
-    out.write_text(build_report(args.package_dir), encoding="utf-8")
+    pkg = Path(args.package_dir)
+    man = json.loads((pkg / "wikillm.json").read_text(encoding="utf-8"))
+    f = man.get("falsification") or {}
+    # the report's headline is "does it help?" — refuse to ship one that can't answer it (unless opted out)
+    measured = bool(f.get("run")) and (f.get("verdict") or f.get("base") or f.get("kp"))
+    if not measured and not args.allow_unmeasured:
+        print("error: this package has no falsification result, so the report cannot answer its headline\n"
+              "       question (\"does it help?\"). Run the falsification test FIRST, then report:\n"
+              "         kp-build falsify <pkg> --question \"<held-out task>\" --base base.txt --kp kp.txt\n"
+              "       where base.txt = an unaided agent's answer and kp.txt = a CONTEXT.md-loaded agent's\n"
+              "       answer to the same task. (Pass --allow-unmeasured to render a draft anyway.)",
+              file=sys.stderr)
+        return 2
+    out = Path(args.output or (pkg / "report.html"))
+    out.write_text(build_report(pkg), encoding="utf-8")
     print(f"wrote {out}  (open in a browser)")
     return 0
 
@@ -346,9 +359,11 @@ def main(argv=None) -> int:
     exp.add_argument("--limit", type=int, default=40, help="max neighbors per seed per direction")
     exp.add_argument("--direction", choices=("both", "references", "citations"), default="both")
     exp.set_defaults(func=_cmd_expand)
-    rep = sub.add_parser("report", help="render a self-contained HTML report of a package")
+    rep = sub.add_parser("report", help="render a self-contained HTML report (requires a falsification result)")
     rep.add_argument("package_dir")
     rep.add_argument("--output", "-o", default="", help="output .html (default <package_dir>/report.html)")
+    rep.add_argument("--allow-unmeasured", action="store_true",
+                     help="render even if the package has not been falsified (the 'does it help?' tile will say 'Not measured')")
     rep.set_defaults(func=_cmd_report)
     val = sub.add_parser("validate", help="lint an assembled package")
     val.add_argument("package_dir")

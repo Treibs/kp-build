@@ -81,6 +81,22 @@ def test_report_handles_no_falsification(tmp_path):
     assert "verdict good" not in html                        # no fabricated verdict when not run
 
 
+def test_report_cli_requires_falsification(tmp_path):
+    from kp_build.cli import main
+    out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")     # unmeasured by default
+    assert main(["report", str(out), "-o", str(tmp_path / "r.html")]) == 2
+    assert not (tmp_path / "r.html").exists()                       # refused — no report without the metric
+    # --allow-unmeasured renders a draft
+    assert main(["report", str(out), "-o", str(tmp_path / "r2.html"), "--allow-unmeasured"]) == 0
+    assert (tmp_path / "r2.html").exists()
+    # once falsified, report works without the flag
+    man = json.loads((out / "wikillm.json").read_text())
+    man["falsification"] = {"run": True, "verdict": "KP HELPS", "base": {"f1": 0.4}, "kp": {"f1": 0.9}}
+    (out / "wikillm.json").write_text(json.dumps(man), encoding="utf-8")
+    assert main(["report", str(out), "-o", str(tmp_path / "r3.html")]) == 0
+    assert (tmp_path / "r3.html").exists()
+
+
 def test_report_falsify_cta_always_shown_when_unmeasured(tmp_path):
     # run flag set but NO verdict/base/kp data -> still the "Not measured / Run kp-build falsify" CTA
     out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
