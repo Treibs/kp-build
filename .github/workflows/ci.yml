@@ -18,9 +18,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -e '.[dev]'
-      # the offline suite — tests/test_citations.py hits the live arXiv/Crossref APIs and is
-      # excluded from CI for determinism (it's the integration smoke test, run locally)
-      - run: pytest -q --deselect tests/test_citations.py
+      # everything except the @pytest.mark.network tests (the one live API smoke test) — keeps CI
+      # deterministic while still running the stubbed citation-gate soundness suite
+      - run: pytest -q -m "not network"
 
   package:
     runs-on: ubuntu-latest
