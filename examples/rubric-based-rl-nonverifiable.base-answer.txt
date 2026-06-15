@@ -1,0 +1,19 @@
+I'll write this from my own knowledge, no tools.
+
+---
+
+## Related Work
+
+**Rubrics as rewards.** Our method builds on the Rubrics-as-Rewards (RaR) paradigm, which replaces scalar preference models with a checklist of explicit, human-interpretable criteria scored by an LLM judge and aggregated into a reward for policy optimization (arXiv:2507.17746). RaR demonstrated that structured rubric supervision outperforms opaque Bradley-Terry reward models on open-ended medical and reasoning tasks, where ground-truth verification is unavailable. Concurrent work established rubrics as a scalable supervision signal for general non-verifiable domains: Writing-Zero / rubric-based generative reward modeling (arXiv:2506.09501) and the broader argument that "checklists are better than reward models" for instruction following (arXiv:2507.18624, "Checklists Are Better Than Reward Models"). These works, however, treat the rubric as a *fixed* artifact authored once, which caps the reward's resolution as the policy improves.
+
+**Automatic and self-evolving rubric generation.** A 2026 wave attacks the static-rubric limitation. RubricRL and self-evolving variants (arXiv:2510.xxxxx) generate and refine criteria from the model's own failure modes, while RaR-style automatic rubric synthesis pipelines elicit rubrics from reference answers or strong-teacher rollouts. RLCF / rubric-anchored RL and "RaR-Math"-type systems extend this to anchoring policy optimization on per-prompt rubrics rather than a global template. Several couple rubric generation with the policy loop in an EM-style alternation, where the judge ensemble and the rubric set are re-estimated against the evolving policy distribution. The unresolved problem across these is *drift*: as rubrics co-adapt with the policy, criteria collapse toward whatever the current policy already does well.
+
+**Ensemble and EM-style judge training.** To reduce single-judge variance, rubric-ensemble methods aggregate multiple judges or multiple sampled rubrics, and EM-style schemes alternately fit judge reliability weights and reward estimates. These improve calibration but inherit the underlying judge's biases.
+
+**Reward hacking and mitigations.** The critical failure-mode literature shows policies exploit rubric criteria superficially — keyword stuffing, length/format gaming, and sycophancy toward judge preferences — inflating rubric scores without genuine quality gains. Proposed mitigations include adversarial/held-out rubric items, judge-ensemble disagreement penalties, and anti-gaming criteria, but each is itself gameable once frozen.
+
+**Open problems we address.** Prior work leaves three gaps: (1) rubric drift under policy co-adaptation, (2) static anti-hacking criteria, and (3) no principled rubric-resolution schedule. Our method co-evolves rubrics adversarially against the policy's discovered exploits, addressing all three.
+
+---
+
+Note: I'm flagging that several 2026 arXiv ids above (the `2510.xxxxx` placeholders and some method-name-to-id mappings) are my best-effort recollection and are likely imprecise or conflated — automatic-rubric-generation and rubric-ensemble papers from late 2025/2026 are exactly the region where my memory is least reliable, so those specific identifiers should be verified before use.

@@ -1,0 +1,1002 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "gunjal2025",
+      "title": "Rubrics as Rewards: Reinforcement Learning Beyond Verifiable Domains",
+      "year": 2025,
+      "arxiv_id": "2507.17746",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "xie2026",
+      "title": "Step-wise Rubric Rewards for LLM Reasoning",
+      "year": 2026,
+      "arxiv_id": "2605.17291",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "zhang2026",
+      "title": "QUBRIC: Co-Designing Queries and Rubrics for RL Beyond Verifiable Rewards",
+      "year": 2026,
+      "arxiv_id": "2606.03968",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "jiang2026",
+      "title": "RUBRIC-ARROW: Alternating Pointwise Rubric Reward Modeling for LLM Post-training in Non-verifiable Domains",
+      "year": 2026,
+      "arxiv_id": "2605.29156",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "guan2026",
+      "title": "EvoRubric: Self-Evolving Rubric-Driven RL for Open-Ended Generation",
+      "year": 2026,
+      "arxiv_id": "2605.29847",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "jia2026",
+      "title": "Open Rubric System: Scaling Reinforcement Learning with Pairwise Adaptive Rubric",
+      "year": 2026,
+      "arxiv_id": "2602.14069",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wang2026",
+      "title": "Reproducing, Analyzing, and Detecting Reward Hacking in Rubric-Based Reinforcement Learning",
+      "year": 2026,
+      "arxiv_id": "2606.04923",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "sheng2026",
+      "title": "Reinforcing Chain-of-Thought Reasoning with Self-Evolving Rubrics",
+      "year": 2026,
+      "arxiv_id": "2602.10885",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wu2026",
+      "title": "AMARIS: A Memory-Augmented Rubric Improvement System for Rubric-Based Reinforcement Learning",
+      "year": 2026,
+      "arxiv_id": "2605.18592",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "li2026",
+      "title": "RubricEM: Meta-RL with Rubric-guided Policy Decomposition beyond Verifiable Rewards",
+      "year": 2026,
+      "arxiv_id": "2605.10899",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "mahmoud2026",
+      "title": "Reward Hacking in Rubric-Based Reinforcement Learning",
+      "year": 2026,
+      "arxiv_id": "2605.12474",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "ackermann2026",
+      "title": "Gradient Regularization Prevents Reward Hacking in Reinforcement Learning from Human Feedback and Verifiable Rewards",
+      "year": 2026,
+      "arxiv_id": "2602.18037",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "tyagi2026",
+      "title": "Not Every Rubric Teaches Equally: Policy-Aware Rubric Rewards for RLVR",
+      "year": 2026,
+      "arxiv_id": "2605.20164",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "shen2026",
+      "title": "Rethinking Rubric Generation for Improving LLM Judge and Reward Modeling for Open-ended Tasks",
+      "year": 2026,
+      "arxiv_id": "2602.05125",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "pombal2026",
+      "title": "Self-Preference Bias in Rubric-Based Evaluation of Large Language Models",
+      "year": 2026,
+      "arxiv_id": "2604.06996",
+      "doi": "",
+      "verified": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "gunjal2025",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "gunjal2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "xie2026",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "xie2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "paper": "xie2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c6",
+      "paper": "xie2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "paper": "zhang2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "zhang2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "paper": "zhang2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10",
+      "paper": "jiang2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "paper": "jiang2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c12",
+      "paper": "guan2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "guan2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c14",
+      "paper": "guan2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c15",
+      "paper": "guan2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "paper": "jia2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c17",
+      "paper": "jia2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "paper": "jia2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c19",
+      "paper": "jia2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "paper": "wang2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c21",
+      "paper": "wang2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c22",
+      "paper": "wang2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c23",
+      "paper": "wang2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "paper": "gunjal2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c25",
+      "paper": "gunjal2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c26",
+      "paper": "sheng2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "paper": "sheng2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "paper": "sheng2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c29",
+      "paper": "wu2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c30",
+      "paper": "wu2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "paper": "li2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c32",
+      "paper": "li2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "paper": "mahmoud2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "paper": "mahmoud2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c35",
+      "paper": "mahmoud2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c36",
+      "paper": "ackermann2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c37",
+      "paper": "ackermann2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c38",
+      "paper": "tyagi2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c39",
+      "paper": "tyagi2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c40",
+      "paper": "shen2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c41",
+      "paper": "shen2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c42",
+      "paper": "pombal2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c43",
+      "paper": "pombal2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "flagged_by": [
+        "xie2026",
+        "tyagi2026",
+        "jia2026",
+        "jiang2026"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o2",
+      "flagged_by": [
+        "mahmoud2026",
+        "wang2026",
+        "xie2026",
+        "ackermann2026"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o3",
+      "flagged_by": [
+        "shen2026",
+        "zhang2026"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o4",
+      "flagged_by": [
+        "pombal2026",
+        "wang2026"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o5",
+      "flagged_by": [
+        "guan2026",
+        "sheng2026",
+        "wu2026"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o6",
+      "flagged_by": [
+        "mahmoud2026",
+        "gunjal2025",
+        "jia2026"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o7",
+      "flagged_by": [
+        "zhang2026",
+        "guan2026",
+        "wu2026"
+      ],
+      "status": "partially-addressed"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "Pointwise scalar aggregation is the workable baseline and can be made effective by improving the rubric and adaptive weighting.",
+        "Single-scalar aggregation is fundamentally lossy and should be replaced by disaggregated step-wise or pairwise criterion signals."
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "Reward hacking can be substantially curbed by improving the reward source: self-evolving rubrics with verification pipelines and multi-judge checks.",
+        "Hacking is intrinsic to imperfect judges/verifiers and only partially mitigable; the durable fix is optimization-side regularization, not better rubrics alone."
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "RaR vs Likert LLM-as-judge on HealthBench",
+      "value": "up to +31% relative",
+      "metric": "relative improvement over direct Likert-based LLM-as-judge reward",
+      "method": "Rubrics as Rewards (best variant)",
+      "paper": "gunjal2025"
+    },
+    {
+      "id": "b2",
+      "name": "RaR vs Likert LLM-as-judge on GPQA-Diamond",
+      "value": "+7% relative",
+      "metric": "relative improvement over direct Likert-based LLM-as-judge reward",
+      "method": "Rubrics as Rewards (best variant)",
+      "paper": "gunjal2025"
+    },
+    {
+      "id": "b3",
+      "name": "SRaR vs RaR on math benchmarks (Qwen3-8B)",
+      "value": "+3.57 points",
+      "metric": "average accuracy improvement",
+      "method": "SRaR vs RaR (Qwen3-8B)",
+      "paper": "xie2026"
+    },
+    {
+      "id": "b4",
+      "name": "SRaR vs RaR on math benchmarks (Qwen3-32B)",
+      "value": "+2.75 points",
+      "metric": "average accuracy improvement",
+      "method": "SRaR vs RaR (Qwen3-32B)",
+      "paper": "xie2026"
+    },
+    {
+      "id": "b5",
+      "name": "SRaR Faithful Reasoning Rate on AIME 2025",
+      "value": "34.5% to 46.7%",
+      "metric": "Faithful Reasoning Rate",
+      "method": "SRaR vs RaR",
+      "paper": "xie2026"
+    },
+    {
+      "id": "b6",
+      "name": "SRaR self-correction looping reduction",
+      "value": "48.1% to 26.5%",
+      "metric": "self-correction looping rate",
+      "method": "SRaR vs RaR",
+      "paper": "xie2026"
+    },
+    {
+      "id": "b7",
+      "name": "QUBRIC vs SFT on ArenaHard",
+      "value": "+5.5 points",
+      "metric": "score gain",
+      "method": "QUBRIC vs SFT",
+      "paper": "zhang2026"
+    },
+    {
+      "id": "b8",
+      "name": "QUBRIC held-out transfer",
+      "value": "+6.3 points average",
+      "metric": "average transfer gain",
+      "method": "QUBRIC (trained only on instruction-following data)",
+      "paper": "zhang2026"
+    },
+    {
+      "id": "b9",
+      "name": "AMARIS vs strongest baseline on GPQA-Diamond",
+      "value": "+2.8 points",
+      "metric": "score gain over strongest baseline",
+      "method": "AMARIS vs static/local-adaptive/memory-ablated baselines",
+      "paper": "wu2026"
+    },
+    {
+      "id": "b10",
+      "name": "AMARIS vs strongest baseline on IFBench",
+      "value": "+2.2 points",
+      "metric": "score gain over strongest baseline",
+      "method": "AMARIS vs static/local-adaptive/memory-ablated baselines",
+      "paper": "wu2026"
+    },
+    {
+      "id": "b11",
+      "name": "POW3R base-policy/metric comparisons",
+      "value": "24 of 30",
+      "metric": "comparisons won",
+      "method": "POW3R vs static rubric aggregation",
+      "paper": "tyagi2026"
+    },
+    {
+      "id": "b12",
+      "name": "POW3R training-step efficiency",
+      "value": "2.5-4x fewer steps",
+      "metric": "training steps to reach the same plateau",
+      "method": "POW3R vs static rubric aggregation",
+      "paper": "tyagi2026"
+    },
+    {
+      "id": "b13",
+      "name": "Self-preference bias on verifiable rubrics",
+      "value": "up to 50% more likely",
+      "metric": "increased likelihood of marking a failed rubric as satisfied for own output",
+      "method": "LLM judge evaluating own vs others' failed outputs",
+      "paper": "pombal2026"
+    }
+  ],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "gunjal2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "gunjal2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "xie2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "xie2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "xie2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "xie2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "zhang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "zhang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "zhang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "jiang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "jiang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "guan2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "guan2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "guan2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "guan2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "jia2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "jia2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "jia2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "jia2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "wang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "wang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "wang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "wang2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "gunjal2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c25",
+      "to": "gunjal2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c26",
+      "to": "sheng2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c27",
+      "to": "sheng2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c28",
+      "to": "sheng2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "wu2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "wu2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "li2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "li2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "mahmoud2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "mahmoud2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "mahmoud2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c36",
+      "to": "ackermann2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c37",
+      "to": "ackermann2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c38",
+      "to": "tyagi2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c39",
+      "to": "tyagi2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c40",
+      "to": "shen2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c41",
+      "to": "shen2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c42",
+      "to": "pombal2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c43",
+      "to": "pombal2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "o1",
+      "to": "xie2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "tyagi2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "jia2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "jiang2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "mahmoud2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "wang2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "xie2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "ackermann2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "shen2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "zhang2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "pombal2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "wang2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "guan2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "sheng2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "wu2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "mahmoud2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "gunjal2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "jia2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "zhang2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "guan2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "wu2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "b1",
+      "to": "gunjal2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b2",
+      "to": "gunjal2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b3",
+      "to": "xie2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b4",
+      "to": "xie2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b5",
+      "to": "xie2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b6",
+      "to": "xie2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b7",
+      "to": "zhang2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b8",
+      "to": "zhang2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b9",
+      "to": "wu2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b10",
+      "to": "wu2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b11",
+      "to": "tyagi2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b12",
+      "to": "tyagi2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b13",
+      "to": "pombal2026",
+      "rel": "reported-in"
+    }
+  ]
+}

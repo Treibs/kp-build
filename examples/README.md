@@ -2,13 +2,21 @@
 
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
-Two packages, two regimes — together they show what the `probe` pre-screen and the falsification
-gate actually discriminate:
+Three packages, three regimes — together they show what the `probe` pre-screen and the falsification
+gate actually discriminate (and where the cheap pre-screen has a blind spot):
 
 | package | topic regime | `probe` | falsification verdict |
 |---|---|---|---|
-| [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | model-**weak** frontier | BUILD | **KP HELPS** — wins on *precision* (kills mislabeled cites) **and** recall |
+| [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | model-**weak**, model *fabricates* | BUILD | **KP HELPS** — wins on *precision* (kills mislabeled cites) **and** recall |
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | model-**known** | SKIP | **KP HELPS on coverage only** — precision already 1.0; the win is pure recall |
+| [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | SKIP* | **KP HELPS hugely** — recall 0.07→1.00; the probe's *blind spot* |
+
+\* The probe is a **precision-only** pre-screen: it greenlights a build when the unaided model *fabricates*
+citations. A well-calibrated model that *hedges* on a topic it doesn't know (cites a few real foundational
+papers, declines to invent ids for the frontier) clears the probe's "enough real cites" floor and reads as
+SKIP — even when it covers almost none of the actual frontier. That **recall** weakness is invisible to the
+probe but caught by the full falsification (see `rubric-based-rl-nonverifiable` below). Lesson: the probe
+rules topics *in* cheaply; it cannot reliably rule a post-cutoff topic *out*.
 
 ## `discrete-diffusion-llms/`
 
@@ -119,4 +127,70 @@ kp-build falsify examples/speculative-decoding-llms \
   --question "2024-2026 frontier of speculative decoding for LLM inference" \
   --base examples/speculative-decoding-llms.base-answer.txt \
   --kp   examples/speculative-decoding-llms.kp-answer.txt
+```
+
+## `rubric-based-rl-nonverifiable/`
+
+A wikillm knowledge package on **rubrics-as-rewards: LLM-graded structured rubrics as the RL reward
+signal for post-training in non-verifiable/open-ended domains** — a genuinely **2026-emergent** subfield
+(RaR was coined mid-2025; the named-method wave — QUBRIC, RUBRIC-ARROW, EvoRubric, OpenRS, SRaR, RLCER,
+AMARIS — and its reward-hacking failure literature crystallized in 2026). **14 of 15 spine papers carry
+2026 arXiv ids** (`2602.*`–`2606.*`), i.e. post the model's training cutoff.
+
+This is the **model-weak-but-the-probe-can't-see-it** case (read the blind-spot note at the top first).
+The topic was found by *browsing arXiv for what's new since the cutoff* — exactly because a model can't
+name from memory what it was never trained on.
+
+| | value |
+|---|---|
+| citations verified | **15 / 15** (live, 14 of them 2026 ids) |
+| claims grounded | **42 / 43** (`--ground`; 1 unconfirmed, 0 ungrounded) |
+| claims / open problems / debates / benchmarks | 43 / 7 / 2 / 13 |
+| `CONTEXT.md` (agent payload) | ~6k tokens |
+
+### The probe said SKIP — and was wrong
+
+```
+$ kp-build probe --answer examples/rubric-based-rl-nonverifiable.base-answer.txt --question "Rubrics-as-Rewards ..."
+topic pre-screen: SKIP — the model already knows this (a package adds ~0 value)
+  unaided base agent: 3 cited · 3 real · 0 fabricated/mislabeled · hallucination 0%
+```
+
+The unaided model cited **3 real papers** (the 2025 seeds) and *hedged* on the 2026 frontier — it wrote a
+placeholder `arXiv:2510.xxxxx` rather than inventing an id. Zero fabrication → the probe (which only
+measures fabrication) says SKIP. But three real cites is not knowledge of a ~59-paper subfield; the model
+covered **1 of the 15 spine papers**. We built it anyway, and the full falsification — which measures
+**recall**, not just precision — tells the true story.
+
+### Reproduce
+
+```bash
+kp-build build -i examples/rubric-based-rl-nonverifiable.research.json -o /tmp/rubric --no-verify   # offline
+# or, with the live citation gate + passage grounding:
+kp-build build -i examples/rubric-based-rl-nonverifiable.research.json -o /tmp/rubric --ground
+```
+
+### Falsification — the recall-aware gate catches what the probe missed
+
+Held-out task: *write the related-work section for a 2026 self-evolving rubric-RL paper, citing the named
+2026 systems and the reward-hacking literature.* Base (unaided recall) vs KP-loaded (given `CONTEXT.md`):
+
+| | base (memory) | KP-loaded |
+|---|---|---|
+| precision | **1.00** | **1.00** |
+| recall (spine coverage) | **0.07 (1/15)** | **1.00 (15/15)** |
+| **f1** | **0.12** | **1.00** |
+
+**Verdict: KP HELPS — massively, on recall.** The base agent, hedging honestly, engaged just **one** of the
+15 frontier papers; the KP-loaded agent covered the whole spine including the post-cutoff named methods
+(`2606.03968` QUBRIC, `2605.29847` EvoRubric, `2602.10885` RLCER, `2606.04923` reward-hacking, …). Precision
+ties at 1.0 (the model never fabricated — it just didn't *know*), so the entire f1 jump 0.12→1.00 is
+coverage the package supplied. This is the value the `probe` could not detect and the falsification could.
+Re-score with:
+
+```bash
+kp-build falsify examples/rubric-based-rl-nonverifiable \
+  --question "2026 frontier of rubric-based RL for non-verifiable domains" \
+  --base examples/rubric-based-rl-nonverifiable.base-answer.txt \
+  --kp   examples/rubric-based-rl-nonverifiable.kp-answer.txt
 ```

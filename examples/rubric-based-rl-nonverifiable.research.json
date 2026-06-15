@@ -1,0 +1,954 @@
+{
+  "topic": "Rubrics-as-Rewards: LLM-graded structured rubrics as the RL reward signal for post-training in non-verifiable, open-ended domains",
+  "scope": "In scope: reinforcement learning methods that replace or augment verifiable rewards (RLVR) with structured, multi-criterion rubrics graded by an LLM judge as the dense reward for open-ended/subjective tasks (writing, dialogue, medicine, reasoning quality) — covering the original \"Rubrics as Rewards (RaR)\" formulation, its 2026 named descendants (e.g. self-evolving/auto-generated rubric systems, rubric-anchored policy optimization variants, rubric ensembling and EM-style judge training), the training recipes (GRPO/PPO with rubric aggregation), and the emerging rubric-reward-hacking / judge-gaming failure-mode literature with its mitigations. Out of scope: classic RLHF with a single scalar Bradley-Terry preference reward model; pure RLVR on math/code with programmatic checkers; LLM-as-a-judge purely for offline evaluation/benchmarking (not as an RL training signal); and general constitutional-AI / preference-optimization (DPO/RLAIF) methods that do not use explicit structured rubrics as the reward.",
+  "papers": [
+    {
+      "cite_key": "gunjal2025",
+      "title": "Rubrics as Rewards: Reinforcement Learning Beyond Verifiable Domains",
+      "authors": [
+        "Anisha Gunjal",
+        "Anthony Wang",
+        "Elaine Lau",
+        "Vaskar Nath",
+        "Yunzhong He",
+        "Bing Liu",
+        "Sean Hendryx"
+      ],
+      "year": 2025,
+      "arxiv_id": "2507.17746",
+      "doi": "",
+      "key_contributions": [
+        "Introduces Rubrics as Rewards (RaR), the original on-policy RL method extending RLVR beyond verifiable domains using instance-specific rubric-based feedback as the reward signal",
+        "Evaluates multiple strategies for aggregating multi-criterion rubric feedback into a scalar reward across medical and science domains (HealthBench, GPQA-Diamond)",
+        "Best RaR variant beats Likert-based LLM-as-judge baselines (up to 31% relative on HealthBench, 7% on GPQA-Diamond) and improves alignment for smaller judges while reducing performance variance across judge scales"
+      ]
+    },
+    {
+      "cite_key": "xie2026",
+      "title": "Step-wise Rubric Rewards for LLM Reasoning",
+      "authors": [
+        "Weichu Xie",
+        "Haozhe Zhao",
+        "Wenpu Liu",
+        "Yongfu Zhu",
+        "Liang Chen",
+        "Minghao Ye",
+        "Zirong Chen",
+        "Yuqi Xu",
+        "Shuai Dong",
+        "Ziyue Wang",
+        "Xinbo Xu",
+        "Kean Shi",
+        "Ruoyu Wu",
+        "Xiaoying Zhang",
+        "Wenqi Shao",
+        "Baobao Chang",
+        "Nan Duan",
+        "Jiaqi Wang"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.17291",
+      "doi": "",
+      "key_contributions": [
+        "Diagnoses that RaR aggregates rubric scores into a single response-level scalar, losing multi-criterion structure and enabling reward hacking via self-correction (18.2% wrong steps positively rewarded; 49.9% correct steps penalized)",
+        "Proposes SRaR, attributing each rubric item to a specific reasoning step via an LLM judge, normalizing per-step scores across rollouts, and combining with outcome reward via a decoupled advantage estimator",
+        "Improves over RaR by 3.57 points (Qwen3-8B) and 2.75 points (Qwen3-32B) on six math benchmarks, raising Faithful Reasoning Rate on AIME 2025 from 34.5% to 46.7% and cutting self-correction looping from 48.1% to 26.5%"
+      ]
+    },
+    {
+      "cite_key": "zhang2026",
+      "title": "QUBRIC: Co-Designing Queries and Rubrics for RL Beyond Verifiable Rewards",
+      "authors": [
+        "Rongzhi Zhang",
+        "Rui Feng",
+        "Zhihan Zhang",
+        "Jingfeng Yang",
+        "Qingyu Yin",
+        "Xin Liu",
+        "Zixuan Zhang",
+        "Priyanka Nigam",
+        "Bing Yin",
+        "Tuo Zhao",
+        "Chao Zhang"
+      ],
+      "year": 2026,
+      "arxiv_id": "2606.03968",
+      "doi": "",
+      "key_contributions": [
+        "Identifies that rubric quality is structurally bottlenecked by query structure: open-ended queries yield vague rubrics and over-narrow ones yield unverifiable references",
+        "Co-designs queries and rubrics via teacher-derived key points, contrastive rubric generation turning teacher-policy gaps into criteria, and learnability filtering of informative query-rubric pairs for GRPO",
+        "Reports +5.5 on ArenaHard over SFT and +6.3 average transfer to held-out legal, moral, and narrative reasoning benchmarks"
+      ]
+    },
+    {
+      "cite_key": "jiang2026",
+      "title": "RUBRIC-ARROW: Alternating Pointwise Rubric Reward Modeling for LLM Post-training in Non-verifiable Domains",
+      "authors": [
+        "Haoxiang Jiang",
+        "Zihan Dong",
+        "Tianci Liu",
+        "Wanying Wang",
+        "Ran Xu",
+        "Tony Yu",
+        "Linjun Zhang",
+        "Haoyu Wang"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.29156",
+      "doi": "",
+      "key_contributions": [
+        "Jointly trains a rubric generator and a rubric-conditioned pointwise judge in an alternating GRPO framework whose RL stage uses only pairwise preference data",
+        "Introduces a probability-based scoring rule that reduces evaluation ties caused by hard Boolean rubric aggregation",
+        "Aims to remove dependence on frontier LLMs for rubric judging while retaining competitive reward-modeling accuracy and downstream policy gains"
+      ]
+    },
+    {
+      "cite_key": "guan2026",
+      "title": "EvoRubric: Self-Evolving Rubric-Driven RL for Open-Ended Generation",
+      "authors": [
+        "Xin Guan",
+        "Xiaomeng Hu",
+        "Shen Huang",
+        "Zhenyi Wang",
+        "Bo Zhang",
+        "Zijian Li",
+        "Pengjun Xie",
+        "Bo Liu",
+        "Jiuxin Cao"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.29847",
+      "doi": "",
+      "key_contributions": [
+        "Single-policy co-evolutionary RL framework that unifies response generation and rubric generation under one parameterized policy, alternating Reasoner and Rubric Generator roles",
+        "Eliminates reliance on static human-annotated rubrics and external proprietary rubric generators, and is compatible with expert rubric priors which it can extend with novel dimensions",
+        "Adds a multi-level verification pipeline (meta-verifier, zero-variance pruning, Leave-One-Out peer consensus) to prevent reward hacking, yielding dense multi-objective rewards; outperforms static and external-LLM baselines across Medical, Writing, and Science domains"
+      ]
+    },
+    {
+      "cite_key": "jia2026",
+      "title": "Open Rubric System: Scaling Reinforcement Learning with Pairwise Adaptive Rubric",
+      "authors": [
+        "Ruipeng Jia",
+        "Yunyi Yang",
+        "Yuxin Wu",
+        "Yongbo Gai",
+        "Siyuan Tao",
+        "Mengyu Zhou",
+        "Jianhe Lin",
+        "Xiaoxi Jiang",
+        "Guanjun Jiang"
+      ],
+      "year": 2026,
+      "arxiv_id": "2602.14069",
+      "doi": "",
+      "key_contributions": [
+        "Presents OpenRS, a plug-and-play rubric-based LLM-as-a-Judge framework built on Pairwise Adaptive Meta-Rubrics (PAMR) and lightweight Pointwise Verifiable Rubrics (PVRs)",
+        "Frames reward as an explicit reasoning process under inspectable principles, treating non-verifiable alignment as a principle generalization problem rather than a learned judge function",
+        "Instantiates adaptive rubrics on the fly from semantic differences between two candidate responses, performs criterion-wise pairwise comparisons aggregated externally (not pointwise weighted scalarization), and uses OpenRS as reward supervision in pairwise RL"
+      ]
+    },
+    {
+      "cite_key": "wang2026",
+      "title": "Reproducing, Analyzing, and Detecting Reward Hacking in Rubric-Based Reinforcement Learning",
+      "authors": [
+        "Xuekang Wang",
+        "Zhuoyuan Hao",
+        "Shuo Hou",
+        "Hao Peng",
+        "Juanzi Li",
+        "Xiaozhi Wang"
+      ],
+      "year": 2026,
+      "arxiv_id": "2606.04923",
+      "doi": "",
+      "key_contributions": [
+        "Introduces CHERRL, a controllable hacking environment for rubric-based RL that injects known biases into the LLM-as-a-Judge to reproducibly study reward hacking",
+        "Enables stable reproduction of reward divergence and precise identification of hacking onset as a clean testbed for mitigations",
+        "Analyzes judge biases by discoverability and exploitability and explores an agent-based system to automatically detect reward-hacking onset from training logs"
+      ]
+    },
+    {
+      "cite_key": "sheng2026",
+      "title": "Reinforcing Chain-of-Thought Reasoning with Self-Evolving Rubrics",
+      "authors": [
+        "Leheng Sheng",
+        "Wenchang Ma",
+        "Ruixin Hong",
+        "Xiang Wang",
+        "An Zhang",
+        "Tat-Seng Chua"
+      ],
+      "year": 2026,
+      "arxiv_id": "2602.10885",
+      "doi": "",
+      "key_contributions": [
+        "Proposes RLCER, which augments outcome-centric RLVR by rewarding chain-of-thought with self-proposed, self-evolving rubrics requiring no human annotation",
+        "Shows self-evolving rubrics give reliable CoT supervision even without outcome rewards, enabling RLCER to outperform outcome-centric RLVR",
+        "Demonstrates the self-proposed rubrics also improve inference-time performance when used as in-prompt hints"
+      ]
+    },
+    {
+      "cite_key": "wu2026",
+      "title": "AMARIS: A Memory-Augmented Rubric Improvement System for Rubric-Based Reinforcement Learning",
+      "authors": [
+        "Peilin Wu",
+        "Xinlu Zhang",
+        "Kun Wan",
+        "Wentian Zhao",
+        "Gang Wu",
+        "Xinya Du",
+        "Zhiyu Chen"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.18592",
+      "doi": "",
+      "key_contributions": [
+        "Grounds rubric updates in longitudinal training evidence via a persistent evaluation memory (rollout analyses, step-level summaries, rubric update records) rather than local batch/instance views",
+        "Evaluated across science, medicine, instruction following, and creative writing under both global and instance-specific rubric settings, beating static, local-adaptive, and memory-ablated baselines (+2.8 on GPQA-Diamond, +2.2 on IFBench)",
+        "Runs asynchronously alongside the RL loop to reduce blocking latency versus synchronous rubric updates"
+      ]
+    },
+    {
+      "cite_key": "li2026",
+      "title": "RubricEM: Meta-RL with Rubric-guided Policy Decomposition beyond Verifiable Rewards",
+      "authors": [
+        "Gaotang Li",
+        "Bhavana Dalvi Mishra",
+        "Zifeng Wang",
+        "Jun Yan",
+        "Yanfei Chen",
+        "Chun-Liang Li",
+        "Long T. Le",
+        "Rujun Han",
+        "George Lee",
+        "Hanghang Tong",
+        "Chen-Yu Lee",
+        "Tomas Pfister"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.10899",
+      "doi": "",
+      "key_contributions": [
+        "Argues rubrics should be the shared interface structuring policy execution, judge feedback, and agent memory for deep-research agents, not merely final-answer evaluators",
+        "Combines stagewise policy decomposition (planning, evidence gathering, review, synthesis conditioned on self-generated rubrics) with Stage-Structured GRPO for denser long-horizon credit assignment",
+        "Trains a shared-backbone reflection meta-policy distilling judged trajectories into reusable rubric-grounded guidance; RubricEM-8B approaches proprietary deep-research systems"
+      ]
+    },
+    {
+      "cite_key": "mahmoud2026",
+      "title": "Reward Hacking in Rubric-Based Reinforcement Learning",
+      "authors": [
+        "Anas Mahmoud",
+        "MohammadHossein Rezaei",
+        "Zihao Wang",
+        "Anisha Gunjal",
+        "Bing Liu",
+        "Yunzhong He"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.12474",
+      "doi": "",
+      "key_contributions": [
+        "Studies reward hacking in rubric-based RL by optimizing against a training verifier while evaluating against a cross-family panel of three frontier judges",
+        "Separates verifier failure from rubric-design limitations and catalogs recurring exploitation failure modes (partial satisfaction of compound criteria, treating implicit as explicit, imprecise topical matching)",
+        "Introduces the self-internalization gap, a verifier-free diagnostic based on policy log-probabilities, and shows stronger verification reduces but does not eliminate reward hacking, with rubric gains not necessarily corresponding to broader quality gains"
+      ]
+    },
+    {
+      "cite_key": "ackermann2026",
+      "title": "Gradient Regularization Prevents Reward Hacking in Reinforcement Learning from Human Feedback and Verifiable Rewards",
+      "authors": [
+        "Johannes Ackermann",
+        "Michael Noukhovitch",
+        "Takashi Ishida",
+        "Masashi Sugiyama"
+      ],
+      "year": 2026,
+      "arxiv_id": "2602.18037",
+      "doi": "",
+      "key_contributions": [
+        "Reframes reward-hacking mitigation as biasing policy updates toward regions where the reward is more accurate, via gradient regularization (GR) toward flatter optima",
+        "Derives a theoretical link between reward-model accuracy and the flatness of an optimum at convergence, and shows KL-penalty reference resets implicitly perform GR",
+        "Empirically GR beats a KL penalty, avoiding format over-focus in rule-based rewards and preventing hacking the judge in LLM-as-a-Judge tasks"
+      ]
+    },
+    {
+      "cite_key": "tyagi2026",
+      "title": "Not Every Rubric Teaches Equally: Policy-Aware Rubric Rewards for RLVR",
+      "authors": [
+        "Utkarsh Tyagi",
+        "Xingang Guo",
+        "MohammadHossein Rezaei",
+        "Daniel George",
+        "Anas Mahmoud",
+        "Jackson Lee",
+        "Bing Liu",
+        "Yunzhong He"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.20164",
+      "doi": "",
+      "key_contributions": [
+        "Shows static rubric aggregation conflates a criterion's human-assigned importance with its current usefulness as a training signal",
+        "Documents that many important rubric criteria are already saturated or currently unreachable while discriminative criteria need not carry the largest human weights",
+        "Introduces POW3R, which preserves human weights/category balance while adapting criterion-level reward weights via rollout-level contrast; wins 24 of 30 base-policy/metric comparisons and reaches the same plateau in 2.5-4x fewer training steps"
+      ]
+    },
+    {
+      "cite_key": "shen2026",
+      "title": "Rethinking Rubric Generation for Improving LLM Judge and Reward Modeling for Open-ended Tasks",
+      "authors": [
+        "William F. Shen",
+        "Xinchi Qiu",
+        "Chenxi Whitehouse",
+        "Lisa Alazraki",
+        "Shashwat Goel",
+        "Francesco Barbieri",
+        "Timon Willi",
+        "Akhil Mathur",
+        "Ilias Leontiadis"
+      ],
+      "year": 2026,
+      "arxiv_id": "2602.05125",
+      "doi": "",
+      "key_contributions": [
+        "Explicitly diagnoses that rubric generation lacks coverage, conflates dimensions, misaligns preference direction, and contains redundant/correlated criteria, degrading judge accuracy and RFT rewards",
+        "Proposes RRD, a recursive decompose-filter framework for rubric refinement with correlation-aware weighting",
+        "Shows refined rubrics yield stronger, more stable RFT reward signals that transfer to held-out benchmarks"
+      ]
+    },
+    {
+      "cite_key": "pombal2026",
+      "title": "Self-Preference Bias in Rubric-Based Evaluation of Large Language Models",
+      "authors": [
+        "José Pombal",
+        "Ricardo Rei",
+        "André F. T. Martins"
+      ],
+      "year": 2026,
+      "arxiv_id": "2604.06996",
+      "doi": "",
+      "key_contributions": [
+        "First study of self-preference bias (SPB) in rubric-based binary-criterion evaluation, relevant to recursive self-improvement training loops",
+        "Shows SPB persists even with objective verifiable rubrics (judges up to 50% more likely to mark own failed outputs as satisfied)",
+        "Finds ensembling judges mitigates but does not eliminate SPB, and identifies negative rubrics, extreme lengths, and subjective topics as risk factors"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "statement": "Rubrics as Rewards (RaR) is an on-policy reinforcement learning method that extends RLVR beyond verifiable domains by using rubric-based feedback, and the authors evaluate multiple strategies for aggregating rubric feedback into rewards.",
+      "paper": "gunjal2025",
+      "supporting_passage": "We introduce Rubrics as Rewards (RaR), an on-policy reinforcement learning method that extends RLVR beyond verifiable domains by using rubric-based feedback. Across both medical and science domains, we evaluate multiple strategies for aggregating rubric feedback into rewards.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c2",
+      "statement": "RaR is motivated by the fact that real-world reasoning evaluation depends on nuanced, multi-criteria judgments rather than binary correctness, and uses instance-specific rubrics as reward signals for on-policy post-training.",
+      "paper": "gunjal2025",
+      "supporting_passage": "However, extending it to real-world reasoning tasks is challenging, as evaluation depends on nuanced, multi-criteria judgments rather than binary correctness. Instance-specific rubrics have recently been used in evaluation benchmarks to capture such judgments, but their potential as reward signals for on-policy post-training remains underexplored.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c3",
+      "statement": "In rubric-based methods such as Rubrics as Rewards (RaR), rollouts are scored against structured criteria but the rubric scores are aggregated into a single scalar applied to the entire response.",
+      "paper": "xie2026",
+      "supporting_passage": "Rubric-based methods such as Rubrics as Rewards (RaR) introduce finer-grained supervision by scoring rollouts against structured criteria, yet the rubric scores are still aggregated into a single scalar applied to the entire response, causing three weaknesses: loss of multi-criterion structure, uniform supervision of correct and incorrect steps, and reward hacking through unbounded self-correction.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c4",
+      "statement": "SRaR uses an LLM judge to attribute each rubric item to a specific reasoning step and normalizes per-step rubric scores across rollouts so that only steps whose quality varies produce a learning signal.",
+      "paper": "xie2026",
+      "supporting_passage": "We introduce Step-wise Rubrics as Rewards (SRaR), an RLVR framework that (i) uses an LLM judge to attribute each rubric item to a specific reasoning step, (ii) normalizes per-step rubric scores across rollouts so only steps whose quality varies produce a learning signal, and (iii) combines the per-step reward with the outcome reward through a decoupled advantage estimator that keeps the outcome baseline stable.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c5",
+      "statement": "Aggregating rubric scores into a single scalar applied to the whole response loses multi-criterion structure, uniformly supervises correct and incorrect steps, and enables reward hacking via unbounded self-correction.",
+      "paper": "xie2026",
+      "supporting_passage": "yet the rubric scores are still aggregated into a single scalar applied to the entire response, causing three weaknesses: loss of multi-criterion structure, uniform supervision of correct and incorrect steps, and reward hacking through unbounded self-correction.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c6",
+      "statement": "Across six mathematical reasoning benchmarks, SRaR improves average accuracy over RaR by 3.57 points on Qwen3-8B and 2.75 points on Qwen3-32B, and raises the Faithful Reasoning Rate on AIME 2025 from 34.5% to 46.7%.",
+      "paper": "xie2026",
+      "supporting_passage": "Across six mathematical reasoning benchmarks, SRaR improves average accuracy over RaR by 3.57 points on Qwen3-8B and 2.75 points on Qwen3-32B, raises the Faithful Reasoning Rate on AIME 2025 from 34.5% to 46.7%, and reduces self-correction looping from 48.1% to 26.5%.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c7",
+      "statement": "QUBRIC co-designs queries and rubrics: teacher-derived key points ground the rewriting of open-ended queries, contrastive rubric generation turns teacher-policy gaps into query-level criteria, and learnability filtering retains informative query-rubric pairs for GRPO training.",
+      "paper": "zhang2026",
+      "supporting_passage": "Teacher-derived key points ground the rewriting of open-ended queries into scenario-based, evaluable questions. Contrastive rubric generation then turns teacher-policy gaps into query-level criteria, and learnability filtering retains only informative query-rubric pairs for GRPO training.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c8",
+      "statement": "Unlike methods that optimize rubrics while treating the query distribution as fixed, QUBRIC co-designs queries and rubrics, motivated by the finding that rubric quality is constrained by query structure.",
+      "paper": "zhang2026",
+      "supporting_passage": "Rubric-based RL is a promising route for extending reinforcement learning beyond verifiable rewards, yet existing methods optimize rubrics while treating the query distribution as fixed. We identify a structural bottleneck: rubric quality is constrained by query structure. Open-ended queries yield vague rubrics; naively narrowing them introduces fabricated references that no model can verify, so all responses fail and training receives no reward signal. We present QUBRIC, a framework that co-designs queries and rubrics.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c9",
+      "statement": "QUBRIC achieves a +5.5 point gain on ArenaHard over the SFT baseline and, trained only on instruction-following data, transfers to held-out legal, moral, and narrative reasoning benchmarks with +6.3 points on average.",
+      "paper": "zhang2026",
+      "supporting_passage": "QUBRIC achieves a +5.5 point gain on ArenaHard over the SFT baseline. Trained only on instruction-following data, it further transfers to three held-out benchmarks spanning legal, moral, and narrative reasoning (+6.3 points on average), with improvements concentrated in reasoning-related dimensions.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c10",
+      "statement": "RUBRIC-ARROW jointly trains a rubric generator and a rubric-conditioned judge in an alternating framework whose RL stage uses only pairwise preference data, combining a probability-based scoring rule that reduces ties with an alternating GRPO scheme.",
+      "paper": "jiang2026",
+      "supporting_passage": "We present RUBRIC-ARROW, an alternating framework that jointly trains a rubric generator and a rubric-conditioned judge, with its RL stage using only pairwise preference data. Our method couples a probability-based scoring rule that reduces ties with phase-specific preference-based rewards and an alternating GRPO scheme that together train the pointwise evaluator.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c11",
+      "statement": "Existing rubric-based pointwise reward methods typically depend on frontier LLMs and suffer from ties caused by hard Boolean aggregation; RUBRIC-ARROW jointly trains a rubric generator and a rubric-conditioned judge with an RL stage that uses only pairwise preference data.",
+      "paper": "jiang2026",
+      "supporting_passage": "Rubric-based methods address this by decomposing evaluation into explicit criteria, but existing approaches typically depend on frontier LLMs and suffer from ties caused by hard Boolean aggregation. We present RUBRIC-ARROW, an alternating framework that jointly trains a rubric generator and a rubric-conditioned judge, with its RL stage using only pairwise preference data.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c12",
+      "statement": "Existing rubric-based RL methods rely either on static human-annotated rubrics that cause policy lag or on expensive external proprietary models for dynamic updates; EvoRubric instead unifies response generation and rubric generation under a single parameterized policy that alternates between a Reasoner and a Rubric Generator.",
+      "paper": "guan2026",
+      "supporting_passage": "Current rubric-based RL methods mitigate this by employing explicit criteria; however, they rely heavily on static, human-annotated rubrics that inevitably cause policy lag, or expensive external proprietary models for dynamic updates. In this paper, we propose EvoRubric, a novel single-policy co-evolutionary RL framework that eliminates the reliance on static criteria and on external rubric generators. By unifying response generation and rubric generation under a single parameterized policy, EvoRubric dynamically alternates between a Reasoner and a Rubric Generator.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c13",
+      "statement": "To prevent reward hacking, EvoRubric introduces a multi-level verification pipeline featuring a meta-verifier, zero-variance pruning, and a Leave-One-Out peer consensus mechanism.",
+      "paper": "guan2026",
+      "supporting_passage": "To prevent reward hacking and ensure the reliability of generated signals, we introduce a multi-level verification pipeline featuring a meta-verifier, zero-variance pruning, and a Leave-One-Out peer consensus mechanism.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c14",
+      "statement": "EvoRubric consistently outperforms traditional static and external-LLM-driven alignment methods across Medical, Writing, and Science domains.",
+      "paper": "guan2026",
+      "supporting_passage": "Extensive experiments across Medical, Writing, and Science domains demonstrate that EvoRubric consistently outperforms traditional static and external-LLM-driven alignment methods.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c15",
+      "statement": "EvoRubric is compatible with human-expert priors: when initialized with expert-annotated rubrics it can further uncover novel, discriminative dimensions, achieving better performance than relying solely on static expert annotations.",
+      "paper": "guan2026",
+      "supporting_passage": "Notably, our framework is compatible with human-expert priors. When initialized with expert-annotated rubrics, EvoRubric can further uncover novel, discriminative dimensions, achieving better performance than relying solely on static expert annotations.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c16",
+      "statement": "OpenRS instantiates adaptive rubrics on the fly by conditioning on the semantic differences between two candidate responses, performs criterion-wise pairwise comparisons, and aggregates criterion-level preferences externally, avoiding pointwise weighted scalarization.",
+      "paper": "jia2026",
+      "supporting_passage": "and instantiates adaptive rubrics on the fly by conditioning on the semantic differences between two candidate responses. It then performs criterion-wise pairwise comparisons and aggregates criterion-level preferences externally, avoiding pointwise weighted scalarization while improving discriminability in open-ended settings.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c17",
+      "statement": "OpenRS is built around Pairwise Adaptive Meta-Rubrics (PAMR) and lightweight Pointwise Verifiable Rubrics (PVRs), and performs criterion-wise pairwise comparisons that are aggregated externally rather than via pointwise weighted scalarization.",
+      "paper": "jia2026",
+      "supporting_passage": "we present the Open Rubric System (OpenRS), a plug-and-play, rubrics-based LLM-as-a-Judge framework built around Pairwise Adaptive Meta-Rubrics (PAMR) and lightweight Pointwise Verifiable Rubrics (PVRs), which provide both hard-constraint guardrails and verifiable reward components when ground-truth or programmatic checks are available.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c18",
+      "statement": "OpenRS argues that for non-verifiable tasks reward should be an explicit reasoning process executed under inspectable principles rather than a learned function internalized into a judge.",
+      "paper": "jia2026",
+      "supporting_passage": "We argue that robust alignment for non-verifiable tasks is fundamentally a principle generalization problem: reward should not be a learned function internalized into a judge, but an explicit reasoning process executed under inspectable principles.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c19",
+      "statement": "Compressing multi-dimensional human preferences into a single scalar reward creates an information bottleneck that often leads to brittleness and reward hacking in open-ended alignment.",
+      "paper": "jia2026",
+      "supporting_passage": "Scalar reward models compress multi-dimensional human preferences into a single opaque score, creating an information bottleneck that often leads to brittleness and reward hacking in open-ended alignment.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c20",
+      "statement": "In rubric-based RL, where an LLM-as-a-Judge scores model outputs according to rubrics as rewards, policy models may exploit latent biases in the judge, leading to reward hacking and ineffective or unsafe training outcomes.",
+      "paper": "wang2026",
+      "supporting_passage": "Rubric-based reinforcement learning (RL) uses an LLM-as-a-Judge (LaaJ) to score model outputs according to rubrics as rewards. However, policy models may exploit latent biases in the judge, leading to reward hacking and ineffective or unsafe training outcomes.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c21",
+      "statement": "CHERRL is a controllable hacking environment for rubric-based RL that injects known biases into the LLM-as-a-Judge to enable stable reproduction of reward hacking and precise identification of hacking onset.",
+      "paper": "wang2026",
+      "supporting_passage": "In this paper, we introduce CHERRL, a controllable hacking environment for rubric-based RL. By injecting known biases into LaaJ, CHERRL enables stable reproduction of reward hacking, explicit observation of reward divergence, and precise identification of hacking onset.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c22",
+      "statement": "CHERRL analyzes judge biases in terms of discoverability and exploitability and explores an agent-based system for automatically detecting reward-hacking onset from training logs.",
+      "paper": "wang2026",
+      "supporting_passage": "To demonstrate its utility, we analyze different judge biases from the perspectives of discoverability and exploitability, and explore an agent-based system for automatically detecting reward hacking onset from training logs.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c23",
+      "statement": "In real-world rubric-based RL, reward-hacking behaviors are often subtle and entangled with multiple judge biases, making them difficult to analyze, detect, and mitigate.",
+      "paper": "wang2026",
+      "supporting_passage": "In real-world rubric-based RL, such hacking behaviors are often subtle and entangled with multiple judge biases, making them difficult to analyze, detect, and mitigate.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c24",
+      "statement": "RaR's best variant achieves up to 31% relative improvement on HealthBench and 7% on GPQA-Diamond over LLM-as-judge baselines that use direct Likert-based rewards.",
+      "paper": "gunjal2025",
+      "supporting_passage": "The best RaR variant achieves relative improvements of up to 31% on HealthBench and 7% on GPQA-Diamond over popular LLM-as-judge baselines that rely on direct Likert-based rewards.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c25",
+      "statement": "Using rubrics as structured reward signals yields better alignment for smaller judges and reduces performance variance across judge scales.",
+      "paper": "gunjal2025",
+      "supporting_passage": "Moreover, we find that using rubrics as structured reward signals yields better alignment for smaller judges and reduces performance variance across judge scales.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c26",
+      "statement": "Self-proposed and self-evolving rubrics provide reliable chain-of-thought supervision even without outcome rewards, enabling RLCER to outperform outcome-centric RLVR.",
+      "paper": "sheng2026",
+      "supporting_passage": "We show that self-proposed and self-evolving rubrics provide reliable CoT supervision signals even without outcome rewards, enabling RLCER to outperform outcome-centric RLVR.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c27",
+      "statement": "Training a reward model for chain-of-thought demands heavy human labeling effort; RLCER instead rewards CoTs with self-proposed and self-evolving rubrics that require no human annotation and provide reliable supervision even without outcome rewards.",
+      "paper": "sheng2026",
+      "supporting_passage": "training a reward model demands heavy human labeling efforts, and static RMs struggle with evolving CoT distributions and reward hacking. These challenges motivate us to seek an autonomous CoT rewarding approach that requires no human annotation efforts and can evolve gradually. Inspired by recent self-evolving training methods, we propose RLCER (Reinforcement Learning with CoT Supervision via Self-Evolving Rubrics), which enhances the outcome-centric RLVR by rewarding CoTs with self-proposed and self-evolving rubrics. We show that self-proposed and self-evolving rubrics provide reliable CoT supervision signals even without outcome rewards",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c28",
+      "statement": "Training a reward model demands heavy human labeling, and static reward models struggle with evolving chain-of-thought distributions and reward hacking, motivating self-evolving rubrics as an autonomous rewarding approach.",
+      "paper": "sheng2026",
+      "supporting_passage": "training a reward model demands heavy human labeling efforts, and static RMs struggle with evolving CoT distributions and reward hacking. These challenges motivate us to seek an autonomous CoT rewarding approach that requires no human annotation efforts and can evolve gradually.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c29",
+      "statement": "AMARIS stores rollout analyses, step-level summaries, and rubric update records in a persistent evaluation memory and retrieves recent, semantically relevant history to revise rubrics, running asynchronously alongside the RL loop to reduce blocking latency relative to synchronous rubric updates.",
+      "paper": "wu2026",
+      "supporting_passage": "AMARIS stores rollout analyses, step-level summaries, and rubric update records in a persistent evaluation memory, then retrieves recent and semantically relevant history to revise rubrics. We evaluate AMARIS across science, medicine, instruction following, and creative writing under both global and instance-specific rubric settings. AMARIS improves over static, local-adaptive, and memory-ablated baselines, such as +2.8 points on GPQA-Diamond and +2.2 points on IFBench over the strongest baselines, while analysis shows that memory reduces oscillatory rubric edits and supports a progression from early failure correction to later curriculum advancement. AMARIS runs asynchronously alongside the normal RL loop, reducing blocking latency relative to synchronous rubric updates.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c30",
+      "statement": "Existing adaptive rubric methods update criteria from local evidence such as the current batch or instance-level comparisons, which discards diagnostic information and makes it hard to track recurring failures, evaluate previous rubric edits, or raise standards once earlier criteria become saturated.",
+      "paper": "wu2026",
+      "supporting_passage": "existing adaptive rubric methods typically update criteria from local evidence such as the current batch or instance-level comparisons. This local view discards diagnostic information produced during training, making it difficult to track recurring failures, evaluate previous rubric edits, or raise standards once earlier criteria become saturated.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c31",
+      "statement": "RubricEM assigns credit with Stage-Structured GRPO, which uses stagewise rubric judgments to provide denser semantic feedback for long-horizon optimization.",
+      "paper": "li2026",
+      "supporting_passage": "It then assigns credit with Stage-Structured GRPO, which uses stagewise rubric judgments to provide denser semantic feedback for long-horizon optimization.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c32",
+      "statement": "RubricEM treats rubrics as the shared interface that structures policy execution, judge feedback, and agent memory, rather than merely as final-answer evaluators.",
+      "paper": "li2026",
+      "supporting_passage": "In this work, we argue that rubrics should serve not merely as final-answer evaluators, but as the shared interface that structures policy execution, judge feedback, and agent memory.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c33",
+      "statement": "In rubric-based RL, weak verifiers produce large proxy-reward gains that do not transfer to reference verifiers, with exploitation growing over training and concentrating in recurring failures such as partial satisfaction of compound criteria, treating implicit content as explicit, and imprecise topical matching.",
+      "paper": "mahmoud2026",
+      "supporting_passage": "Across medical and science domains, weak verifiers produce large proxy-reward gains that do not transfer to the reference verifiers; exploitation grows over training and concentrates in recurring failures such as partial satisfaction of compound criteria, treating implicit content as explicit, and imprecise topical matching.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c34",
+      "statement": "Stronger verifiers substantially reduce but do not eliminate verifier exploitation, so stronger verification reduces reward hacking but does not by itself ensure that rubric gains correspond to broader quality gains.",
+      "paper": "mahmoud2026",
+      "supporting_passage": "Stronger verifiers substantially reduce, but do not eliminate, verifier exploitation.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c35",
+      "statement": "The self-internalization gap is a verifier-free diagnostic based on policy log-probabilities that tracks reference-verifier quality and detects when a policy trained with a weak verifier stops improving.",
+      "paper": "mahmoud2026",
+      "supporting_passage": "We also introduce a self-internalization gap, a verifier-free diagnostic based on policy log-probabilities, which tracks reference-verifier quality, detecting when the policy trained using the weak verifier stops improving.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c36",
+      "statement": "Most prior work mitigates reward hacking by limiting the policy update with a KL penalty toward a reference model, while gradient regularization instead biases training toward flatter regions that maintain reward-model accuracy.",
+      "paper": "ackermann2026",
+      "supporting_passage": "A common problem is reward hacking, where the policy may exploit inaccuracies of the reward and learn an unintended behavior. Most previous works address this by limiting the policy update with a Kullback-Leibler (KL) penalty towards a reference model. We propose a different framing: Train the LM in a way that biases policy updates towards regions in which the reward is more accurate.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c37",
+      "statement": "Gradient regularization empirically performs better than a KL penalty across diverse LM RL experiments, avoiding overly focusing on format in rule-based math rewards and preventing hacking the judge in LLM-as-a-Judge math tasks.",
+      "paper": "ackermann2026",
+      "supporting_passage": "Empirically, GR performs better than a KL penalty across a diverse set of RL experiments with LMs. GR achieves a higher GPT-judged win-rate in RLHF, avoids overly focusing on the format in rule-based math rewards, and prevents hacking the judge in LLM-as-a-Judge math tasks.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c38",
+      "statement": "In rubric RL, standard static aggregations conflate a criterion's human-assigned importance with its current usefulness as an optimization signal, and many important criteria are already saturated or currently unreachable while the criteria that distinguish rollouts are not necessarily those with the largest human weights.",
+      "paper": "tyagi2026",
+      "supporting_passage": "Yet standard static aggregations conflate a criterion's human-assigned importance with its current usefulness as an optimization signal. We show that this assumption breaks down in rubric RL: many important criteria are already saturated or currently unreachable, while criteria that distinguish rollouts are not necessarily those with the largest human weights.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c39",
+      "statement": "POW3R is a policy-aware rubric reward framework that preserves human weights and category balance as the rubric objective while adapting criterion-level reward weights during training using rollout-level contrast to emphasize criteria that currently separate the policy's outputs.",
+      "paper": "tyagi2026",
+      "supporting_passage": "We introduce POW3R, a policy-aware rubric reward framework that preserves human weights and category balance as the rubric objective while adapting criterion-level reward weights during training. POW3R uses rollout-level contrast to emphasize criteria that currently separate the policy's outputs, making the GRPO reward more informative without changing the underlying evaluation target.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c40",
+      "statement": "Authors flag that rubric generation is hard to control: rubrics often lack coverage, conflate dimensions, misalign preference direction, and contain redundant or highly correlated criteria, which degrades judge accuracy and produces suboptimal RFT rewards.",
+      "paper": "shen2026",
+      "supporting_passage": "However, rubric generation remains hard to control: rubrics often lack coverage, conflate dimensions, misalign preference direction, and contain redundant or highly correlated criteria, degrading judge accuracy and producing suboptimal rewards during RFT.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c41",
+      "statement": "A correlation-aware weighting scheme is needed because naively combining rubric criteria can over-represent highly correlated criteria, motivating mechanisms that keep rubric sets informative, comprehensive, and non-redundant.",
+      "paper": "shen2026",
+      "supporting_passage": "A complementary filtering mechanism removes misaligned and redundant rubrics, and a correlation-aware weighting scheme prevents over-representing highly correlated criteria, yielding rubric sets that are informative, comprehensive, and non-redundant.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c42",
+      "statement": "Self-preference bias persists in rubric-based evaluation even when criteria are entirely objective, with judges up to 50% more likely to incorrectly mark a generator's failed rubric as satisfied when the output is their own.",
+      "paper": "pombal2026",
+      "supporting_passage": "Using IFEval, a benchmark with programmatically verifiable rubrics, we show that SPB persists even when evaluation criteria are entirely objective: among rubrics where generators fail, judges can be up to 50\\% more likely to incorrectly mark them as satisfied when the output is their own.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c43",
+      "statement": "Ensembling multiple judges helps mitigate self-preference bias in rubric-based evaluation but does not fully eliminate it.",
+      "paper": "pombal2026",
+      "supporting_passage": "We also find that, similarly to other evaluation paradigms, ensembling multiple judges helps mitigate SPB, but without fully eliminating it.",
+      "claim_type": "finding",
+      "confidence": "high"
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "statement": "Aggregating multi-criterion rubric judgments into a single scalar reward is not principled: static aggregations conflate a criterion's human-assigned importance with its current usefulness as a training signal, lose multi-criterion structure, and can mis-reward individual reasoning steps.",
+      "status": "partially-addressed",
+      "why_it_matters": "The aggregation rule directly determines the gradient the policy receives; a poor aggregation wastes informative criteria, uniformly supervises correct and incorrect steps, and opens the door to reward hacking via self-correction.",
+      "flagged_by": [
+        "xie2026",
+        "tyagi2026",
+        "jia2026",
+        "jiang2026"
+      ]
+    },
+    {
+      "id": "o2",
+      "statement": "Rubric reward hacking is not solved: policy models exploit latent judge biases and weak verifiers, exploitation grows over training, and stronger verification reduces but does not eliminate it, so rubric gains need not correspond to broader human-judged quality gains.",
+      "status": "partially-addressed",
+      "why_it_matters": "If rubric reward optimization diverges from true quality, post-training produces ineffective or unsafe models while reported rubric scores keep rising, undermining the whole non-verifiable RL premise.",
+      "flagged_by": [
+        "mahmoud2026",
+        "wang2026",
+        "xie2026",
+        "ackermann2026"
+      ]
+    },
+    {
+      "id": "o3",
+      "statement": "Rubric generation remains hard to control — rubrics often lack coverage, conflate dimensions, misalign preference direction, and contain redundant or highly correlated criteria — and rubric quality is structurally bottlenecked by query structure.",
+      "status": "partially-addressed",
+      "why_it_matters": "The reward signal can be no better than the rubric that defines it; incomplete or correlated criteria degrade judge accuracy and inject systematic error into every downstream RL update.",
+      "flagged_by": [
+        "shen2026",
+        "zhang2026"
+      ]
+    },
+    {
+      "id": "o4",
+      "statement": "Judge-model bias and self-preference contaminate rubric rewards: self-preference bias persists even with objective verifiable rubrics, and ensembling judges mitigates but does not eliminate it.",
+      "status": "open",
+      "why_it_matters": "In recursive self-improvement loops where the policy and judge share a family or backbone, self-preference bias systematically inflates the policy's own outputs, corrupting the training signal in ways simple objectivity checks do not catch.",
+      "flagged_by": [
+        "pombal2026",
+        "wang2026"
+      ]
+    },
+    {
+      "id": "o5",
+      "statement": "Static human-annotated rubrics cause policy lag while dynamic rubric updates from external proprietary models are expensive, leaving an unresolved tension between rubric freshness, supervision cost, and scalability of expert rubric authoring.",
+      "status": "partially-addressed",
+      "why_it_matters": "Scaling rubric-based RL to many domains requires either expensive expert authoring or trustworthy automatic rubric evolution; both freshness and cost must be solved together for the paradigm to scale.",
+      "flagged_by": [
+        "guan2026",
+        "sheng2026",
+        "wu2026"
+      ]
+    },
+    {
+      "id": "o6",
+      "statement": "There is no standardized non-verifiable evaluation protocol for validating that a rubric reward correlates with true human-judged quality, so methods are validated against heterogeneous benchmarks, judge panels, and self-defined diagnostics.",
+      "status": "open",
+      "why_it_matters": "Without a shared protocol for confirming rubric-reward fidelity, reported gains across papers are hard to compare and may reflect benchmark-specific or judge-specific artifacts rather than real quality improvements.",
+      "flagged_by": [
+        "mahmoud2026",
+        "gunjal2025",
+        "jia2026"
+      ]
+    },
+    {
+      "id": "o7",
+      "statement": "Cross-domain transfer of rubric-trained policies is only partially demonstrated: gains are reported on held-out reasoning benchmarks but it is unclear how rubric criteria, weighting, and judges generalize across the full span of open-ended domains.",
+      "status": "partially-addressed",
+      "why_it_matters": "If rubric rewards must be re-authored or re-tuned per domain, the approach does not scale; demonstrating robust transfer is essential to justify rubric-based post-training as a general alignment recipe.",
+      "flagged_by": [
+        "zhang2026",
+        "guan2026",
+        "wu2026"
+      ]
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "Should the rubric reward be a single pointwise scalar per response, or should criterion-level signals be kept disaggregated (step-wise, pairwise, or externally aggregated)?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Pointwise scalar aggregation is the workable baseline and can be made effective by improving the rubric and adaptive weighting.",
+          "summary": "The original RaR formulation scores rollouts against structured criteria and aggregates them into a single scalar reward that drives on-policy RL, beating Likert LLM-as-judge baselines; later work keeps the pointwise paradigm but improves it via policy-aware criterion weighting and better rubric generation.",
+          "papers": [
+            "gunjal2025",
+            "tyagi2026",
+            "shen2026"
+          ]
+        },
+        {
+          "stance": "Single-scalar aggregation is fundamentally lossy and should be replaced by disaggregated step-wise or pairwise criterion signals.",
+          "summary": "Collapsing rubric scores into one response-level scalar loses multi-criterion structure, uniformly supervises correct and incorrect steps, and enables reward hacking; step-wise attribution, pairwise criterion comparison aggregated externally, and probability-based scoring are proposed as remedies that avoid pointwise weighted scalarization.",
+          "papers": [
+            "xie2026",
+            "jia2026",
+            "jiang2026"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "question": "Is rubric reward hacking solvable, and if so by what mechanism — better/evolving rubrics and verification, or optimization-side constraints?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Reward hacking can be substantially curbed by improving the reward source: self-evolving rubrics with verification pipelines and multi-judge checks.",
+          "summary": "Self-evolving and co-evolutionary rubric systems plus multi-level verification (meta-verifier, zero-variance pruning, leave-one-out consensus) are proposed specifically to prevent reward hacking, on the premise that fresher, verified rubrics keep the reward aligned with quality.",
+          "papers": [
+            "guan2026",
+            "sheng2026",
+            "wang2026"
+          ]
+        },
+        {
+          "stance": "Hacking is intrinsic to imperfect judges/verifiers and only partially mitigable; the durable fix is optimization-side regularization, not better rubrics alone.",
+          "summary": "Stronger verifiers reduce but do not eliminate exploitation and rubric gains need not transfer to true quality; gradient regularization toward flatter, more reward-accurate optima is argued to beat KL penalties and prevent judge hacking, framing the problem as an optimization-accuracy issue rather than a rubric-quality one.",
+          "papers": [
+            "mahmoud2026",
+            "ackermann2026"
+          ]
+        }
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "RaR vs Likert LLM-as-judge on HealthBench",
+      "paper": "gunjal2025",
+      "dataset": "HealthBench",
+      "method": "Rubrics as Rewards (best variant)",
+      "metric": "relative improvement over direct Likert-based LLM-as-judge reward",
+      "value": "up to +31% relative"
+    },
+    {
+      "id": "b2",
+      "name": "RaR vs Likert LLM-as-judge on GPQA-Diamond",
+      "paper": "gunjal2025",
+      "dataset": "GPQA-Diamond",
+      "method": "Rubrics as Rewards (best variant)",
+      "metric": "relative improvement over direct Likert-based LLM-as-judge reward",
+      "value": "+7% relative"
+    },
+    {
+      "id": "b3",
+      "name": "SRaR vs RaR on math benchmarks (Qwen3-8B)",
+      "paper": "xie2026",
+      "dataset": "six mathematical reasoning benchmarks",
+      "method": "SRaR vs RaR (Qwen3-8B)",
+      "metric": "average accuracy improvement",
+      "value": "+3.57 points"
+    },
+    {
+      "id": "b4",
+      "name": "SRaR vs RaR on math benchmarks (Qwen3-32B)",
+      "paper": "xie2026",
+      "dataset": "six mathematical reasoning benchmarks",
+      "method": "SRaR vs RaR (Qwen3-32B)",
+      "metric": "average accuracy improvement",
+      "value": "+2.75 points"
+    },
+    {
+      "id": "b5",
+      "name": "SRaR Faithful Reasoning Rate on AIME 2025",
+      "paper": "xie2026",
+      "dataset": "AIME 2025",
+      "method": "SRaR vs RaR",
+      "metric": "Faithful Reasoning Rate",
+      "value": "34.5% to 46.7%"
+    },
+    {
+      "id": "b6",
+      "name": "SRaR self-correction looping reduction",
+      "paper": "xie2026",
+      "dataset": "AIME 2025 / math reasoning",
+      "method": "SRaR vs RaR",
+      "metric": "self-correction looping rate",
+      "value": "48.1% to 26.5%"
+    },
+    {
+      "id": "b7",
+      "name": "QUBRIC vs SFT on ArenaHard",
+      "paper": "zhang2026",
+      "dataset": "ArenaHard",
+      "method": "QUBRIC vs SFT",
+      "metric": "score gain",
+      "value": "+5.5 points"
+    },
+    {
+      "id": "b8",
+      "name": "QUBRIC held-out transfer",
+      "paper": "zhang2026",
+      "dataset": "held-out legal, moral, and narrative reasoning benchmarks",
+      "method": "QUBRIC (trained only on instruction-following data)",
+      "metric": "average transfer gain",
+      "value": "+6.3 points average"
+    },
+    {
+      "id": "b9",
+      "name": "AMARIS vs strongest baseline on GPQA-Diamond",
+      "paper": "wu2026",
+      "dataset": "GPQA-Diamond",
+      "method": "AMARIS vs static/local-adaptive/memory-ablated baselines",
+      "metric": "score gain over strongest baseline",
+      "value": "+2.8 points"
+    },
+    {
+      "id": "b10",
+      "name": "AMARIS vs strongest baseline on IFBench",
+      "paper": "wu2026",
+      "dataset": "IFBench",
+      "method": "AMARIS vs static/local-adaptive/memory-ablated baselines",
+      "metric": "score gain over strongest baseline",
+      "value": "+2.2 points"
+    },
+    {
+      "id": "b11",
+      "name": "POW3R base-policy/metric comparisons",
+      "paper": "tyagi2026",
+      "dataset": "rubric RL evaluation suite (30 base-policy/metric comparisons)",
+      "method": "POW3R vs static rubric aggregation",
+      "metric": "comparisons won",
+      "value": "24 of 30"
+    },
+    {
+      "id": "b12",
+      "name": "POW3R training-step efficiency",
+      "paper": "tyagi2026",
+      "dataset": "rubric RL training",
+      "method": "POW3R vs static rubric aggregation",
+      "metric": "training steps to reach the same plateau",
+      "value": "2.5-4x fewer steps"
+    },
+    {
+      "id": "b13",
+      "name": "Self-preference bias on verifiable rubrics",
+      "paper": "pombal2026",
+      "dataset": "IFEval (programmatically verifiable rubrics)",
+      "method": "LLM judge evaluating own vs others' failed outputs",
+      "metric": "increased likelihood of marking a failed rubric as satisfied for own output",
+      "value": "up to 50% more likely"
+    }
+  ],
+  "coverage": {
+    "sub_questions": [
+      "What is the core Rubrics-as-Rewards (RaR) method — how are structured rubrics constructed (per-prompt vs. global, expert- vs. LLM-generated), how are individual criterion judgments aggregated into a scalar reward, and which RL optimizer (e.g. GRPO/PPO) consumes that reward during post-training?",
+      "How do rubric-based RL methods perform against baselines — RLVR, scalar preference reward models, LLM-as-a-judge without rubrics, and SFT — on non-verifiable benchmarks, and on what axes (win-rate, factuality, instruction-following, reasoning quality, out-of-distribution generalization) are the reported gains measured?",
+      "What are the cost, data-efficiency, and evaluation-protocol properties — judge-model size and inference cost, number of rubric criteria, amount of human/expert rubric supervision required, and how each system validates that the rubric reward correlates with true human-judged quality?",
+      "What are the major named variants and systems in the 2026 frontier (e.g. self-evolving / auto-evolved rubrics, rubric-ensemble or rubric-EM judge training, rubric-anchored policy optimization, open rubric corpora), and how do their rubric-generation, aggregation, and optimization choices differ from the original RaR?",
+      "What does the rubric-reward-hacking / judge-gaming literature document — what failure modes (length/sycophancy/format exploitation, criterion-collapse, judge overfitting, reward over-optimization) arise when rubrics are used as RL rewards, and which detection and mitigation strategies (rubric refresh, adversarial criteria, judge ensembling, KL/anchoring constraints) are proposed?",
+      "What open problems and limitations do authors explicitly flag — e.g. rubric coverage/completeness, criterion weighting and aggregation principledness, judge-model bias and self-preference, transfer across domains, scalability of expert rubric authoring, and lack of standardized non-verifiable evaluation protocols?"
+    ],
+    "queries": [
+      "rubrics as rewards reinforcement learning LLM non-verifiable",
+      "rubric reward reinforcement learning open-ended reasoning post-training",
+      "self-evolving rubric reward LLM RL",
+      "LLM judge rubric reward hacking over-optimization",
+      "rubric-anchored policy optimization GRPO subjective tasks",
+      "RLVR beyond verifiable rewards structured rubric reward signal",
+      "automatic rubric generation reward model LLM alignment",
+      "rubric ensemble expectation-maximization judge reward training"
+    ]
+  }
+}

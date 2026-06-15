@@ -1,0 +1,79 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Rubrics-as-Rewards: LLM-graded structured rubrics as the RL reward signal for post-training in non-verifiable, open-ended domains",
+  "scope": "In scope: reinforcement learning methods that replace or augment verifiable rewards (RLVR) with structured, multi-criterion rubrics graded by an LLM judge as the dense reward for open-ended/subjective tasks (writing, dialogue, medicine, reasoning quality) \u2014 covering the original \"Rubrics as Rewards (RaR)\" formulation, its 2026 named descendants (e.g. self-evolving/auto-generated rubric systems, rubric-anchored policy optimization variants, rubric ensembling and EM-style judge training), the training recipes (GRPO/PPO with rubric aggregation), and the emerging rubric-reward-hacking / judge-gaming failure-mode literature with its mitigations. Out of scope: classic RLHF with a single scalar Bradley-Terry preference reward model; pure RLVR on math/code with programmatic checkers; LLM-as-a-judge purely for offline evaluation/benchmarking (not as an RL training signal); and general constitutional-AI / preference-optimization (DPO/RLAIF) methods that do not use explicit structured rubrics as the reward.",
+  "built": "2026-06-15",
+  "stats": {
+    "papers_verified": 15,
+    "papers_total": 15,
+    "claims": 43,
+    "open_problems": 7,
+    "debates": 2,
+    "benchmarks": 13,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0
+    }
+  },
+  "source_span": {
+    "oldest": 2025,
+    "newest": 2026,
+    "latest_checked": "2026-06-15"
+  },
+  "coverage": {
+    "sub_questions": [
+      "What is the core Rubrics-as-Rewards (RaR) method \u2014 how are structured rubrics constructed (per-prompt vs. global, expert- vs. LLM-generated), how are individual criterion judgments aggregated into a scalar reward, and which RL optimizer (e.g. GRPO/PPO) consumes that reward during post-training?",
+      "How do rubric-based RL methods perform against baselines \u2014 RLVR, scalar preference reward models, LLM-as-a-judge without rubrics, and SFT \u2014 on non-verifiable benchmarks, and on what axes (win-rate, factuality, instruction-following, reasoning quality, out-of-distribution generalization) are the reported gains measured?",
+      "What are the cost, data-efficiency, and evaluation-protocol properties \u2014 judge-model size and inference cost, number of rubric criteria, amount of human/expert rubric supervision required, and how each system validates that the rubric reward correlates with true human-judged quality?",
+      "What are the major named variants and systems in the 2026 frontier (e.g. self-evolving / auto-evolved rubrics, rubric-ensemble or rubric-EM judge training, rubric-anchored policy optimization, open rubric corpora), and how do their rubric-generation, aggregation, and optimization choices differ from the original RaR?",
+      "What does the rubric-reward-hacking / judge-gaming literature document \u2014 what failure modes (length/sycophancy/format exploitation, criterion-collapse, judge overfitting, reward over-optimization) arise when rubrics are used as RL rewards, and which detection and mitigation strategies (rubric refresh, adversarial criteria, judge ensembling, KL/anchoring constraints) are proposed?",
+      "What open problems and limitations do authors explicitly flag \u2014 e.g. rubric coverage/completeness, criterion weighting and aggregation principledness, judge-model bias and self-preference, transfer across domains, scalability of expert rubric authoring, and lack of standardized non-verifiable evaluation protocols?"
+    ],
+    "queries": [
+      "rubrics as rewards reinforcement learning LLM non-verifiable",
+      "rubric reward reinforcement learning open-ended reasoning post-training",
+      "self-evolving rubric reward LLM RL",
+      "LLM judge rubric reward hacking over-optimization",
+      "rubric-anchored policy optimization GRPO subjective tasks",
+      "RLVR beyond verifiable rewards structured rubric reward signal",
+      "automatic rubric generation reward model LLM alignment",
+      "rubric ensemble expectation-maximization judge reward training"
+    ]
+  },
+  "falsification": {
+    "run": true,
+    "question": "Write the related-work section for a paper introducing a new self-evolving rubric-based RL method for post-training LLMs on non-verifiable, open-ended tasks. Situate it against the original Rubrics-as-Rewards formulation and the 2026 wave of named rubric-reward systems (covering automatic/self-evolving rubric generation, rubric-ensemble and EM-style judge training, and rubric-anchored policy optimization), and critically engage the rubric-reward-hacking failure-mode literature and its proposed mitigations. Cite the specific recent arXiv papers that introduced each named method and each documented failure mode, and identify the open problems they leave unresolved that your method addresses.",
+    "base": {
+      "cited": 3,
+      "checked": 3,
+      "unresolved": 0,
+      "real": 3,
+      "fake": 0,
+      "fake_list": [],
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 0.06666666666666667,
+      "spine_covered": 1,
+      "spine_size": 15,
+      "f1": 0.125
+    },
+    "kp": {
+      "cited": 15,
+      "checked": 15,
+      "unresolved": 0,
+      "real": 15,
+      "fake": 0,
+      "fake_list": [],
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 1.0,
+      "spine_covered": 15,
+      "spine_size": 15,
+      "f1": 1.0
+    },
+    "verdict": "KP HELPS \u2014 f1 0.12 (base) \u2192 1.00 (KP). precision 1.00\u21921.00, recall 0.07\u21921.00, 0 fake cites in base vs 0 in KP."
+  }
+}

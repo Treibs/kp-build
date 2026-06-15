@@ -1,0 +1,13 @@
+{
+  "name": "@kp/rubrics-as-rewards-llm-graded-structured-rubrics-as",
+  "version": "0.1.0",
+  "description": "In scope: reinforcement learning methods that replace or augment verifiable rewards (RLVR) with structured, multi-criterion rubrics graded by an LLM judge as the dense reward for open-ended/subjective tasks (writing, dialogue, medicine, reasoning quality) \u2014 covering the original \"Rubrics as Rewards ",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}
