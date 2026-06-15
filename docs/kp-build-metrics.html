@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>kp-build — metrics, cost &amp; ROI</title>
+<style>
+:root{--ink:#14161c;--mut:#5b6472;--line:#e6e8ef;--bg:#f7f8fa;--card:#fff;--acc:#4f46e5;
+--good:#16a34a;--goodbg:#dcfce7;--warn:#d97706;--warnbg:#fef3c7;--bad:#dc2626;--badbg:#fee2e2;
+--survey:#6366f1;--extract:#4f46e5;--falsify:#a5b4fc;--deepen:#c4b5fd;
+--shadow:0 1px 2px rgba(20,22,40,.05),0 8px 22px rgba(20,22,40,.05)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:#eef0f4;border-radius:5px;padding:1px 6px}
+.num{font-variant-numeric:tabular-nums}
+header{background:linear-gradient(135deg,#312e81,#4f46e5);color:#fff;padding:46px 0 38px}
+.eyebrow{font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;color:#c7d2fe;font-weight:600;margin:0 0 10px}
+h1{font-size:30px;line-height:1.15;margin:0 0 12px;font-weight:700;letter-spacing:-.01em}
+.lede{font-size:16.5px;color:#e0e1f5;max-width:74ch;margin:0 0 26px}
+.hstats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.hstat{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);border-radius:13px;padding:14px 16px}
+.hstat b{display:block;font-size:21px;line-height:1.1;font-weight:700}.hstat span{display:block;font-size:12px;color:#c7d2fe;margin-top:5px}
+section{padding:40px 0;border-bottom:1px solid var(--line)}
+.kicker{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);font-weight:700;margin:0 0 9px}
+h2{font-size:22px;margin:0 0 14px;font-weight:700;letter-spacing:-.01em}
+p{margin:0 0 13px;max-width:76ch}.mut{color:var(--mut)}
+/* scorecard */
+.score{width:100%;border-collapse:separate;border-spacing:0 8px}
+.score th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding:0 14px 4px}
+.score td{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 14px;vertical-align:top}
+.score tr td:first-child{border-left:1px solid var(--line);border-radius:11px 0 0 11px;border-left-width:4px}
+.score tr td:last-child{border-right:1px solid var(--line);border-radius:0 11px 11px 0}
+.score tr.g td:first-child{border-left-color:var(--good)}.score tr.a td:first-child{border-left-color:var(--warn)}.score tr.r td:first-child{border-left-color:var(--bad)}
+.m-name{font-weight:600;font-size:14.5px}.m-what{color:var(--mut);font-size:12.5px;margin-top:2px;max-width:42ch}
+.pill{font-size:11px;font-weight:700;border-radius:99px;padding:2px 10px;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.pill.g{background:var(--goodbg);color:#14532d}.pill.a{background:var(--warnbg);color:#7c2d12}.pill.r{background:var(--badbg);color:#7f1d1d}
+.tgt{font-size:13px}.now{font-size:13.5px;font-weight:600}
+/* cost */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+.bar{display:flex;height:42px;border-radius:9px;overflow:hidden;border:1px solid var(--line);margin:6px 0 4px}
+.seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600;min-width:0;overflow:hidden;white-space:nowrap}
+.seg.s{background:var(--survey)}.seg.e{background:var(--extract)}.seg.f{background:var(--falsify);color:#1e1b4b}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--mut);margin-top:8px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.free{background:#f3fcf6;border:1px solid #bbf7d0;border-radius:10px;padding:11px 15px;margin-top:14px;font-size:13.5px;color:#14532d}
+.totals{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:14px}
+.tot{border:1px solid var(--line);border-radius:11px;padding:13px 15px}.tot b{font-size:19px;display:block}.tot span{color:var(--mut);font-size:12px}
+/* roi chart */
+.roiwrap{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:center}
+svg{display:block;width:100%;height:auto}
+.note{background:#fffdf5;border:1px solid #fde9b8;border-radius:11px;padding:12px 16px;font-size:13.5px;color:#7c5a13;margin-top:14px}
+/* levers */
+.lev{display:grid;grid-template-columns:30px 1fr auto;gap:14px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+.lev .rank{width:28px;height:28px;border-radius:9px;background:#eef0fb;color:var(--acc);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+.lev h3{margin:0 0 3px;font-size:15.5px}.lev p{margin:0;font-size:13px;color:var(--mut);max-width:64ch}
+.tags{display:flex;flex-direction:column;gap:5px;align-items:flex-end;white-space:nowrap}
+.tag{font-size:10.5px;font-weight:700;border-radius:99px;padding:2px 9px;text-transform:uppercase;letter-spacing:.03em}
+.tag.hi{background:var(--goodbg);color:#14532d}.tag.md{background:var(--warnbg);color:#7c2d12}.tag.lo{background:#eef0f4;color:#475569}
+.st{font-size:11px;color:var(--mut)}
+/* decision */
+.dec{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dec .box{border-radius:13px;padding:18px 20px;border:1px solid}
+.dec .run{background:#f3fcf6;border-color:#bbf7d0}.dec .skip{background:#fef6f6;border-color:#fecaca}
+.dec h3{margin:0 0 8px;font-size:16px}.dec .run h3{color:#14532d}.dec .skip h3{color:#991b1b}
+.dec ul{margin:0;padding-left:18px}.dec li{margin:5px 0;font-size:14px}
+.foot{padding:26px 0 56px;color:var(--mut);font-size:13.5px}
+@media (max-width:720px){.hstats{grid-template-columns:1fr 1fr}.roiwrap,.dec,.totals{grid-template-columns:1fr}.lev{grid-template-columns:30px 1fr}.tags{flex-direction:row;align-items:center}}
+</style></head>
+<body>
+<header><div class="wrap">
+  <p class="eyebrow">kp-build · metrics · cost · roi</p>
+  <h1>What we get, what it costs, and when it pays</h1>
+  <p class="lede">kp-build works where it's meant to and is provably worthless where it isn't — that gap is the
+  whole decision. On a model-weak topic it lifted a downstream agent from <b>f1 0.37 → 0.91</b> and cut citation
+  fabrication from <b>37.5% → 0%</b>. The product is sound; the unfunded gap is a cheap pre-flight check so we
+  never pay to build a package that adds nothing.</p>
+  <div class="hstats">
+    <div class="hstat"><b class="num">0.37 → 0.91</b><span>answer quality (f1), unaided → package-loaded</span></div>
+    <div class="hstat"><b class="num">37.5% → 0%</b><span>citation fabrication rate, eliminated</span></div>
+    <div class="hstat"><b>$0</b><span>infra / API — verification is free &amp; keyless</span></div>
+    <div class="hstat"><b class="num">3–7</b><span>consumers to break even on build cost</span></div>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <p class="kicker">Output metrics</p>
+  <h2>The scorecard — targets vs. where we are</h2>
+  <table class="score">
+    <thead><tr><th style="width:34%">Metric</th><th>Target</th><th>Where we are</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr class="g"><td><div class="m-name">Value-lift (Δf1) <span style="color:var(--acc)">★ headline</span></div><div class="m-what">Does loading the package make a downstream agent measurably better?</div></td>
+        <td class="tgt">≥ +0.30 to ship</td><td class="now">+0.54 (weak topic) · 0.00 (3 known topics)</td><td><span class="pill g">on target*</span></td></tr>
+      <tr class="g"><td><div class="m-name">Citation fabrication</div><div class="m-what">Cited papers that are fake or mislabeled (real id, wrong paper)</div></td>
+        <td class="tgt">0% (package must never add one)</td><td class="now">0% (KP) vs 37.5% unaided</td><td><span class="pill g">green</span></td></tr>
+      <tr class="g"><td><div class="m-name">Spine recall</div><div class="m-what">How much of the verified spine the agent actually uses</div></td>
+        <td class="tgt">≥ 0.70 (load-bearing, not decor)</td><td class="now">0.84 vs 0.26 unaided</td><td><span class="pill g">green</span></td></tr>
+      <tr class="g"><td><div class="m-name">Open-problems count</div><div class="m-what">Highest-value, hardest-to-fabricate section</div></td>
+        <td class="tgt">≥ 5 per package</td><td class="now">8 (+ 3 debates, 13 benchmarks)</td><td><span class="pill g">green</span></td></tr>
+      <tr class="r"><td><div class="m-name">Verification reliability</div><div class="m-what">% of citations that resolve live (not transient failures)</div></td>
+        <td class="tgt">≥ 95% resolved</td><td class="now">100% clean · 64% (25/39) on a large build</td><td><span class="pill r">gap</span></td></tr>
+      <tr class="a"><td><div class="m-name">Claim grounding</div><div class="m-what">Is each claim's quote actually in the cited paper?</div></td>
+        <td class="tgt">machine-verified</td><td class="now">unmeasured — drafter-quoted, not checked</td><td><span class="pill a">unmeasured</span></td></tr>
+      <tr class="r"><td><div class="m-name">Model-weakness fit</div><div class="m-what">Is the topic one the model is weak on? (precondition for any value)</div></td>
+        <td class="tgt">pre-screen · ≥80% of builds clear the bar</td><td class="now">no check · ~25% observed hit-rate</td><td><span class="pill r">biggest gap</span></td></tr>
+    </tbody>
+  </table>
+  <p class="mut" style="font-size:13px;margin-top:4px">*Value-lift is <b>bimodal</b>: +0.54 on the one model-weak topic, exactly 0.00 on three the model already knew — and only n=1 above target so far. A multi-topic panel is needed to prove +0.30 is reliably clearable.</p>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">Cost</p>
+  <h2>It's 100% LLM tokens — the infrastructure is free</h2>
+  <p class="mut">The Python engine and every citation API (arXiv, Crossref, Semantic Scholar) are keyless and free, so
+  all verification, assembly, and scoring cost ~0 tokens and $0. The entire price of a package is the agent work.</p>
+  <div class="card">
+    <div class="bar">
+      <div class="seg e" style="width:67%">Extract · Ground · Refute — ~$2.40–$17</div>
+      <div class="seg s" style="width:27%">Survey ~$4.20</div>
+      <div class="seg f" style="width:6%">Falsify</div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--extract)"></i>Extract/Ground/Refute (the #1 driver — scales with paper count)</span>
+      <span><i style="background:var(--survey)"></i>Survey (near-fixed ~280k-token floor)</span>
+      <span><i style="background:var(--falsify)"></i>Falsify (~58k — the gate that proves value)</span>
+    </div>
+    <div class="free">⚙ <b>Engine + citation APIs: $0 / ~0 tokens.</b> Verify, assemble, lint, score — the trust core that drops every fake citation — costs nothing. Optional citation-graph deepening adds a flat ~244k tokens (~$3.66) for ~30× candidate coverage.</div>
+    <div class="totals">
+      <div class="tot"><b class="num">~$7.50 – $22.50</b><span>per package at Opus-tier ($15 / 1M output tokens)</span></div>
+      <div class="tot"><b class="num">~$1.50 – $4.50</b><span>same run on a $3 / 1M model — provider choice swings cost ~5×</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">Cost-benefit · ROI</p>
+  <h2>Build once; every reuse is near-free</h2>
+  <div class="roiwrap">
+    <div class="card">
+      <svg viewBox="0 0 520 260" role="img" aria-label="break-even: build-once vs re-research-each-time">
+        <!-- crossing band N≈3–7 (x: N=3→157, N=7→307) drawn first, under the lines -->
+        <rect x="157" y="20" width="150" height="200" fill="#16a34a" opacity="0.08"/>
+        <!-- axes -->
+        <line x1="44" y1="20" x2="44" y2="220" stroke="#cbd5e1" stroke-width="1.4"/>
+        <line x1="44" y1="220" x2="400" y2="220" stroke="#cbd5e1" stroke-width="1.4"/>
+        <text x="44" y="240" class="num" font-size="11" fill="#5b6472" text-anchor="middle">0</text>
+        <text x="232" y="240" class="num" font-size="11" fill="#5b6472" text-anchor="middle">5</text>
+        <text x="370" y="240" font-size="11" fill="#5b6472" text-anchor="end">consumers →</text>
+        <text x="14" y="120" font-size="11" fill="#5b6472" transform="rotate(-90 14 120)" text-anchor="middle">cumulative tokens</text>
+        <!-- re-research each (steep): from N=0 cost 0, rising; crosses (232,120) -->
+        <line x1="44" y1="220" x2="400" y2="31" stroke="#dc2626" stroke-width="2.4"/>
+        <text x="406" y="33" font-size="11" font-weight="700" fill="#dc2626">re-research each</text>
+        <text x="406" y="47" font-size="10" fill="#b91c1c">~274k tok / consumer</text>
+        <!-- build once: starts at the one-time build cost, near-flat (+6k each); crosses (232,120) -->
+        <line x1="44" y1="128" x2="400" y2="112" stroke="#4f46e5" stroke-width="2.4"/>
+        <text x="406" y="114" font-size="11" font-weight="700" fill="#4f46e5">build once + load</text>
+        <text x="406" y="128" font-size="10" fill="#4338ca">~6k tok / consumer</text>
+        <!-- break-even marker exactly on the intersection (N≈5, x=232,y=120) -->
+        <line x1="232" y1="20" x2="232" y2="220" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <circle cx="232" cy="120" r="5" fill="#16a34a" stroke="#fff" stroke-width="1.5"/>
+        <text x="232" y="34" font-size="10.5" font-weight="700" fill="#16a34a" text-anchor="middle">break-even</text>
+        <text x="232" y="208" font-size="10.5" font-weight="700" fill="#16a34a" text-anchor="middle">N ≈ 3–7</text>
+      </svg>
+    </div>
+    <div>
+      <p><b>The model is amortization.</b> Build a package once (~0.6–1.5M tokens); each consumer then loads a
+      <b>~6k-token <code>CONTEXT.md</code></b> and skips the research entirely. Each saves ~274k tokens (survey-grade)
+      up to a full 0.6–1.5M (per-paper extraction).</p>
+      <p><b>Break-even ≈ 3–7 consumers</b> — or just <b>1–2</b> if each would otherwise do full extraction. Past that,
+      every additional loader is near-pure profit. It's per-<em>topic</em>, not per-question: one package serves
+      unlimited related tasks until the field moves.</p>
+    </div>
+  </div>
+  <div class="note"><b>The asymmetric part — risk avoided.</b> Re-researching doesn't just re-spend compute; it grounds work
+  in <b>undetectable fabrications</b> (our unaided agent cited a real arXiv id with the <em>wrong</em> paper's title — you
+  can't catch that by eye). One fake source in a downstream paper, grant, or memo can invalidate the whole artifact:
+  <b>bounded one-time build cost vs. unbounded downside.</b></div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">Where to improve — ranked by ROI</p>
+  <h2>The levers that raise the red metrics</h2>
+  <div class="lev"><div class="rank">1</div><div><h3>Topic-weakness pre-screen</h3><p>Run only the ~29k-token base-answer probe <b>first</b>; if the model already cites cleanly, abort before paying for the full build. Today ~3 of 4 builds can return $0 purely from topic selection — this turns that into a go/no-go gate.</p></div><div class="tags"><span class="tag lo">low effort</span><span class="tag hi">high impact</span><span class="st">not started</span></div></div>
+  <div class="lev"><div class="rank">2</div><div><h3>Passage-presence grounding gate</h3><p>Machine-verify each claim's quote actually appears in its paper. Turns ~37–76 "grounded" claims from <em>trust-me</em> to verified — the same standing the citation spine already has. Closes the build's own honesty gap #1.</p></div><div class="tags"><span class="tag md">high effort</span><span class="tag hi">high impact</span><span class="st">planned</span></div></div>
+  <div class="lev"><div class="rank">3</div><div><h3>Adaptive verification throttle + retry-errors-only</h3><p>Get large packages from 25/39 → ~100% verified. Today's miss is rate-limiting, not fakes. Pure mechanical, no agent tokens.</p></div><div class="tags"><span class="tag lo">low effort</span><span class="tag md">medium impact</span><span class="st">partial</span></div></div>
+  <div class="lev"><div class="rank">4</div><div><h3>Iterated expansion + gap-critic</h3><p>One wave already surfaced 563 candidates (~30× the keyword survey). Iterate + add a critic that names under-covered sub-questions, so "coverage too shallow" becomes measurable, not asserted.</p></div><div class="tags"><span class="tag md">medium effort</span><span class="tag md">medium impact</span><span class="st">partial</span></div></div>
+  <div class="lev"><div class="rank">5</div><div><h3>Enforced refuter coverage</h3><p>Make stress-testing high-confidence claims a tracked, enforced fraction rather than opt-in. Do after 1–3.</p></div><div class="tags"><span class="tag md">medium effort</span><span class="tag lo">low impact</span><span class="st">partial</span></div></div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">The decision rule</p>
+  <h2>When to run it — and it's self-enforcing</h2>
+  <div class="dec">
+    <div class="box run"><h3>✓ Run kp-build</h3><ul>
+      <li>The topic is <b>model-weak</b> — recent, niche, or post-training-cutoff.</li>
+      <li><b>≥ 3 agents</b> will reuse the package (or even 1–2 if each would otherwise do full extraction).</li>
+      <li>Downstream work needs <b>zero fabricated sources</b> (papers, grants, strategy memos).</li>
+    </ul></div>
+    <div class="box skip"><h3>✗ Skip it</h3><ul>
+      <li>The model <b>already knows</b> the field — value is structurally ~0 (3 topics tested tied).</li>
+      <li>It's a <b>one-off</b> question with no reuse.</li>
+      <li>You only need traceability, not accuracy — cheaper ways exist.</li>
+    </ul></div>
+  </div>
+  <div class="note" style="background:#f3fcf6;border-color:#bbf7d0;color:#14532d">The falsification gate makes this rule <b>verifiable, not faith-based</b>: it tells you honestly, for free, whether the package beat the unaided baseline — so a package that adds nothing is caught before you trust it.</div>
+</div></section>
+
+<div class="wrap foot">
+  <b>The one-liner for the board:</b> the engine and verification are free and trustworthy; the cost and the risk both
+  live entirely in the LLM agent work — so the highest-leverage next build is a cheap gate that stops us paying for
+  packages that won't help.
+</div>
+</body></html>
