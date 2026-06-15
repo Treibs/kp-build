@@ -107,11 +107,11 @@
 <header class="hero"><div class="wrap">
   <div class="eyebrow">open-source · MIT</div>
   <h1>kp-build</h1>
-  <p class="tag">Builds <b>verified, citation-checked knowledge packages</b> an AI agent can load — so it
-    answers from real, checked sources instead of guessing.</p>
+  <p class="tag">Builds <b>verified, citation-checked knowledge packages</b> an AI agent can load — so, on a
+    given topic, it answers from real, checked sources instead of guessing.</p>
   <div class="badges">
     <span class="badge"><code>pip install kp-build</code></span>
-    <span class="badge"><b>0</b> hallucinated citations — by construction</span>
+    <span class="badge">every citation checked live — or dropped</span>
     <span class="badge"><b>$0</b> — verification is free public APIs</span>
     <span class="badge">Python 3.10+</span>
   </div>
@@ -130,7 +130,7 @@
   <div class="pkg">
     <div class="pkgbox">
       <div class="hd">📦 a knowledge package/</div>
-      <div class="pkgrow"><span class="dot" style="background:#137a4a"></span><b style="font-weight:650">verified citation spine</b> — real papers, each checked live</div>
+      <div class="pkgrow"><span class="dot" style="background:#137a4a"></span><b style="font-weight:650">verified citation spine</b> — real papers, each checked live (arXiv / Crossref / OpenAlex)</div>
       <div class="pkgrow"><span class="dot" style="background:#2f5bd0"></span><b style="font-weight:650">claims</b> — findings tied to a quoted source line</div>
       <div class="pkgrow"><span class="dot" style="background:#a9711a"></span><b style="font-weight:650">open problems</b> — what the papers flag as unsolved</div>
       <div class="pkgrow"><span class="dot" style="background:#8a4fd0"></span><b style="font-weight:650">debate map</b> — contested points: settled vs. hype</div>
@@ -162,7 +162,7 @@
     <span class="pill amber">the problem</span>
     <p style="margin-top:10px">We asked a model to review the sleep evidence and cite studies. It cited
       <code>10.5665/sleep.6072</code> — confidently. That DOI resolves to nothing; it was invented. It also
-      engaged only about a quarter of the real evidence.</p>
+      engaged only 6 of the 23 real studies.</p>
     <p>So we built a verified package on it. Every claim is backed by a real, checked study, and its core is a
       five-way <b>evidence-vs-hype map</b>:</p>
     <ul class="clean">
@@ -185,8 +185,10 @@
         <div class="bar base" style="width:40%">0.40</div><div class="bar kp" style="width:85%">0.85</div></div></div>
     </div>
     <div class="barkey"><span><i style="background:#aeb8c6"></i>unaided model</span><span><i style="background:#137a4a"></i>with the package</span></div>
-    <p class="sub" style="margin:14px 0 0">Unaided, it fabricated 1 citation and covered 6 of 23 studies. With
-      the package: 0 fabrications, 17 of 23. And when a package <i>doesn't</i> help, the tool says so.</p>
+    <p class="sub" style="margin:14px 0 0">The model was otherwise competent here — base precision was 0.90. It
+      just invented one citation you couldn't have spotted, and covered only 6 of 23 studies. With the package:
+      0 fabrications, 17 of 23. (The cheap pre-screen even rated the model "fine" on sleep — the recall-aware
+      falsify caught the gap it missed. And when a package <i>doesn't</i> help, the tool says so.)</p>
   </div>
   <p class="sub">The package is public — any agent can install it:
     <code>kpm add github:Treibs/kp-sleep-insomnia-evidence#v0.1.0</code></p>

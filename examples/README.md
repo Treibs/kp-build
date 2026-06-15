@@ -22,6 +22,14 @@ none of the actual frontier. The probe now also **counts hedges** — a masked i
 frontier holds work it cannot name — and greenlights on them, so it correctly **BUILD**s this topic. (The
 full, recall-aware falsification was the backstop that caught the value the old probe missed.)
 
+**Each package is also published as a standalone, installable KPM package** — load one into any agent's vault
+with `kpm add github:Treibs/kp-<slug>#v0.1.0`:
+[kp-sleep-insomnia-evidence](https://github.com/Treibs/kp-sleep-insomnia-evidence) ·
+[kp-discrete-diffusion-llms](https://github.com/Treibs/kp-discrete-diffusion-llms) ·
+[kp-speculative-decoding-llms](https://github.com/Treibs/kp-speculative-decoding-llms) ·
+[kp-rubric-based-rl-nonverifiable](https://github.com/Treibs/kp-rubric-based-rl-nonverifiable) ·
+[kp-glp1-incretin-obesity](https://github.com/Treibs/kp-glp1-incretin-obesity)
+
 ## `discrete-diffusion-llms/`
 
 A wikillm knowledge package on **discrete / masked diffusion language models for text generation**

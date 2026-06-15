@@ -10,7 +10,7 @@ An LLM agent working on a niche or recent topic burns compute reconstructing the
 every time — and routinely cites papers that don't exist. **kp-build builds that foundation once:** a
 small, verified knowledge package an agent loads to actually *know* a narrow research area — deep enough
 to write the related-work section of a paper on it — with every citation checked live against
-arXiv/Crossref so none are hallucinated. Build it once, share it, and any agent reuses it instead of
+arXiv, Crossref, and OpenAlex so none are hallucinated. Build it once, share it, and any agent reuses it instead of
 re-paying the research cost.
 
 And when the model already knows the topic, kp-build *tells you* — it won't sell you a package that
@@ -20,7 +20,7 @@ doesn't help.
 
 **What's in a package** (a small directory):
 
-- **verified citation spine** — the real papers, each checked against arXiv/Crossref (no fakes)
+- **verified citation spine** — the real papers, each checked against arXiv / Crossref / OpenAlex (no fakes)
 - **claims** — findings / methods, each tied to a real quoted passage from its paper
 - **open-problems register** — the gaps the papers flag as unsolved (where new work goes)
 - **debate map** — the contested points, and which papers take which side
@@ -57,14 +57,14 @@ is instantly shareable through KPM — there's no separate distribution layer to
 ## Install
 
 ```bash
-pip install git+https://github.com/Treibs/kp-build.git   # straight from the repo, no clone
-# or, from a clone:
-pip install -e .            # the engine + the `kp-build` CLI
-pip install -e '.[dev]'     # + pytest
+pip install kp-build                                     # from PyPI — the engine + the `kp-build` CLI
+# from source / for development:
+pip install git+https://github.com/Treibs/kp-build.git   # latest, straight from the repo
+pip install -e '.[dev]'                                  # from a clone, with the test suite
 ```
 
-Python ≥ 3.10. Runtime deps: `pyyaml`, `pydantic`. Citation verification hits the public arXiv and
-Crossref APIs (no keys, no cost).
+Python ≥ 3.10. Runtime deps: `pyyaml`, `pydantic`. Citation verification hits the public arXiv,
+Crossref, and OpenAlex APIs (no keys, no cost).
 
 ## Use with Claude Code
 
@@ -77,7 +77,7 @@ it needs is here. Or do it by hand:
 
 ```bash
 # 1. the engine
-pip install git+https://github.com/Treibs/kp-build.git
+pip install kp-build
 
 # 2. the skill (so `/kp-build` is available in Claude Code)
 mkdir -p ~/.claude/skills/kp-build
@@ -153,14 +153,23 @@ check discriminate, and show kp-build works **beyond arXiv** (journal papers ver
 
 | package | the topic | `probe` | did it help? |
 |---|---|---|---|
-| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | SKIP | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
-| `discrete-diffusion-llms` | model **fabricates** cites (recent ML) | BUILD | **yes** — fixes mislabeled cites (precision) **and** coverage (recall) |
+| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | SKIP\* | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
+| `discrete-diffusion-llms` | model **fabricates** cites (recent ML) | BUILD | **yes** — fixes mislabeled cites (precision **0.62→1.0**) **and** coverage; f1 0.37 → 0.91 |
 | `speculative-decoding-llms` | model **knows it cold** | SKIP | only on coverage — precision was already perfect |
 | `rubric-based-rl-nonverifiable` | model **hedges** (post-cutoff 2026) | BUILD | **hugely** — spine coverage 0.07 → 1.00 |
 | `glp1-incretin-obesity` | **biomedical** (non-arXiv, Crossref/DOI) | SKIP | on coverage — recall 0.26 → 0.95 with verifiable DOIs |
 
-See [`examples/README.md`](examples/README.md) for the full story — including how the rubric-RL example
-exposed, and drove a fix for, a blind spot in the probe.
+\* **The probe under-fired on sleep — and that's the point.** The probe is a cheap *precision-only*
+pre-screen; the model cited sleep cleanly enough to pass it (9 of 10 real). But it still *fabricated*
+one citation (`10.5665/sleep.6072` — doesn't exist) and missed most of the evidence — and you can't tell
+which of its confident claims are real without checking. The recall-aware **falsify** caught the gap the
+probe missed. (Same probe blind spot the rubric-RL example documents, here on an everyday topic.)
+
+Each is also a public, installable **KPM package** — load one into any agent's vault with
+`kpm add github:Treibs/kp-<slug>#v0.1.0` (e.g. the flagship
+[`kp-sleep-insomnia-evidence`](https://github.com/Treibs/kp-sleep-insomnia-evidence)).
+See [`examples/README.md`](examples/README.md) for the full story on each — including how the rubric-RL
+example exposed, and drove a fix for, a blind spot in the probe.
 
 ## Sharing a package through KPM
 
