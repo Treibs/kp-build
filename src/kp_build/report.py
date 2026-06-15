@@ -121,7 +121,7 @@ def _tile_citations(man: dict, verified: int, total: int) -> str:
     base_fake = (f.get("base") or {}).get("fake") if f.get("run") else None
     unver = total - verified
     sub = "all citations verified" if unver == 0 else f"{unver} not verified (cannot anchor claims)"
-    fab = (f'<a class="sub-chip bad keylink-fakes" href="#tab-spine">base fabricated {base_fake}</a>'
+    fab = (f'<a class="sub-chip bad keylink-fakes" href="#tab-spine">base fabricated {_esc(base_fake)}</a>'
            if base_fake else "")
     return (f'<div class="tile"><div class="tile-h">Are citations real?</div>'
             f'<div class="donut-wrap">{_donut(verified, total)}</div>'

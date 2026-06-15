@@ -61,6 +61,17 @@ def test_neighbors_malformed_json_is_empty_not_crash():
     assert cands == [] and err == ""
 
 
+def test_expand_continues_past_a_transient_seed():
+    # one seed's expansion fails transiently; the other seeds must still aggregate (no raise)
+    def g(u):
+        if "BADSEED" in u:
+            raise urllib.error.HTTPError(u, 503, "rate", {}, None)
+        return S2_REFS
+    cands = expand(["BADSEED", "2402.12374"], get=g, directions=("references",), sleep=lambda *_: None)
+    keys = {(c["arxiv_id"] or c["doi"] or c["title"]) for c in cands}
+    assert cands and ("2001.00001" in keys or "No Ids" in keys)   # good seed's candidates survived
+
+
 # ── refuter support ──────────────────────────────────────────────────────────────────
 
 def test_claim_survived_refuter_roundtrip():
@@ -76,6 +87,15 @@ def test_load_accepts_survived_refuter(tmp_path):
                              "claims": [{"id": "c1", "statement": "s", "paper": "a", "survived_refuter": False}]}),
                  encoding="utf-8")
     assert _load(str(p)).claims[0].survived_refuter is False
+
+
+def test_load_survived_refuter_null_defaults_true(tmp_path):
+    # explicit JSON null must behave like an absent key (default True), not silently demote the claim
+    p = tmp_path / "r.json"
+    p.write_text(json.dumps({"topic": "T", "papers": [{"cite_key": "a", "title": "A", "arxiv_id": "1.1"}],
+                             "claims": [{"id": "c1", "statement": "s", "paper": "a", "survived_refuter": None}]}),
+                 encoding="utf-8")
+    assert _load(str(p)).claims[0].survived_refuter is True
 
 
 def _V():
@@ -102,7 +122,7 @@ def test_verify_all_throttles_between_papers():
     # default throttle=0.0 must NOT add sleeps (keeps existing behavior / fast tests)
     sleeps2 = []
     verify_all(papers, get=lambda u: HIT, today="2026-06-14", sleep=lambda s: sleeps2.append(s))
-    assert 0.4 not in sleeps2
+    assert sleeps2 == []        # no throttle and no retries on clean hits -> zero sleeps
 
 
 def test_report_marks_refuted_claim_and_survey_depth(tmp_path):

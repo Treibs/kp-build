@@ -138,7 +138,8 @@ def _load(path: str) -> Package:
         claims.append(Claim(id=str(c.get("id", "")), statement=str(c.get("statement", "")),
                             paper=str(c.get("paper", "")), supporting_passage=str(c.get("supporting_passage", "")),
                             claim_type=c.get("claim_type") or "finding", confidence=c.get("confidence") or "medium",
-                            corroborated_by=corr, survived_refuter=bool(c.get("survived_refuter", True))))
+                            corroborated_by=corr,
+                            survived_refuter=c.get("survived_refuter") is not False))  # absent/null -> True
 
     problems = []
     for i, o in _section(d, "open_problems", errs):

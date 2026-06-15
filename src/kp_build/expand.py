@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import time
 from typing import Callable
+from urllib.parse import quote
 
 from .citations import _http_get, _safe, _resolve, strip_arxiv_prefix
 
@@ -51,7 +52,9 @@ def neighbors(handle: str, *, get: Callable[[str], str] = _http_get, direction: 
     """References (what `handle` cites) or citations (what cites `handle`). Returns (candidates, err);
     err='transient' when the index was unreachable after retries so the caller can proceed degraded."""
     field = "citedPaper" if direction == "references" else "citingPaper"
-    url = f"{_S2}{_paper_path(handle)}/{direction}?fields={_FIELDS}&limit={int(limit)}"
+    # encode the handle before it hits the URL (DOIs carry #, <, >, spaces); keep the prefix colon + slashes
+    path = quote(_paper_path(handle), safe=":/")
+    url = f"{_S2}{path}/{direction}?fields={_FIELDS}&limit={int(limit)}"
     text, err = _resolve(lambda u, g: _safe(u, g), url, get=get, sleep=sleep, max_retries=max_retries)
     if err == "transient":
         return [], "transient"
@@ -62,10 +65,11 @@ def neighbors(handle: str, *, get: Callable[[str], str] = _http_get, direction: 
 
 
 def expand(seed_handles, *, get: Callable[[str], str] = _http_get, per_seed: int = 40,
-           directions=DIRECTIONS, skip=()) -> list[dict]:
+           directions=DIRECTIONS, skip=(), sleep=time.sleep) -> list[dict]:
     """Aggregate de-duplicated neighbor candidates across all seeds, excluding any handle already in
     the package (*skip* = its arXiv ids / DOIs). One candidate per distinct paper, preferring an
-    identifier (arxiv/doi) as the dedup key and falling back to the title."""
+    identifier (arxiv/doi) as the dedup key and falling back to the title. A seed whose expansion
+    fails (transient or otherwise) is skipped — the other seeds still aggregate."""
     skip_norm = {strip_arxiv_prefix(s).strip().lower() for s in skip if s}
     seen: set = set()
     out: list[dict] = []
@@ -73,7 +77,7 @@ def expand(seed_handles, *, get: Callable[[str], str] = _http_get, per_seed: int
         if not h:
             continue
         for d in directions:
-            cands, _ = neighbors(h, get=get, direction=d, limit=per_seed)
+            cands, _ = neighbors(h, get=get, direction=d, limit=per_seed, sleep=sleep)
             for c in cands:
                 ident = (c.get("arxiv_id") or c.get("doi") or "").lower()
                 key = ident or (c.get("title") or "").strip().lower()
