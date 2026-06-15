@@ -149,12 +149,17 @@ def _is_real(handle: str, title: str, get=_http_get, *, sleep=time.sleep, max_re
     return _title_ok(title, ct) if ct else False
 
 
-def score_citations(answer: str, *, get=_http_get) -> dict:
+def score_citations(answer: str, *, get=_http_get, throttle: float = 0.0, sleep=time.sleep) -> dict:
     """Precision / integrity: of the cited papers we could CHECK, how many actually exist and are the
     paper named. Citations the index couldn't resolve (transient) are excluded from the denominator so
-    a rate-limited run neither inflates nor deflates precision."""
+    a rate-limited run neither inflates nor deflates precision. *throttle* sleeps between citation
+    checks to avoid bursting the index on a long citation list."""
     cites = parse_citations(answer)
-    verdicts = [(h, t, _is_real(h, t, get)) for h, t in cites]
+    verdicts = []
+    for i, (h, t) in enumerate(cites):
+        verdicts.append((h, t, _is_real(h, t, get)))
+        if throttle and i < len(cites) - 1:
+            sleep(throttle)
     checkable = [(h, t, v) for h, t, v in verdicts if v is not None]
     fake = [f"{h} | {t}" for h, t, v in checkable if not v]
     n = len(checkable)
@@ -197,7 +202,7 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get)
 
 
 def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, min_real: int = 3,
-                  min_sample: int = 3) -> dict:
+                  min_sample: int = 3, throttle: float = 0.0, sleep=time.sleep) -> dict:
     """PRE-FLIGHT: should we even build a package for this topic? Score an UNAIDED agent's answer.
 
     A package only helps where the model is WEAK, which shows up as the base agent FABRICATING /
@@ -211,7 +216,7 @@ def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, m
       6. cites >= min_real real papers cleanly           -> SKIP (it already knows this — the TIE case)
     The min_sample gate on (3) keeps a 0/0.5/1.0 fabrication rate from a 1-2 cite sample from flipping
     the call. Returns the citation report plus {decision, reason}."""
-    rep = score_citations(base_answer, get=get)
+    rep = score_citations(base_answer, get=get, throttle=throttle, sleep=sleep)
     cited, checked, real, fake = rep["cited"], rep["checked"], rep["real"], rep["fake"]
     unresolved, hall = rep["unresolved"], rep["hallucination_rate"]
     if cited == 0:

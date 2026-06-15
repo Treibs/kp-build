@@ -230,17 +230,33 @@ def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str 
 
 
 def verify_all(papers: list[Paper], *, get: Callable[[str], str] = _http_get, today: str = "",
-               sleep: Callable[[float], None] = time.sleep, throttle: float = 0.0) -> dict:
-    """Verify a list in place; return a status breakdown. *throttle* sleeps that many seconds BETWEEN
-    papers so a large (deepened) package doesn't burst past the arXiv/Crossref rate limit and get a
-    wave of false `error` statuses — the per-paper retry/backoff can't recover from a sustained 429."""
+               sleep: Callable[[float], None] = time.sleep, throttle: float = 0.0,
+               max_throttle: float = 8.0, skip_verified: bool = False) -> dict:
+    """Verify a list in place; return a status breakdown.
+
+    *throttle* is the BASE inter-paper delay; it ADAPTS — it backs off (doubling, up to *max_throttle*)
+    each time a paper comes back `error` (the rate-limited signal), and recovers toward the base on a
+    clean check. So a sustained 429 burst self-heals into a slower-but-complete run instead of marking a
+    wave of papers unreachable — the per-paper retry/backoff alone can't recover from a sustained 429.
+    *skip_verified* leaves already-verified papers untouched (no network) — for a cheap re-verify of
+    ONLY the status=error papers of an existing package."""
     from collections import Counter
     statuses = Counter()
     unconfirmed, rejected, errored = [], [], []
+    base = max(0.0, throttle)
+    cur = base
+    n = len(papers)
     for i, p in enumerate(papers):
+        if skip_verified and p.verified.exists:
+            statuses[p.verified.status] += 1          # keep the cached verdict; no network, no throttle
+            continue
         verify_paper(p, get=get, today=today, sleep=sleep)
-        if throttle and i < len(papers) - 1:
-            sleep(throttle)
+        if p.verified.status == "error":
+            cur = min(max_throttle, (cur or base or 1.0) * 2)   # rate-limited -> back off hard
+        else:
+            cur = max(base, cur / 2)                            # recovering -> ease back toward base
+        if cur and i < n - 1:
+            sleep(cur)
         statuses[p.verified.status] += 1
         if p.verified.status == "unconfirmed":
             unconfirmed.append(p.cite_key)

@@ -210,9 +210,29 @@ def _cmd_build(args) -> int:
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
                    "rejected": [], "unconfirmed": [], "errored": []}
     else:
-        print(f"verifying {len(pkg.papers)} citations against arXiv/Crossref "
-              f"(throttle {args.throttle}s/paper) ...", file=sys.stderr)
-        summary = verify_all(pkg.papers, today=today, throttle=args.throttle)
+        reused = 0
+        if args.reuse_verification:                 # cheap retry: keep prior verdicts, re-check only the rest
+            import glob as _glob
+            from .schema import paper_from_md
+            cache = {}
+            for f in _glob.glob(str(Path(args.out) / "papers" / "*.md")):
+                try:
+                    old = paper_from_md(Path(f).read_text(encoding="utf-8"))
+                except (OSError, ValueError, KeyError):
+                    continue
+                if old.verified.exists:
+                    cache[old.cite_key] = old.verified
+            for p in pkg.papers:
+                if p.cite_key in cache:
+                    p.verified = cache[p.cite_key]; reused += 1
+            if reused:
+                print(f"reusing {reused} prior verification(s); re-checking only the {len(pkg.papers) - reused} "
+                      f"unverified/errored ...", file=sys.stderr)
+        todo = sum(1 for p in pkg.papers if not p.verified.exists)
+        print(f"verifying {todo} citation(s) against arXiv/Crossref (adaptive throttle, base "
+              f"{args.throttle}s) ...", file=sys.stderr)
+        summary = verify_all(pkg.papers, today=today, throttle=args.throttle,
+                             skip_verified=args.reuse_verification)
 
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)
@@ -296,7 +316,7 @@ def _cmd_probe(args) -> int:
         print(f"error: answer file not found: {args.answer}", file=sys.stderr)
         return 2
     v = probe_verdict(Path(args.answer).read_text(encoding="utf-8"),
-                      threshold=args.threshold, min_real=args.min_real)
+                      threshold=args.threshold, min_real=args.min_real, throttle=0.2)
     head = {"build": "BUILD — the topic is model-weak (worth packaging)",
             "skip": "SKIP — the model already knows this (a package adds ~0 value)",
             "inconclusive": "INCONCLUSIVE — re-run"}[v["decision"]]
@@ -369,7 +389,8 @@ def main(argv=None) -> int:
     b.add_argument("--out", "-o", required=True)
     b.add_argument("--built", default="")
     b.add_argument("--no-verify", action="store_true", help="skip network citation checks (offline/testing)")
-    b.add_argument("--throttle", type=float, default=0.4, help="seconds between citation checks (avoid rate limits on large packages)")
+    b.add_argument("--throttle", type=float, default=0.4, help="base seconds between citation checks; adapts up on rate limits")
+    b.add_argument("--reuse-verification", action="store_true", help="keep prior verdicts in <out> and re-check only the errored/unverified papers (cheap retry)")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
     b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")

@@ -125,6 +125,39 @@ def test_verify_all_throttles_between_papers():
     assert sleeps2 == []        # no throttle and no retries on clean hits -> zero sleeps
 
 
+def test_verify_all_adaptive_backoff_then_recovers(monkeypatch):
+    import kp_build.citations as C
+    from kp_build.schema import Verification
+    # p0,p1 come back 'error' (rate-limited), p2,p3 verify -> throttle ramps on errors, decays on success
+    seq = iter(["error", "error", "verified", "verified"])
+    monkeypatch.setattr(C, "verify_paper",
+                        lambda p, **k: setattr(p, "verified", Verification(exists=(s := next(seq)) == "verified", status=s)))
+    papers = [Paper(cite_key=f"p{i}", title="T") for i in range(4)]
+    sleeps = []
+    C.verify_all(papers, sleep=lambda s: sleeps.append(s), throttle=0.5)
+    assert sleeps == [1.0, 2.0, 1.0]           # 0.5->1.0 (err) ->2.0 (err) ->1.0 (ok, decaying); last: no sleep
+
+
+def test_verify_all_skip_verified_rechecks_only_errors(monkeypatch):
+    import kp_build.citations as C
+    from kp_build.schema import Verification
+    checked = []
+    monkeypatch.setattr(C, "verify_paper",
+                        lambda p, **k: (checked.append(p.cite_key), setattr(p, "verified", Verification(exists=True, status="verified"))))
+    papers = [Paper(cite_key="a", title="A", verified=Verification(exists=True, status="verified")),
+              Paper(cite_key="b", title="B", verified=Verification(exists=False, status="error"))]
+    rep = C.verify_all(papers, sleep=lambda s: None, skip_verified=True)
+    assert checked == ["b"] and rep["verified"] == 2     # 'a' kept (no network), 'b' re-checked -> verified
+
+
+def test_score_citations_throttles_between_cites():
+    from kp_build.falsify import score_citations
+    ans = "## Citations\n2211.17192 | A\n2310.16834 | B\n2401.00001 | C\n"
+    sleeps = []
+    score_citations(ans, get=lambda u: "<feed></feed>", throttle=0.3, sleep=lambda s: sleeps.append(s))
+    assert sleeps == [0.3, 0.3]                 # one pause between each of the 3 cites
+
+
 def test_report_marks_refuted_claim_and_survey_depth(tmp_path):
     p = Paper(cite_key="p", title="P", arxiv_id="1.1", verified=_V())
     c = Claim(id="c1", statement="A claim.", paper="p", supporting_passage="x", survived_refuter=False)

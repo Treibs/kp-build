@@ -69,7 +69,7 @@ def test_partial_transient_does_not_force_a_spurious_build(monkeypatch):
     # MUST-FIX: 2 real confirmed + 2 unreachable. Visible real=2 < min_real, but real+unresolved=4 >=
     # min_real, so the low count is a TRANSIENT artifact, not 'too thin' -> INCONCLUSIVE, never BUILD.
     import kp_build.falsify as F
-    monkeypatch.setattr(F, "score_citations", lambda a, get=None: {
+    monkeypatch.setattr(F, "score_citations", lambda a, get=None, **kw: {
         "cited": 4, "checked": 2, "unresolved": 2, "real": 2, "fake": 0, "fake_list": [],
         "precision": 1.0, "hallucination_rate": 0.0})
     v = F.probe_verdict("ans")
