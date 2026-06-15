@@ -1,0 +1,1133 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "trauer2015",
+      "title": "Cognitive Behavioral Therapy for Chronic Insomnia: A Systematic Review and Meta-analysis",
+      "year": 2015,
+      "arxiv_id": "",
+      "doi": "10.7326/m14-2841",
+      "verified": true
+    },
+    {
+      "cite_key": "vanstraten2018",
+      "title": "Cognitive and behavioral therapies in the treatment of insomnia: A meta-analysis",
+      "year": 2018,
+      "arxiv_id": "",
+      "doi": "10.1016/j.smrv.2017.02.001",
+      "verified": true
+    },
+    {
+      "cite_key": "zachariae2016",
+      "title": "Efficacy of internet-delivered cognitive-behavioral therapy for insomnia \u2013 A systematic review and meta-analysis of randomized controlled trials",
+      "year": 2016,
+      "arxiv_id": "",
+      "doi": "10.1016/j.smrv.2015.10.004",
+      "verified": true
+    },
+    {
+      "cite_key": "qaseem2016",
+      "title": "Management of Chronic Insomnia Disorder in Adults: A Clinical Practice Guideline From the American College of Physicians",
+      "year": 2016,
+      "arxiv_id": "",
+      "doi": "10.7326/m15-2175",
+      "verified": true
+    },
+    {
+      "cite_key": "ferraciolioda2013",
+      "title": "Meta-Analysis: Melatonin for the Treatment of Primary Sleep Disorders",
+      "year": 2013,
+      "arxiv_id": "",
+      "doi": "10.1371/journal.pone.0063773",
+      "verified": true
+    },
+    {
+      "cite_key": "zhdanova2001",
+      "title": "Melatonin Treatment for Age-Related Insomnia",
+      "year": 2001,
+      "arxiv_id": "",
+      "doi": "10.1210/jcem.86.10.7901",
+      "verified": true
+    },
+    {
+      "cite_key": "erland2017",
+      "title": "Melatonin Natural Health Products and Supplements: Presence of Serotonin and Significant Variability of Melatonin Content",
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.5664/jcsm.6462",
+      "verified": true
+    },
+    {
+      "cite_key": "mah2021",
+      "title": "Oral magnesium supplementation for insomnia in older adults: a Systematic Review & Meta-Analysis",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1186/s12906-021-03297-z",
+      "verified": true
+    },
+    {
+      "cite_key": "faulkner2019",
+      "title": "Light therapies to improve sleep in intrinsic circadian rhythm sleep disorders and neuro-psychiatric illness: A systematic review and meta-analysis",
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1016/j.smrv.2019.04.012",
+      "verified": true
+    },
+    {
+      "cite_key": "lunarangel2025",
+      "title": "Efficacy of blue-light blocking glasses on actigraphic sleep outcomes: a systematic review and meta-analysis of randomized controlled crossover trials",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.3389/fneur.2025.1699303",
+      "verified": true
+    },
+    {
+      "cite_key": "bigalke2021",
+      "title": "Effect of evening blue light blocking glasses on subjective and objective sleep in healthy adults: A randomized control trial",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1016/j.sleh.2021.02.004",
+      "verified": true
+    },
+    {
+      "cite_key": "liset2022",
+      "title": "A randomized controlled trial on the effect of blue-blocking glasses compared to partial blue-blockers on melatonin profile among nulliparous women in third trimester of the pregnancy",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/j.nbscr.2021.100074",
+      "verified": true
+    },
+    {
+      "cite_key": "decrescenzo2022",
+      "title": "Comparative effects of pharmacological interventions for the acute and long-term management of insomnia disorder in adults: a systematic review and network meta-analysis",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/s0140-6736(22)00878-9",
+      "verified": true
+    },
+    {
+      "cite_key": "mignot2022",
+      "title": "Safety and efficacy of daridorexant in patients with insomnia disorder: results from two multicentre, randomised, double-blind, placebo-controlled, phase 3 trials",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/s1474-4422(21)00436-1",
+      "verified": true
+    },
+    {
+      "cite_key": "sateia2017",
+      "title": "Clinical Practice Guideline for the Pharmacologic Treatment of Chronic Insomnia in Adults: An American Academy of Sleep Medicine Clinical Practice Guideline",
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.5664/jcsm.6470",
+      "verified": true
+    },
+    {
+      "cite_key": "karppa2020",
+      "title": "Long-term efficacy and tolerability of lemborexant compared with placebo in adults with insomnia disorder: results from the phase 3 randomized clinical trial SUNRISE 2",
+      "year": 2020,
+      "arxiv_id": "",
+      "doi": "10.1093/sleep/zsaa123",
+      "verified": true
+    },
+    {
+      "cite_key": "rhee2025",
+      "title": "Breaking social media fads and uncovering the safety and efficacy of mouth taping in patients with mouth breathing, sleep disordered breathing, or obstructive sleep apnea: A systematic review",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.1371/journal.pone.0323643",
+      "verified": true
+    },
+    {
+      "cite_key": "agostinho2026",
+      "title": "Are Wearable Sleep-Tracking Devices Reliable Alternatives to Polysomnography? A Systematic Review and Meta-Analysis",
+      "year": 2026,
+      "arxiv_id": "",
+      "doi": "10.1080/15402002.2026.2673893",
+      "verified": true
+    },
+    {
+      "cite_key": "baron2017",
+      "title": "Orthosomnia: Are Some Patients Taking the Quantified Self Too Far?",
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.5664/jcsm.6472",
+      "verified": true
+    },
+    {
+      "cite_key": "guldbrandsen2025",
+      "title": "Development of a scale for measuring orthosomnia: the Bergen Orthosomnia Scale (BOS)",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.3389/frsle.2025.1640355",
+      "verified": true
+    },
+    {
+      "cite_key": "chinoy2022",
+      "title": "Performance of Four Commercial Wearable Sleep-Tracking Devices Tested Under Unrestricted Conditions at Home in Healthy Young Adults",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.2147/nss.s348795",
+      "verified": true
+    },
+    {
+      "cite_key": "kahawage2019",
+      "title": "Validity, potential clinical utility, and comparison of consumer and research-grade activity trackers in Insomnia Disorder I: In-lab validation against polysomnography",
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1111/jsr.12931",
+      "verified": true
+    },
+    {
+      "cite_key": "dezambotti2024",
+      "title": "State of the science and recommendations for using wearable technology in sleep and circadian research",
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1093/sleep/zsad325",
+      "verified": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "trauer2015",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "trauer2015",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "vanstraten2018",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "vanstraten2018",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "paper": "zachariae2016",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c6",
+      "paper": "zachariae2016",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "paper": "qaseem2016",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "ferraciolioda2013",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "paper": "ferraciolioda2013",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10",
+      "paper": "zhdanova2001",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "paper": "erland2017",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c12",
+      "paper": "erland2017",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "mah2021",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c14",
+      "paper": "mah2021",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c15",
+      "paper": "faulkner2019",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "paper": "faulkner2019",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c17",
+      "paper": "lunarangel2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "paper": "lunarangel2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c19",
+      "paper": "bigalke2021",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "paper": "bigalke2021",
+      "type": "result",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c21",
+      "paper": "liset2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c22",
+      "paper": "decrescenzo2022",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c23",
+      "paper": "decrescenzo2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "paper": "decrescenzo2022",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c25",
+      "paper": "mignot2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c26",
+      "paper": "mignot2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "paper": "sateia2017",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "paper": "sateia2017",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c29",
+      "paper": "karppa2020",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c30",
+      "paper": "karppa2020",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "paper": "rhee2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c32",
+      "paper": "rhee2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "paper": "agostinho2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "paper": "agostinho2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c35",
+      "paper": "baron2017",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c36",
+      "paper": "baron2017",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c37",
+      "paper": "guldbrandsen2025",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c38",
+      "paper": "guldbrandsen2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c39",
+      "paper": "zachariae2016",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c40",
+      "paper": "chinoy2022",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c41",
+      "paper": "chinoy2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c42",
+      "paper": "kahawage2019",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c43",
+      "paper": "kahawage2019",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c44",
+      "paper": "dezambotti2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c45",
+      "paper": "dezambotti2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "flagged_by": [
+        "zachariae2016",
+        "qaseem2016",
+        "decrescenzo2022"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o2",
+      "flagged_by": [
+        "decrescenzo2022",
+        "sateia2017"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o3",
+      "flagged_by": [
+        "agostinho2026",
+        "chinoy2022",
+        "kahawage2019",
+        "dezambotti2024"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o4",
+      "flagged_by": [
+        "mah2021",
+        "erland2017",
+        "ferraciolioda2013"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o5",
+      "flagged_by": [
+        "dezambotti2024"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o6",
+      "flagged_by": [
+        "rhee2025",
+        "lunarangel2025",
+        "bigalke2021"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o7",
+      "flagged_by": [
+        "baron2017",
+        "guldbrandsen2025"
+      ],
+      "status": "partially-addressed"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "Low physiologic doses (~0.3 mg) are optimal; high doses are not better and carry side effects",
+        "Pooled effect is modest regardless, with weak dose dependence and small absolute benefit",
+        "Guidelines recommend against melatonin for chronic insomnia"
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "No significant objective sleep benefit",
+        "There is a real mechanistic/subjective signal"
+      ]
+    },
+    {
+      "id": "d3",
+      "positions": [
+        "Useful for global sleep-wake estimates but not diagnostic",
+        "Tracker data can drive clinically harmful preoccupation"
+      ]
+    },
+    {
+      "id": "d4",
+      "positions": [
+        "Behavioral therapy (CBT-I) is first-line; drugs are adjunctive",
+        "Newer dual orexin antagonists are effective drug options with favorable safety, but do not displace first-line behavioral therapy"
+      ]
+    },
+    {
+      "id": "d5",
+      "positions": [
+        "Insufficient evidence and a real harm signal",
+        "Possible benefit in a narrow subgroup"
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "CBT-I posttreatment sleep onset latency reduction",
+      "value": "-19.03 min (95% CI 14.12 to 23.93)",
+      "metric": "Change in sleep onset latency (minutes, sleep diary)",
+      "method": "Face-to-face multimodal CBT-I vs inactive comparators",
+      "paper": "trauer2015"
+    },
+    {
+      "id": "b2",
+      "name": "CBT-I posttreatment WASO reduction",
+      "value": "-26.00 min (95% CI 15.48 to 36.52)",
+      "metric": "Change in wake after sleep onset (minutes, sleep diary)",
+      "method": "Face-to-face multimodal CBT-I vs inactive comparators",
+      "paper": "trauer2015"
+    },
+    {
+      "id": "b3",
+      "name": "CBT-I posttreatment sleep efficiency improvement",
+      "value": "+9.91% (95% CI 8.09 to 11.73)",
+      "metric": "Change in sleep efficiency (percentage points)",
+      "method": "Face-to-face multimodal CBT-I vs inactive comparators",
+      "paper": "trauer2015"
+    },
+    {
+      "id": "b4",
+      "name": "CBT-I effect on insomnia severity",
+      "value": "g = 0.98",
+      "metric": "Effect size (Hedges g) on Insomnia Severity Index",
+      "method": "CBT-I (any component) vs control",
+      "paper": "vanstraten2018"
+    },
+    {
+      "id": "b5",
+      "name": "CBT-I effect on total sleep time",
+      "value": "g = 0.16",
+      "metric": "Effect size (Hedges g) on total sleep time",
+      "method": "CBT-I (any component) vs control",
+      "paper": "vanstraten2018"
+    },
+    {
+      "id": "b6",
+      "name": "Internet-delivered CBT-I effect range",
+      "value": "g = 0.21 to 1.09",
+      "metric": "Post-treatment effect size (Hedges g) across sleep outcomes",
+      "method": "Internet-delivered CBT-I (eCBT-I) vs control",
+      "paper": "zachariae2016"
+    },
+    {
+      "id": "b7",
+      "name": "Melatonin sleep latency reduction",
+      "value": "-7.06 min (95% CI 4.37 to 9.75)",
+      "metric": "Weighted mean difference in sleep latency (minutes)",
+      "method": "Melatonin vs placebo",
+      "paper": "ferraciolioda2013"
+    },
+    {
+      "id": "b8",
+      "name": "Melatonin total sleep time increase",
+      "value": "+8.25 min (95% CI 1.74 to 14.75)",
+      "metric": "Weighted mean difference in total sleep time (minutes)",
+      "method": "Melatonin vs placebo",
+      "paper": "ferraciolioda2013"
+    },
+    {
+      "id": "b9",
+      "name": "Melatonin supplement label accuracy",
+      "value": "-83% to +478% of label; >71% failed within 10% margin",
+      "metric": "Actual content as percent of labelled amount / share failing 10% margin",
+      "method": "UPLC quantification vs label claim",
+      "paper": "erland2017"
+    },
+    {
+      "id": "b10",
+      "name": "Magnesium sleep onset latency reduction",
+      "value": "-17.36 min (95% CI -27.27 to -7.44)",
+      "metric": "Pooled mean difference in sleep onset latency (minutes)",
+      "method": "Oral magnesium vs placebo",
+      "paper": "mah2021"
+    },
+    {
+      "id": "b11",
+      "name": "Light therapy effect on sleep continuity",
+      "value": "ES = -0.23 (p = 0.000)",
+      "metric": "Pooled effect size on sleep continuity",
+      "method": "Light therapy vs comparator",
+      "paper": "faulkner2019"
+    },
+    {
+      "id": "b12",
+      "name": "Blue-light-blocking glasses sleep onset latency",
+      "value": "-4.86 min (95% CI -20.23 to 10.52; p = 0.54, non-significant)",
+      "metric": "Mean difference in sleep onset latency (minutes)",
+      "method": "Blue-light blocking glasses vs control (actigraphy)",
+      "paper": "lunarangel2025"
+    },
+    {
+      "id": "b13",
+      "name": "Daridorexant 50 mg WASO reduction (month 1)",
+      "value": "-22.8 min (95% CI -28.0 to -17.6; p<0.0001)",
+      "metric": "LSM difference in polysomnographic WASO (minutes)",
+      "method": "Daridorexant 50 mg vs placebo",
+      "paper": "mignot2022"
+    },
+    {
+      "id": "b14",
+      "name": "Insomnia pharmacotherapy acute efficacy range",
+      "value": "SMD 0.36 to 0.83 (certainty high to moderate)",
+      "metric": "Standardised mean difference on sleep quality (efficacious agents)",
+      "method": "Network meta-analysis of pharmacotherapies vs placebo",
+      "paper": "decrescenzo2022"
+    },
+    {
+      "id": "b15",
+      "name": "Consumer wearable epoch-by-epoch wake specificity",
+      "value": "Sensitivity 0.93-0.96; wake specificity 0.35-0.45",
+      "metric": "Sleep sensitivity / wake specificity",
+      "method": "Epoch-by-epoch sleep/wake classification",
+      "paper": "chinoy2022"
+    },
+    {
+      "id": "b16",
+      "name": "Wearable vs actigraph wake-detection specificity in insomnia",
+      "value": "39.09% (Actiwatch) / 44.76% (Fitbit)",
+      "metric": "Wake-detection specificity",
+      "method": "Fitbit Alta HR and Actiwatch vs PSG",
+      "paper": "kahawage2019"
+    }
+  ],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "trauer2015",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "trauer2015",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "vanstraten2018",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "vanstraten2018",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "zachariae2016",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "zachariae2016",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "qaseem2016",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "ferraciolioda2013",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "ferraciolioda2013",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "zhdanova2001",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "erland2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "erland2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "mah2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "mah2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "faulkner2019",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "faulkner2019",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "lunarangel2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "lunarangel2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "bigalke2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "bigalke2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "liset2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "decrescenzo2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "decrescenzo2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "decrescenzo2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c25",
+      "to": "mignot2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c26",
+      "to": "mignot2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c27",
+      "to": "sateia2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c28",
+      "to": "sateia2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "karppa2020",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "karppa2020",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "rhee2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "rhee2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "agostinho2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "agostinho2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "baron2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c36",
+      "to": "baron2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c37",
+      "to": "guldbrandsen2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c38",
+      "to": "guldbrandsen2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c39",
+      "to": "zachariae2016",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c40",
+      "to": "chinoy2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c41",
+      "to": "chinoy2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c42",
+      "to": "kahawage2019",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c43",
+      "to": "kahawage2019",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c44",
+      "to": "dezambotti2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c45",
+      "to": "dezambotti2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "o1",
+      "to": "zachariae2016",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "qaseem2016",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "decrescenzo2022",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "decrescenzo2022",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "sateia2017",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "agostinho2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "chinoy2022",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "kahawage2019",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "dezambotti2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "mah2021",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "erland2017",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "ferraciolioda2013",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "dezambotti2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "rhee2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "lunarangel2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "bigalke2021",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "baron2017",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "guldbrandsen2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "b1",
+      "to": "trauer2015",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b2",
+      "to": "trauer2015",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b3",
+      "to": "trauer2015",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b4",
+      "to": "vanstraten2018",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b5",
+      "to": "vanstraten2018",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b6",
+      "to": "zachariae2016",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b7",
+      "to": "ferraciolioda2013",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b8",
+      "to": "ferraciolioda2013",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b9",
+      "to": "erland2017",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b10",
+      "to": "mah2021",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b11",
+      "to": "faulkner2019",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b12",
+      "to": "lunarangel2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b13",
+      "to": "mignot2022",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b14",
+      "to": "decrescenzo2022",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b15",
+      "to": "chinoy2022",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b16",
+      "to": "kahawage2019",
+      "rel": "reported-in"
+    }
+  ]
+}

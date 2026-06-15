@@ -95,7 +95,7 @@ to it? Just ask Claude: *"read skill/SKILL.md and walk me through building a pac
 
 ## Quickstart
 
-`examples/` ships four real packages with their inputs, so you can run the engine end-to-end on a
+`examples/` ships five real packages with their inputs, so you can run the engine end-to-end on a
 clean clone. The engine's input is a `research.json` (papers, claims, open problems, debates):
 
 ```bash
@@ -143,7 +143,7 @@ assemble, ground, lint, score. Two hard gates run at build time:
 
 ## The example packages
 
-`examples/` ships four real packages built end-to-end (also kept as regression fixtures). The first three
+`examples/` ships five real packages built end-to-end (also kept as regression fixtures). The first three
 show exactly what the probe and the falsification check discriminate; the fourth shows kp-build works
 **beyond arXiv** (journal papers verified via Crossref/DOI):
 
@@ -153,6 +153,7 @@ show exactly what the probe and the falsification check discriminate; the fourth
 | `speculative-decoding-llms` | **strong** (knows it cold) | SKIP | only on coverage — precision was already perfect |
 | `rubric-based-rl-nonverifiable` | **weak** (it *hedges*, 2026 topic) | BUILD | **hugely** — spine coverage 0.07 → 1.00 |
 | `glp1-incretin-obesity` | **biomedical** (non-arXiv, Crossref/DOI) | SKIP | on coverage — recall 0.26 → 0.95 with verifiable DOIs |
+| `sleep-insomnia-evidence` | **everyday health** (evidence-vs-hype) | SKIP | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
 
 See [`examples/README.md`](examples/README.md) for the full story — including how the rubric-RL example
 exposed, and drove a fix for, a blind spot in the probe.
@@ -175,7 +176,7 @@ kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — 
 ```
 src/kp_build/      the engine (scope→survey→extract→verify→ground→assemble→falsify→report)
 skill/SKILL.md     the /kp-build orchestration spec (drives the research subagents)
-examples/          four real built packages + their research.json inputs and falsification evidence
+examples/          five real built packages + their research.json inputs and falsification evidence
 docs/              explainer / metrics / orchestration (HTML)
 SPEC.md            the package format + pipeline, in full
 ```

@@ -2,9 +2,9 @@
 
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
-Four packages — three show what the `probe` pre-screen and the falsification gate discriminate (and the
-blind spot one drove a fix for); the fourth shows kp-build works **beyond arXiv** (journal papers verified
-via Crossref/DOI):
+Five packages — three show what the `probe` pre-screen and the falsification gate discriminate (and the
+blind spot one drove a fix for); the fourth shows kp-build works **beyond arXiv** (Crossref/DOI); the fifth
+is the **flagship** — an everyday-health topic anyone can use, with the evidence separated from the hype:
 
 | package | topic regime | `probe` | falsification verdict |
 |---|---|---|---|
@@ -12,6 +12,7 @@ via Crossref/DOI):
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | model-**known** | SKIP | **KP HELPS on coverage only** — precision already 1.0; the win is pure recall |
 | [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | BUILD† | **KP HELPS hugely** — recall 0.07→1.00 |
 | [`glp1-incretin-obesity/`](#glp1-incretin-obesity) | **biomedical** (non-arXiv; Crossref/DOI) | SKIP | **KP HELPS on coverage** — recall 0.26→0.95 with verifiable DOIs |
+| [`sleep-insomnia-evidence/`](#sleep-insomnia-evidence) | **everyday health** (evidence-vs-hype) | SKIP | **KP HELPS** — base *fabricated* a study + missed ¾ of evidence; precision 0.90→1.00, recall 0.26→0.74, f1 0.40→0.85 |
 
 † **This package exposed a probe blind spot and drove a fix.** The probe was originally *precision-only* — it
 greenlit a build only when the unaided model *fabricated* citations. A well-calibrated model that *hedges*
@@ -246,4 +247,48 @@ kp-build falsify examples/glp1-incretin-obesity \
   --question "2023-2026 frontier of incretin pharmacotherapy for obesity" \
   --base examples/glp1-incretin-obesity.base-answer.txt \
   --kp   examples/glp1-incretin-obesity.kp-answer.txt
+```
+
+## `sleep-insomnia-evidence/`
+
+The **flagship** — a knowledge package on **evidence-based interventions to improve sleep and treat
+insomnia in adults**: not a niche research topic but the kind of everyday question millions ask their AI.
+Every claim is a real, Crossref-verified study, and the package's heart is a **5-way evidence-vs-hype
+debate map**: melatonin (low physiologic vs high dose), blue-light-blocking glasses (benefit vs none),
+sleep trackers (useful vs orthosomnia), behavioral-vs-medication first-line, and mouth-taping (aid vs
+unsafe fad).
+
+| | value |
+|---|---|
+| citations verified | **23 / 23** (live, Crossref/DOI) |
+| claims / open problems / **debates** / benchmarks | 45 / 7 / **5** / 16 |
+| `CONTEXT.md` (agent payload) | ~6k tokens |
+
+### Falsification — the everyday case that hits *both* wins
+
+Held-out task: *review the evidence on improving sleep / treating insomnia — CBT-I, supplements, light,
+and the contested consumer interventions — citing studies by DOI.* Base (unaided) vs KP-loaded:
+
+| | base (memory) | KP-loaded |
+|---|---|---|
+| precision | 0.90 | **1.00** |
+| recall (spine coverage) | 0.26 (6/23) | **0.74 (17/23)** |
+| **f1** | **0.40** | **0.85** |
+
+**Verdict: KP HELPS — on precision *and* coverage.** Unaided, the model **fabricated a study**
+(`10.5665/sleep.6072` — a DOI that doesn't resolve) and engaged only **6 of the 23** real studies; the
+KP-loaded agent cited **zero fabrications** and covered the full evidence map, hype included. This is the
+everyday demonstration: your AI sounds confident about sleep, but it invents citations and misses most of
+the evidence — the verified pack makes it trustworthy *and* complete.
+
+> Building this flagship also surfaced + fixed a real soundness-gate bug: Crossref often stores a paper's
+> **short title** (no subtitle), and the build gate only matched `claimed ⊇ canonical`, so it wrongly
+> rejected the famous Trauer CBT-I meta-analysis. The gate now matches in **either direction** (as the
+> falsify gate already did), tolerating Crossref-truncated titles without weakening the strict-match floor.
+
+```bash
+kp-build falsify examples/sleep-insomnia-evidence \
+  --question "Evidence-based interventions to improve sleep and treat insomnia in adults" \
+  --base examples/sleep-insomnia-evidence.base-answer.txt \
+  --kp   examples/sleep-insomnia-evidence.kp-answer.txt
 ```

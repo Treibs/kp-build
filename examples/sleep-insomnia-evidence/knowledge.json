@@ -1,0 +1,13 @@
+{
+  "name": "@kp/evidence-based-interventions-to-improve-sleep-quality-and",
+  "version": "0.1.0",
+  "description": "In scope: interventions for improving sleep and treating insomnia in adults \u2014 cognitive behavioral therapy for insomnia (CBT-I), its components and digital delivery; supplements (melatonin dose/timing, magnesium); light therapy and circadian approaches; pharmacotherapy including newer dual orexin re",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

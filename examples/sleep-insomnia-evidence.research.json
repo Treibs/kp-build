@@ -1,0 +1,1219 @@
+{
+  "topic": "Evidence-based interventions to improve sleep quality and treat insomnia in adults",
+  "scope": "In scope: interventions for improving sleep and treating insomnia in adults — cognitive behavioral therapy for insomnia (CBT-I), its components and digital delivery; supplements (melatonin dose/timing, magnesium); light therapy and circadian approaches; pharmacotherapy including newer dual orexin receptor antagonists; and a critical evidence appraisal of popular/contested consumer interventions (mouth-taping, blue-light-blocking glasses, wearable sleep trackers and orthosomnia). Out of scope: detailed OSA surgical/CPAP management, narcolepsy pharmacology, pediatric sleep, and basic sleep neuroscience unconnected to interventions. Emphasis on meta-analyses and RCTs (2016-2026) with an honest evidence-vs-hype framing.",
+  "papers": [
+    {
+      "cite_key": "trauer2015",
+      "title": "Cognitive Behavioral Therapy for Chronic Insomnia: A Systematic Review and Meta-analysis",
+      "authors": [
+        "James M. Trauer",
+        "Mary Y. Qian",
+        "Joseph S. Doyle",
+        "Shantha M.W. Rajaratnam",
+        "David Cunnington"
+      ],
+      "year": 2015,
+      "arxiv_id": "",
+      "doi": "10.7326/m14-2841",
+      "venue": "Annals of Internal Medicine",
+      "key_contributions": [
+        "Meta-analysis of 20 RCTs (1162 participants) of face-to-face multimodal CBT-I versus inactive comparators in adults with chronic insomnia",
+        "Quantifies posttreatment diary improvements: sleep onset latency ~19 min, wake after sleep onset ~26 min, sleep efficiency ~9.9 percentage points",
+        "Documents that the multimodal CBT-I package combines cognitive therapy, stimulus control, sleep restriction, sleep hygiene, and relaxation, and that gains seemed sustained at later time points with no reported adverse outcomes"
+      ]
+    },
+    {
+      "cite_key": "vanstraten2018",
+      "title": "Cognitive and behavioral therapies in the treatment of insomnia: A meta-analysis",
+      "authors": [
+        "Annemieke van Straten",
+        "Tanja van der Zweerde",
+        "Annet Kleiboer",
+        "Pim Cuijpers",
+        "Charles M. Morin",
+        "Jaap Lancee"
+      ],
+      "year": 2018,
+      "arxiv_id": "",
+      "doi": "10.1016/j.smrv.2017.02.001",
+      "venue": "Sleep Medicine Reviews",
+      "key_contributions": [
+        "Largest component-inclusive meta-analysis: 87 RCTs, 118 treatments, 6303 patients, including any study using at least one CBT-I component",
+        "Reports effect sizes (Hedges g) by outcome: insomnia severity index 0.98, sleep efficiency 0.71, PSQI 0.65, WASO 0.63, SOL 0.57, smallest on total sleep time 0.16",
+        "Finds face-to-face treatments of at least four sessions more effective than self-help or shorter face-to-face interventions, with results robust across comorbidity, age, and medication-use subgroups"
+      ]
+    },
+    {
+      "cite_key": "zachariae2016",
+      "title": "Efficacy of internet-delivered cognitive-behavioral therapy for insomnia – A systematic review and meta-analysis of randomized controlled trials",
+      "authors": [
+        "Robert Zachariae",
+        "Marlene S. Lyby",
+        "Lee M. Ritterband",
+        "Mia S. O'Toole"
+      ],
+      "year": 2016,
+      "arxiv_id": "",
+      "doi": "10.1016/j.smrv.2015.10.004",
+      "venue": "Sleep Medicine Reviews",
+      "key_contributions": [
+        "Meta-analysis of 11 RCTs (1460 participants) evaluating internet-delivered CBT-I (eCBT-I), framing digital delivery explicitly as a strategy to overcome the access/scalability barrier of CBT-I",
+        "Reports eCBT-I effect sizes (Hedges g) ranging from 0.21 to 1.09 across sleep outcomes, comparable to face-to-face CBT-I and generally maintained at 4-48 week follow-up",
+        "Identifies moderators: longer treatment duration and higher degree of personal clinical support associated with larger effects, while larger intervention-group dropout predicts smaller effects — a direct engagement/scalability tension"
+      ]
+    },
+    {
+      "cite_key": "qaseem2016",
+      "title": "Management of Chronic Insomnia Disorder in Adults: A Clinical Practice Guideline From the American College of Physicians",
+      "authors": [
+        "Amir Qaseem",
+        "Devan Kansagara",
+        "Mary Ann Forciea",
+        "Molly Cooke",
+        "Thomas D. Denberg"
+      ],
+      "year": 2016,
+      "arxiv_id": "",
+      "doi": "10.7326/m15-2175",
+      "venue": "Annals of Internal Medicine",
+      "key_contributions": [
+        "Authoritative ACP clinical practice guideline based on a systematic review of RCTs (2004 through September 2015), graded with the GRADE/ACP system",
+        "Issues a strong recommendation (moderate-quality evidence) that all adult patients receive CBT-I as the initial treatment for chronic insomnia disorder",
+        "Recommends shared decision-making before adding short-term pharmacotherapy only when CBT-I alone is unsuccessful (weak recommendation, low-quality evidence)"
+      ]
+    },
+    {
+      "cite_key": "ferraciolioda2013",
+      "title": "Meta-Analysis: Melatonin for the Treatment of Primary Sleep Disorders",
+      "authors": [
+        "Eduardo Ferracioli-Oda",
+        "Ahmad Qawasmi",
+        "Michael H. Bloch"
+      ],
+      "year": 2013,
+      "arxiv_id": "",
+      "doi": "10.1371/journal.pone.0063773",
+      "venue": "PLoS ONE",
+      "key_contributions": [
+        "Meta-analysis of 19 randomized placebo-controlled trials (1683 subjects) quantifying melatonin's hypnotic effect on primary sleep disorders",
+        "Found melatonin produces statistically significant but small reductions in sleep latency (WMD ~7 min) and increases in total sleep time (WMD ~8 min)",
+        "Established the 'modest effect' framing: melatonin's absolute benefit is smaller than other pharmacological insomnia treatments but with a more benign side-effect profile",
+        "Meta-regression found longer-duration and higher-dose trials showed greater effects on latency and total sleep time, but not on sleep quality"
+      ]
+    },
+    {
+      "cite_key": "zhdanova2001",
+      "title": "Melatonin Treatment for Age-Related Insomnia",
+      "authors": [
+        "Irina V. Zhdanova",
+        "Richard J. Wurtman",
+        "Meredith M. Regan",
+        "Judith A. Taylor",
+        "Jian Ping Shi",
+        "Ojingwa U. Leclair"
+      ],
+      "year": 2001,
+      "arxiv_id": "",
+      "doi": "10.1210/jcem.86.10.7901",
+      "venue": "The Journal of Clinical Endocrinology & Metabolism",
+      "key_contributions": [
+        "Double-blind placebo-controlled crossover RCT comparing physiologic (0.3 mg) and pharmacologic (3.0 mg) melatonin doses in adults over 50 with insomnia",
+        "Showed a low physiologic 0.3 mg dose restored sleep efficiency and normalized plasma melatonin, whereas the 3.0 mg dose caused supraphysiologic daytime melatonin and hypothermia",
+        "Provides direct evidence for the low-physiologic vs high-dose distinction and dosing 30 min before bedtime",
+        "Found that subjects without insomnia showed no sleep benefit from any melatonin dose despite low baseline levels"
+      ]
+    },
+    {
+      "cite_key": "erland2017",
+      "title": "Melatonin Natural Health Products and Supplements: Presence of Serotonin and Significant Variability of Melatonin Content",
+      "authors": [
+        "Lauren A.E. Erland",
+        "Praveen K. Saxena"
+      ],
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.5664/jcsm.6462",
+      "venue": "Journal of Clinical Sleep Medicine",
+      "key_contributions": [
+        "Quantified melatonin in ~30 commercial supplements by UPLC, documenting actual content ranging from -83% to +478% of labelled amount",
+        "Found lot-to-lot variability within a single product as high as 465%, uncorrelated with manufacturer or product type",
+        "Identified serotonin (a controlled substance) in 8 of the supplements at 1-75 micrograms, raising contamination/safety concerns",
+        "Reported that >71% of products failed to meet label within a 10% margin, underscoring poor quality control of OTC melatonin"
+      ]
+    },
+    {
+      "cite_key": "mah2021",
+      "title": "Oral magnesium supplementation for insomnia in older adults: a Systematic Review & Meta-Analysis",
+      "authors": [
+        "Jasmine Mah",
+        "Tyler Pitre"
+      ],
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1186/s12906-021-03297-z",
+      "venue": "BMC Complementary Medicine and Therapies",
+      "key_contributions": [
+        "Systematic review and meta-analysis of only 3 RCTs (151 older adults) on oral magnesium for insomnia, using RoB 2.0 and GRADE",
+        "Pooled estimate showed sleep onset latency reduced by ~17 min vs placebo, but total sleep time improvement was statistically insignificant",
+        "Rated all trials at moderate-to-high risk of bias with low to very low quality of evidence",
+        "Concluded the literature is substandard for firm recommendations, while noting magnesium is cheap and widely available"
+      ]
+    },
+    {
+      "cite_key": "faulkner2019",
+      "title": "Light therapies to improve sleep in intrinsic circadian rhythm sleep disorders and neuro-psychiatric illness: A systematic review and meta-analysis",
+      "authors": [
+        "Sophie M. Faulkner",
+        "Penny E. Bee",
+        "Nicholas Meyer",
+        "Derk-Jan Dijk",
+        "Richard J. Drake"
+      ],
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1016/j.smrv.2019.04.012",
+      "venue": "Sleep Medicine Reviews",
+      "key_contributions": [
+        "Systematic review and meta-analysis of light therapy across intrinsic circadian rhythm sleep disorders and neuropsychiatric illness",
+        "Found small but significant pooled improvements in sleep continuity, self-reported sleep disturbance, and advancement of delayed sleep timing",
+        "Reported that evening light avoidance was associated with greater increase in total sleep time, though limited by the small number of studies"
+      ]
+    },
+    {
+      "cite_key": "lunarangel2025",
+      "title": "Efficacy of blue-light blocking glasses on actigraphic sleep outcomes: a systematic review and meta-analysis of randomized controlled crossover trials",
+      "authors": [
+        "Francisco A. Luna-Rangel",
+        "Brenda Gonzalez-Bedolla",
+        "Miranda J. Salazar-Ortega",
+        "Ximena M. Torres-Mancilla",
+        "Salim Martinez-Cadena"
+      ],
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.3389/fneur.2025.1699303",
+      "venue": "Frontiers in Neurology",
+      "key_contributions": [
+        "Meta-analysis of three randomized controlled crossover trials (n=49) of blue-light blocking glasses using actigraphic sleep outcomes",
+        "Found a non-significant reduction in sleep onset latency and a non-significant increase in total sleep time",
+        "Concluded current RCT evidence does not support significant effects and called for larger, well-powered trials with standardized protocols"
+      ]
+    },
+    {
+      "cite_key": "bigalke2021",
+      "title": "Effect of evening blue light blocking glasses on subjective and objective sleep in healthy adults: A randomized control trial",
+      "authors": [
+        "Jeremy A. Bigalke",
+        "Ian M. Greenlund",
+        "Jennifer R. Nicevski",
+        "Jason R. Carter"
+      ],
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1016/j.sleh.2021.02.004",
+      "venue": "Sleep Health",
+      "key_contributions": [
+        "Randomized crossover trial of evening blue-light blocking glasses versus control in healthy adults",
+        "Found a small reduction in subjective (self-reported) sleep onset but no improvement in objective measures",
+        "Highlights a subjective-objective discordance in consumer blue-light glasses outcomes"
+      ]
+    },
+    {
+      "cite_key": "liset2022",
+      "title": "A randomized controlled trial on the effect of blue-blocking glasses compared to partial blue-blockers on melatonin profile among nulliparous women in third trimester of the pregnancy",
+      "authors": [
+        "Randi Liset",
+        "Janne Grønli",
+        "Roger Ekeberg Henriksen",
+        "Tone Elise Gjøtterud Henriksen",
+        "Roy Miodini Nilsen",
+        "Ståle Pallesen"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/j.nbscr.2021.100074",
+      "venue": "Neurobiology of Sleep and Circadian Rhythms",
+      "key_contributions": [
+        "RCT comparing full blue-blocking glasses to partial blue-blockers on the evening melatonin profile in third-trimester pregnant women",
+        "Found that blocking evening blue light produced an earlier onset and rise of melatonin, indicating a circadian effect",
+        "Demonstrates that the mechanism (melatonin timing) can shift even where sleep outcomes are inconsistent"
+      ]
+    },
+    {
+      "cite_key": "decrescenzo2022",
+      "title": "Comparative effects of pharmacological interventions for the acute and long-term management of insomnia disorder in adults: a systematic review and network meta-analysis",
+      "authors": [
+        "Franco De Crescenzo",
+        "Gian Loreto D'Alò",
+        "Edoardo G Ostinelli",
+        "Marco Ciabattini",
+        "Valeria Di Franco",
+        "Norio Watanabe",
+        "Ayse Kurtulmus",
+        "Anneka Tomlinson",
+        "Cinzia Del Giovane",
+        "Digby J Quested",
+        "Philip J Cowen",
+        "Corrado Barbui",
+        "Laura Amato",
+        "Orestis Efthimiou",
+        "Andrea Cipriani"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/s0140-6736(22)00878-9",
+      "venue": "The Lancet",
+      "key_contributions": [
+        "Largest network meta-analysis of insomnia pharmacotherapy: 154 double-blind RCTs, 30 interventions, 44,089 participants, with certainty graded via the CINeMA framework",
+        "For acute treatment, benzodiazepines, eszopiclone, lemborexant, seltorexant, zolpidem, zopiclone (and others) beat placebo on sleep quality (SMD range 0.36-0.83); benzodiazepines/Z-drugs outperformed melatonin, ramelteon, and zaleplon",
+        "Found eszopiclone and lemborexant had the most favorable acute/long-term profile, but flagged eszopiclone's adverse-event burden, inconclusive long-term lemborexant safety, and poor tolerability or absent long-term data for benzodiazepines, daridorexant, and suvorexant",
+        "Concluded melatonin, ramelteon, and non-licensed drugs showed no overall material benefit, providing an evidence base to rank drug options"
+      ]
+    },
+    {
+      "cite_key": "mignot2022",
+      "title": "Safety and efficacy of daridorexant in patients with insomnia disorder: results from two multicentre, randomised, double-blind, placebo-controlled, phase 3 trials",
+      "authors": [
+        "Emmanuel Mignot",
+        "David Mayleben",
+        "Ingo Fietze",
+        "Damien Leger",
+        "Gary Zammit",
+        "Claudio L A Bassetti",
+        "Scott Pain",
+        "Dalma Seboek Kinter",
+        "Thomas Roth"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/s1474-4422(21)00436-1",
+      "venue": "The Lancet Neurology",
+      "key_contributions": [
+        "Two pivotal phase 3 RCTs (n=930 and n=924) establishing daridorexant, a dual orexin receptor antagonist, for insomnia disorder at the dose later approved",
+        "Daridorexant 50 mg significantly reduced polysomnographic wake time after sleep onset (WASO) and latency to persistent sleep, and improved self-reported total sleep time and daytime sleepiness (IDSIQ), versus placebo at months 1 and 3",
+        "The 10 mg dose showed no significant effect on the primary PSG endpoints, demonstrating a dose-response and the importance of the 25-50 mg range",
+        "Adverse-event incidence was comparable to placebo with nasopharyngitis and headache most common, supporting a favorable safety profile distinct from benzodiazepines/Z-drugs"
+      ]
+    },
+    {
+      "cite_key": "sateia2017",
+      "title": "Clinical Practice Guideline for the Pharmacologic Treatment of Chronic Insomnia in Adults: An American Academy of Sleep Medicine Clinical Practice Guideline",
+      "authors": [
+        "Michael J. Sateia",
+        "Daniel J. Buysse",
+        "Andrew D. Krystal",
+        "David N. Neubauer",
+        "Jonathan L. Heald"
+      ],
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.5664/jcsm.6470",
+      "venue": "Journal of Clinical Sleep Medicine",
+      "key_contributions": [
+        "GRADE-based AASM guideline giving drug-specific (not class-level) recommendations for chronic insomnia pharmacotherapy",
+        "All pharmacologic recommendations are WEAK, reflecting downgraded evidence quality due to industry funding/publication-bias risk, few trials per agent, and heterogeneity",
+        "Suggests suvorexant (orexin antagonist) for sleep-maintenance insomnia and specific Z-drugs/benzodiazepines for onset/maintenance, while recommending against melatonin, diphenhydramine, valerian, tryptophan, trazodone, and tiagabine",
+        "Frames drug therapy as adjunctive/conditional, establishing context for behavioral therapy as the preferred first-line approach"
+      ]
+    },
+    {
+      "cite_key": "karppa2020",
+      "title": "Long-term efficacy and tolerability of lemborexant compared with placebo in adults with insomnia disorder: results from the phase 3 randomized clinical trial SUNRISE 2",
+      "authors": [
+        "Mikko Kärppä",
+        "Jane Yardley",
+        "Kate Pinner",
+        "Gleb Filippov",
+        "Gary Zammit",
+        "Margaret Moline",
+        "Carlos Perdomo",
+        "Yuichi Inoue",
+        "Kohei Ishikawa",
+        "Naoki Kubota"
+      ],
+      "year": 2020,
+      "arxiv_id": "",
+      "doi": "10.1093/sleep/zsaa123",
+      "venue": "Sleep",
+      "key_contributions": [
+        "12-month phase 3 RCT (SUNRISE 2; n=949) testing lemborexant, a dual orexin receptor antagonist, with a 6-month placebo-controlled period reported here",
+        "Lemborexant 5 mg and 10 mg produced significantly greater improvements than placebo in subjective sleep onset latency, wake after sleep onset, and sleep efficiency, sustained through month 6",
+        "Demonstrated long-term sustained efficacy on both sleep onset and sleep maintenance, with significantly more sleep-onset and sleep-maintenance responders than placebo",
+        "Most treatment-emergent adverse events were mild/moderate with a low rate of serious events and no deaths, supporting long-term tolerability"
+      ]
+    },
+    {
+      "cite_key": "rhee2025",
+      "title": "Breaking social media fads and uncovering the safety and efficacy of mouth taping in patients with mouth breathing, sleep disordered breathing, or obstructive sleep apnea: A systematic review",
+      "authors": [
+        "Jess Rhee",
+        "Alla Iansavitchene",
+        "Sonya Mannala",
+        "M. Elise Graham",
+        "Brian Rotenberg"
+      ],
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.1371/journal.pone.0323643",
+      "venue": "PLOS One",
+      "key_contributions": [
+        "PRISMA systematic review of nighttime mouth taping for mouth breathing, sleep-disordered breathing, and OSA; 10 studies (213 patients) met inclusion criteria after screening 120 articles",
+        "Found only 2 studies showing statistically significant improvement in sleep apnea markers (AHI, oxygen desaturations), while other studies showed no difference",
+        "Identified a potentially serious risk of harm, including asphyxiation in the presence of nasal obstruction, and notes many studies excluded patients with nasal obstruction",
+        "Concludes evidence is insufficient and calls the social-media-driven practice potentially unsafe for indiscriminate use"
+      ]
+    },
+    {
+      "cite_key": "agostinho2026",
+      "title": "Are Wearable Sleep-Tracking Devices Reliable Alternatives to Polysomnography? A Systematic Review and Meta-Analysis",
+      "authors": [
+        "Margarida Agostinho",
+        "Maria Borges",
+        "Telmo Pereira",
+        "Daniel Filipe Borges",
+        "Joana Isabel Soares"
+      ],
+      "year": 2026,
+      "arxiv_id": "",
+      "doi": "10.1080/15402002.2026.2673893",
+      "venue": "Behavioral Sleep Medicine",
+      "key_contributions": [
+        "Systematic review and meta-analysis (PRISMA, QUADAS-2) comparing consumer wearable sleep-tracking devices against laboratory polysomnography in healthy adults; 16 studies included, 10 in the meta-analysis",
+        "Quantified directional bias: wearables overestimated total sleep time and sleep efficiency and underestimated wake after sleep onset, with substantial between-device variability",
+        "Found no device with consistently superior performance; closest PSG agreement was Oura Ring (3rd gen) for sleep latency/efficiency and selected Fitbit models for deep/REM sleep",
+        "Concludes wearables give reasonable global sleep estimates but cannot serve as stand-alone diagnostic tools or for detailed sleep-stage characterization"
+      ]
+    },
+    {
+      "cite_key": "baron2017",
+      "title": "Orthosomnia: Are Some Patients Taking the Quantified Self Too Far?",
+      "authors": [
+        "Kelly Glazer Baron",
+        "Sabra Abbott",
+        "Nancy Jao",
+        "Natalie Manalo",
+        "Rebecca Mullen"
+      ],
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.5664/jcsm.6472",
+      "venue": "Journal of Clinical Sleep Medicine",
+      "key_contributions": [
+        "Coins the term 'orthosomnia' and describes a clinical case series of patients seeking treatment for self-diagnosed sleep disturbances based on consumer sleep-tracker data",
+        "Documents that patients often trust tracker data over validated techniques such as polysomnography or actigraphy, and may develop a perfectionistic quest for ideal sleep",
+        "Frames the clinical challenge of educating patients about device validity while managing their enthusiasm for objective data, and recommends incorporating trackers into CBT-I"
+      ]
+    },
+    {
+      "cite_key": "guldbrandsen2025",
+      "title": "Development of a scale for measuring orthosomnia: the Bergen Orthosomnia Scale (BOS)",
+      "authors": [
+        "Bodil V. Guldbrandsen",
+        "Kelly Baron",
+        "Øystein Vedaa",
+        "Bjørn Bjorvatn",
+        "Ståle Pallesen"
+      ],
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.3389/frsle.2025.1640355",
+      "venue": "Frontiers in Sleep",
+      "key_contributions": [
+        "Develops and validates the Bergen Orthosomnia Scale (BOS), the first psychometric instrument for measuring orthosomnia (excessive preoccupation with sleep), across three studies (Delphi panel, 994 respondents, 473-person validation)",
+        "Identifies a two-factor structure ('interference' and 'rigidity'), each six items, with acceptable model fit, good internal consistency, and 3-week test-retest reliability",
+        "Establishes construct validity: orthosomnia factors correlate positively with sleep effort, dysfunctional beliefs about sleep, perfectionism, OCD, and health anxiety, with the interference factor also linked to insomnia and neuroticism"
+      ]
+    },
+    {
+      "cite_key": "chinoy2022",
+      "title": "Performance of Four Commercial Wearable Sleep-Tracking Devices Tested Under Unrestricted Conditions at Home in Healthy Young Adults",
+      "authors": [
+        "Evan D. Chinoy",
+        "Joseph A. Cuellar",
+        "Jason T. Jameson",
+        "Rachel R. Markwald"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.2147/nss.s348795",
+      "venue": "Nature and Science of Sleep",
+      "key_contributions": [
+        "Tests four consumer wearables (Fatigue Science Readiband, Fitbit Inspire HR, Oura ring, Polar Vantage V Titan) plus research-grade actigraphy against a mobile EEG headband under naturalistic at-home conditions, addressing the lab-vs-real-world measurement gap",
+        "Quantifies the wake-detection weakness: high epoch-by-epoch sleep sensitivity (0.93-0.96) but low wake specificity (0.35-0.45) across all devices",
+        "Concludes high variability in sleep-stage tracking means devices are best used for sleep-wake outcomes, not sleep stages — a concrete limit on consumer-device measurement claims"
+      ]
+    },
+    {
+      "cite_key": "kahawage2019",
+      "title": "Validity, potential clinical utility, and comparison of consumer and research-grade activity trackers in Insomnia Disorder I: In-lab validation against polysomnography",
+      "authors": [
+        "Piyumi Kahawage",
+        "Ria Jumabhoy",
+        "Kellie Hamill",
+        "Massimiliano de Zambotti",
+        "Sean P. A. Drummond"
+      ],
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1111/jsr.12931",
+      "venue": "Journal of Sleep Research",
+      "key_contributions": [
+        "Validates a consumer tracker (Fitbit Alta HR) and research actigraph (Actiwatch Spectrum Pro) against polysomnography in 42 adults with insomnia disorder — a population where validation was previously lacking",
+        "Documents the core actigraphy/wearable measurement problem in insomnia: high sleep-detection sensitivity but low wake-detection specificity (39-45%), with both devices overestimating total sleep time and sleep efficiency and underestimating wake after sleep onset",
+        "Finds Fitbit sleep-stage classification underestimates deep/REM and overestimates light sleep, and states substitution for actigraphy in insomnia requires further investigation"
+      ]
+    },
+    {
+      "cite_key": "dezambotti2024",
+      "title": "State of the science and recommendations for using wearable technology in sleep and circadian research",
+      "authors": [
+        "Massimiliano de Zambotti",
+        "Cathy Goldstein",
+        "Jesse Cook",
+        "Luca Menghini",
+        "Marco Altini",
+        "Philip Cheng",
+        "Rebecca Robillard"
+      ],
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1093/sleep/zsad325",
+      "venue": "Sleep",
+      "key_contributions": [
+        "Sleep Research Society commissioned State of the Science review synthesizing what wearable sleep-tracking data can provide, how accurate it is, and how to incorporate it into research — the authoritative measurement-methodology reference",
+        "States consumer-grade devices can exceed traditional actigraphy in assessing PSG-defined sleep, while cataloging clear limitations: misclassification of wakefulness, problems tracking outside the main sleep bout, artifacts, and unclear generalization across populations",
+        "Flags an equity/individual-variability concern: person-specific factors such as skin color or obesity can degrade sensor performance and potentially augment existing healthcare disparities"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "statement": "CBT-I for chronic insomnia is multimodal, incorporating at least three of cognitive therapy, stimulus control, sleep restriction, sleep hygiene, and relaxation.",
+      "paper": "trauer2015",
+      "supporting_passage": "Approaches to CBT-i incorporated at least 3 of the following: cognitive therapy, stimulus control, sleep restriction, sleep hygiene, and relaxation.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c2",
+      "statement": "In a meta-analysis of face-to-face CBT-I for chronic insomnia, posttreatment sleep onset latency improved by about 19 minutes, wake after sleep onset by about 26 minutes, and sleep efficiency by about 9.9 percentage points.",
+      "paper": "trauer2015",
+      "supporting_passage": "At the posttreatment time point, SOL improved by 19.03 (95% CI, 14.12 to 23.93) minutes, WASO improved by 26.00 (CI, 15.48 to 36.52) minutes, TST improved by 7.61 (CI, -0.51 to 15.74) minutes, and SE% improved by 9.91% (CI, 8.09% to 11.73%).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c3",
+      "statement": "CBT-I produces large effects on insomnia severity and moderate effects on sleep efficiency, while its effect on total sleep time is small.",
+      "paper": "vanstraten2018",
+      "supporting_passage": "Overall, the interventions had significant effects on: insomnia severity index (g = 0.98), sleep efficiency (g = 0.71), Pittsburgh sleep quality index (g = 0.65), wake after sleep onset (g = 0.63) and sleep onset latency (SOL; g = 0.57), number of awakenings (g = 0.29) and sleep quality (g = 0.40). The smallest effect was on total sleep time (g = 0.16).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c4",
+      "statement": "Face-to-face CBT-I of at least four sessions appears more effective than self-help interventions or shorter face-to-face treatments.",
+      "paper": "vanstraten2018",
+      "supporting_passage": "Face-to-face treatments of at least four sessions seem to be more effective than self-help interventions or face-to-face interventions with fewer sessions.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c5",
+      "statement": "Internet-delivered CBT-I yields effects comparable to face-to-face CBT-I that are generally maintained at 4-48 week follow-up.",
+      "paper": "zachariae2016",
+      "supporting_passage": "The effects were comparable to those found for face-to-face CBT-I, and were generally maintained at 4-48 wk follow-up.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c6",
+      "statement": "For internet-delivered CBT-I, longer treatment duration and a higher degree of personal clinical support were associated with larger effect sizes.",
+      "paper": "zachariae2016",
+      "supporting_passage": "Moderator analyses showed that longer treatment duration and higher degree of personal clinical support were associated with larger effect sizes, and that larger study dropout in the intervention group was associated with smaller effect sizes.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c7",
+      "statement": "The American College of Physicians strongly recommends that all adult patients receive CBT-I as the initial treatment for chronic insomnia disorder, based on moderate-quality evidence.",
+      "paper": "qaseem2016",
+      "supporting_passage": "ACP recommends that all adult patients receive cognitive behavioral therapy for insomnia (CBT-I) as the initial treatment for chronic insomnia disorder. (Grade: strong recommendation, moderate-quality evidence).",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c8",
+      "statement": "In a meta-analysis of 19 RCTs (1683 subjects), melatonin produced a small but statistically significant reduction in sleep latency of about 7 minutes versus placebo.",
+      "paper": "ferraciolioda2013",
+      "supporting_passage": "Nineteen studies involving 1683 subjects were included in this meta-analysis. Melatonin demonstrated significant efficacy in reducing sleep latency (weighted mean difference (WMD) = 7.06 minutes [95% CI 4.37 to 9.75], Z = 5.15, p<0.001) and increasing total sleep time (WMD = 8.25 minutes [95% CI 1.74 to 14.75], Z = 2.48, p = 0.013).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c9",
+      "statement": "Melatonin's effects on sleep are modest and its absolute benefit is smaller than other pharmacological insomnia treatments, though it has a more benign side-effect profile.",
+      "paper": "ferraciolioda2013",
+      "supporting_passage": "The effects of melatonin on sleep are modest but do not appear to dissipate with continued melatonin use. Although the absolute benefit of melatonin compared to placebo is smaller than other pharmacological treatments for insomnia, melatonin may have a role in the treatment of insomnia given its relatively benign side-effect profile compared to these agents.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c10",
+      "statement": "A low physiologic melatonin dose of 0.3 mg taken 30 minutes before bedtime restored sleep efficiency and normalized plasma melatonin in older insomniacs, while a 3.0 mg pharmacologic dose left melatonin elevated into daytime and induced hypothermia.",
+      "paper": "zhdanova2001",
+      "supporting_passage": "subjects who slept normally (n = 15) or exhibited actigraphically confirmed decreases in sleep efficiency (n = 15) received, in randomized order, a placebo and three melatonin doses (0.1, 0.3, and 3.0 mg) orally 30 min before bedtime for a week. Treatments were separated by 1-wk washout periods. Sleep data were obtained by polysomnography on the last three nights of each treatment period. The physiologic melatonin dose (0.3 mg) restored sleep efficiency (P < 0.0001), acting principally in the midthird of the night; it also elevated plasma melatonin levels (P < 0.0008) to normal. The pharmacologic dose (3.0 mg), like the lowest dose (0.1 mg), also improved sleep; however, it induced hypothermia and caused plasma melatonin to remain elevated into the daylight hours.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c11",
+      "statement": "Melatonin content in commercial supplements ranged from -83% to +478% of the labelled amount, with lot-to-lot variability within a single product as high as 465%.",
+      "paper": "erland2017",
+      "supporting_passage": "Melatonin content was found to range from -83% to +478% of the labelled content. Additionally, lot-to-lot variable within a particular product varied by as much as 465%. This variability did not appear to be correlated with manufacturer or product type.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c12",
+      "statement": "More than 71% of melatonin supplements did not meet their label claim within a 10% margin, and serotonin was found in 26% of products.",
+      "paper": "erland2017",
+      "supporting_passage": "Melatonin content did not meet label within a 10% margin of the label claim in more than 71% of supplements and an additional 26% were found to contain serotonin.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c13",
+      "statement": "A meta-analysis of three RCTs in 151 older adults found magnesium reduced sleep onset latency by about 17 minutes versus placebo, but the supporting evidence was of low to very low quality with moderate-to-high risk of bias.",
+      "paper": "mah2021",
+      "supporting_passage": "Pooled analysis showed that post-intervention sleep onset latency time was 17.36 min less after magnesium supplementation compared to placebo (95% CI - 27.27 to - 7.44, p = 0.0006). Total sleep time improved by 16.06 min in the magnesium supplementation group but was statistically insignificant. All trials were at moderate-to-high risk of bias and outcomes were supported by low to very low quality of evidence.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c14",
+      "statement": "The authors concluded the evidence base for oral magnesium in insomnia is substandard for well-informed clinical recommendations.",
+      "paper": "mah2021",
+      "supporting_passage": "This review confirms that the quality of literature is substandard for physicians to make well-informed recommendations on usage of oral magnesium for older adults with insomnia.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c15",
+      "statement": "A meta-analysis of light therapies for intrinsic circadian rhythm sleep disorders and neuropsychiatric illness found small significant improvements in sleep continuity, self-reported sleep disturbance, and advancement of delayed sleep timing.",
+      "paper": "faulkner2019",
+      "supporting_passage": "Meta-analysis showed improvements in sleep continuity (ES = -0.23, p = 0.000), self-reported sleep disturbance (ES = -0.32, p = 0.014), and advancement of delayed sleep timing (ES = -0.34, p = 0.010).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c16",
+      "statement": "In the same review, evening light avoidance was associated with a greater increase in total sleep time, though the small number of studies limited the analysis.",
+      "paper": "faulkner2019",
+      "supporting_passage": "Although the small number of studies limited meta-regression, evening light avoidance was associated with greater increase in total sleep time.",
+      "claim_type": "finding",
+      "confidence": "medium"
+    },
+    {
+      "id": "c17",
+      "statement": "A 2025 meta-analysis of randomized crossover trials found that blue-light blocking glasses produced only a non-significant reduction in sleep onset latency.",
+      "paper": "lunarangel2025",
+      "supporting_passage": "BBGs showed a non-significant reduction in SOL (MD = -4.86 min; 95% CI: -20.23 to 10.52; p = 0.54)",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c18",
+      "statement": "The meta-analysis concluded that current RCT evidence does not support significant sleep effects of blue-light blocking glasses, despite possible small improvements.",
+      "paper": "lunarangel2025",
+      "supporting_passage": "BBGs may provide small improvements in sleep, but current evidence from RCTs does not support significant effects.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c19",
+      "statement": "In an RCT of healthy adults, evening blue-light blocking glasses did not improve objective measures of sleep time or quality.",
+      "paper": "bigalke2021",
+      "supporting_passage": "Blue light blocking glasses did not improve objective measures of sleep time or quality in healthy adults.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c20",
+      "statement": "In the same RCT, blue-light blocking glasses reduced subjective (self-reported) sleep onset.",
+      "paper": "bigalke2021",
+      "supporting_passage": "BLB reduced subjective sleep onset (21 ± 28 vs 24 ± 21 minute, P = .033)",
+      "claim_type": "result",
+      "confidence": "medium"
+    },
+    {
+      "id": "c21",
+      "statement": "Blocking evening blue light in pregnant women produced an earlier onset and rise of melatonin levels, indicating a positive effect on circadian timing.",
+      "paper": "liset2022",
+      "supporting_passage": "Blocking blue light in the evening had a positive effect on the circadian system with an earlier onset and rise of melatonin levels in healthy nulliparous pregnant women.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c22",
+      "statement": "In this network meta-analysis, behavioral, cognitive, and pharmacological interventions can all be effective for insomnia, yet medications are used more frequently worldwide because of inadequate resources.",
+      "paper": "decrescenzo2022",
+      "supporting_passage": "Behavioural, cognitive, and pharmacological interventions can all be effective for insomnia. However, because of inadequate resources, medications are more frequently used worldwide.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c23",
+      "statement": "For acute treatment, benzodiazepines, eszopiclone, lemborexant, seltorexant, zolpidem, and zopiclone were more efficacious than placebo, with standardised mean differences ranging 0.36-0.83 (high to moderate certainty).",
+      "paper": "decrescenzo2022",
+      "supporting_passage": "In terms of acute treatment, benzodiazepines, doxylamine, eszopiclone, lemborexant, seltorexant, zolpidem, and zopiclone were more efficacious than placebo (SMD range: 0·36-0·83 [CINeMA estimates of certainty: high to moderate]).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c24",
+      "statement": "The review concluded that licensed drugs including benzodiazepines, daridorexant, and suvorexant can be effective for acute insomnia but are associated with poor tolerability or lack long-term safety data.",
+      "paper": "decrescenzo2022",
+      "supporting_passage": "Many licensed drugs (including benzodiazepines, daridorexant, suvorexant, and trazodone) can be effective in the acute treatment of insomnia but are associated with poor tolerability, or information about long-term effects is not available.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c25",
+      "statement": "Daridorexant 25 mg and 50 mg improved sleep outcomes and daridorexant 50 mg also improved daytime functioning in people with insomnia disorder, with a favourable safety profile.",
+      "paper": "mignot2022",
+      "supporting_passage": "Daridorexant 25 mg and 50 mg improved sleep outcomes, and daridorexant 50 mg also improved daytime functioning, in people with insomnia disorder, with a favourable safety profile.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c26",
+      "statement": "In phase 3 trials, daridorexant 50 mg significantly reduced wake time after sleep onset versus placebo at month 1 (LSM difference -22.8 min) and month 3 (-18.3 min).",
+      "paper": "mignot2022",
+      "supporting_passage": "WASO and LPS were significantly reduced among participants in the daridorexant 50 mg group compared with participants in the placebo group at month 1 (least squares mean [LSM] difference -22·8 min [95% CI -28·0 to -17·6], p<0·0001 for WASO; -11·4 min [-16·0 to -6·7], p<0·0001 for LPS) and month 3 (-18·3 min [-23·9 to -12·7], p<0·0001 for WASO; -11·7 min [-16·3 to -7·0], p<0·0001 for LPS)",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c27",
+      "statement": "The AASM guideline suggests clinicians use suvorexant, a dual orexin receptor antagonist, as a treatment for sleep maintenance insomnia versus no treatment in adults, but the recommendation is only WEAK.",
+      "paper": "sateia2017",
+      "supporting_passage": "We suggest that clinicians use suvorexant as a treatment for sleep maintenance insomnia (versus no treatment) in adults. (WEAK).",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c28",
+      "statement": "All AASM pharmacologic recommendations were downgraded in quality because of the funding source for most trials and attendant publication-bias risk, the small number of eligible trials per agent, and observed heterogeneity in the data.",
+      "paper": "sateia2017",
+      "supporting_passage": "Downgrading the quality of evidence for these treatments is predictable in GRADE, due to the funding source for most pharmacological clinical trials and the attendant risk of publication bias; the relatively small number of eligible trials for each individual agent; and the observed heterogeneity in the data.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c29",
+      "statement": "In the 6-month placebo-controlled period of SUNRISE 2, lemborexant 5 mg and 10 mg produced significantly greater improvements than placebo in subjective sleep onset latency, wake after sleep onset, and sleep efficiency.",
+      "paper": "karppa2020",
+      "supporting_passage": "Decreases from baseline in patient-reported (subjective) sleep onset latency and subjective wake after sleep onset, and increases from baseline in subjective sleep efficiency, were significantly greater with LEM5 and LEM10 versus placebo.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c30",
+      "statement": "Lemborexant showed long-term sustained efficacy on both sleep onset and sleep maintenance with significant benefits over placebo at the end of month 6 and most time points across the 6-month period.",
+      "paper": "karppa2020",
+      "supporting_passage": "Significant benefits over placebo were observed at the end of month 6, and at most time points assessed over the 6-month period, indicating long-term sustained efficacy of LEM.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c31",
+      "statement": "A systematic review of mouth taping for mouth breathing, sleep-disordered breathing, or OSA found only 2 of 10 included studies showed statistically significant improvement in sleep apnea markers, while others showed no difference and raised harm concerns.",
+      "paper": "rhee2025",
+      "supporting_passage": "Twenty-four went on to full text review and 10 met inclusion criteria with a total of 213 patients. Two studies showed statistically significant improvement in established markers of sleep apnea such as apnea-hypopnea index (AHI) or oxygen desaturations. Other studies showed that mouth taping offered no differences and even discussed potential risks including asphyxiation in the presence of nasal obstruction.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c32",
+      "statement": "The mouth-taping systematic review concluded there is a potentially serious risk of harm for people indiscriminately practicing the trend and that further studies are needed to establish any clinical benefit.",
+      "paper": "rhee2025",
+      "supporting_passage": "Based on the data presented by these 10 different studies, it seems that there is a potentially serious risk of harm for individuals indiscriminately practicing this trend. Further studies are required to elucidate any clinical benefit this practice may have.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c33",
+      "statement": "In a meta-analysis against polysomnography, consumer wearable sleep-tracking devices overestimated total sleep time and sleep efficiency and underestimated wake after sleep onset, with substantial variability between devices and no device consistently superior.",
+      "paper": "agostinho2026",
+      "supporting_passage": "Wearable devices overestimated total sleep time and sleep efficiency and underestimated wake after sleep onset, with substantial variability between devices. No device demonstrated consistently superior performance.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c34",
+      "statement": "The systematic review and meta-analysis concluded that variable performance, methodological heterogeneity, and risk-of-bias considerations currently limit wearables' use as stand-alone diagnostic tools or for detailed sleep-stage characterization.",
+      "paper": "agostinho2026",
+      "supporting_passage": "However, variable performance, methodological heterogeneity, and risk-of-bias considerations currently limit their use as stand-alone diagnostic tools or for detailed sleep-stage characterization.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c35",
+      "statement": "Orthosomnia describes a growing number of patients seeking treatment for self-diagnosed sleep disturbances such as insufficient sleep duration and insomnia based on periods of light or restless sleep observed on their sleep-tracker data.",
+      "paper": "baron2017",
+      "supporting_passage": "However, there are a growing number of patients who are seeking treatment for self-diagnosed sleep disturbances such as insufficient sleep duration and insomnia due to periods of light or restless sleep observed on their sleep tracker data.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c36",
+      "statement": "Patients with orthosomnia often perceive sleep-tracker data as more consistent with their experience of sleep than validated techniques such as polysomnography or actigraphy.",
+      "paper": "baron2017",
+      "supporting_passage": "To the patients, sleep tracker data often feels more consistent with their experience of sleep than validated techniques, such as polysomnography or actigraphy.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c37",
+      "statement": "The Bergen Orthosomnia Scale operationalizes orthosomnia as excessive preoccupation with sleep, captured by two factors ('interference' and 'rigidity'), each comprising six items.",
+      "paper": "guldbrandsen2025",
+      "supporting_passage": "This study aimed to extend the knowledge about orthosomnia, that is, excessive preoccupation with sleep, by developing a scale for its assessment.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c38",
+      "statement": "Both orthosomnia factors measured by the Bergen Orthosomnia Scale correlated positively with sleep effort, dysfunctional beliefs and attitudes about sleep, perfectionism, OCD, and health anxiety.",
+      "paper": "guldbrandsen2025",
+      "supporting_passage": "Both orthosomnia factors correlated positively with sleep effort, dysfunctional beliefs and attitudes about sleep, narcissism, perfectionism, OCD, and health anxiety.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c39",
+      "statement": "Although CBT-I is efficacious, a central open problem is making it available and accessible at population scale, and delivering it over the internet is proposed as one way to overcome this barrier.",
+      "paper": "zachariae2016",
+      "supporting_passage": "Cognitive-behavioral therapy for insomnia (CBT-I) has been shown efficacious, but the challenge remains to make it available and accessible in order to meet population needs. Delivering CBT-I over the internet (eCBT-I) may be one method to overcome this challenge.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c40",
+      "statement": "Across four consumer wearables tested at home, sleep-stage tracking showed high variability, so the devices in their current form are best used for sleep-wake outcomes rather than sleep stages.",
+      "paper": "chinoy2022",
+      "supporting_passage": "High variability in sleep stage-tracking performance suggests that these devices, in their current form, are still best utilized for tracking sleep-wake outcomes and not sleep stages.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c41",
+      "statement": "Consumer wearables are markedly better at detecting sleep than wake, with high sleep sensitivity but low wake specificity (e.g., Fitbit 0.93 sensitivity, 0.45 specificity).",
+      "paper": "chinoy2022",
+      "supporting_passage": "Epoch-by-epoch sensitivity (for sleep) and specificity (for wake), respectively, were as follows: Actiwatch (0.95, 0.35), Fatigue Science (0.94, 0.40), Fitbit (0.93, 0.45), Oura (0.94, 0.41), and Polar (0.96, 0.35).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c42",
+      "statement": "In adults with insomnia disorder, both a consumer tracker and a research actigraph showed high sleep-detection sensitivity but low wake-detection specificity against polysomnography, overestimating total sleep time and sleep efficiency.",
+      "paper": "kahawage2019",
+      "supporting_passage": "Compared with polysomnography, both activity trackers displayed high accuracy (81.12% versus 82.80%, AWS and FBA respectively; ns) and sensitivity (sleep detection; 96.66% versus 96.04%, respectively; ns) but low specificity (wake detection; 39.09% versus 44.76%, respectively; p = .037). Both trackers overestimated total sleep time and sleep efficiency, and underestimated sleep latency and wake after sleep onset.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c43",
+      "statement": "Whether a consumer Fitbit tracker could substitute for research-grade actigraphy in insomnia remains uncertain and requires further investigation.",
+      "paper": "kahawage2019",
+      "supporting_passage": "Whether FBA could serve as a low-cost substitute for actigraphy in insomnia requires further investigation.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c44",
+      "statement": "Wearable sleep trackers have clear limitations including misclassification of wakefulness during the sleep period and unclear translation of performance to individuals with certain characteristics or comorbidities.",
+      "paper": "dezambotti2024",
+      "supporting_passage": "However, clear limitations exist, for example, the misclassification of wakefulness during the sleep period, problems with sleep tracking outside of the main sleep bout or nighttime period, artifacts, and unclear translation of performance to individuals with certain characteristics or comorbidities.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c45",
+      "statement": "Person-specific factors such as skin color or obesity can negatively impact wearable sensor performance, with the potential to augment already existing healthcare disparities.",
+      "paper": "dezambotti2024",
+      "supporting_passage": "This is of particular relevance when person-specific factors (like skin color or obesity) negatively impact sensor performance with the potential downstream impact of augmenting already existing healthcare disparities.",
+      "claim_type": "finding",
+      "confidence": "high"
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "statement": "CBT-I is first-line and efficacious, but making it available and accessible at population scale remains unsolved; therapist scarcity drives patients toward medication instead.",
+      "status": "partially-addressed",
+      "why_it_matters": "Guidelines (ACP) make CBT-I the strong first recommendation, yet inadequate resources mean medications are used more frequently worldwide; digital/internet CBT-I is a proposed but incomplete fix whose effects depend on personal clinical support and are eroded by dropout.",
+      "flagged_by": [
+        "zachariae2016",
+        "qaseem2016",
+        "decrescenzo2022"
+      ]
+    },
+    {
+      "id": "o2",
+      "statement": "Long-term and head-to-head efficacy/safety data for newer insomnia pharmacotherapies (including dual orexin antagonists) are incomplete.",
+      "status": "open",
+      "why_it_matters": "Network meta-analysis flags that several licensed drugs lack long-term safety information and that for agents such as daridorexant and suvorexant the long-term/tolerability picture is poor or absent; without it, ranking and durable prescribing decisions stay uncertain.",
+      "flagged_by": [
+        "decrescenzo2022",
+        "sateia2017"
+      ]
+    },
+    {
+      "id": "o3",
+      "statement": "Consumer wearable sleep trackers cannot reliably substitute for polysomnography, particularly for detecting wake and characterizing sleep stages.",
+      "status": "open",
+      "why_it_matters": "Across home and lab validations, devices show high sleep sensitivity but low wake specificity and systematically overestimate total sleep time/efficiency; without solving wake detection and stage classification they cannot serve as stand-alone diagnostic tools, and substitution for actigraphy in insomnia is still unproven.",
+      "flagged_by": [
+        "agostinho2026",
+        "chinoy2022",
+        "kahawage2019",
+        "dezambotti2024"
+      ]
+    },
+    {
+      "id": "o4",
+      "statement": "The quality and consistency of evidence (and of the products themselves) for supplements is too poor to support firm recommendations.",
+      "status": "open",
+      "why_it_matters": "The magnesium evidence base is rated low to very-low quality with high risk of bias, and melatonin supplements vary wildly from their labels (and can contain serotonin), so even a 'modest effect' cannot be reliably delivered by what consumers actually buy.",
+      "flagged_by": [
+        "mah2021",
+        "erland2017",
+        "ferraciolioda2013"
+      ]
+    },
+    {
+      "id": "o5",
+      "statement": "Individual variability and equity gaps in wearable sensor performance are unresolved.",
+      "status": "open",
+      "why_it_matters": "Person-specific factors such as skin color and obesity can degrade sensor accuracy, risking augmentation of existing healthcare disparities, and translation of device performance to people with comorbidities is unclear.",
+      "flagged_by": [
+        "dezambotti2024"
+      ]
+    },
+    {
+      "id": "o6",
+      "statement": "The evidence for popular consumer interventions like mouth-taping and blue-light-blocking glasses is thin, underpowered, or null, and adequately powered standardized RCTs are lacking.",
+      "status": "open",
+      "why_it_matters": "Mouth-taping rests on only a handful of small studies with a potentially serious harm signal, and blue-light-blocking glasses show non-significant actigraphic effects in pooled crossover trials; the gap between social-media-driven adoption and rigorous evidence leaves clinicians unable to advise confidently.",
+      "flagged_by": [
+        "rhee2025",
+        "lunarangel2025",
+        "bigalke2021"
+      ]
+    },
+    {
+      "id": "o7",
+      "statement": "Tracker-driven preoccupation with sleep ('orthosomnia') is an emerging clinical problem that lacks established prevalence data and validated management pathways.",
+      "status": "partially-addressed",
+      "why_it_matters": "Patients increasingly trust device data over validated measurement and develop perfectionistic sleep anxiety; a measurement scale (BOS) now exists, but how to prevent and treat orthosomnia — and whether trackers can be safely folded into CBT-I — remains underdeveloped.",
+      "flagged_by": [
+        "baron2017",
+        "guldbrandsen2025"
+      ]
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "Does melatonin work as a low-dose physiologic chronobiotic or as a higher-dose hypnotic — and does dose actually matter?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Low physiologic doses (~0.3 mg) are optimal; high doses are not better and carry side effects",
+          "summary": "A controlled crossover RCT showed 0.3 mg restored sleep efficiency and normalized plasma melatonin, while the 3.0 mg dose left melatonin supraphysiologically elevated into the daytime and induced hypothermia, arguing the chronobiotic low-dose framing is preferable.",
+          "papers": [
+            "zhdanova2001"
+          ]
+        },
+        {
+          "stance": "Pooled effect is modest regardless, with weak dose dependence and small absolute benefit",
+          "summary": "The 19-RCT meta-analysis found only ~7 min latency and ~8 min total-sleep-time gains overall; meta-regression linked higher dose to somewhat greater latency/total-sleep effects (but not sleep quality), and concluded melatonin's absolute benefit is smaller than other hypnotics — so the practical effect is modest whichever dose is used.",
+          "papers": [
+            "ferraciolioda2013"
+          ]
+        },
+        {
+          "stance": "Guidelines recommend against melatonin for chronic insomnia",
+          "summary": "The AASM pharmacologic guideline recommends against melatonin as a treatment for chronic insomnia (and the network meta-analysis found melatonin showed no overall material benefit), undercutting hype regardless of dose.",
+          "papers": [
+            "sateia2017",
+            "decrescenzo2022"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "question": "Do blue-light-blocking glasses actually improve sleep, or only shift a biomarker / subjective perception?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "No significant objective sleep benefit",
+          "summary": "A 2025 meta-analysis of crossover RCTs found only a non-significant reduction in sleep onset latency and concluded current RCT evidence does not support significant effects; an individual healthy-adult RCT likewise found no improvement in objective sleep time or quality.",
+          "papers": [
+            "lunarangel2025",
+            "bigalke2021"
+          ]
+        },
+        {
+          "stance": "There is a real mechanistic/subjective signal",
+          "summary": "Blocking evening blue light produced an earlier onset and rise of melatonin in pregnant women (a genuine circadian effect), and one RCT found a small reduction in self-reported sleep onset — suggesting the mechanism is real even if downstream objective sleep gains are inconsistent.",
+          "papers": [
+            "liset2022",
+            "bigalke2021"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "question": "Are consumer sleep trackers useful tools or a source of harm (orthosomnia) — and can they substitute for clinical measurement?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Useful for global sleep-wake estimates but not diagnostic",
+          "summary": "Validation work finds wearables give reasonable total-sleep estimates and can even exceed traditional actigraphy for PSG-defined sleep, but they overestimate sleep, misclassify wake, and vary by device — so they are best for sleep-wake trends, not staging or diagnosis or substitution for actigraphy.",
+          "papers": [
+            "agostinho2026",
+            "chinoy2022",
+            "kahawage2019",
+            "dezambotti2024"
+          ]
+        },
+        {
+          "stance": "Tracker data can drive clinically harmful preoccupation",
+          "summary": "Patients increasingly seek treatment for self-diagnosed problems based on tracker readouts, trusting devices over validated polysomnography/actigraphy and developing perfectionistic 'orthosomnia' that correlates with sleep effort, dysfunctional beliefs, and anxiety.",
+          "papers": [
+            "baron2017",
+            "guldbrandsen2025"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "question": "Should insomnia be treated first with behavioral therapy or with medication — and where do newer orexin antagonists fit?",
+      "resolved": true,
+      "positions": [
+        {
+          "stance": "Behavioral therapy (CBT-I) is first-line; drugs are adjunctive",
+          "summary": "ACP strongly recommends CBT-I as the initial treatment with pharmacotherapy added only via shared decision-making if CBT-I fails, and the AASM frames all drug recommendations as merely WEAK with downgraded evidence — establishing CBT-I's primacy.",
+          "papers": [
+            "qaseem2016",
+            "sateia2017"
+          ]
+        },
+        {
+          "stance": "Newer dual orexin antagonists are effective drug options with favorable safety, but do not displace first-line behavioral therapy",
+          "summary": "Daridorexant 25-50 mg and lemborexant improved objective and subjective sleep with comparable-to-placebo adverse events and sustained efficacy, and the network meta-analysis ranks lemborexant favorably — yet the same evidence notes drugs are used more because of inadequate resources, not because they are preferred first-line.",
+          "papers": [
+            "mignot2022",
+            "karppa2020",
+            "decrescenzo2022"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d5",
+      "question": "Is mouth-taping a legitimate sleep/breathing aid or an unsafe social-media fad?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Insufficient evidence and a real harm signal",
+          "summary": "A systematic review found only 2 of 10 small studies showed significant improvement in sleep-apnea markers while others showed none, and concluded there is a potentially serious risk of harm (including asphyxiation with nasal obstruction) for people indiscriminately practicing the trend.",
+          "papers": [
+            "rhee2025"
+          ]
+        },
+        {
+          "stance": "Possible benefit in a narrow subgroup",
+          "summary": "Two of the included studies did show statistically significant improvement in AHI or oxygen desaturations, leaving open the possibility of a limited clinical benefit in carefully selected mouth-breathers without nasal obstruction — though further studies are required to establish it.",
+          "papers": [
+            "rhee2025"
+          ]
+        }
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "CBT-I posttreatment sleep onset latency reduction",
+      "paper": "trauer2015",
+      "dataset": "20 RCTs, 1162 adults with chronic insomnia",
+      "method": "Face-to-face multimodal CBT-I vs inactive comparators",
+      "metric": "Change in sleep onset latency (minutes, sleep diary)",
+      "value": "-19.03 min (95% CI 14.12 to 23.93)"
+    },
+    {
+      "id": "b2",
+      "name": "CBT-I posttreatment WASO reduction",
+      "paper": "trauer2015",
+      "dataset": "20 RCTs, 1162 adults with chronic insomnia",
+      "method": "Face-to-face multimodal CBT-I vs inactive comparators",
+      "metric": "Change in wake after sleep onset (minutes, sleep diary)",
+      "value": "-26.00 min (95% CI 15.48 to 36.52)"
+    },
+    {
+      "id": "b3",
+      "name": "CBT-I posttreatment sleep efficiency improvement",
+      "paper": "trauer2015",
+      "dataset": "20 RCTs, 1162 adults with chronic insomnia",
+      "method": "Face-to-face multimodal CBT-I vs inactive comparators",
+      "metric": "Change in sleep efficiency (percentage points)",
+      "value": "+9.91% (95% CI 8.09 to 11.73)"
+    },
+    {
+      "id": "b4",
+      "name": "CBT-I effect on insomnia severity",
+      "paper": "vanstraten2018",
+      "dataset": "87 RCTs, 118 treatments, 6303 patients",
+      "method": "CBT-I (any component) vs control",
+      "metric": "Effect size (Hedges g) on Insomnia Severity Index",
+      "value": "g = 0.98"
+    },
+    {
+      "id": "b5",
+      "name": "CBT-I effect on total sleep time",
+      "paper": "vanstraten2018",
+      "dataset": "87 RCTs, 118 treatments, 6303 patients",
+      "method": "CBT-I (any component) vs control",
+      "metric": "Effect size (Hedges g) on total sleep time",
+      "value": "g = 0.16"
+    },
+    {
+      "id": "b6",
+      "name": "Internet-delivered CBT-I effect range",
+      "paper": "zachariae2016",
+      "dataset": "11 RCTs, 1460 participants",
+      "method": "Internet-delivered CBT-I (eCBT-I) vs control",
+      "metric": "Post-treatment effect size (Hedges g) across sleep outcomes",
+      "value": "g = 0.21 to 1.09"
+    },
+    {
+      "id": "b7",
+      "name": "Melatonin sleep latency reduction",
+      "paper": "ferraciolioda2013",
+      "dataset": "19 RCTs, 1683 subjects with primary sleep disorders",
+      "method": "Melatonin vs placebo",
+      "metric": "Weighted mean difference in sleep latency (minutes)",
+      "value": "-7.06 min (95% CI 4.37 to 9.75)"
+    },
+    {
+      "id": "b8",
+      "name": "Melatonin total sleep time increase",
+      "paper": "ferraciolioda2013",
+      "dataset": "19 RCTs, 1683 subjects with primary sleep disorders",
+      "method": "Melatonin vs placebo",
+      "metric": "Weighted mean difference in total sleep time (minutes)",
+      "value": "+8.25 min (95% CI 1.74 to 14.75)"
+    },
+    {
+      "id": "b9",
+      "name": "Melatonin supplement label accuracy",
+      "paper": "erland2017",
+      "dataset": "~30 commercial melatonin supplements",
+      "method": "UPLC quantification vs label claim",
+      "metric": "Actual content as percent of labelled amount / share failing 10% margin",
+      "value": "-83% to +478% of label; >71% failed within 10% margin"
+    },
+    {
+      "id": "b10",
+      "name": "Magnesium sleep onset latency reduction",
+      "paper": "mah2021",
+      "dataset": "3 RCTs, 151 older adults",
+      "method": "Oral magnesium vs placebo",
+      "metric": "Pooled mean difference in sleep onset latency (minutes)",
+      "value": "-17.36 min (95% CI -27.27 to -7.44)"
+    },
+    {
+      "id": "b11",
+      "name": "Light therapy effect on sleep continuity",
+      "paper": "faulkner2019",
+      "dataset": "Intrinsic circadian rhythm sleep disorders and neuropsychiatric illness studies",
+      "method": "Light therapy vs comparator",
+      "metric": "Pooled effect size on sleep continuity",
+      "value": "ES = -0.23 (p = 0.000)"
+    },
+    {
+      "id": "b12",
+      "name": "Blue-light-blocking glasses sleep onset latency",
+      "paper": "lunarangel2025",
+      "dataset": "3 randomized crossover trials, n=49",
+      "method": "Blue-light blocking glasses vs control (actigraphy)",
+      "metric": "Mean difference in sleep onset latency (minutes)",
+      "value": "-4.86 min (95% CI -20.23 to 10.52; p = 0.54, non-significant)"
+    },
+    {
+      "id": "b13",
+      "name": "Daridorexant 50 mg WASO reduction (month 1)",
+      "paper": "mignot2022",
+      "dataset": "Phase 3 trial, n=930 adults with insomnia disorder",
+      "method": "Daridorexant 50 mg vs placebo",
+      "metric": "LSM difference in polysomnographic WASO (minutes)",
+      "value": "-22.8 min (95% CI -28.0 to -17.6; p<0.0001)"
+    },
+    {
+      "id": "b14",
+      "name": "Insomnia pharmacotherapy acute efficacy range",
+      "paper": "decrescenzo2022",
+      "dataset": "154 RCTs, 44,089 participants, 30 interventions",
+      "method": "Network meta-analysis of pharmacotherapies vs placebo",
+      "metric": "Standardised mean difference on sleep quality (efficacious agents)",
+      "value": "SMD 0.36 to 0.83 (certainty high to moderate)"
+    },
+    {
+      "id": "b15",
+      "name": "Consumer wearable epoch-by-epoch wake specificity",
+      "paper": "chinoy2022",
+      "dataset": "Four consumer wearables at home in healthy young adults vs EEG headband",
+      "method": "Epoch-by-epoch sleep/wake classification",
+      "metric": "Sleep sensitivity / wake specificity",
+      "value": "Sensitivity 0.93-0.96; wake specificity 0.35-0.45"
+    },
+    {
+      "id": "b16",
+      "name": "Wearable vs actigraph wake-detection specificity in insomnia",
+      "paper": "kahawage2019",
+      "dataset": "42 adults with insomnia disorder vs polysomnography",
+      "method": "Fitbit Alta HR and Actiwatch vs PSG",
+      "metric": "Wake-detection specificity",
+      "value": "39.09% (Actiwatch) / 44.76% (Fitbit)"
+    }
+  ],
+  "coverage": {
+    "sub_questions": [
+      "CBT-I: its core components (stimulus control, sleep restriction, cognitive therapy), efficacy and durability from meta-analyses, digital/app-based CBT-I, and the access/therapist-availability limits.",
+      "Supplements: the evidence for melatonin (chronobiotic vs hypnotic; low physiologic vs high doses; timing) and product/content mislabeling; and the (weak) evidence for magnesium.",
+      "Light & circadian approaches: bright light therapy, evening light/blue-light suppression of melatonin, and the RCT/Cochrane evidence on blue-light-blocking glasses.",
+      "Pharmacotherapy: evidence and guideline status for newer dual orexin receptor antagonists (daridorexant, lemborexant, suvorexant) vs benzodiazepines/Z-drugs, and why behavioral therapy is first-line.",
+      "Popular/contested consumer interventions: what the evidence actually shows for mouth-taping, wearable sleep-tracker accuracy vs polysomnography, and tracker-driven \"orthosomnia\".",
+      "Open problems and limitations authors explicitly flag: CBT-I access/scalability, long-term and head-to-head data gaps, individual variability, and measurement (actigraphy/wearables vs polysomnography)."
+    ],
+    "queries": [
+      "cognitive behavioral therapy insomnia meta-analysis",
+      "digital CBT-I randomized controlled trial",
+      "melatonin dose timing insomnia meta-analysis",
+      "melatonin supplement content label variability",
+      "blue light blocking glasses sleep Cochrane",
+      "daridorexant orexin antagonist insomnia trial",
+      "wearable sleep tracker accuracy polysomnography",
+      "orthosomnia sleep tracker",
+      "magnesium supplementation sleep systematic review",
+      "bright light therapy circadian sleep"
+    ]
+  }
+}
