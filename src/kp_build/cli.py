@@ -213,21 +213,28 @@ def _cmd_build(args) -> int:
         reused = 0
         if args.reuse_verification:                 # cheap retry: keep prior verdicts, re-check only the rest
             import glob as _glob
+            import yaml
             from .schema import paper_from_md
-            cache = {}
+            cache = {}                              # cite_key -> the whole prior Paper (for the identity check)
             for f in _glob.glob(str(Path(args.out) / "papers" / "*.md")):
                 try:
                     old = paper_from_md(Path(f).read_text(encoding="utf-8"))
-                except (OSError, ValueError, KeyError):
-                    continue
+                except (OSError, ValueError, KeyError, yaml.YAMLError):
+                    continue                        # one corrupt file must not abort the whole reuse
                 if old.verified.exists:
-                    cache[old.cite_key] = old.verified
+                    cache[old.cite_key] = old
             for p in pkg.papers:
-                if p.cite_key in cache:
-                    p.verified = cache[p.cite_key]; reused += 1
+                old = cache.get(p.cite_key)
+                # ONLY reuse when the identity still matches — else the input was edited and the prior
+                # verdict is stale; re-check it (a fabricated paper must never inherit exists=True).
+                if old and old.arxiv_id == p.arxiv_id and old.doi == p.doi and old.title == p.title:
+                    p.verified = old.verified; reused += 1
             if reused:
                 print(f"reusing {reused} prior verification(s); re-checking only the {len(pkg.papers) - reused} "
-                      f"unverified/errored ...", file=sys.stderr)
+                      f"changed/unverified/errored ...", file=sys.stderr)
+            else:
+                print(f"--reuse-verification: no reusable prior verified papers in {args.out}/papers/ "
+                      f"— running a full verification", file=sys.stderr)
         todo = sum(1 for p in pkg.papers if not p.verified.exists)
         print(f"verifying {todo} citation(s) against arXiv/Crossref (adaptive throttle, base "
               f"{args.throttle}s) ...", file=sys.stderr)
@@ -284,8 +291,8 @@ def _cmd_falsify(args) -> int:
     index = json.loads((pkg / "index.json").read_text())
     spine = [{"arxiv_id": p.get("arxiv_id", ""), "doi": p.get("doi", ""), "cite_key": p["cite_key"]}
              for p in index.get("papers", []) if p.get("verified")]
-    base = score_answer(Path(args.base).read_text(), spine=spine)
-    kp = score_answer(Path(args.kp).read_text(), spine=spine)
+    base = score_answer(Path(args.base).read_text(), spine=spine, throttle=args.throttle)
+    kp = score_answer(Path(args.kp).read_text(), spine=spine, throttle=args.throttle)
     v = verdict(base, kp)
     print("falsification:")
     print(f"  base : {base}")
@@ -403,6 +410,7 @@ def main(argv=None) -> int:
     fal.add_argument("--question", required=True)
     fal.add_argument("--base", required=True, help="file with the base agent's answer")
     fal.add_argument("--kp", required=True, help="file with the KP-loaded agent's answer")
+    fal.add_argument("--throttle", type=float, default=0.2, help="seconds between citation checks (avoid rate limits)")
     fal.set_defaults(func=_cmd_falsify)
     prb = sub.add_parser("probe", help="pre-screen a topic: is it model-weak enough to be worth building?")
     prb.add_argument("--answer", default="", help="the unaided agent's answer to score")

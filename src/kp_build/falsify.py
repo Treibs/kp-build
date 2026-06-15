@@ -157,7 +157,7 @@ def score_citations(answer: str, *, get=_http_get, throttle: float = 0.0, sleep=
     cites = parse_citations(answer)
     verdicts = []
     for i, (h, t) in enumerate(cites):
-        verdicts.append((h, t, _is_real(h, t, get)))
+        verdicts.append((h, t, _is_real(h, t, get, sleep=sleep)))   # inject sleep so retries are fast in tests
         if throttle and i < len(cites) - 1:
             sleep(throttle)
     checkable = [(h, t, v) for h, t, v in verdicts if v is not None]
@@ -182,13 +182,14 @@ def _spine_handles(spine: list[dict]) -> list[set]:
     return out
 
 
-def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get) -> dict:
+def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get,
+                 throttle: float = 0.0, sleep=time.sleep) -> dict:
     """Full score: precision (integrity) + recall (coverage of the verified spine) + f1.
 
     *spine* is a list of the package's VERIFIED papers as {arxiv_id, doi, cite_key}. recall = fraction
     of spine papers the answer cited. f1 balances not-hallucinating with actually-using-the-field.
     """
-    base = score_citations(answer, get=get)
+    base = score_citations(answer, get=get, throttle=throttle, sleep=sleep)
     cited_handles = {_norm_handle(h) for h, _ in parse_citations(answer)}
     recall, covered = None, None
     if spine:

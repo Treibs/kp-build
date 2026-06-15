@@ -45,7 +45,7 @@ def test_is_real_transient_returns_none():
 def test_score_citations_excludes_unreachable(monkeypatch):
     import kp_build.falsify as F
     ans = "## Citations\n2211.17192 | Real Paper\n2499.99999 | Unreachable\n"
-    monkeypatch.setattr(F, "_is_real", lambda h, t, get: True if "2211.17192" in h else None)
+    monkeypatch.setattr(F, "_is_real", lambda h, t, get, **kw: True if "2211.17192" in h else None)
     rep = F.score_citations(ans, get=lambda u: "")
     assert rep["cited"] == 2 and rep["checked"] == 1 and rep["unresolved"] == 1
     assert rep["real"] == 1 and rep["fake"] == 0 and rep["precision"] == 1.0   # not deflated by the 429

@@ -150,6 +150,56 @@ def test_verify_all_skip_verified_rechecks_only_errors(monkeypatch):
     assert checked == ["b"] and rep["verified"] == 2     # 'a' kept (no network), 'b' re-checked -> verified
 
 
+def test_verify_all_throttle_caps_at_max(monkeypatch):
+    import kp_build.citations as C
+    from kp_build.schema import Verification
+    monkeypatch.setattr(C, "verify_paper", lambda p, **k: setattr(p, "verified", Verification(exists=False, status="error")))
+    papers = [Paper(cite_key=f"p{i}", title="T") for i in range(6)]
+    sleeps = []
+    C.verify_all(papers, sleep=lambda s: sleeps.append(s), throttle=1.0, max_throttle=4.0)
+    assert sleeps == [2.0, 4.0, 4.0, 4.0, 4.0] and max(sleeps) == 4.0     # backoff doubles then holds at the cap
+
+
+def test_verify_all_throttle_zero_decays_back_to_zero(monkeypatch):
+    import kp_build.citations as C
+    from kp_build.schema import Verification
+    seq = iter(["error", "verified", "verified", "verified"])
+    monkeypatch.setattr(C, "verify_paper",
+                        lambda p, **k: setattr(p, "verified", Verification(exists=(s := next(seq)) == "verified", status=s)))
+    papers = [Paper(cite_key=f"p{i}", title="T") for i in range(4)]
+    sleeps = []
+    C.verify_all(papers, sleep=lambda s: sleeps.append(s), throttle=0.0)
+    assert sleeps == [2.0]            # error bumps to 2.0 once, then recovery returns to 0 (no sticky sleep)
+
+
+def test_cli_reuse_verification_skips_and_reverifies_changed_identity(tmp_path, monkeypatch):
+    import json
+    import kp_build.citations as C
+    from kp_build.schema import Verification
+    from kp_build.cli import main
+    inp = tmp_path / "r.json"
+
+    def write(papers):
+        inp.write_text(json.dumps({"topic": "T", "papers": papers}), encoding="utf-8")
+
+    write([{"cite_key": "a", "title": "Paper A", "arxiv_id": "2401.00001"},
+           {"cite_key": "b", "title": "Paper B", "arxiv_id": "2401.00002"}])
+    out = tmp_path / "pkg"
+    assert main(["build", "-i", str(inp), "-o", str(out), "--no-verify"]) == 0    # both stamped verified
+    hits = []
+    monkeypatch.setattr(C, "verify_paper",
+                        lambda p, **k: (hits.append(p.cite_key), setattr(p, "verified", Verification(exists=True, status="verified"))))
+    # unchanged input -> both reused, ZERO network checks
+    main(["build", "-i", str(inp), "-o", str(out), "--reuse-verification"])
+    assert hits == []
+    # change a's identity (same cite_key, new id+title) -> a MUST be re-checked, not inherit the stale verdict
+    write([{"cite_key": "a", "title": "A Different Paper", "arxiv_id": "2401.99999"},
+           {"cite_key": "b", "title": "Paper B", "arxiv_id": "2401.00002"}])
+    hits.clear()
+    main(["build", "-i", str(inp), "-o", str(out), "--reuse-verification"])
+    assert hits == ["a"]             # a re-verified (identity changed); b reused (unchanged)
+
+
 def test_score_citations_throttles_between_cites():
     from kp_build.falsify import score_citations
     ans = "## Citations\n2211.17192 | A\n2310.16834 | B\n2401.00001 | C\n"

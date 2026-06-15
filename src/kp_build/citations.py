@@ -245,7 +245,9 @@ def verify_all(papers: list[Paper], *, get: Callable[[str], str] = _http_get, to
     unconfirmed, rejected, errored = [], [], []
     base = max(0.0, throttle)
     cur = base
-    n = len(papers)
+    # the index of the LAST paper that will actually be network-checked — don't sleep after it
+    active = [i for i, p in enumerate(papers) if not (skip_verified and p.verified.exists)]
+    last_active = active[-1] if active else -1
     for i, p in enumerate(papers):
         if skip_verified and p.verified.exists:
             statuses[p.verified.status] += 1          # keep the cached verdict; no network, no throttle
@@ -254,8 +256,8 @@ def verify_all(papers: list[Paper], *, get: Callable[[str], str] = _http_get, to
         if p.verified.status == "error":
             cur = min(max_throttle, (cur or base or 1.0) * 2)   # rate-limited -> back off hard
         else:
-            cur = max(base, cur / 2)                            # recovering -> ease back toward base
-        if cur and i < n - 1:
+            cur = max(base, cur / 2) if base else 0.0           # recovering -> ease toward base (0 -> 0)
+        if cur and i < last_active:
             sleep(cur)
         statuses[p.verified.status] += 1
         if p.verified.status == "unconfirmed":
