@@ -265,6 +265,14 @@ def _cmd_falsify(args) -> int:
     return 0 if helped else 1
 
 
+def _cmd_report(args) -> int:
+    from .report import build_report
+    out = Path(args.output or (Path(args.package_dir) / "report.html"))
+    out.write_text(build_report(args.package_dir), encoding="utf-8")
+    print(f"wrote {out}  (open in a browser)")
+    return 0
+
+
 def _cmd_validate(args) -> int:
     res = validate(args.package_dir)
     print("OK" if res.ok else "FAILED")
@@ -296,6 +304,10 @@ def main(argv=None) -> int:
     fal.add_argument("--base", required=True, help="file with the base agent's answer")
     fal.add_argument("--kp", required=True, help="file with the KP-loaded agent's answer")
     fal.set_defaults(func=_cmd_falsify)
+    rep = sub.add_parser("report", help="render a self-contained HTML report of a package")
+    rep.add_argument("package_dir")
+    rep.add_argument("--output", "-o", default="", help="output .html (default <package_dir>/report.html)")
+    rep.set_defaults(func=_cmd_report)
     val = sub.add_parser("validate", help="lint an assembled package")
     val.add_argument("package_dir")
     val.set_defaults(func=_cmd_validate)

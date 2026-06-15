@@ -8,3 +8,6 @@ __pycache__/
 /research.json
 .kpm/
 *.tgz
+
+# headless-render scratch
+.report-shot.png
