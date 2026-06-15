@@ -209,8 +209,9 @@ def _cmd_build(args) -> int:
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
                    "rejected": [], "unconfirmed": [], "errored": []}
     else:
-        print(f"verifying {len(pkg.papers)} citations against arXiv/Crossref ...", file=sys.stderr)
-        summary = verify_all(pkg.papers, today=today)
+        print(f"verifying {len(pkg.papers)} citations against arXiv/Crossref "
+              f"(throttle {args.throttle}s/paper) ...", file=sys.stderr)
+        summary = verify_all(pkg.papers, today=today, throttle=args.throttle)
 
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)
@@ -326,6 +327,7 @@ def main(argv=None) -> int:
     b.add_argument("--out", "-o", required=True)
     b.add_argument("--built", default="")
     b.add_argument("--no-verify", action="store_true", help="skip network citation checks (offline/testing)")
+    b.add_argument("--throttle", type=float, default=0.4, help="seconds between citation checks (avoid rate limits on large packages)")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
     b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")

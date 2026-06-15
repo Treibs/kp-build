@@ -230,13 +230,17 @@ def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str 
 
 
 def verify_all(papers: list[Paper], *, get: Callable[[str], str] = _http_get, today: str = "",
-               sleep: Callable[[float], None] = time.sleep) -> dict:
-    """Verify a list in place; return a status breakdown."""
+               sleep: Callable[[float], None] = time.sleep, throttle: float = 0.0) -> dict:
+    """Verify a list in place; return a status breakdown. *throttle* sleeps that many seconds BETWEEN
+    papers so a large (deepened) package doesn't burst past the arXiv/Crossref rate limit and get a
+    wave of false `error` statuses — the per-paper retry/backoff can't recover from a sustained 429."""
     from collections import Counter
     statuses = Counter()
     unconfirmed, rejected, errored = [], [], []
-    for p in papers:
+    for i, p in enumerate(papers):
         verify_paper(p, get=get, today=today, sleep=sleep)
+        if throttle and i < len(papers) - 1:
+            sleep(throttle)
         statuses[p.verified.status] += 1
         if p.verified.status == "unconfirmed":
             unconfirmed.append(p.cite_key)

@@ -91,6 +91,20 @@ def test_digest_caps_and_flags_refuted_claim():
     assert "> strong evidence" not in ctx          # a broken claim does not get the high-conf passage
 
 
+def test_verify_all_throttles_between_papers():
+    # a deepened (large) package must not burst past the rate limit -> throttle sleeps between papers
+    from kp_build.citations import verify_all
+    papers = [Paper(cite_key=f"p{i}", title="Test Paper Title", arxiv_id="2401.00001") for i in range(3)]
+    sleeps = []
+    HIT = "<feed><entry><title>Test Paper Title</title></entry></feed>"
+    verify_all(papers, get=lambda u: HIT, today="2026-06-14", sleep=lambda s: sleeps.append(s), throttle=0.4)
+    assert sleeps.count(0.4) == 2          # one throttle pause between each adjacent pair (n-1)
+    # default throttle=0.0 must NOT add sleeps (keeps existing behavior / fast tests)
+    sleeps2 = []
+    verify_all(papers, get=lambda u: HIT, today="2026-06-14", sleep=lambda s: sleeps2.append(s))
+    assert 0.4 not in sleeps2
+
+
 def test_report_marks_refuted_claim_and_survey_depth(tmp_path):
     p = Paper(cite_key="p", title="P", arxiv_id="1.1", verified=_V())
     c = Claim(id="c1", statement="A claim.", paper="p", supporting_passage="x", survived_refuter=False)
