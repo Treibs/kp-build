@@ -342,7 +342,8 @@ def _cmd_probe(args) -> int:
     print(f"topic pre-screen: {head}")
     if v["checked"]:
         print(f"  unaided base agent: {v['cited']} cited · {v['real']} real · "
-              f"{v['fake']} fabricated/mislabeled · hallucination {v['hallucination_rate']:.0%}")
+              f"{v['fake']} fabricated/mislabeled · {v.get('hedged', 0)} hedged · "
+              f"hallucination {v['hallucination_rate']:.0%}")
     print(f"  -> {v['reason']}")
     return {"build": 0, "skip": 1, "inconclusive": 3}[v["decision"]]    # 2 is reserved for usage/IO errors
 

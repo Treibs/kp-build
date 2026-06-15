@@ -91,6 +91,74 @@ def test_threshold_is_tunable():
     assert probe_verdict(ans, get=_get_real, threshold=0.40)["decision"] == "skip"     # raise the bar -> known
 
 
+# ── hedge detection (the precision-screen blind spot: a model that HEDGES, not fabricates) ──────────
+
+def test_count_hedges_detects_masked_ids():
+    from kp_build.falsify import count_hedges
+    assert count_hedges("see arXiv:2510.xxxxx for this") == 1
+    assert count_hedges("arXiv:2502.XXXXX and arXiv:XXXX.XXXXX") == 2     # caps + fully-masked
+    assert count_hedges("the 2026 work (2510.xxxxx) we can't recall") == 1   # bare VALID-YYMM masked
+    assert count_hedges("recent work arXiv:2510.????? we can't place") == 1  # ?-mask
+    assert count_hedges("arXiv: forthcoming") == 1 and count_hedges("arXiv: under review") == 1
+
+
+def test_count_hedges_no_false_positives():
+    from kp_build.falsify import count_hedges
+    # multiplier notation, bare x's, and real ids/DOIs must NOT read as hedges
+    assert count_hedges("a 2.8x speedup, 2-3x faster, 100x throughput") == 0
+    assert count_hedges("the xxxx is a free variable; xx and XXX appear too") == 0
+    assert count_hedges("arXiv:2507.17746 | Real Paper, and DOI 10.1234/abcd.efgh") == 0
+    # bare 4-digit-dot-x must NOT match unless it is a VALID arXiv YYMM (month 01-12) — the must-fix
+    assert count_hedges("trained 5000.xx steps; batch 1024.xxxx; the 2024.xx and 2048.xx splits") == 0
+    assert count_hedges("arXiv: na, and the rna pathway, and banana") == 0      # n/a needs the slash
+
+
+def test_count_hedges_no_redos_on_pathological_input():
+    import time
+    from kp_build.falsify import count_hedges
+    s = "arxiv:" + "x" * 50000 + "1"          # long x-run defeating the closing \b — worst case for backtracking
+    t = time.perf_counter()
+    count_hedges(s)
+    assert time.perf_counter() - t < 1.0      # bounded quantifiers -> linear; the unbounded form took ~12s
+
+
+def test_build_when_model_hedges_despite_clean_cites():
+    # THE BLIND-SPOT FIX: 3 real cites (clears min_real) + 0 fabrication, but the model wrote a
+    # PLACEHOLDER id for 2026 work it couldn't recall -> weak on the frontier -> BUILD, not SKIP.
+    ans = ("We build on recent 2026 work (arXiv:2510.xxxxx) whose exact id we cannot recall.\n\n"
+           "## Citations\n2211.17192 | Fast Inference\n2310.16834 | Score Entropy Discrete Diffusion\n"
+           "1706.03762 | Attention Is All You Need\n")
+    v = probe_verdict(ans, get=_get_real)
+    assert v["decision"] == "build" and v["real"] == 3 and v["fake"] == 0
+    assert v["hedged"] == 1 and "hedged" in v["reason"]
+
+
+def test_hedge_does_not_flip_a_broadly_known_topic(monkeypatch):
+    # a single hedge amid MANY real cites (>= 2*min_real) is incidental -> still SKIP (don't over-trigger)
+    import kp_build.falsify as F
+    monkeypatch.setattr(F, "score_citations", lambda a, get=None, **kw: {
+        "cited": 6, "checked": 6, "unresolved": 0, "real": 6, "fake": 0, "fake_list": [],
+        "precision": 1.0, "hallucination_rate": 0.0})
+    v = F.probe_verdict("a broad answer that knows the field but adds one arXiv:2510.xxxxx placeholder")
+    assert v["decision"] == "skip" and v["hedged"] == 1
+
+
+def test_clean_skip_records_zero_hedges():
+    ans = ("## Citations\n2211.17192 | Fast Inference\n2310.16834 | Score Entropy Discrete Diffusion\n"
+           "1706.03762 | Attention Is All You Need\n")
+    v = probe_verdict(ans, get=_get_real)
+    assert v["decision"] == "skip" and v["hedged"] == 0
+
+
+def test_titled_masked_id_is_a_hedge_not_a_fabrication():
+    # a masked id WITH a title in the block must be a HEDGE (dropped from cites), not title-searched into a fake
+    ans = ("## Citations\n2510.xxxxx | Some 2026 Paper I Cannot Recall\n2211.17192 | Fast Inference\n"
+           "2310.16834 | Score Entropy Discrete Diffusion\n1706.03762 | Attention Is All You Need\n")
+    v = probe_verdict(ans, get=_get_real)
+    assert v["fake"] == 0 and v["real"] == 3 and v["hedged"] >= 1       # NOT scored as a fabrication
+    assert v["decision"] == "build" and "hedged" in v["reason"]         # routed through the hedge branch
+
+
 # ── CLI ──────────────────────────────────────────────────────────────────────────
 
 def test_cli_probe_emit_prompt(capsys):
@@ -108,6 +176,17 @@ def test_cli_probe_exit_codes(tmp_path, monkeypatch):
     assert main(["probe", "--answer", str(ans)]) == 1           # skip -> exit 1
     monkeypatch.setattr(F, "probe_verdict", lambda *a, **k: {**base, "checked": 0, "decision": "inconclusive", "reason": "net"})
     assert main(["probe", "--answer", str(ans)]) == 3           # inconclusive -> exit 3 (distinct from error)
+
+
+def test_cli_probe_shows_hedged_count(tmp_path, monkeypatch, capsys):
+    # regression-protect the 'N hedged' surfacing (and that probe_verdict carries a 'hedged' key)
+    import kp_build.falsify as F
+    ans = tmp_path / "a.txt"; ans.write_text("x", encoding="utf-8")
+    monkeypatch.setattr(F, "probe_verdict", lambda *a, **k: {
+        "cited": 4, "checked": 3, "real": 3, "fake": 0, "hedged": 2, "hallucination_rate": 0.0,
+        "decision": "build", "reason": "hedged on 2"})
+    assert main(["probe", "--answer", str(ans)]) == 0
+    assert "2 hedged" in capsys.readouterr().out
 
 
 def test_cli_probe_requires_answer_or_prompt(capsys):

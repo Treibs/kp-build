@@ -44,6 +44,29 @@ _INSTR_KP = (
 _ARXIV_RE = re.compile(r"\b(\d{4}\.\d{4,5})(v\d+)?\b")
 _DOI_RE = re.compile(r"\b(10\.\d{4,9}/[^\s|)\]]+)", re.I)
 
+# MASKED citation attempts — a model that writes 'arXiv:2510.xxxxx' / 'arXiv:XXXX.XXXXX' / 'arXiv: forthcoming'
+# is signalling it WANTED to cite a paper here but could not recall its id — direct evidence it knows the topic has
+# work it cannot name. parse_citations() drops these so they are never scored as a fabrication; count_hedges() tallies
+# them for the probe. High-precision by construction: a masked id needs an 'arXiv:' marker OR a VALID arXiv YYMM
+# prefix (year + month 01-12), so prose like '2.8x'/'100x', config numbers ('1024.xxxx', '2048.xx'), bare 'xxxx',
+# real ids and DOIs do NOT match. All runs are bounded (no overlapping unbounded quantifiers) -> linear, ReDoS-safe.
+_END = r"(?=[\s)\].,;:]|$)"      # boundary that also closes a '?'-mask run (a trailing \b can't — '?' is non-word)
+_HEDGE_RE = re.compile(
+    r"""(?ix)
+      \b \d{2} (?: 0[1-9] | 1[0-2] ) \. [x?]{2,6} """ + _END + r"""   # bare VALID-YYMM masked id: 2510.xxxxx / 2502.?????
+    | \b arxiv: \s* [\dx?]{0,6} \.? [x?]{2,6} """ + _END + r"""        # arXiv:XXXX.XXXXX / arXiv:2510.????? / arXiv:xxxxx
+    | \b arxiv: \s* (?: forthcoming | tbd | pending | to\s+appear | in\s+press | under\s+review | n/a ) \b
+    """
+)
+
+
+def count_hedges(answer: str) -> int:
+    """Count MASKED citation attempts (placeholder arXiv ids like 'arXiv:2510.xxxxx'/'arXiv:XXXX.?????' + explicit
+    'arXiv: forthcoming/TBD'). A hedge is the model admitting it could not recall a citation it wanted to make —
+    frontier weakness the precision metric is blind to, because a masked id is dropped from citation scoring (it is
+    neither a real cite nor a fabrication) rather than counted against the model."""
+    return len(_HEDGE_RE.findall(answer))
+
 
 def make_prompts(pkg_dir: str | Path, question: str) -> dict:
     ctx = (Path(pkg_dir) / "CONTEXT.md").read_text(encoding="utf-8")
@@ -83,7 +106,9 @@ def parse_citations(answer: str) -> list[tuple[str, str]]:
     seen: set = set()
 
     def add(handle: str, title: str):
-        handle = strip_arxiv_prefix(handle)
+        if _HEDGE_RE.match(handle.strip()):                  # a masked/placeholder id is a HEDGE, not a citation:
+            return                                           # drop it (count_hedges tallies it) so it is never
+        handle = strip_arxiv_prefix(handle)                  # title-searched and mislabeled as a fabrication
         key = _norm_handle(handle) or title.strip().lower()
         if key and key not in seen:
             seen.add(key)
@@ -207,19 +232,25 @@ def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, m
     """PRE-FLIGHT: should we even build a package for this topic? Score an UNAIDED agent's answer.
 
     A package only helps where the model is WEAK, which shows up as the base agent FABRICATING /
-    MISLABELING citations or being unable to ground at all. Decision tree (order matters):
+    MISLABELING citations, HEDGING (writing placeholder ids it can't recall), or being unable to ground
+    at all. Decision tree (order matters):
       1. cited nothing                                   -> BUILD (the model lacks the field)
       2. nothing resolvable (all transient)              -> INCONCLUSIVE (index unreachable; re-run)
       3. fabrication >= threshold, on >= min_sample cites -> BUILD (definitive — even if some unresolved)
       4. too few confirmed-real ONLY because cites were unreachable (real<min_real but real+unresolved>=
          min_real) -> INCONCLUSIVE (a transient must not masquerade as 'too thin' and force a build)
       5. genuinely grounded < min_real real papers       -> BUILD (too thin)
-      6. cites >= min_real real papers cleanly           -> SKIP (it already knows this — the TIE case)
+      6. HEDGED on a citation it couldn't recall AND real < 2*min_real -> BUILD (the blind-spot fix: a
+         well-calibrated model that HEDGES rather than fabricates clears the precision screen, but a
+         masked id is proof it knows the frontier holds work it cannot name; only a broad real-cite
+         count >= 2*min_real overrides this and earns SKIP)
+      7. cites >= min_real real papers cleanly, no hedging -> SKIP (it already knows this — the TIE case)
     The min_sample gate on (3) keeps a 0/0.5/1.0 fabrication rate from a 1-2 cite sample from flipping
-    the call. Returns the citation report plus {decision, reason}."""
+    the call. Returns the citation report plus {hedged, decision, reason}."""
     rep = score_citations(base_answer, get=get, throttle=throttle, sleep=sleep)
     cited, checked, real, fake = rep["cited"], rep["checked"], rep["real"], rep["fake"]
     unresolved, hall = rep["unresolved"], rep["hallucination_rate"]
+    hedged = count_hedges(base_answer)
     if cited == 0:
         decision, reason = "build", "the unaided model cited no real papers at all — it lacks this field; a package will help"
     elif checked == 0:
@@ -234,10 +265,16 @@ def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, m
     elif real < min_real:
         decision, reason = "build", (f"the unaided model grounded only {real} real citation(s) — too thin; "
                                      f"a package will help")
+    elif hedged and real < 2 * min_real:
+        decision, reason = "build", (f"the unaided model hedged on {hedged} citation(s) it could not recall "
+                                     f"(placeholder ids like 'arXiv:2510.xxxxx') while grounding only {real} real "
+                                     f"— it knows the frontier holds work it cannot name; a package will help")
     else:
         decision, reason = "skip", (f"the unaided model already cites {real} real papers cleanly "
-                                    f"({hall:.0%} fabrication) — it knows this field; a package adds little value")
-    return {**rep, "decision": decision, "reason": reason, "threshold": threshold, "min_real": min_real}
+                                    f"({hall:.0%} fabrication, {hedged} hedged) — it knows this field; a package "
+                                    f"adds little value")
+    return {**rep, "hedged": hedged, "decision": decision, "reason": reason,
+            "threshold": threshold, "min_real": min_real}
 
 
 def verdict(base_report: dict, kp_report: dict) -> str:

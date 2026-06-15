@@ -3,20 +3,21 @@
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
 Three packages, three regimes — together they show what the `probe` pre-screen and the falsification
-gate actually discriminate (and where the cheap pre-screen has a blind spot):
+gate actually discriminate (and the blind spot one of them drove a fix for):
 
 | package | topic regime | `probe` | falsification verdict |
 |---|---|---|---|
 | [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | model-**weak**, model *fabricates* | BUILD | **KP HELPS** — wins on *precision* (kills mislabeled cites) **and** recall |
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | model-**known** | SKIP | **KP HELPS on coverage only** — precision already 1.0; the win is pure recall |
-| [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | SKIP* | **KP HELPS hugely** — recall 0.07→1.00; the probe's *blind spot* |
+| [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | BUILD† | **KP HELPS hugely** — recall 0.07→1.00 |
 
-\* The probe is a **precision-only** pre-screen: it greenlights a build when the unaided model *fabricates*
-citations. A well-calibrated model that *hedges* on a topic it doesn't know (cites a few real foundational
-papers, declines to invent ids for the frontier) clears the probe's "enough real cites" floor and reads as
-SKIP — even when it covers almost none of the actual frontier. That **recall** weakness is invisible to the
-probe but caught by the full falsification (see `rubric-based-rl-nonverifiable` below). Lesson: the probe
-rules topics *in* cheaply; it cannot reliably rule a post-cutoff topic *out*.
+† **This package exposed a probe blind spot and drove a fix.** The probe was originally *precision-only* — it
+greenlit a build only when the unaided model *fabricated* citations. A well-calibrated model that *hedges*
+(cites a few real foundational papers but writes a placeholder like `arXiv:2510.xxxxx` for the frontier it
+can't recall) cleared the "enough real cites" floor and wrongly read as **SKIP**, even while covering almost
+none of the actual frontier. The probe now also **counts hedges** — a masked id is proof the model knows the
+frontier holds work it cannot name — and greenlights on them, so it correctly **BUILD**s this topic. (The
+full, recall-aware falsification was the backstop that caught the value the old probe missed.)
 
 ## `discrete-diffusion-llms/`
 
@@ -137,7 +138,7 @@ signal for post-training in non-verifiable/open-ended domains** — a genuinely 
 AMARIS — and its reward-hacking failure literature crystallized in 2026). **14 of 15 spine papers carry
 2026 arXiv ids** (`2602.*`–`2606.*`), i.e. post the model's training cutoff.
 
-This is the **model-weak-but-the-probe-can't-see-it** case (read the blind-spot note at the top first).
+This is the case that **exposed — and fixed — a probe blind spot** (read the `†` note at the top first).
 The topic was found by *browsing arXiv for what's new since the cutoff* — exactly because a model can't
 name from memory what it was never trained on.
 
@@ -148,19 +149,27 @@ name from memory what it was never trained on.
 | claims / open problems / debates / benchmarks | 43 / 7 / 2 / 13 |
 | `CONTEXT.md` (agent payload) | ~6k tokens |
 
-### The probe said SKIP — and was wrong
-
-```
-$ kp-build probe --answer examples/rubric-based-rl-nonverifiable.base-answer.txt --question "Rubrics-as-Rewards ..."
-topic pre-screen: SKIP — the model already knows this (a package adds ~0 value)
-  unaided base agent: 3 cited · 3 real · 0 fabricated/mislabeled · hallucination 0%
-```
+### The probe blind spot this example fixed
 
 The unaided model cited **3 real papers** (the 2025 seeds) and *hedged* on the 2026 frontier — it wrote a
-placeholder `arXiv:2510.xxxxx` rather than inventing an id. Zero fabrication → the probe (which only
-measures fabrication) says SKIP. But three real cites is not knowledge of a ~59-paper subfield; the model
-covered **1 of the 15 spine papers**. We built it anyway, and the full falsification — which measures
-**recall**, not just precision — tells the true story.
+placeholder `arXiv:2510.xxxxx` rather than inventing an id. The **original** probe measured only fabrication,
+so zero fabrication + 3 real cites read as SKIP — wrong, since the model covered just **1 of 15** spine
+papers. That false-SKIP motivated **hedge detection**: a masked id is the model admitting it can't name a
+paper it knows exists. The probe now counts hedges and greenlights:
+
+```
+# before the fix (precision-only):
+topic pre-screen: SKIP — the model already knows this (a package adds ~0 value)
+  unaided base agent: 3 cited · 3 real · 0 fabricated/mislabeled · hallucination 0%
+
+# now (hedge-aware):
+$ kp-build probe --answer examples/rubric-based-rl-nonverifiable.base-answer.txt --question "Rubrics-as-Rewards ..."
+topic pre-screen: BUILD — the topic is model-weak (worth packaging)
+  unaided base agent: 3 cited · 3 real · 0 fabricated/mislabeled · 2 hedged · hallucination 0%
+  -> the unaided model hedged on 2 citation(s) it could not recall ... it knows the frontier holds work it cannot name
+```
+
+The full falsification — which measures **recall**, not just precision — confirms the call.
 
 ### Reproduce
 
