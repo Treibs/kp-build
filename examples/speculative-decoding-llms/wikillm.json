@@ -1,0 +1,79 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Speculative Decoding for Fast LLM Inference: Draft-then-Verify Acceleration with Lossless Guarantees",
+  "scope": "IN SCOPE: lossless (or controllably-lossy) inference-acceleration methods for autoregressive LLM decoding that use a cheap \"draft\" proposal verified in parallel by the target model, including speculative sampling, self-speculative / layer-skip drafting, feature-level autoregression (Medusa, EAGLE/EAGLE-2/EAGLE-3), parallel/Jacobi and Lookahead decoding, and tree-structured/multi-candidate verification (SpecInfer); the analysis covers acceptance-rate theory, the distribution-preservation (losslessness) guarantee, wall-clock speedup vs. memory/compute trade-offs, and draft-model training/alignment. OUT OF SCOPE: orthogonal efficiency techniques (quantization, pruning, distillation as a standalone goal, KV-cache compression, FlashAttention-style kernels, MoE routing, continuous batching/PagedAttention) except where they directly interact with or are composed with speculative decoding; and non-autoregressive paradigms (diffusion LMs) that replace rather than accelerate AR decoding. Emphasis is on the 2024-2026 frontier (EAGLE-2/3, dynamic-tree and online drafting, long-context/reasoning/batched-serving regimes) over pre-2024 foundations.",
+  "built": "2026-06-15",
+  "stats": {
+    "papers_verified": 17,
+    "papers_total": 17,
+    "claims": 37,
+    "open_problems": 6,
+    "debates": 2,
+    "benchmarks": 17,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0
+    }
+  },
+  "source_span": {
+    "oldest": 2023,
+    "newest": 2026,
+    "latest_checked": "2026-06-15"
+  },
+  "coverage": {
+    "sub_questions": [
+      "What is the core draft-then-verify mechanism and how does the speculative-sampling / modified-rejection-sampling step provably preserve the target model's output distribution (the losslessness guarantee), and how do the major method families differ in how they generate drafts \u2014 separate draft model, self-speculation/layer-skipping, Medusa-style parallel heads, EAGLE's feature-level autoregression, and Lookahead/Jacobi parallel decoding?",
+      "How do speculative-decoding variants compare on acceptance rate / mean accepted tokens per forward pass and on preserving output quality relative to vanilla autoregressive baselines, and what evaluation protocols and benchmarks (e.g., Spec-Bench, MT-Bench, HumanEval) do authors use to substantiate lossless or near-lossless claims?",
+      "What end-to-end wall-clock speedups and memory/compute overheads do these methods achieve (draft-model VRAM, extra heads, tree-attention cost, training cost), and how do speedups degrade as batch size, sequence/context length, and hardware utilization change \u2014 i.e., when does speculative decoding stop helping under high-throughput serving?",
+      "How does verification topology scale \u2014 from single linear drafts to tree/multi-candidate verification (SpecInfer) and dynamic, context-aware draft trees (EAGLE-2) plus multi-layer feature fusion (EAGLE-3) \u2014 and what algorithmic advances in draft-tree construction, expansion, and pruning drive the 2024-2026 gains?",
+      "How do draft models get trained and aligned to the target (feature/embedding-level objectives, on-policy vs. offline data, self-distillation, training-time vs. test-time scaling of the draft), and how sensitive are results to draft-target alignment, decoding temperature, and domain/distribution shift?",
+      "What open problems and limitations do authors explicitly flag \u2014 e.g., poor speedups at large batch sizes / in throughput-bound serving, weak gains on long-context and reasoning-chain generation, brittleness of acceptance rates out-of-distribution, the train-once-vs-adapt cost of draft models, interaction with quantization/KV-cache methods, and the gap between idealized acceptance theory and realized wall-clock latency?"
+    ],
+    "queries": [
+      "speculative decoding large language models draft verify lossless acceleration",
+      "EAGLE feature-level autoregression speculative sampling draft tree",
+      "EAGLE-2 dynamic draft tree context-aware speculative decoding",
+      "EAGLE-3 multi-layer feature fusion test-time scaling speculative",
+      "Medusa multiple decoding heads parallel speculative inference",
+      "Lookahead decoding Jacobi parallel decoding LLM acceleration",
+      "SpecInfer tree-based speculative inference token tree verification",
+      "speculative decoding batch size throughput serving long-context limitations 2025"
+    ]
+  },
+  "falsification": {
+    "run": true,
+    "question": "Write the related-work section of a 2026 paper proposing a new speculative-decoding method, situating it against the draft-then-verify frontier of 2024-2026: contrast feature-level autoregressive drafting and its dynamic-tree and multi-layer-fusion successors (EAGLE, EAGLE-2, EAGLE-3) against parallel-head drafting (Medusa) and Jacobi/Lookahead parallel decoding, explain how dynamic context-aware draft-tree construction and tree-based multi-candidate verification (SpecInfer-style) changed the acceptance-rate vs. overhead trade-off, and critically discuss the reported breakdown of speculative speedups under large-batch / high-throughput serving and long-context reasoning workloads \u2014 citing the specific arXiv papers (by id) that introduced each method and that documented these regime-dependent limitations.",
+    "base": {
+      "cited": 9,
+      "checked": 9,
+      "unresolved": 0,
+      "real": 9,
+      "fake": 0,
+      "fake_list": [],
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 0.47058823529411764,
+      "spine_covered": 8,
+      "spine_size": 17,
+      "f1": 0.64
+    },
+    "kp": {
+      "cited": 17,
+      "checked": 17,
+      "unresolved": 0,
+      "real": 17,
+      "fake": 0,
+      "fake_list": [],
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 1.0,
+      "spine_covered": 17,
+      "spine_size": 17,
+      "f1": 1.0
+    },
+    "verdict": "KP HELPS \u2014 f1 0.64 (base) \u2192 1.00 (KP). precision 1.00\u21921.00, recall 0.47\u21921.00, 0 fake cites in base vs 0 in KP."
+  }
+}

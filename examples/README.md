@@ -2,6 +2,14 @@
 
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
+Two packages, two regimes — together they show what the `probe` pre-screen and the falsification
+gate actually discriminate:
+
+| package | topic regime | `probe` | falsification verdict |
+|---|---|---|---|
+| [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | model-**weak** frontier | BUILD | **KP HELPS** — wins on *precision* (kills mislabeled cites) **and** recall |
+| [`speculative-decoding-llms/`](#speculative-decoding-llms) | model-**known** | SKIP | **KP HELPS on coverage only** — precision already 1.0; the win is pure recall |
+
 ## `discrete-diffusion-llms/`
 
 A wikillm knowledge package on **discrete / masked diffusion language models for text generation**
@@ -51,4 +59,64 @@ kp-build falsify examples/discrete-diffusion-llms \
   --question "2024-2026 frontier of discrete/masked diffusion LMs" \
   --base examples/discrete-diffusion-llms.base-answer.txt \
   --kp   examples/discrete-diffusion-llms.kp-answer.txt
+```
+
+## `speculative-decoding-llms/`
+
+A wikillm knowledge package on **speculative decoding for fast LLM inference** (draft-then-verify
+acceleration: EAGLE-1/2/3, Medusa, Lookahead/Jacobi, SpecInfer-style tree verification, and the
+2024–2026 serving-regime frontier — `2509.04474`, `2505.13204`, `2603.12617`, `2605.08632`).
+
+This one is the deliberate **counterpoint** to the diffusion example: a topic the model already
+**knows**. The `probe` pre-screen said so before any build —
+
+```
+$ kp-build probe --answer examples/speculative-decoding-llms.base-answer.txt --question "Speculative decoding ..."
+topic pre-screen: SKIP — the model already knows this (a package adds ~0 value)
+  unaided base agent: 9 cited · 9 real · 0 fabricated/mislabeled · hallucination 0%
+```
+
+We built it anyway as a fixture, to show what the falsification gate honestly reports when the
+model *isn't* weak. Every citation was verified live and **every claim passage was machine-grounded**
+against its paper's abstract (the grounding gate, abstract-level):
+
+| | value |
+|---|---|
+| citations verified | **17 / 17** (live) |
+| claims grounded | **37 / 37** (`--ground`, 0 unconfirmed, 0 ungrounded) |
+| claims / open problems / debates / benchmarks | 37 / 6 / 2 / 17 |
+| `CONTEXT.md` (agent payload) | ~5.9k tokens |
+
+### Reproduce
+
+```bash
+kp-build build -i examples/speculative-decoding-llms.research.json -o /tmp/spec --no-verify   # offline
+# or, with the live citation gate + passage grounding:
+kp-build build -i examples/speculative-decoding-llms.research.json -o /tmp/spec --ground
+```
+
+### Falsification — what "helps" means when the model already knows the field
+
+Held-out task: *write a related-work section on the 2024–2026 speculative-decoding frontier, with
+arXiv citations.* Base (unaided recall) vs KP-loaded (given `CONTEXT.md`):
+
+| | base (memory) | KP-loaded |
+|---|---|---|
+| precision | **1.00** | **1.00** |
+| recall (spine coverage) | 0.47 (8/17) | **1.00 (17/17)** |
+| **f1** | **0.64** | **1.00** |
+
+**Verdict: KP HELPS — but on *coverage*, not accuracy.** Unaided, the model cites cleanly (0%
+hallucination — it knows the seminal and mid-frontier papers), so the package buys **no precision**.
+What it buys is **recall**: the base agent recalled only 8 of the 17 spine papers and named none of
+the post-cutoff 2025–2026 frontier (`2509.04474`, `2505.13204`, `2603.12617`, `2605.08632`); the
+KP-loaded agent covers the whole spine. This is exactly the honest distinction the `probe` flagged up
+front — on a model-known topic the value is traceability and completeness, not fewer fabrications.
+Re-score with:
+
+```bash
+kp-build falsify examples/speculative-decoding-llms \
+  --question "2024-2026 frontier of speculative decoding for LLM inference" \
+  --base examples/speculative-decoding-llms.base-answer.txt \
+  --kp   examples/speculative-decoding-llms.kp-answer.txt
 ```

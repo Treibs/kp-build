@@ -1,0 +1,956 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "chen2023",
+      "title": "Accelerating Large Language Model Decoding with Speculative Sampling",
+      "year": 2023,
+      "arxiv_id": "2302.01318",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "cai2024",
+      "title": "Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+      "year": 2024,
+      "arxiv_id": "2401.10774",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "li2024a",
+      "title": "EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty",
+      "year": 2024,
+      "arxiv_id": "2401.15077",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "fu2024",
+      "title": "Break the Sequential Dependency of LLM Inference Using Lookahead Decoding",
+      "year": 2024,
+      "arxiv_id": "2402.02057",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "li2024b",
+      "title": "EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees",
+      "year": 2024,
+      "arxiv_id": "2406.16858",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "li2025",
+      "title": "EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test",
+      "year": 2025,
+      "arxiv_id": "2503.01840",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "xia2024",
+      "title": "Unlocking Efficiency in Large Language Model Inference: A Comprehensive Survey of Speculative Decoding",
+      "year": 2024,
+      "arxiv_id": "2401.07851",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "sadhukhan2024",
+      "title": "MagicDec: Breaking the Latency-Throughput Tradeoff for Long Context Generation with Speculative Decoding",
+      "year": 2024,
+      "arxiv_id": "2408.11049",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "liu2024",
+      "title": "TurboSpec: Closed-loop Speculation Control System for Optimizing LLM Serving Goodput",
+      "year": 2024,
+      "arxiv_id": "2406.14066",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "miao2023",
+      "title": "SpecInfer: Accelerating Generative Large Language Model Serving with Tree-based Speculative Inference and Verification",
+      "year": 2023,
+      "arxiv_id": "2305.09781",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "xiong2024",
+      "title": "DySpec: Faster Speculative Decoding with Dynamic Token Tree Structure",
+      "year": 2024,
+      "arxiv_id": "2410.11744",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "hong2025",
+      "title": "Training Domain Draft Models for Speculative Decoding: Best Practices and Insights",
+      "year": 2025,
+      "arxiv_id": "2503.07807",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "goel2024",
+      "title": "Direct Alignment of Draft Model for Speculative Decoding with Chat-Fine-Tuned LLMs",
+      "year": 2024,
+      "arxiv_id": "2403.00858",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "qian2026",
+      "title": "When Drafts Evolve: Speculative Decoding Meets Online Learning",
+      "year": 2026,
+      "arxiv_id": "2603.12617",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "an2026",
+      "title": "PARD-2: Target-Aligned Parallel Draft Model for Dual-Mode Speculative Decoding",
+      "year": 2026,
+      "arxiv_id": "2605.08632",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "sun2025",
+      "title": "Scaling Up, Speeding Up: A Benchmark of Speculative Decoding for Efficient LLM Test-Time Scaling",
+      "year": 2025,
+      "arxiv_id": "2509.04474",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wang2025",
+      "title": "Alignment-Augmented Speculative Decoding with Alignment Sampling and Conditional Verification",
+      "year": 2025,
+      "arxiv_id": "2505.13204",
+      "doi": "",
+      "verified": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "chen2023",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "chen2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "cai2024",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "cai2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "paper": "cai2024",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c6",
+      "paper": "li2024a",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "paper": "li2024a",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "li2024a",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "paper": "fu2024",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10",
+      "paper": "fu2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10b",
+      "paper": "li2024b",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "paper": "li2024b",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c12",
+      "paper": "li2024b",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "li2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c14",
+      "paper": "li2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c15",
+      "paper": "li2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "paper": "xia2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c17",
+      "paper": "xia2024",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "paper": "sadhukhan2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c19",
+      "paper": "sadhukhan2024",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "paper": "sadhukhan2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c21",
+      "paper": "liu2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c22",
+      "paper": "liu2024",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c23",
+      "paper": "liu2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "paper": "miao2023",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c25",
+      "paper": "miao2023",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c26",
+      "paper": "xiong2024",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "paper": "xiong2024",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "paper": "hong2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c29",
+      "paper": "hong2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c30",
+      "paper": "hong2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "paper": "goel2024",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c32",
+      "paper": "qian2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "paper": "an2026",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "paper": "sun2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c35",
+      "paper": "wang2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c36",
+      "paper": "wang2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "flagged_by": [
+        "liu2024",
+        "sadhukhan2024",
+        "li2025"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o2",
+      "flagged_by": [
+        "hong2025",
+        "wang2025",
+        "goel2024"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o3",
+      "flagged_by": [
+        "li2024b",
+        "xiong2024"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o4",
+      "flagged_by": [
+        "an2026",
+        "li2025",
+        "goel2024"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o5",
+      "flagged_by": [
+        "wang2025",
+        "qian2026"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o6",
+      "flagged_by": [
+        "sun2025",
+        "sadhukhan2024"
+      ],
+      "status": "partially-addressed"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "A separate or learned draft model is the most effective path to acceleration",
+        "Draft models are nontrivial to obtain and can be avoided entirely"
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "Speculation helps mainly at small batch sizes and is fragile under high throughput",
+        "Speculation can accelerate even high-throughput regimes for moderate-to-long sequences"
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "Speculative Sampling speedup on Chinchilla 70B",
+      "value": "2-2.5x",
+      "metric": "decoding latency speedup",
+      "method": "Speculative sampling with modified rejection sampling",
+      "paper": "chen2023"
+    },
+    {
+      "id": "b2",
+      "name": "Medusa-1 lossless speedup",
+      "value": ">2.2x (lossless)",
+      "metric": "wall-clock speedup",
+      "method": "Medusa-1 (extra decoding heads, frozen backbone)",
+      "paper": "cai2024"
+    },
+    {
+      "id": "b3",
+      "name": "Medusa-2 speedup",
+      "value": "2.3-3.6x",
+      "metric": "wall-clock speedup",
+      "method": "Medusa-2 (jointly fine-tuned heads + typical acceptance)",
+      "paper": "cai2024"
+    },
+    {
+      "id": "b4",
+      "name": "EAGLE speedup on LLaMA2-Chat 70B",
+      "value": "2.7x-3.5x",
+      "metric": "latency speedup (lossless)",
+      "method": "EAGLE (feature-level autoregression)",
+      "paper": "li2024a"
+    },
+    {
+      "id": "b5",
+      "name": "Lookahead decoding speedup",
+      "value": "up to 1.8x on MT-bench, up to 4x multi-GPU on code",
+      "metric": "wall-clock speedup",
+      "method": "Lookahead (exact parallel/Jacobi decoding)",
+      "paper": "fu2024"
+    },
+    {
+      "id": "b6",
+      "name": "EAGLE-2 speedup",
+      "value": "3.05x-4.26x (20%-40% faster than EAGLE-1)",
+      "metric": "latency speedup (lossless)",
+      "method": "EAGLE-2 (context-aware dynamic draft tree)",
+      "paper": "li2024b"
+    },
+    {
+      "id": "b7",
+      "name": "EAGLE-3 speedup",
+      "value": "up to 6.5x (~1.4x over EAGLE-2)",
+      "metric": "latency speedup",
+      "method": "EAGLE-3 (direct token prediction + multi-layer feature fusion, training-time test)",
+      "paper": "li2025"
+    },
+    {
+      "id": "b8",
+      "name": "EAGLE-3 throughput in SGLang",
+      "value": "1.38x",
+      "metric": "throughput improvement",
+      "method": "EAGLE-3",
+      "paper": "li2025"
+    },
+    {
+      "id": "b9",
+      "name": "SpecInfer distributed speedup",
+      "value": "1.5-2.8x",
+      "metric": "wall-clock speedup",
+      "method": "SpecInfer (tree-based speculative inference and verification)",
+      "paper": "miao2023"
+    },
+    {
+      "id": "b10",
+      "name": "SpecInfer offloading speedup",
+      "value": "2.6-3.5x",
+      "metric": "wall-clock speedup",
+      "method": "SpecInfer (tree-based speculative inference and verification)",
+      "paper": "miao2023"
+    },
+    {
+      "id": "b11",
+      "name": "DySpec throughput/latency on Llama2-70B",
+      "value": "up to 9.1x throughput, 9.4x latency reduction",
+      "metric": "throughput improvement / latency reduction",
+      "method": "DySpec (dynamic token tree, greedy expansion)",
+      "paper": "xiong2024"
+    },
+    {
+      "id": "b12",
+      "name": "MagicDec speedup at large batch",
+      "value": "up to 2.51x",
+      "metric": "wall-clock speedup",
+      "method": "MagicDec (sparse-KV draft model)",
+      "paper": "sadhukhan2024"
+    },
+    {
+      "id": "b13",
+      "name": "Domain draft distillation gains",
+      "value": "offline +11-25% over online; white-box +2-10% over black-box; synthetic data 80-93% of historical-query performance",
+      "metric": "relative acceptance/performance gain",
+      "method": "Offline vs online, white-box vs black-box distillation",
+      "paper": "hong2025"
+    },
+    {
+      "id": "b14",
+      "name": "Direct draft alignment speedup",
+      "value": "up to 2.4x",
+      "metric": "wall-clock speedup",
+      "method": "Direct alignment + TVD++ loss",
+      "paper": "goel2024"
+    },
+    {
+      "id": "b15",
+      "name": "OnlineSpec online-learning speedup",
+      "value": "up to 24%",
+      "metric": "speedup",
+      "method": "OnlineSpec (optimistic online learning + draft ensemble)",
+      "paper": "qian2026"
+    },
+    {
+      "id": "b16",
+      "name": "PARD-2 lossless acceleration",
+      "value": "up to 6.94x (1.9x over EAGLE-3 on Llama3.1-8B)",
+      "metric": "lossless acceleration",
+      "method": "PARD-2 (acceptance-length objective + CAT optimization)",
+      "paper": "an2026"
+    },
+    {
+      "id": "b17",
+      "name": "Alignment-augmented training-free speedup",
+      "value": "2.23x speedup, mean acceptance length up to 2.39, +3.3 avg generation score points",
+      "metric": "speedup / mean acceptance length / quality",
+      "method": "Alignment sampling + conditional verification (training-free)",
+      "paper": "wang2025"
+    }
+  ],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "chen2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "chen2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "cai2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "cai2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "cai2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "li2024a",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "li2024a",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "li2024a",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "fu2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "fu2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10b",
+      "to": "li2024b",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "li2024b",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "li2024b",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "li2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "li2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "li2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "xia2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "xia2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "sadhukhan2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "sadhukhan2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "sadhukhan2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "liu2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "liu2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "liu2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "miao2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c25",
+      "to": "miao2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c26",
+      "to": "xiong2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c27",
+      "to": "xiong2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c28",
+      "to": "hong2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "hong2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "hong2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "goel2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "qian2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "an2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "sun2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "wang2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c36",
+      "to": "wang2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "o1",
+      "to": "liu2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "sadhukhan2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "li2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "hong2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "wang2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "goel2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "li2024b",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "xiong2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "an2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "li2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "goel2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "wang2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "qian2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "sun2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "sadhukhan2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "b1",
+      "to": "chen2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b2",
+      "to": "cai2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b3",
+      "to": "cai2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b4",
+      "to": "li2024a",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b5",
+      "to": "fu2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b6",
+      "to": "li2024b",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b7",
+      "to": "li2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b8",
+      "to": "li2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b9",
+      "to": "miao2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b10",
+      "to": "miao2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b11",
+      "to": "xiong2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b12",
+      "to": "sadhukhan2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b13",
+      "to": "hong2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b14",
+      "to": "goel2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b15",
+      "to": "qian2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b16",
+      "to": "an2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b17",
+      "to": "wang2025",
+      "rel": "reported-in"
+    }
+  ]
+}

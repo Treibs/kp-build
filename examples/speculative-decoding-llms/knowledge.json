@@ -1,0 +1,13 @@
+{
+  "name": "@kp/speculative-decoding-for-fast-llm-inference-draft-then",
+  "version": "0.1.0",
+  "description": "IN SCOPE: lossless (or controllably-lossy) inference-acceleration methods for autoregressive LLM decoding that use a cheap \"draft\" proposal verified in parallel by the target model, including speculative sampling, self-speculative / layer-skip drafting, feature-level autoregression (Medusa, EAGLE/EA",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

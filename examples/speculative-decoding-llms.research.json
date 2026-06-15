@@ -1,0 +1,966 @@
+{
+  "topic": "Speculative Decoding for Fast LLM Inference: Draft-then-Verify Acceleration with Lossless Guarantees",
+  "scope": "IN SCOPE: lossless (or controllably-lossy) inference-acceleration methods for autoregressive LLM decoding that use a cheap \"draft\" proposal verified in parallel by the target model, including speculative sampling, self-speculative / layer-skip drafting, feature-level autoregression (Medusa, EAGLE/EAGLE-2/EAGLE-3), parallel/Jacobi and Lookahead decoding, and tree-structured/multi-candidate verification (SpecInfer); the analysis covers acceptance-rate theory, the distribution-preservation (losslessness) guarantee, wall-clock speedup vs. memory/compute trade-offs, and draft-model training/alignment. OUT OF SCOPE: orthogonal efficiency techniques (quantization, pruning, distillation as a standalone goal, KV-cache compression, FlashAttention-style kernels, MoE routing, continuous batching/PagedAttention) except where they directly interact with or are composed with speculative decoding; and non-autoregressive paradigms (diffusion LMs) that replace rather than accelerate AR decoding. Emphasis is on the 2024-2026 frontier (EAGLE-2/3, dynamic-tree and online drafting, long-context/reasoning/batched-serving regimes) over pre-2024 foundations.",
+  "papers": [
+    {
+      "cite_key": "chen2023",
+      "title": "Accelerating Large Language Model Decoding with Speculative Sampling",
+      "authors": [
+        "Charlie Chen",
+        "Sebastian Borgeaud",
+        "Geoffrey Irving",
+        "Jean-Baptiste Lespiau",
+        "Laurent Sifre",
+        "John Jumper"
+      ],
+      "year": 2023,
+      "arxiv_id": "2302.01318",
+      "doi": "",
+      "key_contributions": [
+        "Introduces speculative sampling: a faster draft model generates short continuations that the larger target model scores in parallel, since parallel scoring has latency comparable to sampling a single target token",
+        "Introduces a modified rejection sampling scheme that provably preserves the target model's output distribution (within hardware numerics)",
+        "Demonstrates 2-2.5x decoding speedup on the 70B-parameter Chinchilla model without compromising sample quality or modifying the model"
+      ]
+    },
+    {
+      "cite_key": "cai2024",
+      "title": "Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+      "authors": [
+        "Tianle Cai",
+        "Yuhong Li",
+        "Zhengyang Geng",
+        "Hongwu Peng",
+        "Jason D. Lee",
+        "Deming Chen",
+        "Tri Dao"
+      ],
+      "year": 2024,
+      "arxiv_id": "2401.10774",
+      "doi": "",
+      "key_contributions": [
+        "Adds extra decoding heads to the backbone LLM to predict multiple subsequent tokens in parallel, avoiding the need for a separate draft model",
+        "Uses tree-based attention to construct and verify multiple candidate continuations simultaneously per decoding step",
+        "Provides two fine-tuning recipes (Medusa-1 frozen-backbone for lossless acceleration, Medusa-2 joint fine-tuning) achieving 2.2x to 3.6x speedup; introduces a typical-acceptance scheme to boost acceptance rate while maintaining generation quality"
+      ]
+    },
+    {
+      "cite_key": "li2024a",
+      "title": "EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty",
+      "authors": [
+        "Yuhui Li",
+        "Fangyun Wei",
+        "Chao Zhang",
+        "Hongyang Zhang"
+      ],
+      "year": 2024,
+      "arxiv_id": "2401.15077",
+      "doi": "",
+      "key_contributions": [
+        "Performs autoregression at the feature (second-to-top-layer) level rather than the token level, which is shown to be more straightforward",
+        "Resolves feature-level uncertainty by feeding in a token sequence advanced by one time step, enabling precise feature prediction with minimal overhead",
+        "Achieves 2.7x-3.5x latency speedup on LLaMA2-Chat 70B while maintaining the output text distribution (lossless); evaluated across Vicuna, LLaMA2-Chat, and Mixtral 8x7B on dialogue, code generation, math reasoning, and instruction following"
+      ]
+    },
+    {
+      "cite_key": "fu2024",
+      "title": "Break the Sequential Dependency of LLM Inference Using Lookahead Decoding",
+      "authors": [
+        "Yichao Fu",
+        "Peter Bailis",
+        "Ion Stoica",
+        "Hao Zhang"
+      ],
+      "year": 2024,
+      "arxiv_id": "2402.02057",
+      "doi": "",
+      "key_contributions": [
+        "Introduces Lookahead decoding, an exact parallel decoding algorithm that accelerates LLM decoding without any draft model or data store",
+        "Trades per-step log(FLOPs) to reduce the total number of decoding steps and is compatible with FlashAttention-style memory-efficient attention",
+        "Achieves up to 1.8x speedup on MT-bench and up to 4x with strong scaling across multiple GPUs on code completion"
+      ]
+    },
+    {
+      "cite_key": "li2024b",
+      "title": "EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees",
+      "authors": [
+        "Yuhui Li",
+        "Fangyun Wei",
+        "Chao Zhang",
+        "Hongyang Zhang"
+      ],
+      "year": 2024,
+      "arxiv_id": "2406.16858",
+      "doi": "",
+      "key_contributions": [
+        "Identifies that draft-token acceptance rate is context-dependent, not just position-dependent as assumed by static draft trees",
+        "Introduces a context-aware dynamic draft tree built on EAGLE's well-calibrated draft-model confidence scores that approximate acceptance rates, requiring no additional training",
+        "Achieves 3.05x-4.26x speedup (20%-40% faster than EAGLE-1) across three LLM series and six tasks while keeping the generated-text distribution unchanged (lossless)"
+      ]
+    },
+    {
+      "cite_key": "li2025",
+      "title": "EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test",
+      "authors": [
+        "Yuhui Li",
+        "Fangyun Wei",
+        "Chao Zhang",
+        "Hongyang Zhang"
+      ],
+      "year": 2025,
+      "arxiv_id": "2503.01840",
+      "doi": "",
+      "key_contributions": [
+        "Abandons feature prediction in favor of direct token prediction and uses multi-layer feature fusion via a 'training-time test' technique",
+        "Removes EAGLE's feature-prediction constraint so the draft model benefits fully from scaling up training data",
+        "Achieves up to 6.5x speedup (about 1.4x over EAGLE-2) on chat and reasoning models across five tasks, plus 1.38x throughput in SGLang at batch size 64"
+      ]
+    },
+    {
+      "cite_key": "xia2024",
+      "title": "Unlocking Efficiency in Large Language Model Inference: A Comprehensive Survey of Speculative Decoding",
+      "authors": [
+        "Heming Xia",
+        "Zhe Yang",
+        "Qingxiu Dong",
+        "Peiyi Wang",
+        "Yongqi Li",
+        "Tao Ge",
+        "Tianyu Liu",
+        "Wenjie Li",
+        "Zhifang Sui"
+      ],
+      "year": 2024,
+      "arxiv_id": "2401.07851",
+      "doi": "",
+      "key_contributions": [
+        "Provides a formal definition and formulation of speculative decoding and organizes its key facets (drafter selection, verification strategies)",
+        "Presents a comparative analysis of leading speculative-decoding methods under third-party testing environments",
+        "Associated with the Spec-Bench benchmark/evaluation platform used to compare methods (per project repository)"
+      ]
+    },
+    {
+      "cite_key": "sadhukhan2024",
+      "title": "MagicDec: Breaking the Latency-Throughput Tradeoff for Long Context Generation with Speculative Decoding",
+      "authors": [
+        "Ranajoy Sadhukhan",
+        "Jian Chen",
+        "Zhuoming Chen",
+        "Vashisth Tiwari",
+        "Ruihang Lai",
+        "Jinyuan Shi",
+        "Ian En-Hsu Yen",
+        "Avner May",
+        "Tianqi Chen",
+        "Beidi Chen"
+      ],
+      "year": 2024,
+      "arxiv_id": "2408.11049",
+      "doi": "",
+      "key_contributions": [
+        "Challenges the conventional wisdom that speculative decoding only helps at small batch sizes, showing speedups in high-throughput regimes for moderate-to-long sequences",
+        "Analyzes how the bottleneck shifts with batch size and sequence length, and uses a draft model with sparse KV cache to address the KV bottleneck that scales with both sequence length and batch size",
+        "Demonstrates up to 2.51x speedup for Llama3.1-8B at batch sizes from 32 to 256"
+      ]
+    },
+    {
+      "cite_key": "liu2024",
+      "title": "TurboSpec: Closed-loop Speculation Control System for Optimizing LLM Serving Goodput",
+      "authors": [
+        "Xiaoxuan Liu",
+        "Jongseok Park",
+        "Langxiang Hu",
+        "Woosuk Kwon",
+        "Zhuohan Li",
+        "Chen Zhang",
+        "Kuntai Du",
+        "Xiangxi Mo",
+        "Kaichao You",
+        "Alvin Cheung",
+        "Zhijie Deng",
+        "Ion Stoica",
+        "Hao Zhang"
+      ],
+      "year": 2024,
+      "arxiv_id": "2406.14066",
+      "doi": "",
+      "key_contributions": [
+        "Observes that naively-added speculative decoding can degrade serving performance because it adds overhead and speculated tokens may miss",
+        "Introduces a closed-loop speculation control system that profiles the execution environment and adjusts speculation amount at runtime",
+        "Predicts 'goodput' (successfully generated tokens) to dynamically tune the amount of intra-request parallelism at runtime, implemented on vLLM with consistent improvements across diverse workloads and hardware"
+      ]
+    },
+    {
+      "cite_key": "miao2023",
+      "title": "SpecInfer: Accelerating Generative Large Language Model Serving with Tree-based Speculative Inference and Verification",
+      "authors": [
+        "Xupeng Miao",
+        "Gabriele Oliaro",
+        "Zhihao Zhang",
+        "Xinhao Cheng",
+        "Zeyu Wang",
+        "Zhengxin Zhang",
+        "Rae Ying Yee Wong",
+        "Alan Zhu",
+        "Lijie Yang",
+        "Xiaoxiang Shi",
+        "Chunan Shi",
+        "Zhuoming Chen",
+        "Daiyaan Arfeen",
+        "Reyna Abhyankar",
+        "Zhihao Jia"
+      ],
+      "year": 2023,
+      "arxiv_id": "2305.09781",
+      "doi": "",
+      "key_contributions": [
+        "Introduces tree-based speculative inference: predictions from small speculative models are organized as a token tree whose nodes each represent a candidate token sequence",
+        "Proposes a novel tree-based parallel decoding mechanism that verifies the correctness of all candidate token sequences against the LLM in parallel",
+        "Uses the LLM as a token tree verifier instead of an incremental decoder, provably preserving model quality while reducing latency",
+        "Reports 1.5-2.8x speedup for distributed LLM inference and 2.6-3.5x for offloading-based inference"
+      ]
+    },
+    {
+      "cite_key": "xiong2024",
+      "title": "DySpec: Faster Speculative Decoding with Dynamic Token Tree Structure",
+      "authors": [
+        "Yunfan Xiong",
+        "Ruoyu Zhang",
+        "Yanzeng Li",
+        "Tianhao Wu",
+        "Lei Zou"
+      ],
+      "year": 2024,
+      "arxiv_id": "2410.11744",
+      "doi": "",
+      "key_contributions": [
+        "Argues that organizing predicted tokens as independent chains or fixed token trees fails to generalize to diverse query distributions",
+        "Proposes DySpec, a speculative decoding algorithm with a novel dynamic token tree structure built via a greedy expansion strategy at run time",
+        "Shows draft distribution and acceptance rate are strongly correlated, with theoretical optimality under mild assumptions",
+        "Reports up to 9.1x throughput improvement and 9.4x latency reduction on Llama2-70B under low temperature, outperforming SpecInfer and Sequoia"
+      ]
+    },
+    {
+      "cite_key": "hong2025",
+      "title": "Training Domain Draft Models for Speculative Decoding: Best Practices and Insights",
+      "authors": [
+        "Fenglu Hong",
+        "Ravi Raju",
+        "Jonathan Lingjie Li",
+        "Bo Li",
+        "Urmish Thakker",
+        "Avinash Ravichandran",
+        "Swayambhoo Jain",
+        "Changran Hu"
+      ],
+      "year": 2025,
+      "arxiv_id": "2503.07807",
+      "doi": "",
+      "key_contributions": [
+        "Systematically studies knowledge distillation for training domain-specific draft models to counter acceptance-rate drop under domain shift",
+        "Compares white-box vs black-box and offline vs online distillation, finding offline distillation outperforms online by 11-25% and white-box surpasses black-box by 2-10%",
+        "Shows synthetically generated alignment data reaches 80-93% of the performance of training on historical user queries"
+      ]
+    },
+    {
+      "cite_key": "goel2024",
+      "title": "Direct Alignment of Draft Model for Speculative Decoding with Chat-Fine-Tuned LLMs",
+      "authors": [
+        "Raghavv Goel",
+        "Mukul Gagrani",
+        "Wonseok Jeon",
+        "Junyoung Park",
+        "Mingu Lee",
+        "Christopher Lott"
+      ],
+      "year": 2024,
+      "arxiv_id": "2403.00858",
+      "doi": "",
+      "key_contributions": [
+        "Proposes a draft-model training framework (pretraining, distillation-dataset generation, finetuning with knowledge distillation) to directly align a small drafter to chat-capable target models",
+        "Uses instruction-response pairs generated by the target model for distillation in plausible data distribution",
+        "Introduces a Total Variation Distance++ (TVD++) loss using policy-gradient-inspired variance reduction",
+        "Trains a 115M drafter for Llama 2 Chat 7B achieving up to 2.4x speed-up"
+      ]
+    },
+    {
+      "cite_key": "qian2026",
+      "title": "When Drafts Evolve: Speculative Decoding Meets Online Learning",
+      "authors": [
+        "Yu-Yang Qian",
+        "Hao-Cong Wu",
+        "Yichao Fu",
+        "Hao Zhang",
+        "Peng Zhao"
+      ],
+      "year": 2026,
+      "arxiv_id": "2603.12617",
+      "doi": "",
+      "key_contributions": [
+        "Frames speculative decoding's verification feedback as a draft-commits/feedback-provides/draft-adapts loop matching the online learning paradigm",
+        "Proposes OnlineSpec, using dynamic regret minimization to link online learning performance to acceleration rate",
+        "Develops optimistic online learning (reusing historical gradients) and online ensemble of draft models, achieving up to 24% speedup"
+      ]
+    },
+    {
+      "cite_key": "an2026",
+      "title": "PARD-2: Target-Aligned Parallel Draft Model for Dual-Mode Speculative Decoding",
+      "authors": [
+        "Zihao An",
+        "Taichi Liu",
+        "Ziqiong Liu",
+        "Dong Li",
+        "Ruofeng Liu",
+        "Emad Barsoum"
+      ],
+      "year": 2026,
+      "arxiv_id": "2605.08632",
+      "doi": "",
+      "key_contributions": [
+        "Reformulates the draft-model objective to target overall acceptance length rather than per-token prediction accuracy",
+        "Introduces Confidence-Adaptive Token (CAT) optimization that reweights tokens to align with the verification process",
+        "Supports both target-dependent and target-independent modes in a single draft model",
+        "Reports up to 6.94x lossless acceleration, surpassing EAGLE-3 by 1.9x on Llama3.1-8B"
+      ]
+    },
+    {
+      "cite_key": "sun2025",
+      "title": "Scaling Up, Speeding Up: A Benchmark of Speculative Decoding for Efficient LLM Test-Time Scaling",
+      "authors": [
+        "Shengyin Sun",
+        "Yiming Li",
+        "Xing Li",
+        "Yingzhao Lian",
+        "Weizhe Lin",
+        "Hui-Ling Zhen",
+        "Zhiyuan Yang",
+        "Chen Chen",
+        "Xianzhi Yu",
+        "Mingxuan Yuan",
+        "Chen Ma"
+      ],
+      "year": 2025,
+      "arxiv_id": "2509.04474",
+      "doi": "",
+      "key_contributions": [
+        "Notes that speculative decoding's efficacy in the structured, repetition-rich context of test-time scaling was largely unexplored",
+        "Introduces the first comprehensive benchmark for evaluating speculative decoding methods on LLM test-time scaling",
+        "Compares model-based, training-based, and n-gram-based speculative methods under consistent protocols",
+        "Finds simple n-gram-based methods effectively capture repetitive reasoning patterns in test-time scaling"
+      ]
+    },
+    {
+      "cite_key": "wang2025",
+      "title": "Alignment-Augmented Speculative Decoding with Alignment Sampling and Conditional Verification",
+      "authors": [
+        "Jikai Wang",
+        "Zhenxu Tian",
+        "Juntao Li",
+        "Qingrong Xia",
+        "Xinyu Duan",
+        "Zhefeng Wang",
+        "Baoxing Huai",
+        "Min Zhang"
+      ],
+      "year": 2025,
+      "arxiv_id": "2505.13204",
+      "doi": "",
+      "key_contributions": [
+        "Frames the success of speculative decoding as relying on draft-target distribution alignment, and existing training-based alignment (EAGLE, Medusa) as incurring considerable training cost",
+        "Proposes a training-free alignment-augmented algorithm using alignment sampling from the prefilling-phase output distribution",
+        "Introduces a flexible conditional verification strategy with an adaptive probability threshold",
+        "Reports +3.3 average generation score points for LLaMA3, mean acceptance length up to 2.39, and 2.23x speedup across 8 datasets"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "statement": "Speculative sampling accelerates transformer decoding by having a faster, less powerful draft model generate short continuations that the larger target model scores in parallel, exploiting that parallel scoring latency is comparable to sampling a single token from the target model.",
+      "paper": "chen2023",
+      "supporting_passage": "Our algorithm relies on the observation that the latency of parallel scoring of short continuations, generated by a faster but less powerful draft model, is comparable to that of sampling a single token from the larger target model.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c2",
+      "statement": "Speculative sampling uses a modified rejection sampling scheme that preserves the target model's distribution within hardware numerics, achieving a 2-2.5x decoding speedup on the 70B-parameter Chinchilla model without compromising sample quality.",
+      "paper": "chen2023",
+      "supporting_passage": "This is combined with a novel modified rejection sampling scheme which preserves the distribution of the target model within hardware numerics. We benchmark speculative sampling with Chinchilla, a 70 billion parameter language model, achieving a 2-2.5x decoding speedup in a distributed setup, without compromising the sample quality or making modifications to the model itself.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c3",
+      "statement": "Medusa avoids the difficulty of obtaining and maintaining a separate draft model by adding extra decoding heads to the LLM that predict multiple subsequent tokens in parallel, then uses tree-based attention to construct and simultaneously verify multiple candidate continuations each decoding step.",
+      "paper": "cai2024",
+      "supporting_passage": "In this paper, we present Medusa, an efficient method that augments LLM inference by adding extra decoding heads to predict multiple subsequent tokens in parallel. Using a tree-based attention mechanism, Medusa constructs multiple candidate continuations and verifies them simultaneously in each decoding step.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c4",
+      "statement": "Medusa-1, in which the decoding heads are directly fine-tuned on top of a frozen backbone LLM, enables lossless inference acceleration.",
+      "paper": "cai2024",
+      "supporting_passage": "Medusa-1: Medusa is directly fine-tuned on top of a frozen backbone LLM, enabling lossless inference acceleration.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c5",
+      "statement": "Medusa-1 achieves over 2.2x speedup without compromising generation quality, while Medusa-2 further improves the speedup to 2.3-3.6x.",
+      "paper": "cai2024",
+      "supporting_passage": "Our experiments demonstrate that Medusa-1 can achieve over 2.2x speedup without compromising generation quality, while Medusa-2 further improves the speedup to 2.3-3.6x.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c6",
+      "statement": "EAGLE performs autoregression at the feature (second-to-top-layer) level rather than the token level, and resolves the inherent feature-level uncertainty by incorporating a token sequence advanced by one time step, enabling precise feature prediction with minimal overhead.",
+      "paper": "li2024a",
+      "supporting_passage": "Firstly, autoregression at the feature (second-to-top-layer) level is more straightforward than at the token level. Secondly, the inherent uncertainty in feature (second-to-top-layer) level autoregression constrains its performance. Based on these insights, we introduce EAGLE (Extrapolation Algorithm for Greater Language-model Efficiency), a simple yet highly efficient speculative sampling framework. By incorporating a token sequence advanced by one time step, EAGLE effectively resolves the uncertainty, enabling precise second-to-top-layer feature prediction with minimal overhead.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c7",
+      "statement": "On LLaMA2-Chat 70B, EAGLE achieved a 2.7x-3.5x latency speedup while maintaining the distribution of the generated text.",
+      "paper": "li2024a",
+      "supporting_passage": "For LLaMA2-Chat 70B, EAGLE achieved a latency speedup ratio of 2.7x-3.5x, doubled throughput, while maintaining the distribution of the generated text.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c8",
+      "statement": "Autoregression at the feature (second-to-top-layer) level is more straightforward than at the token level, but inherent feature-level uncertainty constrains its performance.",
+      "paper": "li2024a",
+      "supporting_passage": "Firstly, autoregression at the feature (second-to-top-layer) level is more straightforward than at the token level. Secondly, the inherent uncertainty in feature (second-to-top-layer) level autoregression constrains its performance.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c9",
+      "statement": "Lookahead decoding is an exact, parallel decoding algorithm that accelerates LLM decoding without needing an auxiliary draft model or data store, unlike speculative decoding which requires a draft model that is nontrivial to obtain.",
+      "paper": "fu2024",
+      "supporting_passage": "Existing methods for accelerating LLM decoding often require a draft model (e.g., speculative decoding), which is nontrivial to obtain and unable to generalize. In this paper, we introduce Lookahead decoding, an exact, parallel decoding algorithm that accelerates LLM decoding without needing auxiliary models or data stores.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c10",
+      "statement": "Lookahead decoding trades per-step log(FLOPs) to reduce the total number of decoding steps and is compatible with concurrent memory-efficient attention such as FlashAttention.",
+      "paper": "fu2024",
+      "supporting_passage": "It allows trading per-step log(FLOPs) to reduce the number of total decoding steps, is more parallelizable on single or multiple modern accelerators, and is compatible with concurrent memory-efficient attention (e.g., FlashAttention).",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c10b",
+      "statement": "Most speculative sampling methods such as EAGLE use a static draft tree that implicitly assumes draft-token acceptance rate depends only on position, but EAGLE-2 leverages the finding that acceptance rate is also context-dependent to build a context-aware dynamic draft tree.",
+      "paper": "li2024b",
+      "supporting_passage": "Most speculative sampling methods such as EAGLE use a static draft tree, implicitly assuming that the acceptance rate of draft tokens depends only on their position. Interestingly, we found that the acceptance rate of draft tokens is also context-dependent. In this paper, building upon EAGLE, we propose EAGLE-2, which introduces a new technique of context-aware dynamic draft tree into drafting modeling.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c11",
+      "statement": "EAGLE-2 achieves speedup ratios of 3.05x-4.26x (20%-40% faster than EAGLE-1) while ensuring the distribution of the generated text remains unchanged, making it a lossless acceleration algorithm.",
+      "paper": "li2024b",
+      "supporting_passage": "with EAGLE-2 achieving speedup ratios 3.05x-4.26x, which is 20%-40% faster than EAGLE-1. EAGLE-2 also ensures that the distribution of the generated text remains unchanged, making it a lossless acceleration algorithm.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c12",
+      "statement": "EAGLE-2's design relies on the EAGLE draft model being well-calibrated, with its confidence scores approximating acceptance rates with small errors.",
+      "paper": "li2024b",
+      "supporting_passage": "This improvement leverages the fact that the draft model of EAGLE is well-calibrated: the confidence scores from the draft model approximate acceptance rates with small errors.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c13",
+      "statement": "EAGLE-3 replaces feature prediction with direct token prediction and multi-layer feature fusion, achieving a speedup ratio up to 6.5x with about 1.4x improvement over EAGLE-2 across five tasks on chat and reasoning models.",
+      "paper": "li2025",
+      "supporting_passage": "In this paper, we introduce EAGLE-3, which abandons feature prediction in favor of direct token prediction and replaces reliance on top-layer features with multi-layer feature fusion via a technique named training-time test. ... evaluated on five tasks. The results show that EAGLE-3 achieves a speedup ratio up to 6.5x, with about 1.4x improvement over EAGLE-2.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c14",
+      "statement": "EAGLE-3 reaches a speedup ratio up to 6.5x (about 1.4x over EAGLE-2) and a 1.38x throughput improvement at batch size 64 in the SGLang framework.",
+      "paper": "li2025",
+      "supporting_passage": "The results show that EAGLE-3 achieves a speedup ratio up to 6.5x, with about 1.4x improvement over EAGLE-2. In the SGLang framework, EAGLE-3 achieves a 1.38x throughput improvement at a batch size of 64.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c15",
+      "statement": "Scaling up training data provides only limited improvements for EAGLE, a limitation the authors attribute to EAGLE's feature prediction constraints.",
+      "paper": "li2025",
+      "supporting_passage": "However, we observe that scaling up data provides limited improvements for EAGLE. We identify that this limitation arises from EAGLE's feature prediction constraints.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c16",
+      "statement": "The speculative decoding survey presents a comparative analysis of leading speculative-decoding methods under third-party testing environments.",
+      "paper": "xia2024",
+      "supporting_passage": "Furthermore, we present a comparative analysis of leading methods under third-party testing environments.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c17",
+      "statement": "In speculative decoding, each decoding step first drafts several future tokens efficiently and then verifies them in parallel, enabling simultaneous decoding of multiple tokens per step to accelerate inference.",
+      "paper": "xia2024",
+      "supporting_passage": "In each decoding step, this method first drafts several future tokens efficiently and then verifies them in parallel. Unlike autoregressive decoding, Speculative Decoding facilitates the simultaneous decoding of multiple tokens per step, thereby accelerating inference.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c18",
+      "statement": "Contrary to the conventional wisdom that speculative decoding only helps at small batch sizes, MagicDec shows it can achieve speedup in a high-throughput regime for moderate-to-long sequences, with up to 2.51x speedup for Llama3.1-8B at batch sizes from 32 to 256.",
+      "paper": "sadhukhan2024",
+      "supporting_passage": "Speculative decoding (SD) is a widely used technique to reduce latency losslessly, but the conventional wisdom suggests that its efficacy is limited to small batch sizes. In MagicDec, we show that surprisingly SD can achieve speedup even for a high throughput inference regime for moderate to long sequences.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c19",
+      "statement": "MagicDec uses a draft model with sparse KV cache to address the KV bottleneck, which scales with both sequence length and batch size.",
+      "paper": "sadhukhan2024",
+      "supporting_passage": "We leverage draft model with sparse KV cache to address the KV bottleneck, which scales with both sequence length and batch size.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c20",
+      "statement": "Conventional wisdom holds that speculative decoding's efficacy is limited to small batch sizes.",
+      "paper": "sadhukhan2024",
+      "supporting_passage": "Speculative decoding (SD) is a widely used technique to reduce latency losslessly, but the conventional wisdom suggests that its efficacy is limited to small batch sizes.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c21",
+      "statement": "Speculative decoding can degrade LLM serving performance if added naively without tuning, because it causes overhead and speculated tokens may miss.",
+      "paper": "liu2024",
+      "supporting_passage": "benefits from intra-request parallelism are often fragile, as speculative decoding causes overhead, and speculated tokens may miss. We observe that speculative decoding may degrade LLM serving performance if added naively without tuning to the incoming requests and the speculation method.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c22",
+      "statement": "TurboSpec predicts 'goodput' (successfully generated tokens) to dynamically adjust the amount of intra-request parallelism in LLM serving at runtime.",
+      "paper": "liu2024",
+      "supporting_passage": "TurboSpec predicts \"goodput\" - the amount of successfully generated tokens - to evaluate and adjust intra-request parallelism amount to that with the highest goodput in runtime.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c23",
+      "statement": "Inter-request parallelism from batching is often limited in real-world deployments by external factors such as low request rates or memory constraints.",
+      "paper": "liu2024",
+      "supporting_passage": "However, in real-world deployments, such inter-request parallelism from batching is often limited by external factors such as low request rates or memory constraints.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c24",
+      "statement": "SpecInfer organizes the predictions of small speculative models as a token tree whose nodes each represent a candidate token sequence.",
+      "paper": "miao2023",
+      "supporting_passage": "The key idea behind SpecInfer is leveraging small speculative models to predict the LLM's outputs; the predictions are organized as a token tree, whose nodes each represent a candidate token sequence.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c25",
+      "statement": "SpecInfer verifies the correctness of all candidate token sequences represented by a token tree against the LLM in parallel using a tree-based parallel decoding mechanism, while provably preserving model quality.",
+      "paper": "miao2023",
+      "supporting_passage": "The correctness of all candidate token sequences represented by a token tree is verified against the LLM in parallel using a novel tree-based parallel decoding mechanism. SpecInfer uses an LLM as a token tree verifier instead of an incremental decoder, which significantly reduces the end-to-end latency and computational requirement for serving generative LLMs while provably preserving model quality.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c26",
+      "statement": "Prevalent speculative decoding methods organize predicted tokens as independent chains or fixed token trees, which fails to generalize to diverse query distributions; DySpec instead employs a greedy strategy to dynamically expand the token tree at run time.",
+      "paper": "xiong2024",
+      "supporting_passage": "Prevalent methods usually organize predicted tokens as independent chains or fixed token trees, which fails to generalize to diverse query distributions. In this paper, we propose DySpec, a faster speculative decoding algorithm with a novel dynamic token tree structure.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c27",
+      "statement": "DySpec dynamically expands the token tree at run time using a greedy strategy and yields a higher acceptance rate and speedup than fixed trees.",
+      "paper": "xiong2024",
+      "supporting_passage": "Based on this, we employ a greedy strategy to dynamically expand the token tree at run time. Theoretically, we show that our method can achieve optimal results under mild assumptions. Empirically, DySpec yields a higher acceptance rate and speedup than fixed trees.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c28",
+      "statement": "When a generic draft model is applied to a domain-specific target model, its acceptance rate drops significantly because of domain shift.",
+      "paper": "hong2025",
+      "supporting_passage": "However, when adapting speculative decoding to domain-specific target models, the acceptance rate of the generic draft model drops significantly due to domain shift.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c29",
+      "statement": "In training domain draft models via distillation, offline distillation consistently outperforms online distillation by 11% to 25%, and white-box distillation surpasses black-box distillation by 2% to 10%.",
+      "paper": "hong2025",
+      "supporting_passage": "Our experiments across Function Calling, Biology, and Chinese domains show that offline distillation consistently outperforms online distillation by 11% to 25%, white-box distillation surpasses black-box distillation by 2% to 10%, and data scaling trends hold across domains.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c30",
+      "statement": "Synthetic data can effectively align draft models, achieving 80% to 93% of the performance of training on historical user queries.",
+      "paper": "hong2025",
+      "supporting_passage": "Additionally, we find that synthetic data can effectively align draft models and achieve 80% to 93% of the performance of training on historical user queries.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c31",
+      "statement": "The draft model is finetuned using instruction-response pairs generated by the target model for distillation, with a Total Variation Distance++ (TVD++) loss incorporating variance-reduction techniques inspired by the policy gradient method.",
+      "paper": "goel2024",
+      "supporting_passage": "For the finetuning step, we use instruction-response pairs generated by target model for distillation in plausible data distribution, and propose a new Total Variation Distance++ (TVD++) loss that incorporates variance reduction techniques inspired from the policy gradient method in reinforcement learning.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c32",
+      "statement": "Speculative decoding inherently provides verification feedback quantifying the deviation between draft and target models at no additional cost, forming an iterative evolving loop that matches the online learning paradigm.",
+      "paper": "qian2026",
+      "supporting_passage": "A key yet under-explored observation is that speculative decoding inherently provides verification feedback that quantifies the deviation between the draft and target models at no additional cost. This process naturally forms an iterative \"draft commits-feedback provides-draft adapts\" evolving loop, which precisely matches the online learning paradigm.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c33",
+      "statement": "Existing draft model training objectives are not directly aligned with the inference-time goal of maximizing consecutive token acceptance, so PARD-2 reformulates the objective to focus on overall acceptance length rather than token prediction accuracy.",
+      "paper": "an2026",
+      "supporting_passage": "However, existing draft model training objectives are not directly aligned with the inference-time goal of maximizing consecutive token acceptance. To address this issue, we reformulate the draft model optimization objective, shifting the focus from token prediction accuracy to the overall acceptance length.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c34",
+      "statement": "The effectiveness of speculative decoding in the structured, repetition-rich context of test-time scaling remained largely unexplored prior to this benchmark.",
+      "paper": "sun2025",
+      "supporting_passage": "Speculative decoding offers a promising avenue for mitigating this inefficiency, yet its efficacy in the structured, repetition-rich context of test-time scaling remains largely unexplored.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c35",
+      "statement": "The success of speculative decoding methods relies on alignment between draft candidates and the sampled outputs of the target model.",
+      "paper": "wang2025",
+      "supporting_passage": "The success of these methods relies on the alignment between draft candidates and the sampled outputs of the target model.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c36",
+      "statement": "Existing methods achieve draft-target alignment mainly through training-based approaches such as EAGLE and Medusa, which involve considerable training costs.",
+      "paper": "wang2025",
+      "supporting_passage": "Existing methods mainly achieve draft-target alignment with training-based methods, e.g., EAGLE, Medusa, involving considerable training costs.",
+      "claim_type": "finding",
+      "confidence": "high"
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "statement": "Speculative decoding's wall-clock benefit degrades or disappears in high-throughput, large-batch serving regimes because added overhead and missed speculated tokens can degrade goodput, and inter-request batching parallelism competes with intra-request speculation parallelism.",
+      "status": "partially-addressed",
+      "why_it_matters": "Production serving is throughput-bound; if speculation only helps at small batch sizes it cannot be deployed naively in real systems, requiring closed-loop control or sparse-KV draft designs to recover gains.",
+      "flagged_by": [
+        "liu2024",
+        "sadhukhan2024",
+        "li2025"
+      ]
+    },
+    {
+      "id": "o2",
+      "statement": "Acceptance rates are brittle under distribution/domain shift: a generic draft model's acceptance rate drops significantly when the target is domain-specific, requiring retraining or alignment data to recover.",
+      "status": "partially-addressed",
+      "why_it_matters": "Train-once draft models do not transfer across domains, so each deployment may incur retraining/distillation cost; the field is exploring offline/white-box distillation and synthetic alignment data to mitigate this.",
+      "flagged_by": [
+        "hong2025",
+        "wang2025",
+        "goel2024"
+      ]
+    },
+    {
+      "id": "o3",
+      "statement": "Static draft-tree structures assume acceptance rate depends only on token position, but acceptance is actually context-dependent, so fixed chains or trees fail to generalize across diverse query distributions.",
+      "status": "partially-addressed",
+      "why_it_matters": "The verification topology directly determines mean accepted tokens per forward pass; context-aware dynamic trees (EAGLE-2, DySpec) close part of this gap but optimal run-time tree construction remains an active design space.",
+      "flagged_by": [
+        "li2024b",
+        "xiong2024"
+      ]
+    },
+    {
+      "id": "o4",
+      "statement": "Draft-model training objectives (per-token prediction accuracy, feature prediction) are misaligned with the true inference-time goal of maximizing consecutive accepted token length, and feature-prediction constraints limit benefit from scaling training data.",
+      "status": "partially-addressed",
+      "why_it_matters": "If the training objective does not match the acceptance-length objective, scaling data or model capacity yields diminishing returns; reformulating the objective (EAGLE-3 token prediction, PARD-2 acceptance-length, TVD++) is an open and evolving line of work.",
+      "flagged_by": [
+        "an2026",
+        "li2025",
+        "goel2024"
+      ]
+    },
+    {
+      "id": "o5",
+      "statement": "Training-based draft-target alignment (EAGLE, Medusa) incurs considerable training cost, motivating training-free alignment and online/adaptive drafting whose realized speedups still trail trained drafters.",
+      "status": "partially-addressed",
+      "why_it_matters": "The train-once-vs-adapt cost of draft models is a deployment barrier; training-free alignment sampling and online-learning drafts trade lower setup cost for typically smaller acceleration, and the trade-off is unresolved.",
+      "flagged_by": [
+        "wang2025",
+        "qian2026"
+      ]
+    },
+    {
+      "id": "o6",
+      "statement": "Speculative decoding's behavior in the structured, repetition-rich regimes of long-context generation and test-time-scaling/reasoning chains was largely unexplored, and simple n-gram methods can rival learned drafters there.",
+      "status": "partially-addressed",
+      "why_it_matters": "Reasoning and long-context workloads are an increasingly dominant inference cost; whether sophisticated learned drafters justify their cost over cheap n-gram methods in these regimes is an open empirical question now being benchmarked.",
+      "flagged_by": [
+        "sun2025",
+        "sadhukhan2024"
+      ]
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "Does effective LLM-decoding acceleration require an auxiliary draft model, or can it be achieved draft-model-free?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "A separate or learned draft model is the most effective path to acceleration",
+          "summary": "Speculative-sampling and feature-level methods rely on a draft model (separate model, extra heads, or feature-autoregression head) whose alignment with the target drives high acceptance rates and the largest reported speedups (up to 6.5x-6.94x).",
+          "papers": [
+            "chen2023",
+            "li2024a",
+            "li2024b",
+            "li2025",
+            "cai2024",
+            "an2026",
+            "miao2023"
+          ]
+        },
+        {
+          "stance": "Draft models are nontrivial to obtain and can be avoided entirely",
+          "summary": "Lookahead decoding argues draft models are hard to obtain and fail to generalize, and provides exact parallel decoding without any auxiliary model or data store; n-gram-based drafting is also competitive in repetition-rich test-time-scaling regimes.",
+          "papers": [
+            "fu2024",
+            "sun2025"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "question": "Does speculative decoding only help at small batch sizes, or can it accelerate high-throughput, large-batch serving?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Speculation helps mainly at small batch sizes and is fragile under high throughput",
+          "summary": "Conventional wisdom and serving-systems analysis hold that intra-request speculation overhead competes with batching parallelism and can degrade serving performance if added naively without tuning.",
+          "papers": [
+            "liu2024",
+            "sadhukhan2024"
+          ]
+        },
+        {
+          "stance": "Speculation can accelerate even high-throughput regimes for moderate-to-long sequences",
+          "summary": "MagicDec shows that by addressing the KV bottleneck (which scales with both batch size and sequence length) with a sparse-KV draft model, speculative decoding achieves up to 2.51x speedup at batch sizes from 32 to 256, and EAGLE-3 reports throughput gains at batch size 64.",
+          "papers": [
+            "sadhukhan2024",
+            "li2025"
+          ]
+        }
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "Speculative Sampling speedup on Chinchilla 70B",
+      "paper": "chen2023",
+      "dataset": "distributed decoding setup (Chinchilla)",
+      "method": "Speculative sampling with modified rejection sampling",
+      "metric": "decoding latency speedup",
+      "value": "2-2.5x"
+    },
+    {
+      "id": "b2",
+      "name": "Medusa-1 lossless speedup",
+      "paper": "cai2024",
+      "dataset": "backbone LLM inference (frozen backbone)",
+      "method": "Medusa-1 (extra decoding heads, frozen backbone)",
+      "metric": "wall-clock speedup",
+      "value": ">2.2x (lossless)"
+    },
+    {
+      "id": "b3",
+      "name": "Medusa-2 speedup",
+      "paper": "cai2024",
+      "dataset": "backbone LLM inference (jointly fine-tuned)",
+      "method": "Medusa-2 (jointly fine-tuned heads + typical acceptance)",
+      "metric": "wall-clock speedup",
+      "value": "2.3-3.6x"
+    },
+    {
+      "id": "b4",
+      "name": "EAGLE speedup on LLaMA2-Chat 70B",
+      "paper": "li2024a",
+      "dataset": "LLaMA2-Chat 70B (dialogue/code/math/instruction)",
+      "method": "EAGLE (feature-level autoregression)",
+      "metric": "latency speedup (lossless)",
+      "value": "2.7x-3.5x"
+    },
+    {
+      "id": "b5",
+      "name": "Lookahead decoding speedup",
+      "paper": "fu2024",
+      "dataset": "MT-bench (and code completion)",
+      "method": "Lookahead (exact parallel/Jacobi decoding)",
+      "metric": "wall-clock speedup",
+      "value": "up to 1.8x on MT-bench, up to 4x multi-GPU on code"
+    },
+    {
+      "id": "b6",
+      "name": "EAGLE-2 speedup",
+      "paper": "li2024b",
+      "dataset": "three LLM series, six tasks",
+      "method": "EAGLE-2 (context-aware dynamic draft tree)",
+      "metric": "latency speedup (lossless)",
+      "value": "3.05x-4.26x (20%-40% faster than EAGLE-1)"
+    },
+    {
+      "id": "b7",
+      "name": "EAGLE-3 speedup",
+      "paper": "li2025",
+      "dataset": "chat and reasoning models, five tasks",
+      "method": "EAGLE-3 (direct token prediction + multi-layer feature fusion, training-time test)",
+      "metric": "latency speedup",
+      "value": "up to 6.5x (~1.4x over EAGLE-2)"
+    },
+    {
+      "id": "b8",
+      "name": "EAGLE-3 throughput in SGLang",
+      "paper": "li2025",
+      "dataset": "SGLang framework, batch size 64",
+      "method": "EAGLE-3",
+      "metric": "throughput improvement",
+      "value": "1.38x"
+    },
+    {
+      "id": "b9",
+      "name": "SpecInfer distributed speedup",
+      "paper": "miao2023",
+      "dataset": "distributed LLM inference",
+      "method": "SpecInfer (tree-based speculative inference and verification)",
+      "metric": "wall-clock speedup",
+      "value": "1.5-2.8x"
+    },
+    {
+      "id": "b10",
+      "name": "SpecInfer offloading speedup",
+      "paper": "miao2023",
+      "dataset": "offloading-based inference",
+      "method": "SpecInfer (tree-based speculative inference and verification)",
+      "metric": "wall-clock speedup",
+      "value": "2.6-3.5x"
+    },
+    {
+      "id": "b11",
+      "name": "DySpec throughput/latency on Llama2-70B",
+      "paper": "xiong2024",
+      "dataset": "Llama2-70B (low temperature)",
+      "method": "DySpec (dynamic token tree, greedy expansion)",
+      "metric": "throughput improvement / latency reduction",
+      "value": "up to 9.1x throughput, 9.4x latency reduction"
+    },
+    {
+      "id": "b12",
+      "name": "MagicDec speedup at large batch",
+      "paper": "sadhukhan2024",
+      "dataset": "Llama3.1-8B, batch sizes 32-256",
+      "method": "MagicDec (sparse-KV draft model)",
+      "metric": "wall-clock speedup",
+      "value": "up to 2.51x"
+    },
+    {
+      "id": "b13",
+      "name": "Domain draft distillation gains",
+      "paper": "hong2025",
+      "dataset": "Function Calling, Biology, Chinese domains",
+      "method": "Offline vs online, white-box vs black-box distillation",
+      "metric": "relative acceptance/performance gain",
+      "value": "offline +11-25% over online; white-box +2-10% over black-box; synthetic data 80-93% of historical-query performance"
+    },
+    {
+      "id": "b14",
+      "name": "Direct draft alignment speedup",
+      "paper": "goel2024",
+      "dataset": "Llama 2 Chat 7B (115M drafter)",
+      "method": "Direct alignment + TVD++ loss",
+      "metric": "wall-clock speedup",
+      "value": "up to 2.4x"
+    },
+    {
+      "id": "b15",
+      "name": "OnlineSpec online-learning speedup",
+      "paper": "qian2026",
+      "dataset": "evolving-draft online learning setup",
+      "method": "OnlineSpec (optimistic online learning + draft ensemble)",
+      "metric": "speedup",
+      "value": "up to 24%"
+    },
+    {
+      "id": "b16",
+      "name": "PARD-2 lossless acceleration",
+      "paper": "an2026",
+      "dataset": "Llama3.1-8B",
+      "method": "PARD-2 (acceptance-length objective + CAT optimization)",
+      "metric": "lossless acceleration",
+      "value": "up to 6.94x (1.9x over EAGLE-3 on Llama3.1-8B)"
+    },
+    {
+      "id": "b17",
+      "name": "Alignment-augmented training-free speedup",
+      "paper": "wang2025",
+      "dataset": "LLaMA3 across 8 datasets",
+      "method": "Alignment sampling + conditional verification (training-free)",
+      "metric": "speedup / mean acceptance length / quality",
+      "value": "2.23x speedup, mean acceptance length up to 2.39, +3.3 avg generation score points"
+    }
+  ],
+  "coverage": {
+    "sub_questions": [
+      "What is the core draft-then-verify mechanism and how does the speculative-sampling / modified-rejection-sampling step provably preserve the target model's output distribution (the losslessness guarantee), and how do the major method families differ in how they generate drafts — separate draft model, self-speculation/layer-skipping, Medusa-style parallel heads, EAGLE's feature-level autoregression, and Lookahead/Jacobi parallel decoding?",
+      "How do speculative-decoding variants compare on acceptance rate / mean accepted tokens per forward pass and on preserving output quality relative to vanilla autoregressive baselines, and what evaluation protocols and benchmarks (e.g., Spec-Bench, MT-Bench, HumanEval) do authors use to substantiate lossless or near-lossless claims?",
+      "What end-to-end wall-clock speedups and memory/compute overheads do these methods achieve (draft-model VRAM, extra heads, tree-attention cost, training cost), and how do speedups degrade as batch size, sequence/context length, and hardware utilization change — i.e., when does speculative decoding stop helping under high-throughput serving?",
+      "How does verification topology scale — from single linear drafts to tree/multi-candidate verification (SpecInfer) and dynamic, context-aware draft trees (EAGLE-2) plus multi-layer feature fusion (EAGLE-3) — and what algorithmic advances in draft-tree construction, expansion, and pruning drive the 2024-2026 gains?",
+      "How do draft models get trained and aligned to the target (feature/embedding-level objectives, on-policy vs. offline data, self-distillation, training-time vs. test-time scaling of the draft), and how sensitive are results to draft-target alignment, decoding temperature, and domain/distribution shift?",
+      "What open problems and limitations do authors explicitly flag — e.g., poor speedups at large batch sizes / in throughput-bound serving, weak gains on long-context and reasoning-chain generation, brittleness of acceptance rates out-of-distribution, the train-once-vs-adapt cost of draft models, interaction with quantization/KV-cache methods, and the gap between idealized acceptance theory and realized wall-clock latency?"
+    ],
+    "queries": [
+      "speculative decoding large language models draft verify lossless acceleration",
+      "EAGLE feature-level autoregression speculative sampling draft tree",
+      "EAGLE-2 dynamic draft tree context-aware speculative decoding",
+      "EAGLE-3 multi-layer feature fusion test-time scaling speculative",
+      "Medusa multiple decoding heads parallel speculative inference",
+      "Lookahead decoding Jacobi parallel decoding LLM acceleration",
+      "SpecInfer tree-based speculative inference token tree verification",
+      "speculative decoding batch size throughput serving long-context limitations 2025"
+    ]
+  }
+}
