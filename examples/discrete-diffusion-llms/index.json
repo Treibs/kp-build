@@ -1,0 +1,1172 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "austin2021",
+      "title": "Structured Denoising Diffusion Models in Discrete State-Spaces",
+      "year": 2021,
+      "arxiv_id": "2107.03006",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "lou2023",
+      "title": "Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution",
+      "year": 2023,
+      "arxiv_id": "2310.16834",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "sahoo2024",
+      "title": "Simple and Effective Masked Diffusion Language Models",
+      "year": 2024,
+      "arxiv_id": "2406.07524",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "nie2025",
+      "title": "Large Language Diffusion Models",
+      "year": 2025,
+      "arxiv_id": "2502.09992",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "garg2025",
+      "title": "Masked Diffusion Models are Secretly Learned-Order Autoregressive Models",
+      "year": 2025,
+      "arxiv_id": "2511.19152",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "nie2024",
+      "title": "Scaling up Masked Diffusion Models on Text",
+      "year": 2024,
+      "arxiv_id": "2410.18514",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "prabhudesai2025",
+      "title": "Diffusion Beats Autoregressive in Data-Constrained Settings",
+      "year": 2025,
+      "arxiv_id": "2507.15857",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wu2025",
+      "title": "Fast-dLLM: Training-free Acceleration of Diffusion LLM by Enabling KV Cache and Parallel Decoding",
+      "year": 2025,
+      "arxiv_id": "2505.22618",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wang2025",
+      "title": "Diffusion LLMs Can Do Faster-Than-AR Inference via Discrete Diffusion Forcing",
+      "year": 2025,
+      "arxiv_id": "2508.09192",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "bao2025",
+      "title": "Learning to Parallel: Accelerating Diffusion Large Language Models via Learnable Parallel Decoding",
+      "year": 2025,
+      "arxiv_id": "2509.25188",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "nguyentri2025",
+      "title": "Attention Is All You Need for KV Cache in Diffusion LLMs",
+      "year": 2025,
+      "arxiv_id": "2510.14973",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "kim2025",
+      "title": "Any-Order Flexible Length Masked Diffusion",
+      "year": 2025,
+      "arxiv_id": "2509.01025",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "bie2025",
+      "title": "LLaDA2.0: Scaling Up Diffusion Language Models to 100B",
+      "year": 2025,
+      "arxiv_id": "2512.15745",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "vonrutte2025",
+      "title": "Scaling Behavior of Discrete Diffusion Language Models",
+      "year": 2025,
+      "arxiv_id": "2512.10858",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "sahoo2026",
+      "title": "Scaling Beyond Masked Diffusion Language Models",
+      "year": 2026,
+      "arxiv_id": "2602.15014",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "arriola2025",
+      "title": "Block Diffusion: Interpolating Between Autoregressive and Diffusion Language Models",
+      "year": 2025,
+      "arxiv_id": "2503.09573",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "ma2025",
+      "title": "dKV-Cache: The Cache for Diffusion Language Models",
+      "year": 2025,
+      "arxiv_id": "2505.15781",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "turok2026",
+      "title": "DUEL: Exact Likelihood for Masked Diffusion via Deterministic Unmasking",
+      "year": 2026,
+      "arxiv_id": "2603.01367",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "feng2025",
+      "title": "Theoretical Benefit and Limitation of Diffusion Language Model",
+      "year": 2025,
+      "arxiv_id": "2502.09622",
+      "doi": "",
+      "verified": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "austin2021",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "austin2021",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "lou2023",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "lou2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "paper": "lou2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sahoo2024"
+      ]
+    },
+    {
+      "id": "c6",
+      "paper": "lou2023",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "paper": "sahoo2024",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "sahoo2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "paper": "sahoo2024",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "lou2023",
+        "nie2024"
+      ]
+    },
+    {
+      "id": "c10",
+      "paper": "nie2025",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "paper": "nie2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sahoo2024",
+        "lou2023",
+        "nie2024",
+        "bie2025"
+      ]
+    },
+    {
+      "id": "c12",
+      "paper": "nie2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "garg2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c14",
+      "paper": "garg2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c15",
+      "paper": "nie2024",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "prabhudesai2025",
+        "nie2025",
+        "sahoo2026"
+      ]
+    },
+    {
+      "id": "c16",
+      "paper": "nie2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c17",
+      "paper": "nie2024",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "paper": "prabhudesai2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "nie2024"
+      ]
+    },
+    {
+      "id": "c19",
+      "paper": "prabhudesai2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "paper": "wu2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "wang2025",
+        "nguyentri2025",
+        "ma2025",
+        "arriola2025"
+      ]
+    },
+    {
+      "id": "c21",
+      "paper": "wu2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "bao2025"
+      ]
+    },
+    {
+      "id": "c22",
+      "paper": "wang2025",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "wu2025"
+      ]
+    },
+    {
+      "id": "c23",
+      "paper": "wang2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "bao2025",
+        "wu2025"
+      ]
+    },
+    {
+      "id": "c24",
+      "paper": "bao2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "wu2025"
+      ]
+    },
+    {
+      "id": "c25",
+      "paper": "nguyentri2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "wu2025",
+        "ma2025"
+      ]
+    },
+    {
+      "id": "c26",
+      "paper": "nguyentri2025",
+      "type": "result",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "paper": "kim2025",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "nie2025"
+      ]
+    },
+    {
+      "id": "c28",
+      "paper": "bie2025",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "nie2025"
+      ]
+    },
+    {
+      "id": "c29",
+      "paper": "vonrutte2025",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "sahoo2026"
+      ]
+    },
+    {
+      "id": "c30",
+      "paper": "sahoo2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "vonrutte2025"
+      ]
+    },
+    {
+      "id": "c31",
+      "paper": "arriola2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "sahoo2024",
+        "nie2025"
+      ]
+    },
+    {
+      "id": "c32",
+      "paper": "arriola2025",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "paper": "ma2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "arriola2025",
+        "wu2025"
+      ]
+    },
+    {
+      "id": "c34",
+      "paper": "turok2026",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c35",
+      "paper": "turok2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c36",
+      "paper": "feng2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c37",
+      "paper": "feng2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "flagged_by": [
+        "arriola2025",
+        "sahoo2024",
+        "turok2026",
+        "feng2025"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o2",
+      "flagged_by": [
+        "ma2025",
+        "arriola2025",
+        "wu2025",
+        "nguyentri2025"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o3",
+      "flagged_by": [
+        "feng2025",
+        "lou2023"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o4",
+      "flagged_by": [
+        "wu2025",
+        "bao2025",
+        "garg2025"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o5",
+      "flagged_by": [
+        "arriola2025",
+        "kim2025"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o6",
+      "flagged_by": [
+        "arriola2025"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o7",
+      "flagged_by": [
+        "vonrutte2025",
+        "sahoo2026",
+        "nie2024"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o8",
+      "flagged_by": [
+        "prabhudesai2025",
+        "nie2024"
+      ],
+      "status": "open"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "Yes \u2014 at scale, diffusion LMs are competitive with or comparable to similarly-sized AR models on in-context learning, math, code, and general benchmarks, and can even beat AR in data-constrained regimes.",
+        "Not yet on likelihood/perplexity \u2014 diffusion LMs approach but do not close the AR perplexity gap, and the efficiency/quality advantage is metric-dependent."
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "They are effectively autoregressive \u2014 the MDM objective decomposes into a weighted sum of autoregressive losses over decoding orders, making MDMs autoregressive models with learnable orders.",
+        "They are a distinct generative paradigm \u2014 any-order, parallel, bidirectional generation that yields capabilities AR lacks, such as breaking the reversal curse and better data reuse."
+      ]
+    },
+    {
+      "id": "d3",
+      "positions": [
+        "With the right machinery they are faster than AR \u2014 KV-cache approximations, block-wise AR generation, and learned parallel-decoding filters deliver large speedups, including faster-than-AR inference.",
+        "Naively they are slower and the speedup is conditional \u2014 bidirectional architecture precludes KV caching, parallel decoding hurts quality, and high-fidelity output may need steps scaling with sequence length."
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "SEDD vs prior diffusion LM perplexity",
+      "value": "25-75% lower",
+      "metric": "perplexity reduction vs prior language diffusion paradigms",
+      "method": "SEDD (Score Entropy Discrete Diffusion)",
+      "paper": "lou2023"
+    },
+    {
+      "id": "b2",
+      "name": "SEDD generative perplexity vs GPT-2",
+      "value": "~6-8x better",
+      "metric": "generative perplexity vs un-annealed GPT-2",
+      "method": "SEDD",
+      "paper": "lou2023"
+    },
+    {
+      "id": "b3",
+      "name": "SEDD compute-quality tradeoff",
+      "value": "32x fewer",
+      "metric": "network evaluations for similar quality vs AR",
+      "method": "SEDD",
+      "paper": "lou2023"
+    },
+    {
+      "id": "b4",
+      "name": "MDM sampling speed vs KV-cache AR",
+      "value": "1.4x faster",
+      "metric": "sampling speedup vs KV-Cache ARM",
+      "method": "MDM (16x pre-training compute)",
+      "paper": "nie2024"
+    },
+    {
+      "id": "b5",
+      "name": "1.1B MDM vs TinyLlama-1.1B",
+      "value": "4 of 8",
+      "metric": "benchmarks won vs same-size AR",
+      "method": "1.1B MDM",
+      "paper": "nie2024"
+    },
+    {
+      "id": "b6",
+      "name": "Fast-dLLM throughput",
+      "value": "up to 27.6x",
+      "metric": "throughput improvement (training-free)",
+      "method": "Fast-dLLM (block-wise KV cache + confidence-aware parallel decoding)",
+      "paper": "wu2025"
+    },
+    {
+      "id": "b7",
+      "name": "D2F faster-than-AR on GSM8K",
+      "value": ">2.5x",
+      "metric": "inference speed vs LLaMA3 / Qwen2.5",
+      "method": "Discrete Diffusion Forcing (D2F)",
+      "paper": "wang2025"
+    },
+    {
+      "id": "b8",
+      "name": "D2F vs vanilla dLLMs",
+      "value": ">50x",
+      "metric": "acceleration vs vanilla dLLM",
+      "method": "D2F",
+      "paper": "wang2025"
+    },
+    {
+      "id": "b9",
+      "name": "Learn2PD speedup",
+      "value": "up to 22.58x (57.51x with KV-Cache)",
+      "metric": "speedup with no performance drop",
+      "method": "Learn2PD (learnable parallel decoding filter)",
+      "paper": "bao2025"
+    },
+    {
+      "id": "b10",
+      "name": "Selective KV refresh speedup",
+      "value": "8.7x / 45.1x",
+      "metric": "decoding speedup",
+      "method": "Adaptive layer-aware KV refresh",
+      "paper": "nguyentri2025"
+    },
+    {
+      "id": "b11",
+      "name": "FlexMDMs LLaDA-8B fine-tune gains",
+      "value": "GSM8K 58%->67%; code infilling 52%->65%",
+      "metric": "accuracy improvement",
+      "method": "FlexMDMs (any-order flexible-length MDM) fine-tuning LLaDA-8B",
+      "paper": "kim2025"
+    },
+    {
+      "id": "b12",
+      "name": "LLaDA2.0 scale",
+      "value": "up to 100B",
+      "metric": "total parameters",
+      "method": "LLaDA2.0 (AR-to-dLLM conversion)",
+      "paper": "bie2025"
+    },
+    {
+      "id": "b13",
+      "name": "Uniform-state diffusion on GSM8K at 1.7B",
+      "value": "outperforms both",
+      "metric": "vs AR and masked diffusion (despite worse val perplexity)",
+      "method": "Uniform-state discrete diffusion (1.7B)",
+      "paper": "sahoo2026"
+    }
+  ],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "austin2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "austin2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "lou2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "lou2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "lou2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "lou2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "sahoo2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "sahoo2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "sahoo2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "nie2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "nie2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "nie2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "garg2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "garg2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "nie2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "nie2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "nie2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "prabhudesai2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "prabhudesai2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "wu2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "wu2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "wang2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "wang2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "bao2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c25",
+      "to": "nguyentri2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c26",
+      "to": "nguyentri2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c27",
+      "to": "kim2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c28",
+      "to": "bie2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "vonrutte2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "sahoo2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "arriola2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "arriola2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "ma2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "turok2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "turok2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c36",
+      "to": "feng2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c37",
+      "to": "feng2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "o1",
+      "to": "arriola2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "sahoo2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "turok2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o1",
+      "to": "feng2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "ma2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "arriola2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "wu2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "nguyentri2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "feng2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "lou2023",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "wu2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "bao2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "garg2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "arriola2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "kim2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "arriola2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "vonrutte2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "sahoo2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o7",
+      "to": "nie2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o8",
+      "to": "prabhudesai2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o8",
+      "to": "nie2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "b1",
+      "to": "lou2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b2",
+      "to": "lou2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b3",
+      "to": "lou2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b4",
+      "to": "nie2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b5",
+      "to": "nie2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b6",
+      "to": "wu2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b7",
+      "to": "wang2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b8",
+      "to": "wang2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b9",
+      "to": "bao2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b10",
+      "to": "nguyentri2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b11",
+      "to": "kim2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b12",
+      "to": "bie2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b13",
+      "to": "sahoo2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "c5",
+      "to": "sahoo2024",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c9",
+      "to": "lou2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c9",
+      "to": "nie2024",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c11",
+      "to": "sahoo2024",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c11",
+      "to": "lou2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c11",
+      "to": "nie2024",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c11",
+      "to": "bie2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c15",
+      "to": "prabhudesai2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c15",
+      "to": "nie2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c15",
+      "to": "sahoo2026",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c18",
+      "to": "nie2024",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c20",
+      "to": "wang2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c20",
+      "to": "nguyentri2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c20",
+      "to": "ma2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c20",
+      "to": "arriola2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c21",
+      "to": "bao2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c22",
+      "to": "wu2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c23",
+      "to": "bao2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c23",
+      "to": "wu2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c24",
+      "to": "wu2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c25",
+      "to": "wu2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c25",
+      "to": "ma2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c27",
+      "to": "nie2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c28",
+      "to": "nie2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c29",
+      "to": "sahoo2026",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c30",
+      "to": "vonrutte2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c31",
+      "to": "sahoo2024",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c31",
+      "to": "nie2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c33",
+      "to": "arriola2025",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c33",
+      "to": "wu2025",
+      "rel": "corroborated-by"
+    }
+  ]
+}

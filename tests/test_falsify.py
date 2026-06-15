@@ -37,16 +37,62 @@ def test_make_prompts_injects_context(tmp_path):
     assert "speculative decoding" in p["base"] and "FIELD BRIEFING" not in p["base"]
 
 
-# ── P0-4: id resolves = real regardless of human title; recall/f1 ───────────────
+# ── strict id↔title matching: a real id with the WRONG paper's title is a mislabel ──
 
-def test_is_real_id_resolves_regardless_of_title():
+def test_is_real_strict_title_match():
     from kp_build.falsify import _is_real
-    HIT = "<feed><entry><title>Whatever Canonical Title</title></entry></feed>"
-    # arxiv id resolves -> real even though the cited title is blank or different
-    assert _is_real("2211.17192", "", get=lambda u: HIT) is True
-    assert _is_real("2211.17192", "A Completely Different Human Title", get=lambda u: HIT) is True
+    HIT = "<feed><entry><title>Structured Denoising Diffusion Models in Discrete State Spaces</title></entry></feed>"
+    g = lambda u: HIT
+    # no claimed title -> existence is the floor (nothing to check against) -> real
+    assert _is_real("2211.17192", "", get=g) is True
+    # claimed title matches canonical (an appended annotation is tolerated) -> real
+    assert _is_real("2211.17192", "Structured Denoising Diffusion Models in Discrete State Spaces (D3PM)", get=g) is True
+    # real id but a DIFFERENT paper's title (the diffusion-LLM mislabel pattern) -> NOT real
+    assert _is_real("2211.17192", "Simple and Effective Masked Diffusion Language Models", get=g) is False
     # a fake id that returns no entry -> not real
     assert _is_real("2499.99999", "Plausible Title", get=lambda u: "<feed></feed>") is False
+
+
+def test_degenerate_title_falls_back_to_existence():
+    from kp_build.falsify import _is_real
+    HIT = "<feed><entry><title>Some Real Paper Title</title></entry></feed>"
+    # an all-stopword / uninformative title carries no tokens to judge -> existence floor -> real
+    assert _is_real("2211.17192", "the of and from", get=lambda u: HIT) is True
+
+
+def test_annotation_on_short_canonical_title_is_not_a_mislabel():
+    """Regression: '(LLaDA)' appended to a SHORT canonical title must not be flagged (real id, right
+    paper). Requires accepting a strict match in either direction, not just claimed-covers-canonical."""
+    from kp_build.falsify import _is_real
+    HIT = "<feed><entry><title>Large Language Diffusion Models</title></entry></feed>"
+    assert _is_real("2502.09992", "Large Language Diffusion Models (LLaDA)", get=lambda u: HIT) is True
+
+
+def test_score_flags_real_id_wrong_title_mislabel():
+    """The diffusion-LLM finding in miniature: a real id with the wrong paper's title is a hallucination."""
+    from kp_build.falsify import score_citations
+    ans = ("## Citations\n"
+           "arXiv:2406.07524 — Simplified and Generalized Masked Diffusion for Discrete Data (MD4)\n"
+           "arXiv:2502.09992 — Large Language Diffusion Models\n")
+    canon = {"2406.07524": "Simple and Effective Masked Diffusion Language Models",
+             "2502.09992": "Large Language Diffusion Models"}
+    def g(u):
+        for aid, t in canon.items():
+            if aid in u:
+                return f"<feed><entry><title>{t}</title></entry></feed>"
+        return "<feed></feed>"
+    rep = score_citations(ans, get=g)
+    assert rep["cited"] == 2 and rep["fake"] == 1 and rep["real"] == 1
+    assert "2406.07524" in rep["fake_list"][0]
+
+
+def test_parse_em_dash_block_dedups_inline_mention():
+    from kp_build.falsify import parse_citations
+    ans = ("We build on score-entropy diffusion (arXiv:2310.16834).\n\n## Citations\n"
+           "arXiv:2310.16834 — Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution\n")
+    cites = parse_citations(ans)
+    # ONE entry, and it keeps the title (the block wins over the bare inline mention)
+    assert cites == [("2310.16834", "Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution")]
 
 
 def test_score_answer_recall_and_f1():

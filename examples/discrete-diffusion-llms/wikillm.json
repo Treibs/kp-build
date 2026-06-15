@@ -1,0 +1,89 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Discrete diffusion language models for text generation",
+  "scope": "Non-autoregressive language models that generate text by iteratively denoising / unmasking tokens (masked and discrete diffusion), and whether they can match autoregressive LLMs in quality, likelihood, and inference cost.",
+  "built": "2026-06-14",
+  "stats": {
+    "papers_verified": 19,
+    "papers_total": 19,
+    "claims": 37,
+    "open_problems": 8,
+    "debates": 3,
+    "benchmarks": 13,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0
+    }
+  },
+  "source_span": {
+    "oldest": 2021,
+    "newest": 2026,
+    "latest_checked": "2026-06-14"
+  },
+  "coverage": {
+    "sub_questions": [
+      "Core method: how masked / discrete diffusion language models generate text \u2014 the forward masking/noising process, the denoising training objective (masked-token prediction, score-entropy / concrete-score), and how decoding works (number of denoising steps, any-order generation).",
+      "Quality vs autoregressive LLMs: empirical results comparing diffusion LMs to AR transformers on language-modeling perplexity / likelihood and downstream benchmarks (the central diffusion-vs-AR debate).",
+      "Inference cost & parallel decoding: how many denoising steps are needed, parallel / any-order token decoding, measured speedups or slowdowns vs autoregressive decoding, and KV-cache implications.",
+      "Scaling: evidence that diffusion LMs scale with parameters / data \u2014 scaling laws, the largest diffusion LMs (e.g. LLaDA-scale), and how they compare to similarly-sized AR models.",
+      "Open problems & limitations that authors EXPLICITLY flag: exact-likelihood estimation, controllability, sampling-step count, KV-cache incompatibility, training stability, and the remaining gap to AR."
+    ],
+    "queries": [
+      "structured denoising diffusion discrete state spaces D3PM absorbing state masking",
+      "score entropy discrete diffusion SEDD ratios data distribution",
+      "simple effective masked diffusion language models Rao-Blackwellized MDLM",
+      "LLaDA large language diffusion model 8B masked diffusion reversal curse",
+      "masked diffusion models learned-order autoregressive decomposition",
+      "scaling up masked diffusion models text scaling law TinyLlama",
+      "diffusion beats autoregressive data-constrained settings repeated data",
+      "Fast-dLLM training-free KV cache parallel decoding diffusion LLM",
+      "discrete diffusion forcing faster-than-AR inference D2F",
+      "learning to parallel learnable parallel decoding Learn2PD",
+      "attention KV cache diffusion LLMs selective refresh",
+      "any-order flexible length masked diffusion FlexMDM",
+      "LLaDA2.0 scaling diffusion language models 100B AR conversion",
+      "scaling behavior discrete diffusion language models noise type",
+      "scaling beyond masked diffusion uniform-state GSM8K perplexity",
+      "block diffusion interpolating autoregressive diffusion KV caching",
+      "dKV-Cache cache diffusion language models bidirectional attention",
+      "DUEL exact likelihood masked diffusion deterministic unmasking ELBO",
+      "theoretical benefit limitation diffusion language model sampling steps sequence error rate"
+    ]
+  },
+  "falsification": {
+    "run": true,
+    "question": "Write a related-work section on the 2024-2026 frontier of discrete/masked diffusion language models, with arXiv citations.",
+    "base": {
+      "cited": 8,
+      "real": 5,
+      "fake": 3,
+      "fake_list": [
+        "2406.07524 | Simplified and Generalized Masked Diffusion for Discrete Data (MD4)",
+        "2406.04329 | Simple and Effective Masked Diffusion Language Models (MDLM)",
+        "2410.17891 | Scaling up Masked Diffusion Models on Text"
+      ],
+      "precision": 0.625,
+      "hallucination_rate": 0.375,
+      "recall": 0.2631578947368421,
+      "spine_covered": 5,
+      "spine_size": 19,
+      "f1": 0.37
+    },
+    "kp": {
+      "cited": 16,
+      "real": 16,
+      "fake": 0,
+      "fake_list": [],
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 0.8421052631578947,
+      "spine_covered": 16,
+      "spine_size": 19,
+      "f1": 0.914
+    },
+    "verdict": "KP HELPS \u2014 f1 0.37 (base) \u2192 0.91 (KP). precision 0.62\u21921.00, recall 0.26\u21920.84, 3 fake cites in base vs 0 in KP."
+  }
+}

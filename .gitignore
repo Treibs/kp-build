@@ -3,3 +3,8 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 *.pyc
+
+# stray build inputs/outputs at repo root (canonical copies live under examples/)
+/research.json
+.kpm/
+*.tgz

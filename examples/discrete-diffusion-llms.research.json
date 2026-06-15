@@ -1,0 +1,1094 @@
+{
+  "topic": "Discrete diffusion language models for text generation",
+  "scope": "Non-autoregressive language models that generate text by iteratively denoising / unmasking tokens (masked and discrete diffusion), and whether they can match autoregressive LLMs in quality, likelihood, and inference cost.",
+  "papers": [
+    {
+      "cite_key": "austin2021",
+      "title": "Structured Denoising Diffusion Models in Discrete State-Spaces",
+      "authors": [
+        "Jacob Austin",
+        "Daniel D. Johnson",
+        "Jonathan Ho",
+        "Daniel Tarlow",
+        "Rianne van den Berg"
+      ],
+      "year": 2021,
+      "arxiv_id": "2107.03006",
+      "doi": "",
+      "key_contributions": [
+        "Introduces D3PMs, diffusion-like generative models for discrete data that generalize multinomial diffusion by allowing structured (non-uniform) corruption transition matrices",
+        "Defines absorbing-state (masking) corruption among the transition-matrix families, the basis of later masked diffusion LMs",
+        "Draws a formal connection between discrete diffusion models and autoregressive / mask-based generative models",
+        "Shows the choice of transition matrix is a key design decision improving results in image and text domains"
+      ]
+    },
+    {
+      "cite_key": "lou2023",
+      "title": "Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution",
+      "authors": [
+        "Aaron Lou",
+        "Chenlin Meng",
+        "Stefano Ermon"
+      ],
+      "year": 2023,
+      "arxiv_id": "2310.16834",
+      "doi": "",
+      "key_contributions": [
+        "Proposes score entropy, a loss that extends score matching to discrete spaces to build discrete diffusion models (SEDD)",
+        "First non-autoregressive language model competitive with GPT-2 on perplexity, reducing perplexity of prior diffusion paradigms by 25-75%",
+        "Shows SEDD generates faithful text without temperature/annealing, ~6-8x better generative perplexity than un-annealed GPT-2",
+        "Demonstrates compute/quality trade-off (similar quality with 32x fewer network evaluations) and controllable infilling beyond left-to-right prompting"
+      ]
+    },
+    {
+      "cite_key": "sahoo2024",
+      "title": "Simple and Effective Masked Diffusion Language Models",
+      "authors": [
+        "Subham Sekhar Sahoo",
+        "Marianne Arriola",
+        "Yair Schiff",
+        "Aaron Gokaslan",
+        "Edgar Marroquin",
+        "Justin T. Chiu",
+        "Alexander Rush",
+        "Volodymyr Kuleshov"
+      ],
+      "year": 2024,
+      "arxiv_id": "2406.07524",
+      "doi": "",
+      "key_contributions": [
+        "Derives a simplified, Rao-Blackwellized training objective for masked diffusion that is a mixture of classical masked language modeling losses",
+        "Provides an effective training recipe that closes much of the gap to autoregressive perplexity",
+        "Admits efficient samplers that can generate arbitrary-length text semi-autoregressively like a traditional language model",
+        "Achieves a new state-of-the-art among diffusion language models and approaches AR perplexity"
+      ]
+    },
+    {
+      "cite_key": "nie2025",
+      "title": "Large Language Diffusion Models",
+      "authors": [
+        "Shen Nie",
+        "Fengqi Zhu",
+        "Zebin You",
+        "Xiaolu Zhang",
+        "Jingyang Ou",
+        "Jun Hu",
+        "Jun Zhou",
+        "Yankai Lin",
+        "Ji-Rong Wen",
+        "Chongxuan Li"
+      ],
+      "year": 2025,
+      "arxiv_id": "2502.09992",
+      "doi": "",
+      "key_contributions": [
+        "Introduces LLaDA, an 8B-scale masked diffusion language model trained from scratch under pre-training + SFT",
+        "Uses a forward data masking process and a reverse generation process parameterized by a Transformer that predicts masked tokens, optimizing a likelihood lower bound",
+        "Shows LLaDA 8B is competitive with LLaMA3 8B in in-context learning and follows instructions after SFT",
+        "Addresses the reversal curse, surpassing GPT-4o on a reversal poem completion task, challenging the assumption that LLM capabilities require autoregressive models"
+      ]
+    },
+    {
+      "cite_key": "garg2025",
+      "title": "Masked Diffusion Models are Secretly Learned-Order Autoregressive Models",
+      "authors": [
+        "Prateek Garg",
+        "Bhavya Kohli",
+        "Sunita Sarawagi"
+      ],
+      "year": 2025,
+      "arxiv_id": "2511.19152",
+      "doi": "",
+      "key_contributions": [
+        "Shows MDMs effectively train to decode tokens in a random order and that this ordering has performance implications",
+        "Proves the continuous-time variational MDM objective with multivariate noise schedules can identify and optimize a decoding order during training",
+        "Establishes a direct correspondence between decoding order and the multivariate noise schedule",
+        "Proves the MDM objective decomposes precisely into a weighted sum of auto-regressive losses over orders, establishing MDMs as autoregressive models with learnable orders"
+      ]
+    },
+    {
+      "cite_key": "nie2024",
+      "title": "Scaling up Masked Diffusion Models on Text",
+      "authors": [
+        "Shen Nie",
+        "Fengqi Zhu",
+        "Chao Du",
+        "Tianyu Pang",
+        "Qian Liu",
+        "Guangtao Zeng",
+        "Min Lin",
+        "Chongxuan Li"
+      ],
+      "year": 2024,
+      "arxiv_id": "2410.18514",
+      "doi": "",
+      "key_contributions": [
+        "Establishes the first scaling law for masked diffusion models (MDMs), showing a scaling rate comparable to autoregressive models with a relatively small compute gap",
+        "Trains MDMs up to 1.1B parameters; quantifies a 16x pre-training compute trade-off where MDMs match ARMs while being 1.4x faster at sampling vs KV-Cache AR",
+        "1.1B MDM outperforms TinyLlama-1.1B on four of eight zero-shot benchmarks and reaches competitive GSM8K math reasoning vs 7B Llama-2",
+        "Shows a 1.1B MDM breaks the reverse curse faced by much larger ARMs (13B Llama-2, 175B GPT-3)"
+      ]
+    },
+    {
+      "cite_key": "prabhudesai2025",
+      "title": "Diffusion Beats Autoregressive in Data-Constrained Settings",
+      "authors": [
+        "Mihir Prabhudesai",
+        "Mengning Wu",
+        "Amir Zadeh",
+        "Katerina Fragkiadaki",
+        "Deepak Pathak"
+      ],
+      "year": 2025,
+      "arxiv_id": "2507.15857",
+      "doi": "",
+      "key_contributions": [
+        "Systematically studies masked diffusion vs AR models in data-constrained regimes (repeated passes over limited data)",
+        "Finds diffusion models significantly outperform AR when compute is abundant but data is scarce, with lower validation loss and superior downstream performance",
+        "Derives new scaling laws and a critical compute threshold",
+        "Attributes diffusion's advantage to implicit data augmentation from diverse token orderings"
+      ]
+    },
+    {
+      "cite_key": "wu2025",
+      "title": "Fast-dLLM: Training-free Acceleration of Diffusion LLM by Enabling KV Cache and Parallel Decoding",
+      "authors": [
+        "Chengyue Wu",
+        "Hao Zhang",
+        "Shuchen Xue",
+        "Zhijian Liu",
+        "Shizhe Diao",
+        "Ligeng Zhu",
+        "Ping Luo",
+        "Song Han",
+        "Enze Xie"
+      ],
+      "year": 2025,
+      "arxiv_id": "2505.22618",
+      "doi": "",
+      "key_contributions": [
+        "Block-wise approximate KV Cache mechanism tailored for bidirectional diffusion models, enabling cache reuse with negligible performance drop",
+        "Confidence-aware parallel decoding that only decodes tokens above a confidence threshold to avoid breaking token dependencies",
+        "Up to 27.6x throughput improvement on LLaDA and Dream with minimal accuracy loss, narrowing the gap with autoregressive models, training-free"
+      ]
+    },
+    {
+      "cite_key": "wang2025",
+      "title": "Diffusion LLMs Can Do Faster-Than-AR Inference via Discrete Diffusion Forcing",
+      "authors": [
+        "Xu Wang",
+        "Chenkai Xu",
+        "Yijie Jin",
+        "Jiachun Jin",
+        "Hao Zhang",
+        "Zhijie Deng"
+      ],
+      "year": 2025,
+      "arxiv_id": "2508.09192",
+      "doi": "",
+      "key_contributions": [
+        "Discrete Diffusion Forcing (D2F): block-wise autoregressive generation enabling KV cache utilization plus inter-block parallel decoding",
+        "First dLLM to achieve faster-than-AR inference: >2.5x speed over LLaMA3 and Qwen2.5 on GSM8K",
+        ">50x acceleration over vanilla dLLMs (LLaDA, Dream)"
+      ]
+    },
+    {
+      "cite_key": "bao2025",
+      "title": "Learning to Parallel: Accelerating Diffusion Large Language Models via Learnable Parallel Decoding",
+      "authors": [
+        "Wenrui Bao",
+        "Zhiben Chen",
+        "Dan Xu",
+        "Yuzhang Shang"
+      ],
+      "year": 2025,
+      "arxiv_id": "2509.25188",
+      "doi": "",
+      "key_contributions": [
+        "Learn2PD: a lightweight adaptive filter that predicts, per token position, whether the current prediction already matches the final output, deciding which tokens can be unmasked in parallel",
+        "Up to 22.58x speedup on the LLaDA benchmark with no performance drop",
+        "Up to 57.51x speedup when combined with KV-Cache"
+      ]
+    },
+    {
+      "cite_key": "nguyentri2025",
+      "title": "Attention Is All You Need for KV Cache in Diffusion LLMs",
+      "authors": [
+        "Quan Nguyen-Tri",
+        "Mukul Ranjan",
+        "Zhiqiang Shen"
+      ],
+      "year": 2025,
+      "arxiv_id": "2510.14973",
+      "doi": "",
+      "key_contributions": [
+        "Identifies that prior diffusion-LLM decoders recompute QKV for all tokens at every denoising step and layer, despite KV states changing little across most steps",
+        "Adaptive, layer-aware selective KV refresh (starting from deeper layers) to cut redundant computation",
+        "8.7x speedup on GSM8K (256 tokens) and 45.1x on longer sequences; 6.8x higher throughput than confidence-based approaches while preserving quality"
+      ]
+    },
+    {
+      "cite_key": "kim2025",
+      "title": "Any-Order Flexible Length Masked Diffusion",
+      "authors": [
+        "Jaeyeon Kim",
+        "Cheuk-Kit Lee",
+        "Carles Domingo-Enrich",
+        "Yilun Du",
+        "Sham Kakade",
+        "Timothy Ngotiaoco",
+        "Sitan Chen",
+        "Michael Albergo"
+      ],
+      "year": 2025,
+      "arxiv_id": "2509.01025",
+      "doi": "",
+      "key_contributions": [
+        "FlexMDMs: masked diffusion models that generate sequences by inserting and unmasking mask tokens, supporting flexible output length",
+        "Preserves any-order, parallel generation while adding length flexibility",
+        "Fine-tuned LLaDA-8B gains on math (GSM8K 58%->67%) and code infilling (52%->65%)"
+      ]
+    },
+    {
+      "cite_key": "bie2025",
+      "title": "LLaDA2.0: Scaling Up Diffusion Language Models to 100B",
+      "authors": [
+        "Tiwei Bie",
+        "Maosong Cao",
+        "Kun Chen",
+        "Lun Du",
+        "Mingliang Gong",
+        "Zhuochen Gong",
+        "Yanmei Gu",
+        "Jiaqi Hu",
+        "Zenan Huang",
+        "Zhenzhong Lan",
+        "Chengxi Li",
+        "Chongxuan Li",
+        "Jianguo Li",
+        "Zehuan Li",
+        "Huabin Liu",
+        "Lin Liu",
+        "Guoshan Lu",
+        "Xiaocheng Lu",
+        "Yuxin Ma",
+        "Jianfeng Tan",
+        "Lanning Wei",
+        "Ji-Rong Wen",
+        "Yipeng Xing",
+        "Xiaolu Zhang",
+        "Junbo Zhao",
+        "Da Zheng",
+        "Jun Zhou",
+        "Junlin Zhou",
+        "Zhanchao Zhou",
+        "Liwang Zhu",
+        "Yihong Zhuang"
+      ],
+      "year": 2025,
+      "arxiv_id": "2512.15745",
+      "doi": "",
+      "key_contributions": [
+        "Scales discrete diffusion LLMs up to 100B total parameters via systematic conversion from autoregressive models",
+        "Establishes knowledge-inheritance / AR-to-dLLM conversion as a paradigm for frontier-scale diffusion LM deployment"
+      ]
+    },
+    {
+      "cite_key": "vonrutte2025",
+      "title": "Scaling Behavior of Discrete Diffusion Language Models",
+      "authors": [
+        "Dimitri von R\u00fctte",
+        "Janis Fluri",
+        "Omead Pooladzandi",
+        "Bernhard Sch\u00f6lkopf",
+        "Thomas Hofmann",
+        "Antonio Orvieto"
+      ],
+      "year": 2025,
+      "arxiv_id": "2512.10858",
+      "doi": "",
+      "key_contributions": [
+        "Studies discrete diffusion LM scaling across noise types by interpolating between masked and uniform diffusion",
+        "Finds DLM scaling behavior strongly depends on noise type and differs from autoregressive models, though all noise types converge to similar loss in compute-bound scaling"
+      ]
+    },
+    {
+      "cite_key": "sahoo2026",
+      "title": "Scaling Beyond Masked Diffusion Language Models",
+      "authors": [
+        "Subham Sekhar Sahoo",
+        "Jean-Marie Lemercier",
+        "Zhihan Yang",
+        "Justin Deschenaux",
+        "Jingyu Liu",
+        "John Thickstun",
+        "Ante Jukic"
+      ],
+      "year": 2026,
+      "arxiv_id": "2602.15014",
+      "doi": "",
+      "key_contributions": [
+        "Presents the first scaling-law study of uniform-state and interpolating discrete diffusion methods, scaling all methods to 1.7B parameters",
+        "Shows uniform-state diffusion outperforms autoregressive and masked diffusion models on GSM8K despite worse validation perplexity",
+        "Argues perplexity is informative within a diffusion family but misleading across families, motivating the speed-quality Pareto frontier"
+      ]
+    },
+    {
+      "cite_key": "arriola2025",
+      "title": "Block Diffusion: Interpolating Between Autoregressive and Diffusion Language Models",
+      "authors": [
+        "Marianne Arriola",
+        "Aaron Gokaslan",
+        "Justin T. Chiu",
+        "Zhihan Yang",
+        "Zhixuan Qi",
+        "Jiaqi Han",
+        "Subham Sekhar Sahoo",
+        "Volodymyr Kuleshov"
+      ],
+      "year": 2025,
+      "arxiv_id": "2503.09573",
+      "doi": "",
+      "key_contributions": [
+        "Identifies that diffusion LMs lag in likelihood modeling and are limited to fixed-length generation, and that standard diffusion LMs lack KV caching",
+        "Introduces block diffusion interpolating between autoregressive and discrete diffusion to recover KV caching, flexible-length generation, and parallel sampling",
+        "Provides estimators of gradient variance and data-driven noise schedules to address high training-objective gradient variance"
+      ]
+    },
+    {
+      "cite_key": "ma2025",
+      "title": "dKV-Cache: The Cache for Diffusion Language Models",
+      "authors": [
+        "Xinyin Ma",
+        "Runpeng Yu",
+        "Gongfan Fang",
+        "Xinchao Wang"
+      ],
+      "year": 2025,
+      "arxiv_id": "2505.15781",
+      "doi": "",
+      "key_contributions": [
+        "Explicitly frames the KV-cache incompatibility of diffusion LMs as a core inference bottleneck arising from non-autoregressive architecture and bidirectional attention",
+        "Proposes a delayed, conditioned KV-cache mechanism (dKV-Cache) that works even training-free on existing DLMs",
+        "Reports 2-10x inference speedup, narrowing the gap between autoregressive and diffusion language models"
+      ]
+    },
+    {
+      "cite_key": "turok2026",
+      "title": "DUEL: Exact Likelihood for Masked Diffusion via Deterministic Unmasking",
+      "authors": [
+        "Gilad Turok",
+        "Chris De Sa",
+        "Volodymyr Kuleshov"
+      ],
+      "year": 2026,
+      "arxiv_id": "2603.01367",
+      "doi": "",
+      "key_contributions": [
+        "Flags that masked diffusion models lack proper likelihood evaluation: the ELBO is a loose bound and is computed under the training rather than test-time distribution",
+        "Introduces the DUEL framework unifying deterministic-position-selection MDM samplers",
+        "Proves DUEL samplers admit exact likelihood computation under the test-time distribution, giving MDMs proper perplexity for the first time"
+      ]
+    },
+    {
+      "cite_key": "feng2025",
+      "title": "Theoretical Benefit and Limitation of Diffusion Language Model",
+      "authors": [
+        "Guhao Feng",
+        "Yihan Geng",
+        "Jian Guan",
+        "Wei Wu",
+        "Liwei Wang",
+        "Di He"
+      ],
+      "year": 2025,
+      "arxiv_id": "2502.09622",
+      "doi": "",
+      "key_contributions": [
+        "Provides a rigorous theoretical analysis showing the efficiency of Masked Diffusion Models depends heavily on the target evaluation metric",
+        "Proves MDMs reach near-optimal perplexity in sampling steps independent of sequence length",
+        "Proves that under sequence error rate the required sampling steps must scale linearly with sequence length, eliminating the efficiency advantage over autoregressive models"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "statement": "D3PMs are diffusion-like generative models for discrete data that generalize multinomial diffusion by using structured corruption processes, including transition matrices that introduce absorbing (mask) states.",
+      "paper": "austin2021",
+      "supporting_passage": "Here, we introduce Discrete Denoising Diffusion Probabilistic Models (D3PMs), diffusion-like generative models for discrete data that generalize the multinomial diffusion model of Hoogeboom et al. 2021, by going beyond corruption processes with uniform transition probabilities.",
+      "claim_type": "method",
+      "confidence": "high",
+      "id": "c1"
+    },
+    {
+      "statement": "Absorbing-state masking is one of the structured corruption transition-matrix families introduced by D3PMs, which the authors use to connect diffusion models to mask-based generative models.",
+      "paper": "austin2021",
+      "supporting_passage": "This includes corruption with transition matrices that mimic Gaussian kernels in continuous space, matrices based on nearest neighbors in embedding space, and matrices that introduce absorbing states.",
+      "claim_type": "method",
+      "confidence": "high",
+      "id": "c2"
+    },
+    {
+      "statement": "Score entropy is a loss that extends score matching to discrete spaces and is used to build discrete diffusion language models (SEDD).",
+      "paper": "lou2023",
+      "supporting_passage": "In this work, we bridge this gap by proposing score entropy, a novel loss that naturally extends score matching to discrete spaces, integrates seamlessly to build discrete diffusion models, and significantly boosts performance.",
+      "claim_type": "method",
+      "confidence": "high",
+      "id": "c3"
+    },
+    {
+      "statement": "SEDD can trade off compute against quality in decoding, achieving similar generation quality with 32x fewer network evaluations than autoregressive models.",
+      "paper": "lou2023",
+      "supporting_passage": "can trade compute and quality (similar quality with 32\u00d7 fewer network evaluations)",
+      "claim_type": "result",
+      "confidence": "high",
+      "id": "c4"
+    },
+    {
+      "statement": "SEDD is the first non-autoregressive diffusion language model to become competitive with autoregressive models on language-modeling perplexity, in particular outperforming GPT-2, while reducing the perplexity of prior diffusion paradigms by 25-75%.",
+      "paper": "lou2023",
+      "supporting_passage": "SEDD beats existing language diffusion paradigms (reducing perplexity by $25$-$75$\\%) and is competitive with autoregressive models, in particular outperforming GPT-2.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sahoo2024"
+      ],
+      "id": "c5"
+    },
+    {
+      "statement": "On generative quality, SEDD produces faithful text without distribution-annealing tricks like temperature scaling, achieving roughly 6-8x better generative perplexity than un-annealed GPT-2.",
+      "paper": "lou2023",
+      "supporting_passage": "compared to autoregressive mdoels, SEDD generates faithful text without requiring distribution annealing techniques like temperature scaling (around $6$-$8\\times$ better generative perplexity than un-annealed GPT-2)",
+      "claim_type": "finding",
+      "confidence": "high",
+      "id": "c6"
+    },
+    {
+      "statement": "The masked diffusion training objective can be derived in a simplified Rao-Blackwellized form that is a mixture of classical masked language modeling losses.",
+      "paper": "sahoo2024",
+      "supporting_passage": "We apply an effective training recipe that improves the performance of masked diffusion models and derive a simplified, Rao-Blackwellized objective that results in additional improvements. Our objective has a simple form -- it is a mixture of classical masked language modeling losses",
+      "claim_type": "method",
+      "confidence": "high",
+      "id": "c7"
+    },
+    {
+      "statement": "Masked diffusion language models admit efficient samplers that can generate arbitrary-length text semi-autoregressively, like a traditional language model.",
+      "paper": "sahoo2024",
+      "supporting_passage": "can be used to train encoder-only language models that admit efficient samplers, including ones that can generate arbitrary lengths of text semi-autoregressively like a traditional language model.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "id": "c8"
+    },
+    {
+      "statement": "Masked diffusion language models still trail autoregressive models on perplexity, but a well-engineered MDLM achieves a new state-of-the-art among diffusion models and approaches AR perplexity.",
+      "paper": "sahoo2024",
+      "supporting_passage": "On language modeling benchmarks, a range of masked diffusion models trained with modern engineering practices achieves a new state-of-the-art among diffusion models, and approaches AR perplexity.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "lou2023",
+        "nie2024"
+      ],
+      "id": "c9"
+    },
+    {
+      "statement": "LLaDA generates text using a forward data masking process and a reverse generation process parameterized by a Transformer that predicts masked tokens, optimizing a likelihood lower bound.",
+      "paper": "nie2025",
+      "supporting_passage": "LLaDA employs a forward data masking process and a reverse generation process, parameterized by a Transformer to predict masked tokens. It provides a principled generative approach for probabilistic inference by optimizing a likelihood lower bound.",
+      "claim_type": "method",
+      "confidence": "high",
+      "id": "c10"
+    },
+    {
+      "statement": "An 8B-scale masked diffusion language model trained from scratch (LLaDA) is competitive with the autoregressive LLaMA3 8B in in-context learning and performs comparably to AR baselines, challenging the assumption that LLM capabilities require autoregression.",
+      "paper": "nie2025",
+      "supporting_passage": "Across extensive benchmarks on general tasks, math, code, and so on, LLaDA demonstrates strong scalability and performs comparably to our self-constructed ARM baselines. Remarkably, LLaDA 8B is competitive with strong LLMs like LLaMA3 8B in in-context learning, and, after SFT, exhibits impressive instruction-following abilities in case studies such as multi-turn dialogue.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sahoo2024",
+        "lou2023",
+        "nie2024",
+        "bie2025"
+      ],
+      "id": "c11"
+    },
+    {
+      "statement": "The diffusion LLM LLaDA addresses the reversal curse, surpassing GPT-4o on a reversal poem completion task.",
+      "paper": "nie2025",
+      "supporting_passage": "LLaDA addresses the reversal curse, surpassing GPT-4o in a reversal poem completion task",
+      "claim_type": "finding",
+      "confidence": "high",
+      "id": "c12"
+    },
+    {
+      "statement": "Masked diffusion models effectively train to decode tokens in a random order, and this decoding ordering has significant performance implications in practice.",
+      "paper": "garg2025",
+      "supporting_passage": "It is known that MDMs effectively train to decode tokens in a random order, and that this ordering has significant performance implications in practice.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "id": "c13"
+    },
+    {
+      "statement": "The masked diffusion model objective decomposes precisely into a weighted sum of autoregressive losses over decoding orders, establishing MDMs as autoregressive models with learnable orders.",
+      "paper": "garg2025",
+      "supporting_passage": "we prove that the MDM objective decomposes precisely into a weighted auto-regressive losses over these orders, which establishes them as auto-regressive models with learnable orders.",
+      "claim_type": "result",
+      "confidence": "high",
+      "id": "c14"
+    },
+    {
+      "statement": "Masked diffusion models exhibit a scaling rate comparable to autoregressive models with a relatively small compute gap, as established by the first scaling law for MDMs.",
+      "paper": "nie2024",
+      "supporting_passage": "This paper establishes the first scaling law for MDMs, demonstrating a scaling rate comparable to autoregressive models (ARMs) and a relatively small compute gap.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "prabhudesai2025",
+        "nie2025",
+        "sahoo2026"
+      ],
+      "id": "c15"
+    },
+    {
+      "statement": "With 16x more pre-training compute, masked diffusion models can match autoregressive models in performance while being 1.4x faster during sampling than ARMs using KV-Cache.",
+      "paper": "nie2024",
+      "supporting_passage": "MDMs with 16 times more pre-training time offer a flexible trade-off against ARMs with the accelerated sampling technique KV-Cache: MDMs match ARMs in performance while being 1.4 times faster during sampling.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "id": "c16"
+    },
+    {
+      "statement": "A 1.1B-parameter masked diffusion model outperforms a TinyLlama autoregressive model of the same size on four of eight zero-shot downstream benchmarks when trained on the same data.",
+      "paper": "nie2024",
+      "supporting_passage": "In language understanding, the 1.1B MDM outperforms the 1.1B TinyLlama model trained on the same data across four of eight zero-shot benchmarks.",
+      "claim_type": "result",
+      "confidence": "high",
+      "id": "c17"
+    },
+    {
+      "statement": "In data-constrained settings where data is repeated, masked diffusion models significantly outperform autoregressive models when compute is abundant but data is scarce.",
+      "paper": "prabhudesai2025",
+      "supporting_passage": "they significantly outperform AR models when compute is abundant but data is scarce",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "nie2024"
+      ],
+      "id": "c18"
+    },
+    {
+      "statement": "Diffusion models make better use of repeated data than autoregressive models, achieving both lower validation loss and superior downstream performance in data-constrained regimes.",
+      "paper": "prabhudesai2025",
+      "supporting_passage": "Diffusion models make better use of repeated data, achieving lower validation loss and superior downstream performance",
+      "claim_type": "finding",
+      "confidence": "high",
+      "id": "c19"
+    },
+    {
+      "statement": "Diffusion LLMs can decode multiple tokens per iteration in parallel, but in practice their inference speed often lags autoregressive models because they lack a KV cache and lose quality when many tokens are decoded simultaneously.",
+      "paper": "wu2025",
+      "supporting_passage": "Diffusion-based large language models (Diffusion LLMs) have shown promise for non-autoregressive text generation with parallel decoding capabilities, but their practical inference speed often lags behind autoregressive models due to the lack of Key-Value (KV) Cache and quality degradation when decoding multiple tokens simultaneously.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "wang2025",
+        "nguyentri2025",
+        "ma2025",
+        "arriola2025"
+      ],
+      "id": "c20"
+    },
+    {
+      "statement": "A block-wise approximate KV cache for bidirectional diffusion models combined with confidence-aware parallel decoding yields up to 27.6x throughput improvement with minimal accuracy loss, narrowing the gap with autoregressive models.",
+      "paper": "wu2025",
+      "supporting_passage": "Experimental results on LLaDA and Dream models across multiple LLM benchmarks demonstrate up to 27.6\u00d7 throughput improvement with minimal accuracy loss, closing the performance gap with autoregressive models and paving the way for practical deployment of Diffusion LLMs.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "bao2025"
+      ],
+      "id": "c21"
+    },
+    {
+      "statement": "Discrete Diffusion Forcing equips dLLMs with block-wise autoregressive generation to enable KV cache utilization and with prediction of following tokens before prior blocks are complete for inter-block parallel decoding.",
+      "paper": "wang2025",
+      "supporting_passage": "D2F equips dLLMs with two key capabilities: (1) block-wise autoregressive generation to enable KV cache utilization (2) prediction of following tokens without requiring completion of prior blocks for inter-block parallel decoding.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "wu2025"
+      ],
+      "id": "c22"
+    },
+    {
+      "statement": "Using Discrete Diffusion Forcing, dLLMs achieve more than 2.5x inference speed over LLaMA3 and Qwen2.5 on GSM8K, with more than 50x acceleration versus vanilla dLLMs such as LLaDA and Dream.",
+      "paper": "wang2025",
+      "supporting_passage": "D2F dLLMs achieve more than 2.5\u00d7 inference speed than LLaMA3 and Qwen2.5 on GSM8K. Compared to vanilla dLLMs like LLaDA and Dream, the acceleration can be more than 50\u00d7",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "bao2025",
+        "wu2025"
+      ],
+      "id": "c23"
+    },
+    {
+      "statement": "A lightweight learned filter that predicts, per token position, whether the current prediction already matches the final output gives up to 22.58x speedup on the LLaDA benchmark with no performance drop, and up to 57.51x when combined with KV-Cache.",
+      "paper": "bao2025",
+      "supporting_passage": "Experiments on the LLaDA benchmark demonstrate that our method achieves up to 22.58\u00d7 speedup without any performance drop, and up to 57.51\u00d7 when combined with KV-Cache.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "wu2025"
+      ],
+      "id": "c24"
+    },
+    {
+      "statement": "Existing diffusion-LLM decoders recompute the query/key/value projections for all tokens at every denoising step and layer even though KV states change little across most steps, indicating substantial redundant computation per denoising step.",
+      "paper": "nguyentri2025",
+      "supporting_passage": "Prior methods' decoders recompute QKV for all tokens at every denoising step and layer, despite KV states changing little across most steps",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "wu2025",
+        "ma2025"
+      ],
+      "id": "c25"
+    },
+    {
+      "statement": "An adaptive layer-aware KV refresh policy for diffusion LLMs reaches 8.7x speedup on GSM8K at 256 tokens and 45.1x on longer sequences, and 6.8x higher throughput than confidence-based approaches while preserving generation quality.",
+      "paper": "nguyentri2025",
+      "supporting_passage": "reducing redundant computation and accelerating decoding achieved 8.7\u00d7 on GSM8K (256 tokens), and 45.1\u00d7 on longer sequences",
+      "claim_type": "result",
+      "confidence": "medium",
+      "id": "c26"
+    },
+    {
+      "statement": "Masked diffusion models generate sequences in an any-order, parallel fashion, which enables fast inference and strong performance on non-causal tasks.",
+      "paper": "kim2025",
+      "supporting_passage": "MDMs generate sequences in an any-order, parallel fashion, enabling fast inference and strong performance on non-causal tasks.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "nie2025"
+      ],
+      "id": "c27"
+    },
+    {
+      "statement": "LLaDA2.0 scales discrete diffusion large language models up to 100B total parameters through systematic conversion from autoregressive models.",
+      "paper": "bie2025",
+      "supporting_passage": "This paper presents LLaDA2.0 -- a tuple of discrete diffusion large language models (dLLM) scaling up to 100B total parameters through systematic conversion from auto-regressive (AR) models -- establishing a new paradigm for frontier-scale deployment.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "nie2025"
+      ],
+      "id": "c28"
+    },
+    {
+      "statement": "The scaling behavior of discrete diffusion language models strongly depends on the noise type and differs considerably from that of autoregressive models, though all noise types converge to similar loss values in compute-bound scaling.",
+      "paper": "vonrutte2025",
+      "supporting_passage": "the scaling behavior of DLMs strongly depends on the noise type and is considerably different from ALMs",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "sahoo2026"
+      ],
+      "id": "c29"
+    },
+    {
+      "statement": "Scaling all methods to 1.7B parameters, uniform-state diffusion remains competitive on likelihood-based benchmarks and outperforms autoregressive and masked diffusion models on GSM8K despite worse validation perplexity.",
+      "paper": "sahoo2026",
+      "supporting_passage": "Scaling all methods to 1.7B parameters, we show that uniform-state diffusion remains competitive on likelihood-based benchmarks and outperforms autoregressive and Masked diffusion models on GSM8K, despite worse validation perplexity.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "vonrutte2025"
+      ],
+      "id": "c30"
+    },
+    {
+      "statement": "Diffusion language models lag behind autoregressive models in likelihood modeling and are restricted to fixed-length generation.",
+      "paper": "arriola2025",
+      "supporting_passage": "Diffusion language models offer unique benefits over autoregressive models due to their potential for parallelized generation and controllability, yet they lag in likelihood modeling and are limited to fixed-length generation.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "sahoo2024",
+        "nie2025"
+      ],
+      "id": "c31"
+    },
+    {
+      "statement": "Block diffusion is proposed to overcome diffusion LMs' limitations by supporting flexible-length generation and enabling inference acceleration through KV caching and parallel token sampling.",
+      "paper": "arriola2025",
+      "supporting_passage": "Block diffusion overcomes key limitations of both approaches by supporting flexible-length generation and improving inference efficiency with KV caching and parallel token sampling.",
+      "claim_type": "method",
+      "confidence": "high",
+      "id": "c32"
+    },
+    {
+      "statement": "The non-autoregressive architecture and bidirectional attention of diffusion language models preclude the key-value cache that accelerates autoregressive decoding, constraining their inference speed.",
+      "paper": "ma2025",
+      "supporting_passage": "A core challenge is that their non-autoregressive architecture and bidirectional attention preclude the key-value cache that accelerates decoding.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "arriola2025",
+        "wu2025"
+      ],
+      "id": "c33"
+    },
+    {
+      "statement": "Masked diffusion models lack proper likelihood evaluation because the ELBO is a loose bound on log-likelihood and is computed under the training distribution rather than the test-time distribution.",
+      "paper": "turok2026",
+      "supporting_passage": "Yet MDMs lack proper likelihood evaluation: the evidence lower bound (ELBO) is not only a loose bound on log-likelihood, but, as we show, is also computed under the training distribution rather than the test-time distribution.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "id": "c34"
+    },
+    {
+      "statement": "The DUEL framework proves that masked diffusion samplers with deterministic position selection admit exact likelihood computation under the test-time distribution, giving MDMs proper perplexity for the first time.",
+      "paper": "turok2026",
+      "supporting_passage": "We prove that DUEL samplers admit exact likelihood computation under the test-time distribution -- giving MDMs proper likelihood, and hence proper perplexity, for the first time.",
+      "claim_type": "result",
+      "confidence": "high",
+      "id": "c35"
+    },
+    {
+      "statement": "Under the sequence error rate metric, the number of sampling steps required by masked diffusion models must scale linearly with sequence length to obtain correct sequences, eliminating their efficiency advantage over autoregressive models.",
+      "paper": "feng2025",
+      "supporting_passage": "we show that the required sampling steps must scale linearly with sequence length to obtain \"correct\" sequences, thereby eliminating MDM's efficiency advantage over autoregressive models.",
+      "claim_type": "result",
+      "confidence": "high",
+      "id": "c36"
+    },
+    {
+      "statement": "Under perplexity as the metric, masked diffusion models can achieve near-optimal perplexity in sampling steps regardless of sequence length, so the efficiency limitation is metric-dependent.",
+      "paper": "feng2025",
+      "supporting_passage": "we prove that when using perplexity as the metric, MDMs can achieve near-optimal perplexity in sampling steps regardless of sequence length, demonstrating that efficiency can be achieved without sacrificing performance.",
+      "claim_type": "result",
+      "confidence": "high",
+      "id": "c37"
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "statement": "Diffusion language models still lag autoregressive models in exact likelihood / perplexity modeling, and proper likelihood evaluation is itself unresolved: the ELBO is a loose bound computed under the training rather than test-time distribution, so reported perplexities can be misleading.",
+      "flagged_by": [
+        "arriola2025",
+        "sahoo2024",
+        "turok2026",
+        "feng2025"
+      ],
+      "why_it_matters": "Likelihood is the canonical training and evaluation signal for LMs; without a proper, comparable likelihood, claims that diffusion LMs match AR quality remain contestable and cross-family comparison is unreliable.",
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o2",
+      "statement": "Standard (bidirectional, non-autoregressive) diffusion LMs are incompatible with the KV cache that accelerates AR decoding, so naive diffusion inference is slow despite parallel decoding potential.",
+      "flagged_by": [
+        "ma2025",
+        "arriola2025",
+        "wu2025",
+        "nguyentri2025"
+      ],
+      "why_it_matters": "KV-cache incompatibility is the central reason diffusion LMs underperform AR on wall-clock latency in practice; closing this gap is required for real deployment.",
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o3",
+      "statement": "The number of denoising/sampling steps required is metric-dependent: under sequence-level (sequence error rate) correctness, steps must scale linearly with sequence length, which eliminates the theoretical efficiency advantage over AR models.",
+      "flagged_by": [
+        "feng2025",
+        "lou2023"
+      ],
+      "why_it_matters": "If high-quality sequence generation needs as many steps as there are tokens, the promised parallel-decoding speedup disappears for tasks that demand exact outputs (e.g. code, math).",
+      "status": "open"
+    },
+    {
+      "id": "o4",
+      "statement": "Decoding multiple tokens in parallel degrades quality because it breaks inter-token dependencies, forcing a trade-off between speed (more parallel unmasking) and accuracy.",
+      "flagged_by": [
+        "wu2025",
+        "bao2025",
+        "garg2025"
+      ],
+      "why_it_matters": "The headline benefit of diffusion LMs is parallel decoding, but if quality collapses under aggressive parallelism the speed advantage is only realizable with extra machinery (confidence thresholds, learned filters).",
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o5",
+      "statement": "Most masked diffusion LMs are limited to fixed-length generation and lack native flexible-length / insertion-based output, unlike autoregressive models.",
+      "flagged_by": [
+        "arriola2025",
+        "kim2025"
+      ],
+      "why_it_matters": "Fixed-length generation is a fundamental usability gap for open-ended generation and chat; flexible length is needed for the format to be a general-purpose LM.",
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o6",
+      "statement": "The masked-diffusion training objective has high gradient variance, raising training-stability and optimization concerns that need variance estimators and data-driven noise schedules.",
+      "flagged_by": [
+        "arriola2025"
+      ],
+      "why_it_matters": "Unstable, high-variance training objectives make it harder to scale diffusion LMs reliably and reproducibly to frontier sizes.",
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o7",
+      "statement": "Scaling behavior of discrete diffusion LMs depends strongly on the noise type (masked vs uniform vs interpolating), and perplexity is informative only within a diffusion family but misleading across families, so the right scaling recipe and evaluation metric are unsettled.",
+      "flagged_by": [
+        "vonrutte2025",
+        "sahoo2026",
+        "nie2024"
+      ],
+      "why_it_matters": "Without a noise-type-robust scaling law and a cross-family-valid metric, it is unclear how to allocate compute and which diffusion variant to scale to frontier sizes.",
+      "status": "open"
+    },
+    {
+      "id": "o8",
+      "statement": "Whether the diffusion advantage in data-constrained regimes persists at frontier scale, and the location of the critical compute threshold where diffusion overtakes AR, is only partially characterized.",
+      "flagged_by": [
+        "prabhudesai2025",
+        "nie2024"
+      ],
+      "why_it_matters": "As high-quality text data becomes scarce, knowing when diffusion's better data reuse pays off determines whether it is the right paradigm for the next generation of LLMs.",
+      "status": "open"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "Can discrete/masked diffusion language models match autoregressive LLMs in generation quality and downstream benchmark performance?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Yes \u2014 at scale, diffusion LMs are competitive with or comparable to similarly-sized AR models on in-context learning, math, code, and general benchmarks, and can even beat AR in data-constrained regimes.",
+          "papers": [
+            "nie2025",
+            "nie2024",
+            "prabhudesai2025",
+            "sahoo2026",
+            "bie2025"
+          ],
+          "summary": "LLaDA 8B is competitive with LLaMA3 8B in in-context learning; 1.1B MDMs beat TinyLlama on 4/8 benchmarks; diffusion outperforms AR when data is scarce; uniform-state diffusion beats AR on GSM8K; and the paradigm scales to 100B."
+        },
+        {
+          "stance": "Not yet on likelihood/perplexity \u2014 diffusion LMs approach but do not close the AR perplexity gap, and the efficiency/quality advantage is metric-dependent.",
+          "papers": [
+            "sahoo2024",
+            "arriola2025",
+            "feng2025",
+            "lou2023"
+          ],
+          "summary": "MDLMs reach SOTA among diffusion models but only approach AR perplexity; diffusion LMs explicitly lag in likelihood modeling; and theory shows the step-count advantage vanishes under sequence-level correctness metrics."
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "question": "Are masked diffusion LMs genuinely a non-autoregressive paradigm, or are they fundamentally autoregressive models in disguise?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "They are effectively autoregressive \u2014 the MDM objective decomposes into a weighted sum of autoregressive losses over decoding orders, making MDMs autoregressive models with learnable orders.",
+          "papers": [
+            "garg2025",
+            "austin2021"
+          ],
+          "summary": "Garg et al. prove the MDM objective equals a weighted sum of AR losses over token orders, and Austin et al. already drew a formal connection between discrete diffusion and autoregressive/mask-based models."
+        },
+        {
+          "stance": "They are a distinct generative paradigm \u2014 any-order, parallel, bidirectional generation that yields capabilities AR lacks, such as breaking the reversal curse and better data reuse.",
+          "papers": [
+            "nie2025",
+            "kim2025",
+            "prabhudesai2025"
+          ],
+          "summary": "LLaDA generates by predicting masked tokens with bidirectional attention, addresses the reversal curse (beating GPT-4o), generates any-order/parallel, and exploits diverse token orderings as implicit data augmentation."
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "question": "Can diffusion LMs actually be faster than autoregressive decoding at inference, or does the lack of KV cache make them slower in practice?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "With the right machinery they are faster than AR \u2014 KV-cache approximations, block-wise AR generation, and learned parallel-decoding filters deliver large speedups, including faster-than-AR inference.",
+          "papers": [
+            "wang2025",
+            "wu2025",
+            "bao2025",
+            "nguyentri2025",
+            "nie2024"
+          ],
+          "summary": "D2F achieves >2.5x over LLaMA3/Qwen2.5; Fast-dLLM up to 27.6x; Learn2PD up to 57.51x with KV-Cache; selective KV refresh up to 45.1x; and MDMs can be 1.4x faster than KV-cache AR given enough pre-training compute."
+        },
+        {
+          "stance": "Naively they are slower and the speedup is conditional \u2014 bidirectional architecture precludes KV caching, parallel decoding hurts quality, and high-fidelity output may need steps scaling with sequence length.",
+          "papers": [
+            "ma2025",
+            "arriola2025",
+            "feng2025",
+            "wu2025"
+          ],
+          "summary": "Diffusion LMs' non-autoregressive, bidirectional design precludes the KV cache; decoding many tokens at once degrades quality; and under sequence error rate the step count must scale linearly with length, erasing the speed advantage."
+        }
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "SEDD vs prior diffusion LM perplexity",
+      "method": "SEDD (Score Entropy Discrete Diffusion)",
+      "dataset": "language modeling (perplexity)",
+      "metric": "perplexity reduction vs prior language diffusion paradigms",
+      "value": "25-75% lower",
+      "paper": "lou2023"
+    },
+    {
+      "id": "b2",
+      "name": "SEDD generative perplexity vs GPT-2",
+      "method": "SEDD",
+      "dataset": "unconditional generation",
+      "metric": "generative perplexity vs un-annealed GPT-2",
+      "value": "~6-8x better",
+      "paper": "lou2023"
+    },
+    {
+      "id": "b3",
+      "name": "SEDD compute-quality tradeoff",
+      "method": "SEDD",
+      "dataset": "generation",
+      "metric": "network evaluations for similar quality vs AR",
+      "value": "32x fewer",
+      "paper": "lou2023"
+    },
+    {
+      "id": "b4",
+      "name": "MDM sampling speed vs KV-cache AR",
+      "method": "MDM (16x pre-training compute)",
+      "dataset": "matched-performance sampling",
+      "metric": "sampling speedup vs KV-Cache ARM",
+      "value": "1.4x faster",
+      "paper": "nie2024"
+    },
+    {
+      "id": "b5",
+      "name": "1.1B MDM vs TinyLlama-1.1B",
+      "method": "1.1B MDM",
+      "dataset": "8 zero-shot language understanding benchmarks",
+      "metric": "benchmarks won vs same-size AR",
+      "value": "4 of 8",
+      "paper": "nie2024"
+    },
+    {
+      "id": "b6",
+      "name": "Fast-dLLM throughput",
+      "method": "Fast-dLLM (block-wise KV cache + confidence-aware parallel decoding)",
+      "dataset": "LLaDA / Dream across LLM benchmarks",
+      "metric": "throughput improvement (training-free)",
+      "value": "up to 27.6x",
+      "paper": "wu2025"
+    },
+    {
+      "id": "b7",
+      "name": "D2F faster-than-AR on GSM8K",
+      "method": "Discrete Diffusion Forcing (D2F)",
+      "dataset": "GSM8K",
+      "metric": "inference speed vs LLaMA3 / Qwen2.5",
+      "value": ">2.5x",
+      "paper": "wang2025"
+    },
+    {
+      "id": "b8",
+      "name": "D2F vs vanilla dLLMs",
+      "method": "D2F",
+      "dataset": "LLaDA / Dream",
+      "metric": "acceleration vs vanilla dLLM",
+      "value": ">50x",
+      "paper": "wang2025"
+    },
+    {
+      "id": "b9",
+      "name": "Learn2PD speedup",
+      "method": "Learn2PD (learnable parallel decoding filter)",
+      "dataset": "LLaDA benchmark",
+      "metric": "speedup with no performance drop",
+      "value": "up to 22.58x (57.51x with KV-Cache)",
+      "paper": "bao2025"
+    },
+    {
+      "id": "b10",
+      "name": "Selective KV refresh speedup",
+      "method": "Adaptive layer-aware KV refresh",
+      "dataset": "GSM8K (256 tokens) / longer sequences",
+      "metric": "decoding speedup",
+      "value": "8.7x / 45.1x",
+      "paper": "nguyentri2025"
+    },
+    {
+      "id": "b11",
+      "name": "FlexMDMs LLaDA-8B fine-tune gains",
+      "method": "FlexMDMs (any-order flexible-length MDM) fine-tuning LLaDA-8B",
+      "dataset": "GSM8K math / code infilling",
+      "metric": "accuracy improvement",
+      "value": "GSM8K 58%->67%; code infilling 52%->65%",
+      "paper": "kim2025"
+    },
+    {
+      "id": "b12",
+      "name": "LLaDA2.0 scale",
+      "method": "LLaDA2.0 (AR-to-dLLM conversion)",
+      "dataset": "diffusion LLM scaling",
+      "metric": "total parameters",
+      "value": "up to 100B",
+      "paper": "bie2025"
+    },
+    {
+      "id": "b13",
+      "name": "Uniform-state diffusion on GSM8K at 1.7B",
+      "method": "Uniform-state discrete diffusion (1.7B)",
+      "dataset": "GSM8K",
+      "metric": "vs AR and masked diffusion (despite worse val perplexity)",
+      "value": "outperforms both",
+      "paper": "sahoo2026"
+    }
+  ],
+  "coverage": {
+    "sub_questions": [
+      "Core method: how masked / discrete diffusion language models generate text \u2014 the forward masking/noising process, the denoising training objective (masked-token prediction, score-entropy / concrete-score), and how decoding works (number of denoising steps, any-order generation).",
+      "Quality vs autoregressive LLMs: empirical results comparing diffusion LMs to AR transformers on language-modeling perplexity / likelihood and downstream benchmarks (the central diffusion-vs-AR debate).",
+      "Inference cost & parallel decoding: how many denoising steps are needed, parallel / any-order token decoding, measured speedups or slowdowns vs autoregressive decoding, and KV-cache implications.",
+      "Scaling: evidence that diffusion LMs scale with parameters / data \u2014 scaling laws, the largest diffusion LMs (e.g. LLaDA-scale), and how they compare to similarly-sized AR models.",
+      "Open problems & limitations that authors EXPLICITLY flag: exact-likelihood estimation, controllability, sampling-step count, KV-cache incompatibility, training stability, and the remaining gap to AR."
+    ],
+    "queries": [
+      "structured denoising diffusion discrete state spaces D3PM absorbing state masking",
+      "score entropy discrete diffusion SEDD ratios data distribution",
+      "simple effective masked diffusion language models Rao-Blackwellized MDLM",
+      "LLaDA large language diffusion model 8B masked diffusion reversal curse",
+      "masked diffusion models learned-order autoregressive decomposition",
+      "scaling up masked diffusion models text scaling law TinyLlama",
+      "diffusion beats autoregressive data-constrained settings repeated data",
+      "Fast-dLLM training-free KV cache parallel decoding diffusion LLM",
+      "discrete diffusion forcing faster-than-AR inference D2F",
+      "learning to parallel learnable parallel decoding Learn2PD",
+      "attention KV cache diffusion LLMs selective refresh",
+      "any-order flexible length masked diffusion FlexMDM",
+      "LLaDA2.0 scaling diffusion language models 100B AR conversion",
+      "scaling behavior discrete diffusion language models noise type",
+      "scaling beyond masked diffusion uniform-state GSM8K perplexity",
+      "block diffusion interpolating autoregressive diffusion KV caching",
+      "dKV-Cache cache diffusion language models bidirectional attention",
+      "DUEL exact likelihood masked diffusion deterministic unmasking ELBO",
+      "theoretical benefit limitation diffusion language model sampling steps sequence error rate"
+    ]
+  }
+}

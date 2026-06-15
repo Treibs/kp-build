@@ -1,0 +1,13 @@
+{
+  "name": "@kp/discrete-diffusion-language-models-for-text-generation",
+  "version": "0.1.0",
+  "description": "Non-autoregressive language models that generate text by iteratively denoising / unmasking tokens (masked and discrete diffusion), and whether they can match autoregressive LLMs in quality, likelihood, and inference cost.",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

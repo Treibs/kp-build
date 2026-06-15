@@ -1,0 +1,23 @@
+The frontier of discrete and masked diffusion language models (2024–2026) has rapidly matured from foundational formulations toward credible alternatives to autoregressive (AR) generation. Early discrete-state diffusion (arXiv:2107.03006) and score-entropy formulations (arXiv:2310.16834) established the paradigm, while simplified masked-diffusion objectives (arXiv:2406.07524) made training practical. Scaling efforts then showed these models are competitive: a 1.1B masked diffusion model (MDM) outperforms TinyLlama on most benchmarks (arXiv:2410.18514), LLaDA reaches LLaMA3-8B parity (arXiv:2502.09992), and LLaDA2.0 pushes to 100B parameters (arXiv:2512.15745). Diffusion even surpasses AR in data-constrained regimes (arXiv:2507.15857) and with uniform-state noise on GSM8K (arXiv:2602.15014).
+
+Quality parity remains contested, however. On exact likelihood and perplexity, diffusion LMs still trail AR (arXiv:2406.07524, arXiv:2502.09622), partly because their ELBO is loose and likelihood evaluation is itself unresolved—work like DUEL provides the first exact likelihood for MDMs (arXiv:2603.01367). Some argue MDMs are "secretly" learned-order AR models, their objective a weighted sum of AR losses (arXiv:2511.19152).
+
+Inference speed is the central practical battleground. Bidirectional attention precludes the KV cache, making naive decoding slow (arXiv:2505.15781). Recent methods recover and exceed AR throughput: Fast-dLLM enables training-free KV caching with up to 27.6x speedups (arXiv:2505.22618), Discrete Diffusion Forcing achieves faster-than-AR inference (arXiv:2508.09192). Open problems persist: parallel decoding breaks inter-token dependencies, sampling steps may scale with length (arXiv:2502.09622), and most MDMs remain fixed-length (arXiv:2503.09573, arXiv:2509.01025).
+
+## Citations
+arXiv:2107.03006 — Structured Denoising Diffusion Models in Discrete State-Spaces
+arXiv:2310.16834 — Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution
+arXiv:2406.07524 — Simple and Effective Masked Diffusion Language Models
+arXiv:2502.09992 — Large Language Diffusion Models
+arXiv:2511.19152 — Masked Diffusion Models are Secretly Learned-Order Autoregressive Models
+arXiv:2410.18514 — Scaling up Masked Diffusion Models on Text
+arXiv:2507.15857 — Diffusion Beats Autoregressive in Data-Constrained Settings
+arXiv:2505.22618 — Fast-dLLM: Training-free Acceleration of Diffusion LLM by Enabling KV Cache and Parallel Decoding
+arXiv:2508.09192 — Diffusion LLMs Can Do Faster-Than-AR Inference via Discrete Diffusion Forcing
+arXiv:2512.15745 — LLaDA2.0: Scaling Up Diffusion Language Models to 100B
+arXiv:2602.15014 — Scaling Beyond Masked Diffusion Language Models
+arXiv:2503.09573 — Block Diffusion: Interpolating Between Autoregressive and Diffusion Language Models
+arXiv:2505.15781 — dKV-Cache: The Cache for Diffusion Language Models
+arXiv:2502.09622 — Theoretical Benefit and Limitation of Diffusion Language Model
+arXiv:2509.01025 — Any-Order Flexible Length Masked Diffusion
+arXiv:2603.01367 — DUEL: Exact Likelihood for Masked Diffusion via Deterministic Unmasking

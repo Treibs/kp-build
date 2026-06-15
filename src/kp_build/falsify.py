@@ -3,9 +3,12 @@
 It compares a BASE agent (no package) against a KP-LOADED agent on a held-out task and scores each
 answer on TWO axes, not one:
 
-- **precision / citation integrity** — what fraction of the cited papers actually EXIST. A resolvable
-  arXiv id or DOI counts as real regardless of the human-supplied title (the id IS the identity);
-  a title-only cite must strictly match a real work. This is the anti-hallucination metric.
+- **precision / citation integrity** — what fraction of the cited papers actually exist AND are the
+  paper the answer names. A resolvable arXiv id / DOI is real ONLY if its canonical title strictly
+  matches the claimed title (so a real id bearing the WRONG paper's title — a mislabel — counts as a
+  hallucination, mirroring the build-time citation gate). An id cited with no title falls back to
+  existence (nothing to match); a title-only cite must strictly match a real work. This is the
+  anti-hallucination metric.
 - **recall / coverage** — what fraction of the package's verified spine the answer actually used. A
   base agent that knows the field may cite real papers (high precision) but miss the spine (low
   recall); a KP-loaded agent should do both.
@@ -21,6 +24,7 @@ from pathlib import Path
 
 from .citations import (
     _http_get, _arxiv_title, _crossref_doi_title, _crossref_search_strict,
+    titles_match_strict, _meaningful,
 )
 
 _TASK = (
@@ -46,34 +50,49 @@ def make_prompts(pkg_dir: str | Path, question: str) -> dict:
     return {"base": task, "kp": _INSTR_KP.format(context=ctx) + task}
 
 
+def _norm_handle(h: str) -> str:
+    """Dedup key for a citation handle: strip a leading 'arxiv:' and any version suffix, lowercase."""
+    h = re.sub(r"(?i)^\s*arxiv:\s*", "", h.strip())
+    return re.sub(r"v\d+$", "", h.lower())
+
+
+_SEP_RE = re.compile(r"\s*(?:\||—|–|\s-\s)\s*")                       # block handle↔title separators
+_LEAD_ID_RE = re.compile(r"(?i)\s*((?:arxiv:)?\d{4}\.\d{4,5}(?:v\d+)?|10\.\d{4,9}/\S+)\s+(.*)")
+
+
 def parse_citations(answer: str) -> list[tuple[str, str]]:
-    """Pull (handle, title) pairs. Reads the '## Citations' pipe block AND any arXiv ids / DOIs that
-    appear inline in the prose (so a non-pipe or numbered list still counts), deduped by handle."""
+    """Pull (handle, title) pairs. Reads the '## Citations' block — handle and title separated by
+    '|', '—', '–', or ' - ' (or just whitespace after a leading id) — AND any arXiv ids / DOIs inline
+    in the prose, deduped by normalized handle. A *titled* block entry is recorded before the bare
+    inline scan, so the title survives to be strict-checked rather than lost to an untitled duplicate."""
     out: list[tuple[str, str]] = []
     seen: set = set()
 
-    m = re.search(r"##\s*Citations\s*(.+)$", answer, re.S | re.I)
-    block = m.group(1) if m else ""
-    for line in block.splitlines():
-        if "|" not in line:
-            continue
-        handle, title = line.split("|", 1)
-        handle = re.sub(r"^[-*•·\s]+", "", handle)
-        handle = re.sub(r"^\d+[.)]\s+(?=\D)", "", handle).strip()  # ordered marker, not an arxiv id
-        key = handle.lower() or title.strip().lower()
-        if key not in seen:
+    def add(handle: str, title: str):
+        handle = re.sub(r"(?i)^\s*arxiv:\s*", "", handle.strip())
+        key = _norm_handle(handle) or title.strip().lower()
+        if key and key not in seen:
             seen.add(key)
             out.append((handle, title.strip()))
 
-    # inline ids/DOIs anywhere (catch cites not in a clean block)
+    m = re.search(r"##\s*Citations\s*(.+)$", answer, re.S | re.I)
+    for line in (m.group(1) if m else "").splitlines():
+        line = re.sub(r"^[-*•·\s]+", "", line).strip()
+        line = re.sub(r"^\d+[.)]\s+(?=\D)", "", line)                # ordered marker, not an id
+        if not line:
+            continue
+        sep = _SEP_RE.search(line)
+        if sep:
+            add(line[:sep.start()], line[sep.end():])
+        else:
+            mid = _LEAD_ID_RE.match(line)
+            add(*(mid.groups() if mid else (line, "")))
+
+    # inline ids/DOIs anywhere (catch cites not in a clean block); untitled, so existence-only
     for mobj in _ARXIV_RE.finditer(answer):
-        h = mobj.group(1)
-        if h.lower() not in seen:
-            seen.add(h.lower()); out.append((h, ""))
+        add(mobj.group(1), "")
     for mobj in _DOI_RE.finditer(answer):
-        h = mobj.group(1).rstrip(".,);")
-        if h.lower() not in seen:
-            seen.add(h.lower()); out.append((h, ""))
+        add(mobj.group(1).rstrip(".,);"), "")
     return out
 
 
@@ -85,16 +104,29 @@ def _handle_kind(handle: str) -> str:
     return "title"
 
 
+def _title_ok(claimed: str, canonical: str) -> bool:
+    """Gate a resolved id's claimed title against its canonical one. An uninformative claimed title
+    (no meaningful tokens) falls back to existence. Otherwise accept iff the titles strictly match in
+    EITHER direction: claimed⊇canonical tolerates a legitimate annotation ('(LLaDA)', '(SEDD)') on a
+    short title, canonical⊇claimed tolerates a truncated subtitle — but a DIFFERENT paper's title
+    (low overlap both ways) is rejected as a mislabel. Mirrors the build gate's title strictness while
+    not punishing the annotations agents naturally add in a citations list."""
+    if not _meaningful(claimed):
+        return True
+    return titles_match_strict(claimed, canonical)[0] or titles_match_strict(canonical, claimed)[0]
+
+
 def _is_real(handle: str, title: str, get=_http_get) -> bool:
-    """A cited paper is REAL if its id/DOI resolves (regardless of the human title), or — title-only —
-    it strictly matches a real work."""
+    """REAL iff the id/DOI resolves AND — when a title is supplied — the canonical title strictly
+    matches it. A 'real id, wrong paper' mislabel is therefore NOT real (mirrors the build gate). A
+    title-only cite must strictly match a real work."""
     kind = _handle_kind(handle)
     if kind == "arxiv":
-        ct, err = _arxiv_title(handle.replace("arxiv:", "").replace("arXiv:", "").strip(), get)
-        return bool(ct) if err == "" else False
+        ct, err = _arxiv_title(re.sub(r"(?i)^arxiv:", "", handle).strip(), get)
+        return _title_ok(title, ct) if (err == "" and ct) else False
     if kind == "doi":
         ct, err = _crossref_doi_title(handle.strip(), get)
-        return bool(ct) if err == "" else False
+        return _title_ok(title, ct) if (err == "" and ct) else False
     hit, err = _crossref_search_strict(title or handle, get)
     return bool(hit) if err == "" else False
 

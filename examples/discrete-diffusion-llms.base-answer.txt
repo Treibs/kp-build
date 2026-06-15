@@ -1,0 +1,17 @@
+## Related Work: Discrete and Masked Diffusion Language Models (2024–2026)
+
+Diffusion language models adapt the iterative denoising paradigm to text, with masked (absorbing-state) diffusion emerging as the dominant formulation. The theoretical groundwork traces to D3PM (arXiv:2107.03006) and continuous-time score-entropy formulations: SEDD (arXiv:2310.16834) showed discrete diffusion can rival GPT-2-scale autoregressive (AR) likelihood, while MD4 and the simplified masked-diffusion ELBO (arXiv:2406.07524) and concurrent work (arXiv:2406.04329) clarified that masked diffusion reduces to a clean weighted cross-entropy objective, closing much of the prior gap. Scaling studies established compute laws for diffusion LMs (arXiv:2410.17891), finding them data-efficient but still trailing AR in strict log-likelihood while becoming competitive in generation quality at scale.
+
+On the frontier, LLaDA (arXiv:2502.09992) trained an 8B masked diffusion model competitive with LLaMA-class AR baselines on standard benchmarks, and DiffuLLaMA / adaptation work (arXiv:2410.17891) showed AR checkpoints can be cheaply converted to diffusion. Block and semi-autoregressive variants (BD3-LMs, arXiv:2503.09573) interpolate between paradigms to recover KV-cache compatibility, since vanilla bidirectional diffusion cannot cache keys/values across the full-attention denoising steps—the central inference-efficiency obstacle. Parallel/any-order decoding offers latency wins but suffers token-independence errors; remasking and predictor-corrector samplers (arXiv:2410.06264) mitigate this.
+
+Open problems remain: matching AR likelihood exactly, principled sampling-step/quality tradeoffs, efficient caching under bidirectional attention, reliable controllability and infilling, and scaling reinforcement-learning post-training to the diffusion setting.
+
+## Citations
+arXiv:2107.03006 — Structured Denoising Diffusion Models in Discrete State-Spaces (D3PM)
+arXiv:2310.16834 — Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution (SEDD)
+arXiv:2406.07524 — Simplified and Generalized Masked Diffusion for Discrete Data (MD4)
+arXiv:2406.04329 — Simple and Effective Masked Diffusion Language Models (MDLM)
+arXiv:2410.17891 — Scaling up Masked Diffusion Models on Text
+arXiv:2502.09992 — Large Language Diffusion Models (LLaDA)
+arXiv:2503.09573 — Block Diffusion: Interpolating Between Autoregressive and Diffusion Language Models (BD3-LMs)
+arXiv:2410.06264 — Think While You Generate: Discrete Diffusion with Planned Denoising
