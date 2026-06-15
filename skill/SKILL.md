@@ -34,7 +34,8 @@ worst at. The value is (1) verified citations (no hallucinations), (2) the open-
 
 ## Setup
 ```
-pip install -e ~/kp-build      # provides the `kp-build` CLI and the kp_build engine
+pip install kp-build                                       # the `kp-build` CLI + engine (from PyPI)
+# or, unreleased/from source:  pip install git+https://github.com/Treibs/kp-build.git
 ```
 Citation verification uses arXiv + Crossref (free, no key, network required).
 
@@ -48,14 +49,19 @@ it guards the largest cost:
 2. Dispatch ONE unaided agent with it (no package); save its answer to `base.txt`.
 3. Score it: `kp-build probe --answer base.txt` → **BUILD / SKIP / INCONCLUSIVE** (exit 0 / 1 / 3; a
    usage or file error is exit 2).
-   - **BUILD** — the unaided model fabricates/mislabels its citations or can't ground at all → it's weak
-     here → proceed to step 1.
+   - **BUILD** — the unaided model is weak here: it fabricates/mislabels citations, **HEDGES** (writes
+     placeholder ids like `arXiv:2510.xxxxx` for work it can't recall — proof it knows of a frontier it
+     can't name), or is too thin → proceed to step 1.
    - **SKIP** — it already cites real papers cleanly → a package would add ~zero value; tell the user and
      stop, or pick a more model-weak angle. (This is the same condition that made 3 topics TIE in
      falsification.)
    - **INCONCLUSIVE** — the citation index was unreachable (or too many cites went transient) during
      scoring → re-run once the network is back. If it stays inconclusive on a persistent outage, treat
      conservatively as BUILD rather than risk skipping a model-weak topic.
+
+   For a **known fast-moving** topic, add `--as-of YYYY-MM` (today): an answer that cites only OLD work
+   (nothing recent) then also reads as model-weak on the frontier. It's opt-in — off by default, because
+   old cites are correct on a settled topic.
 This reuses the falsification scorer (citation precision / hallucination rate) — no new judgment, ~29k
 tokens for one base answer, and it converts "build and hope" into a measured go/no-go.
 
@@ -108,20 +114,29 @@ For each paper, dispatch extraction. Return, each tied to a **verbatim passage**
 ### 5 — Assemble (the engine — verifies + lints)
 Write the research JSON (shape below) and run:
 ```
-kp-build build --input research.json --out <out_dir>
+kp-build build --input research.json --out <out_dir> --ground       # --ground machine-confirms passages (step 3)
 ```
-The engine **verifies every citation** (drops unverifiable ones + logs them), assembles the package,
-generates `CONTEXT.md` (the agent payload), and lints. Read the output: any UNVERIFIED papers are a
-signal a subagent may have hallucinated — investigate, don't ignore.
+The engine **verifies every citation** (drops unverifiable ones + logs them), grounds passages,
+assembles the package, generates `CONTEXT.md` (the agent payload), and lints. Read the output: any
+UNVERIFIED papers are a signal a subagent may have hallucinated — investigate, don't ignore.
+- **Large package hitting rate limits?** Add `--throttle 0.5` (adaptive backoff between checks). If some
+  cites still come back `error` (rate-limited, not fake), re-run with `--reuse-verification` — it keeps
+  the good verdicts in `<out_dir>` and re-checks only the errored ones (cheap; turns 25/39 → 39/39).
 
-Research JSON:
+Research JSON (every `cite_key` referenced anywhere must exist in `papers`):
 ```json
 {"topic","scope",
  "papers":[{"cite_key","title","authors","year","venue","arxiv_id","doi","url","key_contributions"}],
  "claims":[{"id","statement","paper","supporting_passage","claim_type","confidence","corroborated_by"}],
  "open_problems":[{"id","statement","flagged_by","status","why_it_matters"}],
- "debates":[{"id","question","positions":[{"stance","papers","summary"}],"resolved"}]}
+ "debates":[{"id","question","positions":[{"stance","papers","summary"}],"resolved"}],
+ "benchmarks":[{"id","name","paper","dataset","method","metric","value"}],
+ "coverage":{"sub_questions":[...],"queries":[...]}}
 ```
+Controlled vocabularies (the engine rejects others): `claim_type` ∈ {result, method, finding,
+definition}; `confidence` ∈ {high, medium, low}; open-problem `status` ∈ {open, partially-addressed}.
+Non-arXiv papers set `arxiv_id:""` and carry a real `doi` (verified via Crossref) — kp-build is not
+arXiv-only.
 
 ### 6 — Falsify (the acceptance gate — does it actually help?)
 Run the falsification harness. Build the two prompts and dispatch two answer subagents:

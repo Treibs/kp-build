@@ -91,7 +91,7 @@ to it? Just ask Claude: *"read skill/SKILL.md and walk me through building a pac
 
 ## Quickstart
 
-`examples/` ships three real packages with their inputs, so you can run the engine end-to-end on a
+`examples/` ships four real packages with their inputs, so you can run the engine end-to-end on a
 clean clone. The engine's input is a `research.json` (papers, claims, open problems, debates):
 
 ```bash
@@ -171,7 +171,7 @@ kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — 
 ```
 src/kp_build/      the engine (scope→survey→extract→verify→ground→assemble→falsify→report)
 skill/SKILL.md     the /kp-build orchestration spec (drives the research subagents)
-examples/          three real built packages + their research.json inputs and falsification evidence
+examples/          four real built packages + their research.json inputs and falsification evidence
 docs/              explainer / metrics / orchestration (HTML)
 SPEC.md            the package format + pipeline, in full
 ```
