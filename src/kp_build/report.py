@@ -244,14 +244,14 @@ def _panel_claims(claims, verified) -> str:
         meta = f'{_keychip(c.paper)} {_conf_dots(c.confidence)}'
         if corr:
             meta += f' <span class="corr">corroborated×{len(corr)}</span>'
+        grounded = getattr(c, "grounded", "unchecked")
+        flagged = (not c.survived_refuter) or grounded == "ungrounded"
         passage = ""
-        if c.supporting_passage:
+        if c.supporting_passage and not flagged:        # don't surface a refuted/ungrounded claim's passage
             teaser = _esc(c.supporting_passage[:90]) + ("…" if len(c.supporting_passage) > 90 else "")
             passage = (f'<button class="passage-toggle">show passage ▸</button>'
                        f'<span class="teaser">{teaser}</span>'
                        f'<blockquote>{_esc(c.supporting_passage)}</blockquote>')
-        grounded = getattr(c, "grounded", "unchecked")
-        flagged = (not c.survived_refuter) or grounded == "ungrounded"
         marks = "" if c.survived_refuter else ' <span class="pill no">⚠ refuter broke this</span>'
         if grounded == "grounded":
             marks += ' <span class="pill ok">✓ grounded</span>'

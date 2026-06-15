@@ -124,7 +124,10 @@ def _arxiv_abstract(arxiv_id: str, get: Callable[[str], str]) -> tuple[Optional[
     if not raw or "<entry>" not in raw:
         return None, ""
     m = re.search(r"<entry>.*?<summary>(.*?)</summary>", raw, re.S)
-    return (re.sub(r"\s+", " ", m.group(1)).strip() if m else None), ""
+    if not m:
+        return None, ""
+    import html as _html
+    return _html.unescape(re.sub(r"\s+", " ", m.group(1)).strip()), ""   # decode &gt;/&amp; in math abstracts
 
 
 def _crossref_doi_title(doi: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:

@@ -241,6 +241,10 @@ def _cmd_build(args) -> int:
         summary = verify_all(pkg.papers, today=today, throttle=args.throttle,
                              skip_verified=args.reuse_verification)
 
+    if args.ground_fulltext:
+        args.ground = True                              # --ground-fulltext implies grounding
+    if args.ground and args.no_verify:
+        print("warn: --ground skipped because --no-verify was set (grounding needs the network)", file=sys.stderr)
     if args.ground and not args.no_verify:
         from .ground import ground_claims
         src = "ar5iv fulltext" if args.ground_fulltext else "abstracts"

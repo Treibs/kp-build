@@ -17,6 +17,7 @@ fulltext grounding produces the negative `ungrounded` verdict.
 from __future__ import annotations
 
 import difflib
+import html
 import re
 import time
 from collections import Counter
@@ -26,6 +27,10 @@ from .citations import _http_get, _safe, _resolve, _arxiv_abstract, strip_arxiv_
 
 _WORD = re.compile(r"[a-z0-9]+")
 _AR5IV = "https://ar5iv.org/abs/"
+_MIN_CHARS = 24          # below this a passage is too short to ground reliably (would match by coincidence)
+_MIN_WORDS = 5
+_MAX_FUZZY = 200000      # bound the fuzzy pass; covers any real paper, caps the worst case
+_CONTIGUITY = 0.6        # the SINGLE longest contiguous match must cover this much of the passage
 
 
 def _norm(s: str) -> str:
@@ -33,19 +38,24 @@ def _norm(s: str) -> str:
     return " ".join(_WORD.findall(s.lower()))
 
 
-def passage_in_text(passage: str, text: str, *, threshold: float = 0.85) -> bool:
-    """Is the passage present in the text? An exact normalized substring, or — for a near-verbatim quote
-    with minor edits — a contiguous match covering >= threshold of the passage's words."""
+def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY) -> bool:
+    """Is the passage present in the text? Sound by construction — a fabricated or generic passage must
+    NOT ground:
+      - too short (< _MIN_CHARS / _MIN_WORDS) -> never grounds (a few common words match by coincidence);
+      - an exact normalized substring -> grounds (a genuine verbatim quote);
+      - otherwise the SINGLE longest contiguous match must cover >= *contiguity* of the passage. We use
+        the longest block (not the SUM of scattered blocks) so a word-salad whose tokens merely appear
+        scattered across the text does NOT clear the bar — only a near-verbatim quote with one small edit
+        has a long contiguous run."""
     p, t = _norm(passage), _norm(text)
-    if not p or not t:
+    if len(p) < _MIN_CHARS or len(p.split()) < _MIN_WORDS or not t:
         return False
     if p in t:
         return True
-    if len(t) > 30000:                 # skip the O(n*m) fuzzy pass on long fulltext; substring suffices there
+    if len(t) > _MAX_FUZZY:
         return False
-    sm = difflib.SequenceMatcher(None, p, t, autojunk=False)
-    covered = sum(b.size for b in sm.get_matching_blocks())
-    return covered / len(p) >= threshold
+    m = difflib.SequenceMatcher(None, p, t, autojunk=False).find_longest_match(0, len(p), 0, len(t))
+    return m.size / len(p) >= contiguity
 
 
 def fetch_paper_text(paper, *, get: Callable[[str], str] = _http_get, fulltext: bool = False,
@@ -57,7 +67,7 @@ def fetch_paper_text(paper, *, get: Callable[[str], str] = _http_get, fulltext: 
                             get=get, sleep=sleep, max_retries=max_retries)
         if err == "" and raw:
             body = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", raw)
-            body = re.sub(r"(?s)<[^>]+>", " ", body)
+            body = html.unescape(re.sub(r"(?s)<[^>]+>", " ", body))   # decode &amp;/&gt; so they don't mis-tokenize
             if len(body) > 500:
                 return body, "fulltext"
     if paper.arxiv_id:
@@ -68,7 +78,7 @@ def fetch_paper_text(paper, *, get: Callable[[str], str] = _http_get, fulltext: 
 
 
 def ground_claims(papers, claims, *, get: Callable[[str], str] = _http_get, fulltext: bool = False,
-                  threshold: float = 0.85, sleep=time.sleep, throttle: float = 0.0) -> dict:
+                  sleep=time.sleep, throttle: float = 0.0) -> dict:
     """Set claim.grounded IN PLACE for each claim anchored to a VERIFIED paper, by checking its
     supporting_passage against the paper's text. One fetch per paper (cached). Returns a breakdown."""
     verified = {p.cite_key: p for p in papers if p.verified.exists}
@@ -85,7 +95,7 @@ def ground_claims(papers, claims, *, get: Callable[[str], str] = _http_get, full
         text, src = texts.get(c.paper, ("", ""))
         if not c.supporting_passage or not text:
             c.grounded = "unconfirmed"          # no passage, or couldn't fetch the source
-        elif passage_in_text(c.supporting_passage, text, threshold=threshold):
+        elif passage_in_text(c.supporting_passage, text):
             c.grounded = "grounded"
         else:
             c.grounded = "ungrounded" if src == "fulltext" else "unconfirmed"
