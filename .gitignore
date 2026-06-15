@@ -15,3 +15,7 @@ __pycache__/
 .nofal-report.html
 .deep-report.html
 .*-test.html
+
+# internal project review (strategic framing — keep out of any public release)
+docs/kp-build-review.html
+.review-*.png
