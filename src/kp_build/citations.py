@@ -83,6 +83,18 @@ def titles_match_strict(claimed: str, canonical: str) -> tuple[bool, float]:
     return False, max(jacc, 0.0)
 
 
+def _title_ok(claimed: str, canonical: str) -> tuple[bool, float]:
+    """Accept a resolved id's title against the claimed one if they STRICTLY match in EITHER direction:
+    claimed ⊇ canonical tolerates an annotation the claim added ('(LLaDA)'); canonical ⊇ claimed tolerates
+    a Crossref-TRUNCATED title (the short form without subtitle — very common for Annals/NEJM/JAMA, e.g.
+    'Cognitive Behavioral Therapy for Chronic Insomnia' vs '… : A Systematic Review and Meta-analysis').
+    The >=4-meaningful-token floor inside titles_match_strict still rejects short/generic titles and a
+    genuinely different paper (which fails both directions). Returns (ok, best_score)."""
+    ok1, s1 = titles_match_strict(claimed, canonical)
+    ok2, s2 = titles_match_strict(canonical, claimed)
+    return (ok1 or ok2), max(s1, s2)
+
+
 # ── index fetchers: return (value, err) where err in {'', 'transient'} ───────────
 
 
@@ -245,7 +257,7 @@ def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str 
             if not p.url:
                 p.url = f"https://arxiv.org/abs/{strip_arxiv_prefix(p.arxiv_id)}"
             return done("verified", "arxiv", ct, 1.0)
-        ok, score = titles_match_strict(p.title, ct)
+        ok, score = _title_ok(p.title, ct)
         if ok:
             if not p.url:
                 p.url = f"https://arxiv.org/abs/{strip_arxiv_prefix(p.arxiv_id)}"
@@ -260,7 +272,7 @@ def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str 
             return done("not-found", via)
         if not p.title:
             return done("verified", via, ct, 1.0)
-        ok, score = titles_match_strict(p.title, ct)
+        ok, score = _title_ok(p.title, ct)
         return done("verified" if ok else "id-title-mismatch", via, ct, score)
 
     # 2. Title-only path — NEVER 'verified'. A strict hit is a candidate hint, exists=False.

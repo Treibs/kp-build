@@ -100,6 +100,22 @@ def test_doi_path_verifies_and_mismatch_rejects():
     assert not q.verified.exists and q.verified.status == "id-title-mismatch"
 
 
+def test_doi_crossref_truncated_title_still_verifies():
+    # Crossref often stores the SHORT title (no subtitle); the claimed title adds it. canonical ⊆ claimed
+    # must still verify (the gate matches in EITHER direction, like falsify) — common for Annals/NEJM/JAMA.
+    p = Paper(cite_key="t", doi="10.7326/m14-2841",
+              title="Cognitive Behavioral Therapy for Chronic Insomnia: A Systematic Review and Meta-analysis")
+    verify_paper(p, get=lambda u: _crossref_doi("Cognitive Behavioral Therapy for Chronic Insomnia"), today="2026-06-14")
+    assert p.verified.exists and p.verified.status == "verified"
+
+
+def test_doi_short_canonical_cannot_be_padded_into_a_fake():
+    # SOUNDNESS: a 2-token canonical ('Deep Learning') must NOT verify a padded claimed title (no laundering)
+    p = Paper(cite_key="x", title="Deep Learning for Curing All Cancer in Mice Tomorrow", doi="10.1/x")
+    verify_paper(p, get=lambda u: _crossref_doi("Deep Learning"), today="2026-06-14")
+    assert not p.verified.exists and p.verified.status == "id-title-mismatch"
+
+
 # ── DOI backends: Crossref first, OpenAlex fallback (broaden reach, soundness unchanged) ──────────
 
 
