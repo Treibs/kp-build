@@ -20,11 +20,12 @@ show up as precision < 1, while a KP-loaded agent that stays on the verified spi
 from __future__ import annotations
 
 import re
+import time
 from pathlib import Path
 
 from .citations import (
     _http_get, _arxiv_title, _crossref_doi_title, _crossref_search_strict,
-    titles_match_strict, _meaningful,
+    titles_match_strict, _meaningful, _resolve, strip_arxiv_prefix,
 )
 
 _TASK = (
@@ -51,9 +52,12 @@ def make_prompts(pkg_dir: str | Path, question: str) -> dict:
 
 
 def _norm_handle(h: str) -> str:
-    """Dedup key for a citation handle: strip a leading 'arxiv:' and any version suffix, lowercase."""
-    h = re.sub(r"(?i)^\s*arxiv:\s*", "", h.strip())
-    return re.sub(r"v\d+$", "", h.lower())
+    """Dedup/identity key for a citation or spine handle: strip a leading 'arxiv:' (any case),
+    lowercase, and strip a trailing arXiv version (vN) — but NEVER on a DOI (a DOI contains '/' and a
+    trailing 'vN' there is part of the identifier, not a version). ONE normalization, applied
+    identically to the cited side AND the spine side so their handle sets actually intersect."""
+    s = strip_arxiv_prefix(h).lower()
+    return s if "/" in s else re.sub(r"v\d+$", "", s)
 
 
 _SEP_RE = re.compile(r"\s*(?:\||—|–|\s-\s)\s*")                       # block handle↔title separators
@@ -69,7 +73,7 @@ def parse_citations(answer: str) -> list[tuple[str, str]]:
     seen: set = set()
 
     def add(handle: str, title: str):
-        handle = re.sub(r"(?i)^\s*arxiv:\s*", "", handle.strip())
+        handle = strip_arxiv_prefix(handle)
         key = _norm_handle(handle) or title.strip().lower()
         if key and key not in seen:
             seen.add(key)
@@ -78,7 +82,7 @@ def parse_citations(answer: str) -> list[tuple[str, str]]:
     m = re.search(r"##\s*Citations\s*(.+)$", answer, re.S | re.I)
     for line in (m.group(1) if m else "").splitlines():
         line = re.sub(r"^[-*•·\s]+", "", line).strip()
-        line = re.sub(r"^\d+[.)]\s+(?=\D)", "", line)                # ordered marker, not an id
+        line = re.sub(r"^\d+[.)]\s+", "", line)                      # ordered-list marker (also before an id)
         if not line:
             continue
         sep = _SEP_RE.search(line)
@@ -116,27 +120,36 @@ def _title_ok(claimed: str, canonical: str) -> bool:
     return titles_match_strict(claimed, canonical)[0] or titles_match_strict(canonical, claimed)[0]
 
 
-def _is_real(handle: str, title: str, get=_http_get) -> bool:
-    """REAL iff the id/DOI resolves AND — when a title is supplied — the canonical title strictly
-    matches it. A 'real id, wrong paper' mislabel is therefore NOT real (mirrors the build gate). A
-    title-only cite must strictly match a real work."""
+def _is_real(handle: str, title: str, get=_http_get, *, sleep=time.sleep, max_retries: int = 2):
+    """Tri-state. REAL (True) iff the id/DOI resolves AND — when a title is supplied — the canonical
+    title strictly matches it (a 'real id, wrong paper' mislabel is False, mirroring the build gate).
+    Returns None when the index can't be reached (transient error after retries) so the caller can
+    EXCLUDE it — a rate-limit burst must not be scored as a fabrication. Transient errors are retried
+    with backoff exactly like the build gate (it shares _resolve)."""
     kind = _handle_kind(handle)
     if kind == "arxiv":
-        ct, err = _arxiv_title(re.sub(r"(?i)^arxiv:", "", handle).strip(), get)
-        return _title_ok(title, ct) if (err == "" and ct) else False
-    if kind == "doi":
-        ct, err = _crossref_doi_title(handle.strip(), get)
-        return _title_ok(title, ct) if (err == "" and ct) else False
-    hit, err = _crossref_search_strict(title or handle, get)
-    return bool(hit) if err == "" else False
+        ct, err = _resolve(_arxiv_title, strip_arxiv_prefix(handle), get=get, sleep=sleep, max_retries=max_retries)
+    elif kind == "doi":
+        ct, err = _resolve(_crossref_doi_title, handle.strip(), get=get, sleep=sleep, max_retries=max_retries)
+    else:
+        hit, err = _resolve(_crossref_search_strict, title or handle, get=get, sleep=sleep, max_retries=max_retries)
+        return None if err == "transient" else bool(hit)
+    if err == "transient":
+        return None
+    return _title_ok(title, ct) if ct else False
 
 
 def score_citations(answer: str, *, get=_http_get) -> dict:
-    """Precision / integrity: how many cited papers actually exist."""
+    """Precision / integrity: of the cited papers we could CHECK, how many actually exist and are the
+    paper named. Citations the index couldn't resolve (transient) are excluded from the denominator so
+    a rate-limited run neither inflates nor deflates precision."""
     cites = parse_citations(answer)
-    fake = [f"{h} | {t}" for h, t in cites if not _is_real(h, t, get)]
-    n = len(cites)
-    return {"cited": n, "real": n - len(fake), "fake": len(fake), "fake_list": fake,
+    verdicts = [(h, t, _is_real(h, t, get)) for h, t in cites]
+    checkable = [(h, t, v) for h, t, v in verdicts if v is not None]
+    fake = [f"{h} | {t}" for h, t, v in checkable if not v]
+    n = len(checkable)
+    return {"cited": len(cites), "checked": n, "unresolved": len(cites) - n,
+            "real": n - len(fake), "fake": len(fake), "fake_list": fake,
             "precision": (n - len(fake)) / n if n else 0.0,
             "hallucination_rate": (len(fake) / n) if n else 0.0}
 
@@ -147,9 +160,9 @@ def _spine_handles(spine: list[dict]) -> list[set]:
     for p in spine:
         hs = set()
         if p.get("arxiv_id"):
-            hs.add(re.sub(r"v\d+$", "", p["arxiv_id"].lower().strip()))
+            hs.add(_norm_handle(p["arxiv_id"]))        # same normalization as the cited side
         if p.get("doi"):
-            hs.add(p["doi"].lower().strip())
+            hs.add(_norm_handle(p["doi"]))             # identical normalization to the cited side
         out.append(hs)
     return out
 
@@ -161,8 +174,7 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get)
     of spine papers the answer cited. f1 balances not-hallucinating with actually-using-the-field.
     """
     base = score_citations(answer, get=get)
-    cited_handles = {h.lower().strip() for h, _ in parse_citations(answer)}
-    cited_handles |= {re.sub(r"v\d+$", "", h) for h in cited_handles}
+    cited_handles = {_norm_handle(h) for h, _ in parse_citations(answer)}
     recall, covered = None, None
     if spine:
         sh = _spine_handles(spine)
@@ -178,6 +190,9 @@ def verdict(base_report: dict, kp_report: dict) -> str:
     """One-line comparison. Prefers f1 (precision+recall) when available, else precision."""
     if kp_report.get("cited", 0) == 0:
         return "INCONCLUSIVE — the KP answer cited nothing; check the task ran."
+    if base_report.get("checked") == 0 or kp_report.get("checked") == 0:
+        # every cited id was unreachable (index outage) — precision/f1 here is 0-by-default, not earned
+        return "INCONCLUSIVE — citations could not be verified (citation index unreachable); re-run."
     if base_report.get("f1") is not None and kp_report.get("f1") is not None:
         b, k = base_report["f1"], kp_report["f1"]
         verb = "HELPS" if k > b else ("TIES" if k == b else "DID NOT HELP")

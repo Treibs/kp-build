@@ -8,6 +8,7 @@ or unverified reference. Everything dropped is counted and reported (never silen
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 from .schema import (
@@ -51,13 +52,14 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     for p in pkg.papers:
         (out / "papers" / f"{p.cite_key}.md").write_text(paper_to_md(p), encoding="utf-8")
 
+    # prune unverified refs into COPIES — never mutate the caller's input dataclasses (ASSM-1)
     claims = []
     for c in pkg.claims:
         if c.paper in verified:
-            c.corroborated_by = [k for k in c.corroborated_by if k in verified]   # prune to verified
-            (out / "claims" / f"{c.id}.md").write_text(
-                claim_to_md(c, paper_ref=refs.get(c.paper, "")), encoding="utf-8")
-            claims.append(c)
+            c2 = replace(c, corroborated_by=[k for k in c.corroborated_by if k in verified])
+            (out / "claims" / f"{c2.id}.md").write_text(
+                claim_to_md(c2, paper_ref=refs.get(c2.paper, "")), encoding="utf-8")
+            claims.append(c2)
         else:
             drops["claims"] += 1
 
@@ -65,27 +67,22 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     for op in pkg.open_problems:
         kept_flags = [k for k in op.flagged_by if k in verified]
         if kept_flags:
-            op.flagged_by = kept_flags                                            # prune (ASSM-1)
-            (out / "open-problems" / f"{op.id}.md").write_text(
-                problem_to_md(op, refs=refs), encoding="utf-8")
-            problems.append(op)
+            op2 = replace(op, flagged_by=kept_flags)
+            (out / "open-problems" / f"{op2.id}.md").write_text(
+                problem_to_md(op2, refs=refs), encoding="utf-8")
+            problems.append(op2)
         else:
             drops["open_problems"] += 1
 
     debates = []
     for d in pkg.debates:
-        kept_pos = []
-        for pos in d.positions:
-            vp = [k for k in pos.papers if k in verified]
-            if vp:
-                pos.papers = vp
-                kept_pos.append(pos)
-            else:
-                drops["positions"] += 1
+        kept_pos = [replace(pos, papers=vp) for pos in d.positions
+                    if (vp := [k for k in pos.papers if k in verified])]
+        drops["positions"] += sum(1 for pos in d.positions if not [k for k in pos.papers if k in verified])
         if kept_pos:
-            d.positions = kept_pos
-            (out / "debates" / f"{d.id}.md").write_text(debate_to_md(d), encoding="utf-8")
-            debates.append(d)
+            d2 = replace(d, positions=kept_pos)
+            (out / "debates" / f"{d2.id}.md").write_text(debate_to_md(d2), encoding="utf-8")
+            debates.append(d2)
         else:
             drops["debates"] += 1
 

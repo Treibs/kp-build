@@ -96,8 +96,14 @@ def _safe(url: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
         return None, ""
 
 
+def strip_arxiv_prefix(s: str) -> str:
+    """Drop a leading 'arXiv:'/'arxiv:' (any case) and surrounding space — so a prefixed id never
+    reaches an API URL malformed. Shared by the build gate and the falsify harness."""
+    return re.sub(r"(?i)^\s*arxiv:\s*", "", s.strip())
+
+
 def _arxiv_title(arxiv_id: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
-    aid = arxiv_id.strip().replace("arXiv:", "").strip()
+    aid = strip_arxiv_prefix(arxiv_id)
     url = f"http://export.arxiv.org/api/query?id_list={urllib.parse.quote(aid, safe='')}&max_results=1"
     raw, err = _safe(url, get)
     if err:
@@ -189,12 +195,12 @@ def verify_paper(p: Paper, *, get: Callable[[str], str] = _http_get, today: str 
             return done("not-found", "arxiv")
         if not p.title:
             if not p.url:
-                p.url = f"https://arxiv.org/abs/{p.arxiv_id.replace('arXiv:', '').strip()}"
+                p.url = f"https://arxiv.org/abs/{strip_arxiv_prefix(p.arxiv_id)}"
             return done("verified", "arxiv", ct, 1.0)
         ok, score = titles_match_strict(p.title, ct)
         if ok:
             if not p.url:
-                p.url = f"https://arxiv.org/abs/{p.arxiv_id.replace('arXiv:', '').strip()}"
+                p.url = f"https://arxiv.org/abs/{strip_arxiv_prefix(p.arxiv_id)}"
             return done("verified", "arxiv", ct, score)
         return done("id-title-mismatch", "arxiv", ct, score)
 

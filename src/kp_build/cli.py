@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -100,6 +101,10 @@ def _load(path: str) -> Package:
             errs.append(f"papers[{i}]: missing cite_key"); continue
         if not isinstance(ck, str):
             errs.append(f"papers[{i}]: cite_key must be a string, got {type(ck).__name__}"); continue
+        if not re.fullmatch(r"[A-Za-z0-9_.-]+", ck):
+            # cite_key is used verbatim as a filename and a [[papers/<key>]] wikilink target — keep the
+            # mapping bijective and path-safe (a slash would escape the papers/ dir and abort the build)
+            errs.append(f"papers[{i}]: cite_key {ck!r} has unsafe characters (allowed: letters, digits, '_', '.', '-')"); continue
         if ck in seen:
             errs.append(f"duplicate cite_key {ck!r} (papers[{seen[ck]}] and papers[{i}])"); continue
         seen[ck] = i
@@ -188,6 +193,14 @@ def _load(path: str) -> Package:
 
 
 def _cmd_build(args) -> int:
+    from .validate import _NAME_RE, _VERSION_RE
+    if args.name and not _NAME_RE.match(args.name):                 # fail fast, before the slow verify+assemble
+        print(f"error: --name {args.name!r} is not a valid kpm package name "
+              f"(lowercase, optional @scope/, e.g. @kp/my-topic)", file=sys.stderr)
+        return 2
+    if not _VERSION_RE.match(args.version):
+        print(f"error: --version {args.version!r} is not an exact semver (e.g. 0.1.0)", file=sys.stderr)
+        return 2
     pkg = _load(args.input)
     today = args.built or datetime.date.today().isoformat()
     if args.no_verify:
@@ -314,7 +327,8 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     try:
         return args.func(args)
-    except (ResearchInputError, FileNotFoundError) as e:
+    except (ResearchInputError, OSError) as e:
+        # OSError covers FileNotFoundError, NotADirectoryError (e.g. `report <a-file>.json`), PermissionError
         print(f"error: {e}", file=sys.stderr)
         return 2
     except (TypeError, AttributeError, ValueError, KeyError) as e:

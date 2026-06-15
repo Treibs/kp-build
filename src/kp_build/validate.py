@@ -111,6 +111,13 @@ def _check_knowledge_json(path: Path) -> List[str]:
     files = m.get("files")
     if not isinstance(files, list) or not files:
         out.append("knowledge.json: files must be a non-empty list of globs")
+    else:
+        for i, entry in enumerate(files):
+            if not isinstance(entry, str):
+                out.append(f"knowledge.json: files[{i}] must be a string"); continue
+            pat = entry[1:] if entry.startswith("!") else entry     # kpm allows a leading '!' exclude
+            if pat.startswith("/") or ".." in pat.split("/"):
+                out.append(f"knowledge.json: files[{i}] {entry!r} must be a safe relative path")
     ep = m.get("entrypoint", "README.md")
     if not isinstance(ep, str) or not ep.lower().endswith(".md"):
         out.append("knowledge.json: entrypoint must be a markdown file")

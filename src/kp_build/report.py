@@ -72,8 +72,8 @@ def _scorecard(man: dict) -> str:
             f'<div class="metrics">{_bars("precision", b.get("precision"), k.get("precision"))}'
             f'{_bars("recall (spine coverage)", b.get("recall"), k.get("recall"))}'
             f'{_bars("f1", b.get("f1"), k.get("f1"))}</div>'
-            f'<div class="cov">base covered {b.get("spine_covered","?")}/{b.get("spine_size","?")} of the '
-            f'verified spine; KP covered {k.get("spine_covered","?")}/{k.get("spine_size","?")}.</div>'
+            f'<div class="cov">base covered {_esc(b.get("spine_covered","?"))}/{_esc(b.get("spine_size","?"))} of the '
+            f'verified spine; KP covered {_esc(k.get("spine_covered","?"))}/{_esc(k.get("spine_size","?"))}.</div>'
             f'{fakes_html}</section>')
 
 
@@ -189,7 +189,7 @@ def build_report(pkg_dir: str | Path) -> str:
         f"{name}@{know.get('version','?')}", f"built {man.get('built','?')}",
         f"{s.get('papers_verified','?')}/{s.get('papers_total','?')} verified",
         f"source years {span}"])
-    counts = "".join(f'<div class="stat"><b>{v}</b><span>{lbl}</span></div>' for v, lbl in [
+    counts = "".join(f'<div class="stat"><b>{_esc(v)}</b><span>{lbl}</span></div>' for v, lbl in [
         (s.get("papers_verified", 0), "papers"), (s.get("claims", 0), "claims"),
         (s.get("open_problems", 0), "open problems"), (s.get("debates", 0), "debates"),
         (s.get("benchmarks", 0), "benchmarks")])
