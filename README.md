@@ -1,5 +1,9 @@
 # kp-build — citation-verified knowledge packages for agents
 
+[![tests](https://github.com/Treibs/kp-build/actions/workflows/ci.yml/badge.svg)](https://github.com/Treibs/kp-build/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/kp-build)](https://pypi.org/project/kp-build/)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 An LLM agent working on a niche or recent topic burns compute reconstructing the field from scratch
 every time — and routinely cites papers that don't exist. **kp-build builds that foundation once:** a
 small, verified knowledge package an agent loads to actually *know* a narrow research area — deep enough
