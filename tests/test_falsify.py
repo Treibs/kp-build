@@ -10,6 +10,19 @@ def test_parse_citations():
     assert ("1706.03762", "Attention Is All You Need") in cites
 
 
+def test_parse_citations_doi_edge_cases():
+    # a non-CS (DOI-heavy) regression: a DOI's 'YYYY.NNNNN' tail must NOT be mis-read as an arXiv id,
+    # and a DOI with internal parens (Lancet 'S0140-6736(YY)…') must be captured whole.
+    h = [x for x, _ in parse_citations("STEP-8 (10.1001/jama.2021.23619) and oral (10.1016/s0140-6736(23)01185-6).")]
+    assert "10.1001/jama.2021.23619" in h and "10.1016/s0140-6736(23)01185-6" in h
+    assert "2021.23619" not in h                 # the DOI tail is NOT a separate (fake) arXiv cite
+    h2 = [x for x, _ in parse_citations("see arXiv:2503.01840 and 10.1056/nejmoa2032183")]
+    assert "2503.01840" in h2 and "10.1056/nejmoa2032183" in h2    # genuine arXiv id still parsed alongside a DOI
+    # an em-dash (or trailing prose) attached to a DOI must not be swallowed into the handle
+    h3 = [x for x, _ in parse_citations("GI events (10.1111/dom.14551)—and discontinuation")]
+    assert h3 == ["10.1111/dom.14551"]
+
+
 def test_score_citations_flags_fakes_mocked():
     ans = ("## Citations\n"
            "2211.17192 | Fast Inference from Transformers via Speculative Decoding\n"

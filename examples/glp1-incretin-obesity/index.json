@@ -1,0 +1,931 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "campbell2013",
+      "title": "Pharmacology, physiology, and mechanisms of incretin hormone action",
+      "year": 2013,
+      "arxiv_id": "",
+      "doi": "10.1016/j.cmet.2013.04.008",
+      "verified": true
+    },
+    {
+      "cite_key": "coskun2018",
+      "title": "LY3298176, a novel dual GIP and GLP-1 receptor agonist for the treatment of type 2 diabetes mellitus: From discovery to clinical proof of concept",
+      "year": 2018,
+      "arxiv_id": "",
+      "doi": "10.1016/j.molmet.2018.09.009",
+      "verified": true
+    },
+    {
+      "cite_key": "muller2019",
+      "title": "Glucagon-like peptide 1 (GLP-1)",
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1016/j.molmet.2019.09.010",
+      "verified": true
+    },
+    {
+      "cite_key": "drucker2022",
+      "title": "GLP-1 physiology informs the pharmacotherapy of obesity",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/j.molmet.2021.101351",
+      "verified": true
+    },
+    {
+      "cite_key": "wilding2021",
+      "title": "Once-Weekly Semaglutide in Adults with Overweight or Obesity",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2032183",
+      "verified": true
+    },
+    {
+      "cite_key": "jastreboff2022",
+      "title": "Tirzepatide Once Weekly for the Treatment of Obesity",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2206038",
+      "verified": true
+    },
+    {
+      "cite_key": "aronne2025",
+      "title": "Tirzepatide as Compared with Semaglutide for the Treatment of Obesity",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2416394",
+      "verified": true
+    },
+    {
+      "cite_key": "rubino2022",
+      "title": "Effect of Weekly Subcutaneous Semaglutide vs Daily Liraglutide on Body Weight in Adults With Overweight or Obesity Without Diabetes",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1001/jama.2021.23619",
+      "verified": true
+    },
+    {
+      "cite_key": "lincoff2023",
+      "title": "Semaglutide and Cardiovascular Outcomes in Obesity without Diabetes",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2307563",
+      "verified": true
+    },
+    {
+      "cite_key": "perkovic2024",
+      "title": "Effects of Semaglutide on Chronic Kidney Disease in Patients with Type 2 Diabetes",
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2403347",
+      "verified": true
+    },
+    {
+      "cite_key": "kosiborod2023",
+      "title": "Semaglutide in Patients with Heart Failure with Preserved Ejection Fraction and Obesity",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2306963",
+      "verified": true
+    },
+    {
+      "cite_key": "wharton2021",
+      "title": "Gastrointestinal tolerability of once-weekly semaglutide 2.4 mg in adults with overweight or obesity, and the relationship between gastrointestinal adverse events and weight loss",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1111/dom.14551",
+      "verified": true
+    },
+    {
+      "cite_key": "jastreboff2023",
+      "title": "Triple\u2013Hormone-Receptor Agonist Retatrutide for Obesity \u2014 A Phase 2 Trial",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2301972",
+      "verified": true
+    },
+    {
+      "cite_key": "wharton2023",
+      "title": "Daily Oral GLP-1 Receptor Agonist Orforglipron for Adults with Obesity",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2302392",
+      "verified": true
+    },
+    {
+      "cite_key": "knop2023",
+      "title": "Oral semaglutide 50 mg taken once per day in adults with overweight or obesity (OASIS 1): a randomised, double-blind, placebo-controlled, phase 3 trial",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1016/s0140-6736(23)01185-6",
+      "verified": true
+    },
+    {
+      "cite_key": "rosenstock2026",
+      "title": "Efficacy and safety of once-daily oral orforglipron compared with oral semaglutide in adults with type 2 diabetes (ACHIEVE-3): a multinational, multicentre, non-inferiority, open-label, randomised, phase 3 trial",
+      "year": 2026,
+      "arxiv_id": "",
+      "doi": "10.1016/s0140-6736(26)00202-3",
+      "verified": true
+    },
+    {
+      "cite_key": "wilding2022",
+      "title": "Weight regain and cardiometabolic effects after withdrawal of semaglutide: The STEP 1 trial extension",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1111/dom.14725",
+      "verified": true
+    },
+    {
+      "cite_key": "linge2024",
+      "title": "Muscle Mass and Glucagon-Like Peptide-1 Receptor Agonists: Adaptive or Maladaptive Response to Weight Loss?",
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1161/circulationaha.124.067676",
+      "verified": true
+    },
+    {
+      "cite_key": "hwang2025",
+      "title": "Lifetime Health Effects and Cost-Effectiveness of Tirzepatide and Semaglutide in US Adults",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.1001/jamahealthforum.2024.5586",
+      "verified": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "campbell2013",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "campbell2013",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "coskun2018",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "coskun2018",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "paper": "muller2019",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c6",
+      "paper": "drucker2022",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "paper": "drucker2022",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "wilding2021",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "paper": "wilding2021",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10",
+      "paper": "wilding2021",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "paper": "wilding2021",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c12",
+      "paper": "jastreboff2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "jastreboff2022",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c14",
+      "paper": "jastreboff2022",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c15",
+      "paper": "jastreboff2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "paper": "jastreboff2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c17",
+      "paper": "aronne2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "paper": "aronne2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c19",
+      "paper": "aronne2025",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "paper": "rubino2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c21",
+      "paper": "lincoff2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c22",
+      "paper": "lincoff2023",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c23",
+      "paper": "lincoff2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "paper": "perkovic2024",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c25",
+      "paper": "perkovic2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c26",
+      "paper": "kosiborod2023",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "paper": "wharton2021",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "paper": "wharton2021",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c29",
+      "paper": "jastreboff2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c30",
+      "paper": "jastreboff2023",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "paper": "wharton2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c32",
+      "paper": "wharton2023",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "paper": "knop2023",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "paper": "rosenstock2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c35",
+      "paper": "rosenstock2026",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c36",
+      "paper": "wilding2022",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c37",
+      "paper": "wilding2022",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c38",
+      "paper": "linge2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c39",
+      "paper": "linge2024",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c40",
+      "paper": "hwang2025",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c41",
+      "paper": "hwang2025",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "flagged_by": [
+        "wilding2022"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o2",
+      "flagged_by": [
+        "linge2024"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o3",
+      "flagged_by": [
+        "hwang2025"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "o4",
+      "flagged_by": [
+        "lincoff2023"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o5",
+      "flagged_by": [
+        "aronne2025",
+        "rosenstock2026",
+        "jastreboff2023",
+        "wharton2023"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "o6",
+      "flagged_by": [
+        "drucker2022",
+        "coskun2018",
+        "campbell2013"
+      ],
+      "status": "partially-addressed"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "Tirzepatide is superior to semaglutide for weight loss.",
+        "Before the direct trial, the comparison was unresolved and rested on indirect evidence."
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "Orforglipron offers greater glycemic efficacy.",
+        "The greater efficacy of orforglipron comes with a tolerability trade-off, and oral semaglutide already shows meaningful weight efficacy."
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "STEP 1 mean body-weight change (week 68)",
+      "value": "-14.9% vs -2.4% (treatment difference -12.4 pp)",
+      "metric": "Mean % change in body weight",
+      "method": "Semaglutide 2.4 mg once weekly vs placebo",
+      "paper": "wilding2021"
+    },
+    {
+      "id": "b2",
+      "name": "SURMOUNT-1 mean body-weight change (week 72)",
+      "value": "-15.0% / -19.5% / -20.9% vs -3.1% (placebo)",
+      "metric": "Mean % change in body weight",
+      "method": "Tirzepatide 5/10/15 mg once weekly vs placebo",
+      "paper": "jastreboff2022"
+    },
+    {
+      "id": "b3",
+      "name": "SURMOUNT-5 head-to-head weight change (week 72)",
+      "value": "-20.2% vs -13.7% (P<0.001)",
+      "metric": "LS mean % change in body weight",
+      "method": "Max-tolerated tirzepatide vs semaglutide 2.4 mg",
+      "paper": "aronne2025"
+    },
+    {
+      "id": "b4",
+      "name": "STEP 8 head-to-head weight change (week 68)",
+      "value": "-15.8% vs -6.4% (difference -9.4 pp)",
+      "metric": "Mean % change in body weight",
+      "method": "Semaglutide 2.4 mg weekly vs liraglutide 3.0 mg daily",
+      "paper": "rubino2022"
+    },
+    {
+      "id": "b5",
+      "name": "SELECT primary MACE outcome",
+      "value": "HR 0.80 (6.5% vs 8.0%); mean follow-up 39.8 months",
+      "metric": "3-point MACE hazard ratio (event rate)",
+      "method": "Semaglutide 2.4 mg weekly vs placebo",
+      "paper": "lincoff2023"
+    },
+    {
+      "id": "b6",
+      "name": "FLOW primary kidney-CV composite outcome",
+      "value": "HR 0.76 (331 vs 410 events; 24% lower risk)",
+      "metric": "Composite primary outcome hazard ratio",
+      "method": "Semaglutide vs placebo",
+      "paper": "perkovic2024"
+    },
+    {
+      "id": "b8",
+      "name": "STEP 1 extension net weight loss after withdrawal (week 120)",
+      "value": "-5.6% net (17.3% lost, 11.6 pp regained)",
+      "metric": "Net % weight change from baseline at week 120",
+      "method": "Semaglutide 2.4 mg then withdrawal",
+      "paper": "wilding2022"
+    },
+    {
+      "id": "b9",
+      "name": "Retatrutide responders reaching >=15% weight loss (week 48)",
+      "value": "60% / 75% / 83% vs 2% (placebo)",
+      "metric": "Proportion achieving >=15% weight loss",
+      "method": "Retatrutide 4/8/12 mg vs placebo",
+      "paper": "jastreboff2023"
+    },
+    {
+      "id": "b10",
+      "name": "Orforglipron weight change (week 26)",
+      "value": "-8.6% to -12.6% vs -2.0% (placebo)",
+      "metric": "Mean % change in body weight",
+      "method": "Oral orforglipron (dose cohorts) vs placebo",
+      "paper": "wharton2023"
+    },
+    {
+      "id": "b11",
+      "name": "ACHIEVE-3 HbA1c treatment difference (week 52)",
+      "value": "-0.48% (95% CI -0.65 to -0.31; p<0.0001)",
+      "metric": "Estimated treatment difference in HbA1c",
+      "method": "Orforglipron 12 mg vs oral semaglutide 7 mg",
+      "paper": "rosenstock2026"
+    },
+    {
+      "id": "b12",
+      "name": "Cost-effectiveness ICER vs lifestyle modification",
+      "value": "$197,023 (tirzepatide); $467,676 (semaglutide)",
+      "metric": "ICER ($/QALY) at current net prices",
+      "method": "Tirzepatide and semaglutide vs lifestyle modification",
+      "paper": "hwang2025"
+    },
+    {
+      "id": "b13",
+      "name": "SELECT adverse-event discontinuation",
+      "value": "16.6% vs 8.2% (P<0.001)",
+      "metric": "Permanent discontinuation due to adverse events",
+      "method": "Semaglutide 2.4 mg weekly vs placebo",
+      "paper": "lincoff2023"
+    }
+  ],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "campbell2013",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "campbell2013",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "coskun2018",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "coskun2018",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "muller2019",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "drucker2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "drucker2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "wilding2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "wilding2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "wilding2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "wilding2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "jastreboff2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "jastreboff2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "jastreboff2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "jastreboff2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "jastreboff2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "aronne2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "aronne2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "aronne2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "rubino2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "lincoff2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "lincoff2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "lincoff2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "perkovic2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c25",
+      "to": "perkovic2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c26",
+      "to": "kosiborod2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c27",
+      "to": "wharton2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c28",
+      "to": "wharton2021",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "jastreboff2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "jastreboff2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "wharton2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "wharton2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "knop2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "rosenstock2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "rosenstock2026",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c36",
+      "to": "wilding2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c37",
+      "to": "wilding2022",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c38",
+      "to": "linge2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c39",
+      "to": "linge2024",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c40",
+      "to": "hwang2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c41",
+      "to": "hwang2025",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "o1",
+      "to": "wilding2022",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o2",
+      "to": "linge2024",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o3",
+      "to": "hwang2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o4",
+      "to": "lincoff2023",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "aronne2025",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "rosenstock2026",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "jastreboff2023",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o5",
+      "to": "wharton2023",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "drucker2022",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "coskun2018",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "o6",
+      "to": "campbell2013",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "b1",
+      "to": "wilding2021",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b2",
+      "to": "jastreboff2022",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b3",
+      "to": "aronne2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b4",
+      "to": "rubino2022",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b5",
+      "to": "lincoff2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b6",
+      "to": "perkovic2024",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b8",
+      "to": "wilding2022",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b9",
+      "to": "jastreboff2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b10",
+      "to": "wharton2023",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b11",
+      "to": "rosenstock2026",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b12",
+      "to": "hwang2025",
+      "rel": "reported-in"
+    },
+    {
+      "from": "b13",
+      "to": "lincoff2023",
+      "rel": "reported-in"
+    }
+  ]
+}

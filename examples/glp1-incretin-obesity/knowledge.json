@@ -1,0 +1,13 @@
+{
+  "name": "@kp/glp-1-and-dual-gip-glp-1-incretin",
+  "version": "0.1.0",
+  "description": "In scope: incretin-based pharmacotherapy for obesity and type-2-diabetes-adjacent cardiometabolic outcomes \u2014 GLP-1 receptor agonists (semaglutide, liraglutide) and dual GIP/GLP-1 agonists (tirzepatide) and emerging triple/oral agents; mechanism of action, weight-loss efficacy vs comparators, cardiov",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

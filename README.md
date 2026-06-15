@@ -104,16 +104,18 @@ assemble, ground, lint, score. Two hard gates run at build time:
   match) and **recall** (coverage of the verified spine). Survive that, and it's a real, recorded win;
   fail, and it says so.
 
-## The three example packages
+## The example packages
 
-`examples/` ships three real packages built end-to-end (also kept as regression fixtures). Together they
-show exactly what the probe and the falsification check discriminate:
+`examples/` ships four real packages built end-to-end (also kept as regression fixtures). The first three
+show exactly what the probe and the falsification check discriminate; the fourth shows kp-build works
+**beyond arXiv** (journal papers verified via Crossref/DOI):
 
 | package | the model is… | `probe` | did it help? |
 |---|---|---|---|
 | `discrete-diffusion-llms` | **weak** (it *fabricates* cites) | BUILD | **yes** — fixes mislabeled cites (precision) **and** coverage (recall) |
 | `speculative-decoding-llms` | **strong** (knows it cold) | SKIP | only on coverage — precision was already perfect |
 | `rubric-based-rl-nonverifiable` | **weak** (it *hedges*, 2026 topic) | BUILD | **hugely** — spine coverage 0.07 → 1.00 |
+| `glp1-incretin-obesity` | **biomedical** (non-arXiv, Crossref/DOI) | SKIP | on coverage — recall 0.26 → 0.95 with verifiable DOIs |
 
 See [`examples/README.md`](examples/README.md) for the full story — including how the rubric-RL example
 exposed, and drove a fix for, a blind spot in the probe.

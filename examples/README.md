@@ -2,14 +2,16 @@
 
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
-Three packages, three regimes — together they show what the `probe` pre-screen and the falsification
-gate actually discriminate (and the blind spot one of them drove a fix for):
+Four packages — three show what the `probe` pre-screen and the falsification gate discriminate (and the
+blind spot one drove a fix for); the fourth shows kp-build works **beyond arXiv** (journal papers verified
+via Crossref/DOI):
 
 | package | topic regime | `probe` | falsification verdict |
 |---|---|---|---|
 | [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | model-**weak**, model *fabricates* | BUILD | **KP HELPS** — wins on *precision* (kills mislabeled cites) **and** recall |
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | model-**known** | SKIP | **KP HELPS on coverage only** — precision already 1.0; the win is pure recall |
 | [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | BUILD† | **KP HELPS hugely** — recall 0.07→1.00 |
+| [`glp1-incretin-obesity/`](#glp1-incretin-obesity) | **biomedical** (non-arXiv; Crossref/DOI) | SKIP | **KP HELPS on coverage** — recall 0.26→0.95 with verifiable DOIs |
 
 † **This package exposed a probe blind spot and drove a fix.** The probe was originally *precision-only* — it
 greenlit a build only when the unaided model *fabricated* citations. A well-calibrated model that *hedges*
@@ -202,4 +204,46 @@ kp-build falsify examples/rubric-based-rl-nonverifiable \
   --question "2026 frontier of rubric-based RL for non-verifiable domains" \
   --base examples/rubric-based-rl-nonverifiable.base-answer.txt \
   --kp   examples/rubric-based-rl-nonverifiable.kp-answer.txt
+```
+
+## `glp1-incretin-obesity/`
+
+A knowledge package on **GLP-1 and dual GIP/GLP-1 incretin receptor agonists for obesity and
+cardiometabolic disease** — the proof that kp-build is **not arXiv-only**. Every paper here is a journal
+article (NEJM, Lancet, JAMA, Cell Metabolism, …) identified by **DOI and verified live against Crossref**,
+exactly the same hard gate, different index.
+
+| | value |
+|---|---|
+| citations verified | **19 / 19** (live, Crossref/DOI) |
+| claims / open problems / debates / benchmarks | 41 / 6 / 2 / 12 |
+| grounding | n/a — passage grounding is arXiv-only; these claims are drafter-quoted |
+
+**The gate caught a bad cite, live.** During the build the research wave proposed one paper (`rubino2021`)
+whose DOI did not match its claimed title; the citation gate **rejected it** (`id-title-mismatch`) and
+dropped the 2 claims + 1 benchmark anchored to it — the same "no hallucinated citations" guarantee, on a
+non-arXiv source. (It was removed from the input here so the fixture builds a clean 19/19.)
+
+### Falsification
+
+Held-out task: *write a background section on the 2023–2026 incretin-for-obesity frontier, citing papers by
+DOI.* Base (unaided recall) vs KP-loaded:
+
+| | base (memory) | KP-loaded |
+|---|---|---|
+| precision | **1.00** | **1.00** |
+| recall (spine coverage) | 0.26 (5/19) | **0.95 (18/19)** |
+| **f1** | **0.42** | **0.97** |
+
+**Verdict: KP HELPS on coverage.** The model recalls the famous trials (STEP-1, SURMOUNT-1, SELECT) and
+even some real DOIs, but covers only ~5 of the 19 spine papers; the package supplies the full landscape
+with **verifiable** DOIs. (Building this example also surfaced and fixed three real DOI-parsing bugs in
+`falsify` — an arXiv-tail collision, Lancet `S0140-6736(YY)…` parens, and em-dash attachment — the kind of
+edge a non-CS domain flushes out.) Re-score with:
+
+```bash
+kp-build falsify examples/glp1-incretin-obesity \
+  --question "2023-2026 frontier of incretin pharmacotherapy for obesity" \
+  --base examples/glp1-incretin-obesity.base-answer.txt \
+  --kp   examples/glp1-incretin-obesity.kp-answer.txt
 ```

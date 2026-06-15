@@ -1,0 +1,81 @@
+{
+  "schema": "wikillm/1",
+  "topic": "GLP-1 and dual GIP/GLP-1 incretin receptor agonists for obesity and cardiometabolic disease",
+  "scope": "In scope: incretin-based pharmacotherapy for obesity and type-2-diabetes-adjacent cardiometabolic outcomes \u2014 GLP-1 receptor agonists (semaglutide, liraglutide) and dual GIP/GLP-1 agonists (tirzepatide) and emerging triple/oral agents; mechanism of action, weight-loss efficacy vs comparators, cardiovascular and metabolic outcomes, adverse effects/tolerability, and open clinical questions. Out of scope: bariatric surgery, non-incretin anti-obesity drugs except as named comparators, and basic receptor pharmacology unconnected to clinical outcomes. Emphasis on 2022-2026 trial evidence.",
+  "built": "2026-06-15",
+  "stats": {
+    "papers_verified": 19,
+    "papers_total": 19,
+    "claims": 41,
+    "open_problems": 6,
+    "debates": 2,
+    "benchmarks": 12,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0
+    }
+  },
+  "source_span": {
+    "oldest": 2013,
+    "newest": 2026,
+    "latest_checked": "2026-06-15"
+  },
+  "coverage": {
+    "sub_questions": [
+      "Mechanism: how GLP-1 and dual GIP/GLP-1 receptor agonists drive weight loss and glycemic control (appetite/satiety, gastric emptying, insulinotropic effects) \u2014 the established pharmacology.",
+      "Weight-loss efficacy: magnitude of weight reduction for semaglutide and tirzepatide in pivotal obesity trials (e.g. STEP, SURMOUNT), and head-to-head or indirect comparisons.",
+      "Cardiometabolic & cardiovascular outcomes: effects on MACE, blood pressure, lipids, HbA1c, and other endpoints in outcome trials (e.g. SELECT).",
+      "Adverse effects & tolerability: gastrointestinal events, discontinuation rates, weight regain on cessation, and safety signals.",
+      "Emerging agents & formulations: oral GLP-1 agents, triple agonists (e.g. retatrutide), and the 2024-2026 pipeline.",
+      "Open questions/limitations authors explicitly flag: durability, muscle-mass loss, access/cost, long-term safety, and unanswered comparative questions."
+    ],
+    "queries": [
+      "semaglutide obesity weight loss trial",
+      "tirzepatide SURMOUNT obesity",
+      "semaglutide cardiovascular outcomes SELECT",
+      "GLP-1 receptor agonist mechanism satiety",
+      "retatrutide triple agonist obesity",
+      "oral semaglutide obesity",
+      "incretin therapy weight regain discontinuation",
+      "tirzepatide vs semaglutide weight"
+    ]
+  },
+  "falsification": {
+    "run": true,
+    "question": "2023-2026 frontier of incretin pharmacotherapy for obesity",
+    "base": {
+      "cited": 8,
+      "checked": 8,
+      "unresolved": 0,
+      "real": 8,
+      "fake": 0,
+      "fake_list": [],
+      "newest_real_ym": null,
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 0.2631578947368421,
+      "spine_covered": 5,
+      "spine_size": 19,
+      "f1": 0.417
+    },
+    "kp": {
+      "cited": 18,
+      "checked": 18,
+      "unresolved": 0,
+      "real": 18,
+      "fake": 0,
+      "fake_list": [],
+      "newest_real_ym": null,
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 0.9473684210526315,
+      "spine_covered": 18,
+      "spine_size": 19,
+      "f1": 0.973
+    },
+    "verdict": "KP HELPS \u2014 f1 0.42 (base) \u2192 0.97 (KP). precision 1.00\u21921.00, recall 0.26\u21920.95, 0 fake cites in base vs 0 in KP."
+  }
+}

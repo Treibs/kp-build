@@ -42,7 +42,7 @@ _INSTR_KP = (
 )
 
 _ARXIV_RE = re.compile(r"\b(\d{4}\.\d{4,5})(v\d+)?\b")
-_DOI_RE = re.compile(r"\b(10\.\d{4,9}/[^\s|)\]]+)", re.I)
+_DOI_RE = re.compile(r"\b(10\.\d{4,9}/[^\s|\]–—]+)", re.I)   # allow () (Lancet 'S0140-6736(26)…') but stop at em/en-dash (prose, never in a DOI); trailing ')' etc. stripped below
 
 # MASKED citation attempts — a model that writes 'arXiv:2510.xxxxx' / 'arXiv:XXXX.XXXXX' / 'arXiv: forthcoming'
 # is signalling it WANTED to cite a paper here but could not recall its id — direct evidence it knows the topic has
@@ -127,11 +127,15 @@ def parse_citations(answer: str) -> list[tuple[str, str]]:
             mid = _LEAD_ID_RE.match(line)
             add(*(mid.groups() if mid else (line, "")))
 
-    # inline ids/DOIs anywhere (catch cites not in a clean block); untitled, so existence-only
-    for mobj in _ARXIV_RE.finditer(answer):
-        add(mobj.group(1), "")
+    # inline ids/DOIs anywhere (catch cites not in a clean block); untitled, so existence-only.
+    # DOIs FIRST, masking each matched span, so a DOI-internal 'YYYY.NNNNN' tail (e.g. the '2021.23619'
+    # in '10.1001/jama.2021.23619') is not then mis-read by the arXiv scan as a fabricated arXiv id.
+    masked = list(answer)
     for mobj in _DOI_RE.finditer(answer):
         add(mobj.group(1).rstrip(".,);"), "")
+        masked[mobj.start():mobj.end()] = " " * (mobj.end() - mobj.start())
+    for mobj in _ARXIV_RE.finditer("".join(masked)):
+        add(mobj.group(1), "")
     return out
 
 

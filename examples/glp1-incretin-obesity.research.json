@@ -1,0 +1,1084 @@
+{
+  "topic": "GLP-1 and dual GIP/GLP-1 incretin receptor agonists for obesity and cardiometabolic disease",
+  "scope": "In scope: incretin-based pharmacotherapy for obesity and type-2-diabetes-adjacent cardiometabolic outcomes — GLP-1 receptor agonists (semaglutide, liraglutide) and dual GIP/GLP-1 agonists (tirzepatide) and emerging triple/oral agents; mechanism of action, weight-loss efficacy vs comparators, cardiovascular and metabolic outcomes, adverse effects/tolerability, and open clinical questions. Out of scope: bariatric surgery, non-incretin anti-obesity drugs except as named comparators, and basic receptor pharmacology unconnected to clinical outcomes. Emphasis on 2022-2026 trial evidence.",
+  "papers": [
+    {
+      "cite_key": "campbell2013",
+      "title": "Pharmacology, physiology, and mechanisms of incretin hormone action",
+      "authors": [
+        "Jonathan E. Campbell",
+        "Daniel J. Drucker"
+      ],
+      "year": 2013,
+      "arxiv_id": "",
+      "doi": "10.1016/j.cmet.2013.04.008",
+      "venue": "Cell Metabolism",
+      "key_contributions": [
+        "Establishes the foundational framework that the incretin peptides GLP-1 and GIP regulate islet hormone secretion, glucose concentrations, lipid metabolism, gut motility, appetite, and body weight, providing the scientific basis for incretin-based therapies in type 2 diabetes.",
+        "Distinguishes direct actions of incretin receptors on tissues expressing them from indirect mechanisms mediated through neuronal and endocrine pathways.",
+        "Contrasts the pharmacology versus physiology of incretin hormones and reviews how incretin receptor signaling couples to pleiotropic metabolic actions."
+      ]
+    },
+    {
+      "cite_key": "coskun2018",
+      "title": "LY3298176, a novel dual GIP and GLP-1 receptor agonist for the treatment of type 2 diabetes mellitus: From discovery to clinical proof of concept",
+      "authors": [
+        "Tamer Coskun",
+        "Kyle W. Sloop",
+        "Corina Loghin",
+        "Jorge Alsina-Fernandez",
+        "Shweta Urva",
+        "Krister B. Bokvist",
+        "Xuewei Cui",
+        "Daniel A. Briere",
+        "Over Cabrera",
+        "William C. Roell",
+        "Uma Kuchibhotla",
+        "Julie S. Moyers",
+        "Charles T. Benson",
+        "Ruth E. Gimeno",
+        "David A. D'Alessio",
+        "Axel Haupt"
+      ],
+      "year": 2018,
+      "arxiv_id": "",
+      "doi": "10.1016/j.molmet.2018.09.009",
+      "venue": "Molecular Metabolism",
+      "key_contributions": [
+        "Foundational discovery-to-proof-of-concept characterization of LY3298176 (tirzepatide), a fatty-acid-modified peptide engineered as a dual GIP and GLP-1 receptor agonist for once-weekly subcutaneous dosing.",
+        "Demonstrates that the compound activates both GIP and GLP-1 receptor signaling in vitro and produces glucose-dependent insulin secretion and improved glucose tolerance in mice via both receptors.",
+        "Shows that chronic administration in mice decreases body weight and food intake more potently than a selective GLP-1 receptor agonist, motivating the dual-agonist mechanism rationale for adding GIP action to GLP-1.",
+        "Translates preclinical pharmacology to a Phase 1 program showing reductions in fasting glucose and body weight in healthy subjects and patients with T2DM."
+      ]
+    },
+    {
+      "cite_key": "muller2019",
+      "title": "Glucagon-like peptide 1 (GLP-1)",
+      "authors": [
+        "Timo D. Müller",
+        "Brian Finan",
+        "Stephen R. Bloom",
+        "David D'Alessio",
+        "Daniel J. Drucker",
+        "Peter R. Flatt",
+        "Andreas Fritsche",
+        "Fiona Gribble",
+        "Harvey J. Grill",
+        "Joel F. Habener",
+        "Jens J. Holst",
+        "Wolfgang Langhans",
+        "Juris J. Meier",
+        "Michael A. Nauck",
+        "Diego Perez-Tilve",
+        "Alessandro Pocai",
+        "Frank Reimann",
+        "Darleen A. Sandoval",
+        "Thue W. Schwartz",
+        "Randy J. Seeley",
+        "Kerstin Stemmer",
+        "Mette Tang-Christensen",
+        "Stephen C. Woods",
+        "Richard D. DiMarchi",
+        "Matthias H. Tschöp"
+      ],
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1016/j.molmet.2019.09.010",
+      "venue": "Molecular Metabolism",
+      "key_contributions": [
+        "Comprehensive multi-author consensus review cataloguing the pleiotropic metabolic effects of GLP-1, including glucose-dependent stimulation of insulin secretion, decreased gastric emptying, and inhibition of food intake.",
+        "Frames GLP-1 as a multifaceted hormone extending beyond its classical incretin identity to cardio- and neuroprotective, anti-inflammatory, and reward/palatability actions.",
+        "Connects the mechanistic physiology to the rationale for biochemically modified GLP-1 receptor agonists in type 2 diabetes and obesity."
+      ]
+    },
+    {
+      "cite_key": "drucker2022",
+      "title": "GLP-1 physiology informs the pharmacotherapy of obesity",
+      "authors": [
+        "Daniel J. Drucker"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1016/j.molmet.2021.101351",
+      "venue": "Molecular Metabolism",
+      "key_contributions": [
+        "Synthesizes how GLP-1 receptor agonists augment glucose-dependent insulin release while reducing glucagon secretion and gastric emptying, and inhibit food intake to reduce body weight.",
+        "Dissects the relative contributions of gut-derived versus brain-derived GLP-1 and of vagal afferent pathways versus central GLP1R+ neuronal populations to the anorectic response.",
+        "Distinguishes energy-expenditure pathways (prominent in preclinical models) from reduction of food intake (dominant in animals and humans) as drivers of weight loss.",
+        "Argues the conserved single-GPCR mechanism plus the T2D safety database support long-term GLP1RA use in obesity, potentially rivaling bariatric surgery."
+      ]
+    },
+    {
+      "cite_key": "wilding2021",
+      "title": "Once-Weekly Semaglutide in Adults with Overweight or Obesity",
+      "authors": [
+        "John P.H. Wilding",
+        "Rachel L. Batterham",
+        "Salvatore Calanna",
+        "Melanie Davies",
+        "Luc F. Van Gaal",
+        "Ildiko Lingvay",
+        "Barbara M. McGowan",
+        "Julio Rosenstock",
+        "Marie T.D. Tran",
+        "Thomas A. Wadden",
+        "Sean Wharton",
+        "Koutaro Yokote",
+        "Niels Zeuthen",
+        "Robert F. Kushner"
+      ],
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2032183",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "Pivotal phase 3 STEP 1 trial: 1961 adults with overweight/obesity without diabetes randomized 2:1 to once-weekly semaglutide 2.4 mg vs placebo plus lifestyle intervention over 68 weeks.",
+        "Established the magnitude of semaglutide-induced weight loss: -14.9% mean change vs -2.4% with placebo (estimated treatment difference -12.4 percentage points).",
+        "Documented high responder rates (5%, 10%, 15% weight-loss thresholds) and a predominantly mild-to-moderate, transient gastrointestinal adverse-event profile.",
+        "Established nausea and diarrhea as the most common adverse events, typically transient and mild-to-moderate and subsiding over time."
+      ]
+    },
+    {
+      "cite_key": "jastreboff2022",
+      "title": "Tirzepatide Once Weekly for the Treatment of Obesity",
+      "authors": [
+        "Ania M. Jastreboff",
+        "Louis J. Aronne",
+        "Nadia N. Ahmad",
+        "Sean Wharton",
+        "Lisa Connery",
+        "Breno Alves",
+        "Arihiro Kiyosue",
+        "Shuyu Zhang",
+        "Bing Liu",
+        "Mathijs C. Bunck",
+        "Adam Stefanski"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2206038",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "Pivotal phase 3 SURMOUNT-1 trial: 2539 adults with obesity (or overweight with complication, excluding diabetes) randomized 1:1:1:1 to tirzepatide 5/10/15 mg or placebo over 72 weeks.",
+        "Established the dose-dependent magnitude of tirzepatide weight loss: -15.0% (5 mg), -19.5% (10 mg), -20.9% (15 mg) vs -3.1% placebo.",
+        "Demonstrated the highest weight-loss efficacy of any obesity pharmacotherapy reported at the time, with a gastrointestinal-dominant, mostly mild-to-moderate safety profile.",
+        "Reported improvements across all prespecified cardiometabolic risk-factor measures with tirzepatide, supporting cardiometabolic benefit beyond weight."
+      ]
+    },
+    {
+      "cite_key": "aronne2025",
+      "title": "Tirzepatide as Compared with Semaglutide for the Treatment of Obesity",
+      "authors": [
+        "Louis J. Aronne",
+        "Deborah Bade Horn",
+        "Carel W. le Roux",
+        "Wayne Ho",
+        "Beverly L. Falcon",
+        "Elisa Gomez Valderas",
+        "Sagar Das",
+        "Clare J. Lee",
+        "Leonard C. Glass",
+        "Cagri Senyucel",
+        "Julia P. Dunn"
+      ],
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2416394",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "SURMOUNT-5: first large randomized head-to-head trial directly comparing maximum-tolerated-dose tirzepatide vs semaglutide 2.4 mg for obesity over 72 weeks.",
+        "Demonstrated superior weight loss with tirzepatide: -20.2% vs -13.7% with semaglutide (P<0.001), resolving the prior reliance on cross-trial/indirect comparisons.",
+        "Provides the definitive direct-comparison evidence quantifying the efficacy gap between the dual GIP/GLP-1 agonist and the GLP-1 receptor agonist.",
+        "Reports gastrointestinal events as the most common adverse effects in both groups, mostly mild-to-moderate and concentrated during dose escalation."
+      ]
+    },
+    {
+      "cite_key": "rubino2022",
+      "title": "Effect of Weekly Subcutaneous Semaglutide vs Daily Liraglutide on Body Weight in Adults With Overweight or Obesity Without Diabetes",
+      "authors": [
+        "Domenica M. Rubino",
+        "Frank L. Greenway",
+        "Usman Khalid",
+        "Patrick M. O'Neil",
+        "Julio Rosenstock",
+        "Rasmus Sørrig",
+        "Thomas A. Wadden",
+        "Alicja Wizert",
+        "W. Timothy Garvey"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1001/jama.2021.23619",
+      "venue": "JAMA",
+      "key_contributions": [
+        "STEP 8: randomized head-to-head trial of once-weekly semaglutide 2.4 mg vs once-daily liraglutide 3.0 mg in 338 adults with overweight/obesity without diabetes over 68 weeks.",
+        "Established semaglutide's superiority over the prior-generation GLP-1 agonist liraglutide: -15.8% vs -6.4% weight change (difference -9.4 percentage points).",
+        "Anchors the GLP-1 efficacy hierarchy by quantifying the gap between newer and older GLP-1 receptor agonists in a direct comparison."
+      ]
+    },
+    {
+      "cite_key": "lincoff2023",
+      "title": "Semaglutide and Cardiovascular Outcomes in Obesity without Diabetes",
+      "authors": [
+        "A. Michael Lincoff",
+        "Kirstine Brown-Frandsen",
+        "Helen M. Colhoun",
+        "John Deanfield",
+        "Scott S. Emerson",
+        "Sille Esbjerg",
+        "Søren Hardt-Lindberg",
+        "G. Kees Hovingh",
+        "Steven E. Kahn",
+        "Robert F. Kushner",
+        "Ildiko Lingvay",
+        "Tugce K. Oral",
+        "Marie M. Michelsen",
+        "Jorge Plutzky",
+        "Christoffer W. Tornøe",
+        "Donna H. Ryan"
+      ],
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2307563",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "SELECT trial: the first dedicated cardiovascular outcomes trial of a GLP-1 receptor agonist (semaglutide 2.4 mg weekly) in patients with established cardiovascular disease and overweight/obesity but WITHOUT diabetes (17,604 patients).",
+        "Demonstrated a statistically significant reduction in three-point MACE (CV death, nonfatal MI, nonfatal stroke) with a hazard ratio of 0.80 (20% relative reduction), establishing cardiovascular benefit independent of glycemic indication.",
+        "Quantified tolerability: more frequent permanent discontinuation due to adverse events with semaglutide (16.6%) vs placebo (8.2%) over ~40 months of follow-up.",
+        "Provided large-scale long-term safety data."
+      ]
+    },
+    {
+      "cite_key": "perkovic2024",
+      "title": "Effects of Semaglutide on Chronic Kidney Disease in Patients with Type 2 Diabetes",
+      "authors": [
+        "Vlado Perkovic",
+        "Katherine R. Tuttle",
+        "Peter Rossing",
+        "Kenneth W. Mahaffey",
+        "Johannes F.E. Mann",
+        "George Bakris",
+        "Florian M.M. Baeres",
+        "Thomas Idorn",
+        "Heidrun Bosch-Traberg",
+        "Nanna Leonora Lausvig",
+        "Richard Pratley"
+      ],
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2403347",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "FLOW trial: outcome trial of semaglutide in patients with type 2 diabetes and chronic kidney disease, with a composite kidney + cardiovascular primary endpoint.",
+        "Showed a 24% reduction in the composite primary outcome (HR 0.76, 95% CI 0.66-0.88), extending incretin benefit to a renal-cardiovascular high-risk population.",
+        "Reported reduction in death from cardiovascular causes as part of the secondary cardiovascular outcomes, linking GLP-1 therapy to hard CV endpoints in CKD."
+      ]
+    },
+    {
+      "cite_key": "kosiborod2023",
+      "title": "Semaglutide in Patients with Heart Failure with Preserved Ejection Fraction and Obesity",
+      "authors": [
+        "Mikhail N. Kosiborod",
+        "Steen Z. Abildstrøm",
+        "Barry A. Borlaug",
+        "Javed Butler",
+        "Søren Rasmussen",
+        "Melanie Davies",
+        "G. Kees Hovingh",
+        "Dalane W. Kitzman",
+        "Marie L. Lindegaard",
+        "Daniél V. Møller",
+        "Sanjiv J. Shah",
+        "Marianne B. Treppendahl",
+        "Subodh Verma",
+        "Walter Abhayaratna",
+        "Fozia Z. Ahmed",
+        "Vijay Chopra",
+        "Justin Ezekowitz",
+        "Michael Fu",
+        "Hiroshi Ito",
+        "Małgorzata Lelonek",
+        "Vojtech Melenovsky",
+        "Bela Merkely",
+        "Julio Núñez",
+        "Eduardo Perna",
+        "Morten Schou",
+        "Michele Senni",
+        "Kavita Sharma",
+        "Peter Van der Meer",
+        "Dirk von Lewinski",
+        "Dennis Wolf",
+        "Mark C. Petrie"
+      ],
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2306963",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "STEP-HFpEF trial: tested semaglutide 2.4 mg in patients with obesity-related heart failure with preserved ejection fraction, a population with limited prior therapies.",
+        "Showed semaglutide produced larger improvements in heart-failure symptoms/physical limitations (KCCQ-CSS), greater weight loss, and improved exercise function (6-minute walk distance) vs placebo.",
+        "Extended the cardiometabolic case for GLP-1 therapy from MACE/glycemic endpoints into functional heart-failure outcomes."
+      ]
+    },
+    {
+      "cite_key": "wharton2021",
+      "title": "Gastrointestinal tolerability of once-weekly semaglutide 2.4 mg in adults with overweight or obesity, and the relationship between gastrointestinal adverse events and weight loss",
+      "authors": [
+        "Sean Wharton",
+        "Melanie Davies",
+        "Dror Dicker",
+        "Ildiko Lingvay",
+        "Ofri Mosenzon",
+        "Sue D. Pedersen",
+        "Domenica Rubino",
+        "Signe O.R. Pedersen",
+        "Mette Gislum",
+        "Robert F. Kushner"
+      ],
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1111/dom.14551",
+      "venue": "Diabetes, Obesity and Metabolism",
+      "key_contributions": [
+        "Pooled tolerability analysis of semaglutide 2.4 mg across the STEP 1-3 (and STEP 4) obesity trials focused specifically on gastrointestinal adverse events.",
+        "Quantified the most common GI events (nausea, diarrhoea, vomiting) and showed the vast majority were non-serious, mild-to-moderate, and transient.",
+        "Found weight loss was largely independent of whether patients experienced GI adverse events."
+      ]
+    },
+    {
+      "cite_key": "jastreboff2023",
+      "title": "Triple–Hormone-Receptor Agonist Retatrutide for Obesity — A Phase 2 Trial",
+      "authors": [
+        "Ania M. Jastreboff",
+        "Lee M. Kaplan",
+        "Juan P. Frías",
+        "Qiwei Wu",
+        "Yu Du",
+        "Sirel Gurbuz",
+        "Tamer Coskun",
+        "Axel Haupt",
+        "Zvonko Milicevic",
+        "Mark L. Hartman"
+      ],
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2301972",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "First phase 2 randomized trial of retatrutide, a triple agonist of the GIP, GLP-1, and glucagon receptors, in adults with obesity over 48 weeks.",
+        "Demonstrated dose-dependent, substantial body-weight reductions, with high proportions of participants reaching ≥15% weight loss at the highest doses.",
+        "Established gastrointestinal adverse events as the predominant, dose-dependent, mostly mild-to-moderate tolerability signal for the triple-agonist class."
+      ]
+    },
+    {
+      "cite_key": "wharton2023",
+      "title": "Daily Oral GLP-1 Receptor Agonist Orforglipron for Adults with Obesity",
+      "authors": [
+        "Sean Wharton",
+        "Thomas Blevins",
+        "Louis Connery",
+        "Julio Rosenstock",
+        "Sdebio Raha",
+        "Rong Liu",
+        "Xuewei Cui",
+        "Christof M. Kazda",
+        "Kieren J. Mather",
+        "Axel Haupt",
+        "Zvonko Milicevic",
+        "Manige Konig"
+      ],
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1056/nejmoa2302392",
+      "venue": "New England Journal of Medicine",
+      "key_contributions": [
+        "Phase 2 randomized trial of orforglipron, an oral nonpeptide (small-molecule) GLP-1 receptor agonist, in adults with obesity.",
+        "Showed dose-dependent weight reduction over 26 and 36 weeks versus placebo, supporting an orally administered alternative to injectable GLP-1 agonists.",
+        "Reported a gastrointestinal-dominant adverse-event profile consistent with injectable GLP-1 receptor agonists."
+      ]
+    },
+    {
+      "cite_key": "knop2023",
+      "title": "Oral semaglutide 50 mg taken once per day in adults with overweight or obesity (OASIS 1): a randomised, double-blind, placebo-controlled, phase 3 trial",
+      "authors": [
+        "Filip K Knop",
+        "Vanita R Aroda",
+        "Ruben D do Vale",
+        "Thomas Holst-Hansen",
+        "Peter N Laursen",
+        "Julio Rosenstock",
+        "Domenica M Rubino",
+        "W Timothy Garvey"
+      ],
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1016/s0140-6736(23)01185-6",
+      "venue": "The Lancet",
+      "key_contributions": [
+        "Phase 3 trial of a high-dose (50 mg) oral peptide GLP-1 receptor agonist (oral semaglutide) for overweight or obesity in adults without type 2 diabetes.",
+        "Demonstrated a superior and clinically meaningful bodyweight reduction versus placebo over 68 weeks.",
+        "Provided evidence that an oral formulation of semaglutide can approach the weight-loss magnitude of injectable GLP-1 therapy."
+      ]
+    },
+    {
+      "cite_key": "rosenstock2026",
+      "title": "Efficacy and safety of once-daily oral orforglipron compared with oral semaglutide in adults with type 2 diabetes (ACHIEVE-3): a multinational, multicentre, non-inferiority, open-label, randomised, phase 3 trial",
+      "authors": [
+        "Julio Rosenstock",
+        "Daisuke Yabe",
+        "David Cox",
+        "Jianghao Li",
+        "Max Denning",
+        "Wen-Shuo Wu",
+        "Rong Liu",
+        "Youna Zhao"
+      ],
+      "year": 2026,
+      "arxiv_id": "",
+      "doi": "10.1016/s0140-6736(26)00202-3",
+      "venue": "The Lancet",
+      "key_contributions": [
+        "Phase 3 head-to-head trial of two oral GLP-1 agents — small-molecule orforglipron versus oral peptide semaglutide — in type 2 diabetes inadequately controlled on metformin.",
+        "Showed orforglipron 12 mg and 36 mg were non-inferior and superior to oral semaglutide 7 mg and 14 mg for HbA1c reduction at 52 weeks.",
+        "Identified a trade-off: greater glycemic efficacy for orforglipron alongside higher rates of gastrointestinal adverse events versus oral semaglutide."
+      ]
+    },
+    {
+      "cite_key": "wilding2022",
+      "title": "Weight regain and cardiometabolic effects after withdrawal of semaglutide: The STEP 1 trial extension",
+      "authors": [
+        "John P. H. Wilding",
+        "Rachel L. Batterham",
+        "Melanie Davies",
+        "Luc F. Van Gaal",
+        "Kristian Kandler",
+        "Katerina Konakli",
+        "Ildiko Lingvay",
+        "Barbara M. McGowan",
+        "Tugce Kalayci Oral",
+        "Julio Rosenstock",
+        "Thomas A. Wadden",
+        "Sean Wharton",
+        "Koutaro Yokote",
+        "Robert F. Kushner"
+      ],
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1111/dom.14725",
+      "venue": "Diabetes, Obesity and Metabolism",
+      "key_contributions": [
+        "Off-treatment extension of STEP 1 quantifying weight regain after stopping once-weekly semaglutide 2.4 mg plus lifestyle intervention in 327 participants.",
+        "Shows participants regained two-thirds of lost weight one year after withdrawal (net loss 5.6% vs 17.3% on-treatment), directly evidencing the durability limitation of incretin pharmacotherapy.",
+        "Cardiometabolic improvements reverted toward baseline after withdrawal, framing obesity as a chronic disease requiring ongoing treatment."
+      ]
+    },
+    {
+      "cite_key": "linge2024",
+      "title": "Muscle Mass and Glucagon-Like Peptide-1 Receptor Agonists: Adaptive or Maladaptive Response to Weight Loss?",
+      "authors": [
+        "Jennifer Linge",
+        "Andreas L. Birkenfeld",
+        "Ian J. Neeland"
+      ],
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1161/circulationaha.124.067676",
+      "venue": "Circulation",
+      "key_contributions": [
+        "Primer addressing the open question of whether muscle changes during GLP-1 RA weight loss are adaptive, maladaptive, or enhanced.",
+        "Argues, using MRI-based evidence, that muscle changes appear adaptive (commensurate with expected change given weight loss), while flagging older age and prefrailty as risk factors for sarcopenia.",
+        "Calls for more objective, comprehensive assessment of muscle health (quantity, composition, function, mobility, strength) given the large future patient population."
+      ]
+    },
+    {
+      "cite_key": "hwang2025",
+      "title": "Lifetime Health Effects and Cost-Effectiveness of Tirzepatide and Semaglutide in US Adults",
+      "authors": [
+        "Jennifer H. Hwang",
+        "Neda Laiteerapong",
+        "Elbert S. Huang",
+        "David D. Kim"
+      ],
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.1001/jamahealthforum.2024.5586",
+      "venue": "JAMA Health Forum",
+      "key_contributions": [
+        "Lifetime microsimulation cost-effectiveness analysis of tirzepatide, semaglutide, and other antiobesity medications vs lifestyle modification in US adults.",
+        "Finds tirzepatide and semaglutide are not cost-effective at current net prices (ICERs $197,023 and $467,676 per QALY), directly quantifying the access/cost limitation.",
+        "Estimates the price discounts required (30.5% tirzepatide, 81.9% semaglutide) to reach a $100,000/QALY threshold and argues price reductions are essential for equitable access."
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "statement": "GLP-1 and GIP regulate islet hormone secretion, glucose concentrations, lipid metabolism, gut motility, appetite and body weight, providing a scientific basis for incretin-based therapies in type 2 diabetes.",
+      "paper": "campbell2013",
+      "supporting_passage": "Incretin peptides, principally GLP-1 and GIP, regulate islet hormone secretion, glucose concentrations, lipid metabolism, gut motility, appetite and body weight, and immune function, providing a scientific basis for utilizing incretin-based therapies in the treatment of type 2 diabetes.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c2",
+      "statement": "Activation of GLP-1 and GIP receptors produces nonglycemic effects in multiple tissues both through direct actions on tissues expressing incretin receptors and through indirect mechanisms mediated by neuronal and endocrine pathways.",
+      "paper": "campbell2013",
+      "supporting_passage": "Activation of GLP-1 and GIP receptors also leads to nonglycemic effects in multiple tissues, through direct actions on tissues expressing incretin receptors and indirect mechanisms mediated through neuronal and endocrine pathways.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c3",
+      "statement": "The dual GIP/GLP-1 receptor agonist LY3298176 (tirzepatide) activated both GIP and GLP-1 receptor signaling in vitro and produced glucose-dependent insulin secretion and improved glucose tolerance in mice by acting on both receptors.",
+      "paper": "coskun2018",
+      "supporting_passage": "LY3298176 activated both GIP and GLP-1 receptor signaling in vitro and showed glucose-dependent insulin secretion and improved glucose tolerance by acting on both GIP and GLP-1 receptors in mice.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c4",
+      "statement": "With chronic administration to mice, the dual GIP/GLP-1 agonist potently decreased body weight and food intake, with effects significantly greater than those of a GLP-1 receptor agonist.",
+      "paper": "coskun2018",
+      "supporting_passage": "With chronic administration to mice, LY3298176 potently decreased body weight and food intake; these effects were significantly greater than the effects of a GLP-1 receptor agonist.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c5",
+      "statement": "Among the metabolic effects of GLP-1 are glucose-dependent stimulation of insulin secretion, decrease of gastric emptying, and inhibition of food intake.",
+      "paper": "muller2019",
+      "supporting_passage": "Among the numerous metabolic effects of GLP-1 are the glucose-dependent stimulation of insulin secretion, decrease of gastric emptying, inhibition of food intake, increase of natriuresis and diuresis, and modulation of rodent β-cell proliferation.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c6",
+      "statement": "GLP-1 receptor agonists augment glucose-dependent insulin release and reduce glucagon secretion and gastric emptying, and they also inhibit food intake and reduce body weight.",
+      "paper": "drucker2022",
+      "supporting_passage": "Glucagon-like peptide-1 receptor agonists (GLP1RA) augment glucose-dependent insulin release and reduce glucagon secretion and gastric emptying, enabling their successful development for the treatment of type 2 diabetes (T2D). These agents also inhibit food intake and reduce body weight, fostering investigation of GLP1RA for the treatment of obesity.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c7",
+      "statement": "The actions of GLP-1 to reduce food intake and body weight are highly conserved in obese animals and humans, in both adolescents and adults.",
+      "paper": "drucker2022",
+      "supporting_passage": "The actions of GLP-1 to reduce food intake and body weight are highly conserved in obese animals and humans, in both adolescents and adults.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c8",
+      "statement": "In the phase 3 STEP 1 trial, once-weekly semaglutide 2.4 mg produced a mean body-weight change of -14.9% from baseline to week 68, versus -2.4% with placebo, an estimated treatment difference of -12.4 percentage points.",
+      "paper": "wilding2021",
+      "supporting_passage": "The mean change in body weight from baseline to week 68 was -14.9% in the semaglutide group as compared with -2.4% with placebo, for an estimated treatment difference of -12.4 percentage points (95% confidence interval [CI], -13.4 to -11.5; P<0.001).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c9",
+      "statement": "STEP 1 enrolled 1961 adults with a BMI of 30 or greater (or >=27 with a weight-related condition) without diabetes, randomized 2:1 to 68 weeks of once-weekly subcutaneous semaglutide 2.4 mg or placebo plus lifestyle intervention.",
+      "paper": "wilding2021",
+      "supporting_passage": "In this double-blind trial, we enrolled 1961 adults with a body-mass index (the weight in kilograms divided by the square of the height in meters) of 30 or greater (≥27 in persons with ≥1 weight-related coexisting condition), who did not have diabetes, and randomly assigned them, in a 2:1 ratio, to 68 weeks of treatment with once-weekly subcutaneous semaglutide (at a dose of 2.4 mg) or placebo, plus lifestyle intervention.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c10",
+      "statement": "In adults with overweight or obesity treated with once-weekly semaglutide 2.4 mg, nausea and diarrhea were the most common adverse events and were typically transient and mild-to-moderate, subsiding over time.",
+      "paper": "wilding2021",
+      "supporting_passage": "Nausea and diarrhea were the most common adverse events with semaglutide; they were typically transient and mild-to-moderate in severity and subsided with time.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c11",
+      "statement": "More participants discontinued semaglutide than placebo owing to gastrointestinal events (4.5% vs 0.8%).",
+      "paper": "wilding2021",
+      "supporting_passage": "More participants in the semaglutide group than in the placebo group discontinued treatment owing to gastrointestinal events (59 [4.5%] vs. 5 [0.8%]).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c12",
+      "statement": "In the phase 3 SURMOUNT-1 trial, tirzepatide produced dose-dependent mean weight changes at week 72 of -15.0% (5 mg), -19.5% (10 mg), and -20.9% (15 mg), versus -3.1% with placebo.",
+      "paper": "jastreboff2022",
+      "supporting_passage": "The mean percentage change in weight at week 72 was -15.0% (95% confidence interval [CI], -15.9 to -14.2) with 5-mg weekly doses of tirzepatide, -19.5% (95% CI, -20.4 to -18.5) with 10-mg doses, and -20.9% (95% CI, -21.8 to -19.9) with 15-mg doses and -3.1% (95% CI, -4.3 to -1.9) with placebo (P<0.001 for all comparisons with placebo).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c13",
+      "statement": "SURMOUNT-1 randomized 2539 adults with a BMI of 30 or more (or >=27 with a weight-related complication, excluding diabetes) 1:1:1:1 to once-weekly tirzepatide 5, 10, or 15 mg or placebo for 72 weeks.",
+      "paper": "jastreboff2022",
+      "supporting_passage": "we assigned 2539 adults with a body-mass index (BMI; the weight in kilograms divided by the square of the height in meters) of 30 or more, or 27 or more and at least one weight-related complication, excluding diabetes, in a 1:1:1:1 ratio to receive once-weekly, subcutaneous tirzepatide (5 mg, 10 mg, or 15 mg) or placebo for 72 weeks, including a 20-week dose-escalation period.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c14",
+      "statement": "With the dual GIP/GLP-1 agonist tirzepatide, the most common adverse events were gastrointestinal, mostly mild to moderate in severity and occurring primarily during dose escalation.",
+      "paper": "jastreboff2022",
+      "supporting_passage": "The most common adverse events with tirzepatide were gastrointestinal, and most were mild to moderate in severity, occurring primarily during dose escalation.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c15",
+      "statement": "Treatment discontinuation due to adverse events was higher with tirzepatide (4.3%, 7.1%, and 6.2% for the 5-, 10-, and 15-mg doses) than with placebo (2.6%).",
+      "paper": "jastreboff2022",
+      "supporting_passage": "Adverse events caused treatment discontinuation in 4.3%, 7.1%, 6.2%, and 2.6% of participants receiving 5-mg, 10-mg, and 15-mg tirzepatide doses and placebo, respectively.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c16",
+      "statement": "In SURMOUNT-1, improvements in all prespecified cardiometabolic measures were observed with the dual GIP/GLP-1 agonist tirzepatide.",
+      "paper": "jastreboff2022",
+      "supporting_passage": "Improvements in all prespecified cardiometabolic measures were observed with tirzepatide.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c17",
+      "statement": "In the head-to-head SURMOUNT-5 trial, tirzepatide produced greater weight loss than semaglutide 2.4 mg at week 72: -20.2% versus -13.7%.",
+      "paper": "aronne2025",
+      "supporting_passage": "The least-squares mean percent change in weight at week 72 was -20.2% (95% confidence interval [CI], -21.4 to -19.1) with tirzepatide and -13.7% (95% CI, -14.9 to -12.6) with semaglutide (P<0.001).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c18",
+      "statement": "In a head-to-head trial of adults with obesity but without diabetes, tirzepatide was superior to semaglutide for reduction in body weight and waist circumference at week 72.",
+      "paper": "aronne2025",
+      "supporting_passage": "Among participants with obesity but without diabetes, treatment with tirzepatide was superior to treatment with semaglutide with respect to reduction in body weight and waist circumference at week 72.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c19",
+      "statement": "Before this trial, the comparative efficacy and safety of tirzepatide versus semaglutide in adults with obesity but without type 2 diabetes was unknown.",
+      "paper": "aronne2025",
+      "supporting_passage": "The efficacy and safety of tirzepatide as compared with semaglutide in adults with obesity but without type 2 diabetes is unknown.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c20",
+      "statement": "In the head-to-head STEP 8 trial, once-weekly semaglutide 2.4 mg produced greater mean weight loss than once-daily liraglutide 3.0 mg: -15.8% versus -6.4% (difference -9.4 percentage points).",
+      "paper": "rubino2022",
+      "supporting_passage": "The mean weight change from baseline was -15.8% with semaglutide vs -6.4% with liraglutide (difference, -9.4 percentage points [95% CI, -12.0 to -6.8]; P < .001)",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c21",
+      "statement": "In SELECT, semaglutide 2.4 mg reduced the incidence of the primary composite MACE endpoint versus placebo, occurring in 6.5% of the semaglutide group versus 8.0% of the placebo group (hazard ratio 0.80).",
+      "paper": "lincoff2023",
+      "supporting_passage": "A primary cardiovascular end-point event occurred in 569 of the 8803 patients (6.5%) in the semaglutide group and in 701 of the 8801 patients (8.0%) in the placebo group (hazard ratio, 0.80; 95% confidence interval, 0.72 to 0.90; P<0.001).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c22",
+      "statement": "In patients with preexisting cardiovascular disease and overweight or obesity but without diabetes, weekly subcutaneous semaglutide 2.4 mg was superior to placebo in reducing CV death, nonfatal MI, or nonfatal stroke at a mean follow-up of 39.8 months.",
+      "paper": "lincoff2023",
+      "supporting_passage": "In patients with preexisting cardiovascular disease and overweight or obesity but without diabetes, weekly subcutaneous semaglutide at a dose of 2.4 mg was superior to placebo in reducing the incidence of death from cardiovascular causes, nonfatal myocardial infarction, or nonfatal stroke at a mean follow-up of 39.8 months.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c23",
+      "statement": "In a large cardiovascular outcomes trial, adverse events leading to permanent discontinuation of trial product were about twice as frequent with semaglutide as with placebo (16.6% vs 8.2%).",
+      "paper": "lincoff2023",
+      "supporting_passage": "Adverse events leading to permanent discontinuation of the trial product occurred in 1461 patients (16.6%) in the semaglutide group and 718 patients (8.2%) in the placebo group (P<0.001).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c24",
+      "statement": "In the FLOW trial, the risk of the primary kidney-cardiovascular composite outcome was 24% lower with semaglutide than placebo (331 vs. 410 first events; hazard ratio 0.76).",
+      "paper": "perkovic2024",
+      "supporting_passage": "The risk of a primary-outcome event was 24% lower in the semaglutide group than in the placebo group (331 vs. 410 first events; hazard ratio, 0.76; 95% confidence interval [CI], 0.66 to 0.88; P = 0.0003).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c25",
+      "statement": "In patients with type 2 diabetes and chronic kidney disease, semaglutide reduced the risk of clinically important kidney outcomes and death from cardiovascular causes.",
+      "paper": "perkovic2024",
+      "supporting_passage": "Semaglutide reduced the risk of clinically important kidney outcomes and death from cardiovascular causes in patients with type 2 diabetes and chronic kidney disease.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c26",
+      "statement": "In patients with heart failure with preserved ejection fraction and obesity, semaglutide 2.4 mg led to larger reductions in symptoms and physical limitations, greater improvements in exercise function, and greater weight loss than placebo.",
+      "paper": "kosiborod2023",
+      "supporting_passage": "In patients with heart failure with preserved ejection fraction and obesity, treatment with semaglutide (2.4 mg) led to larger reductions in symptoms and physical limitations, greater improvements in exercise function, and greater weight loss than placebo.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c27",
+      "statement": "The most common gastrointestinal adverse events with semaglutide 2.4 mg were nausea, diarrhoea, and vomiting, each occurring more often than with placebo.",
+      "paper": "wharton2021",
+      "supporting_passage": "nausea (43.9% vs. 16.1% of participants), diarrhoea (29.7% vs. 15.9%), vomiting (24.5% vs. 6.3%)",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c28",
+      "statement": "The large majority of gastrointestinal adverse events with semaglutide were non-serious, mild-to-moderate, and transient.",
+      "paper": "wharton2021",
+      "supporting_passage": "Most GI AEs with semaglutide were non-serious (99.5% of AEs), mild-to-moderate (98.1%), transient",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c29",
+      "statement": "At 48 weeks, a 15%-or-greater weight reduction occurred in 60% of participants who received 4 mg of retatrutide, 75% of those who received 8 mg, and 83% of those who received 12 mg, versus 2% of those who received placebo.",
+      "paper": "jastreboff2023",
+      "supporting_passage": "At 48 weeks, a weight reduction of 5% or more, 10% or more, and 15% or more had occurred in 92%, 75%, and 60%, respectively, of the participants who received 4 mg of retatrutide; 100%, 91%, and 75% of those who received 8 mg; 100%, 93%, and 83% of those who received 12 mg; and 27%, 9%, and 2% of those who received placebo.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c30",
+      "statement": "In adults with obesity, 48 weeks of retatrutide treatment produced substantial reductions in body weight.",
+      "paper": "jastreboff2023",
+      "supporting_passage": "In adults with obesity, retatrutide treatment for 48 weeks resulted in substantial reductions in body weight.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c31",
+      "statement": "At week 26, the mean change from baseline in body weight ranged from -8.6% to -12.6% across orforglipron dose cohorts and was -2.0% in the placebo group.",
+      "paper": "wharton2023",
+      "supporting_passage": "the mean change from baseline in body weight ranged from -8.6% to -12.6% across the orforglipron dose cohorts and was -2.0% in the placebo group.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c32",
+      "statement": "Daily oral orforglipron, a nonpeptide GLP-1 receptor agonist, was associated with weight reduction in adults with obesity.",
+      "paper": "wharton2023",
+      "supporting_passage": "Daily oral orforglipron, a nonpeptide GLP-1 receptor agonist, was associated with weight reduction.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c33",
+      "statement": "In adults with overweight or obesity, once-daily oral semaglutide 50 mg led to a superior and clinically meaningful decrease in bodyweight compared with placebo.",
+      "paper": "knop2023",
+      "supporting_passage": "oral semaglutide 50 mg once per day led to a superior and clinically meaningful decrease in bodyweight compared with placebo",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c34",
+      "statement": "In type 2 diabetes inadequately controlled with metformin, orforglipron 12 mg and 36 mg were non-inferior and superior to oral semaglutide 7 mg and 14 mg for mean change in HbA1c from baseline to 52 weeks.",
+      "paper": "rosenstock2026",
+      "supporting_passage": "In individuals with type 2 diabetes inadequately controlled with metformin, orforglipron 12 mg and 36 mg was non-inferior and superior to semaglutide 7 mg and 14 mg with respect to the mean change in HbA1c from baseline to 52 weeks.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c35",
+      "statement": "In ACHIEVE-3, the estimated treatment difference in HbA1c favored orforglipron 12 mg over oral semaglutide 7 mg by -0.48% (95% CI -0.65 to -0.31; p<0.0001).",
+      "paper": "rosenstock2026",
+      "supporting_passage": "Estimated treatment differences were -0·48% (95% CI -0·65 to -0·31; p<0·0001) for orforglipron 12 mg versus semaglutide 7 mg; -0·44% (-0·62 to -0·26; p<0·0001) for orforglipron 36 mg versus semaglutide 14 mg",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c36",
+      "statement": "One year after withdrawal of once-weekly subcutaneous semaglutide 2.4 mg plus lifestyle intervention, participants regained about two-thirds of their prior weight loss, indicating that ongoing treatment is required to maintain weight and health improvements.",
+      "paper": "wilding2022",
+      "supporting_passage": "One year after withdrawal of once-weekly subcutaneous semaglutide 2.4 mg and lifestyle intervention, participants regained two-thirds of their prior weight loss, with similar changes in cardiometabolic variables. Findings confirm the chronicity of obesity and suggest ongoing treatment is required to maintain improvements in weight and health.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c37",
+      "statement": "In the STEP 1 extension, mean weight loss from week 0 to week 68 was 17.3% with semaglutide, but after treatment withdrawal participants regained 11.6 percentage points by week 120, leaving a net loss of 5.6% from baseline.",
+      "paper": "wilding2022",
+      "supporting_passage": "From week 0 to week 68, mean weight loss was 17.3% (SD: 9.3%) with semaglutide and 2.0% (SD: 6.1%) with placebo. Following treatment withdrawal, semaglutide and placebo participants regained 11.6 (SD: 7.7) and 1.9 (SD: 4.8) percentage points of lost weight, respectively, by week 120, resulting in net losses of 5.6% (SD: 8.9%) and 0.1% (SD: 5.8%), respectively, from week 0 to week 120.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c38",
+      "statement": "As GLP-1 receptor agonist weight loss approaches magnitudes achieved with surgery, there is concern about potential adverse effects on muscle quantity, composition, and function.",
+      "paper": "linge2024",
+      "supporting_passage": "Recent studies have shown that pharmacologic weight loss with glucagon-like peptide-1 receptor agonists (GLP-1 RAs) and combination therapies is approaching magnitudes achieved with surgery. However, as more weight loss is achieved, there is concern for potential adverse effects on muscle quantity, composition, and function.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c39",
+      "statement": "Based on contemporary evidence including MRI studies, skeletal muscle changes with GLP-1 RA treatment appear to be adaptive, with muscle volume changes commensurate with what is expected given aging, disease status, and weight loss achieved.",
+      "paper": "linge2024",
+      "supporting_passage": "Based on contemporary evidence with the addition of studies using magnetic resonance imaging, skeletal muscle changes with GLP-1 RA treatments appear to be adaptive: changes in muscle volume z-score indicate a change in muscle volume that is commensurate with what is expected given aging, disease status, and weight loss achieved",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c40",
+      "statement": "Despite offering substantial long-term health benefits, tirzepatide and semaglutide were not cost-effective at current net prices, and reducing their net prices is described as essential to ensure equitable access.",
+      "paper": "hwang2025",
+      "supporting_passage": "This economic evaluation found that although tirzepatide and semaglutide offered substantial long-term health benefits, they were not cost-effective at current net prices. Efforts to reduce the net prices of new antiobesity medications are essential to ensure equitable access to highly effective antiobesity medications.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c41",
+      "statement": "To reach a $100,000/QALY cost-effectiveness threshold, tirzepatide would require an additional 30.5% discount and semaglutide an additional 81.9% discount from their current net prices.",
+      "paper": "hwang2025",
+      "supporting_passage": "To reach the $100,000/QALY threshold, their prices would require additional discounts by 30.5% for tirzepatide and 81.9% for semaglutide from their current net prices.",
+      "claim_type": "result",
+      "confidence": "high"
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "o1",
+      "statement": "Weight loss from incretin pharmacotherapy is not durable off-treatment: stopping semaglutide leads to regain of roughly two-thirds of lost weight within a year, with cardiometabolic gains reverting toward baseline, so it remains unresolved how to maintain benefit without indefinite continuous therapy.",
+      "status": "open",
+      "why_it_matters": "Obesity is framed as a chronic disease requiring ongoing treatment; durability and exit strategies directly determine real-world effectiveness, adherence burden, and lifetime cost.",
+      "flagged_by": [
+        "wilding2022"
+      ]
+    },
+    {
+      "id": "o2",
+      "statement": "Whether the muscle/lean-mass loss accompanying large GLP-1 RA weight reductions is adaptive or maladaptive (and in whom it becomes clinically harmful, e.g. older or prefrail patients) remains unsettled, and standardized comprehensive muscle-health assessment is lacking.",
+      "status": "partially-addressed",
+      "why_it_matters": "As pharmacologic weight loss approaches surgical magnitudes across a very large future patient population, undetected sarcopenia could offset metabolic benefit and harm function in vulnerable groups.",
+      "flagged_by": [
+        "linge2024"
+      ]
+    },
+    {
+      "id": "o3",
+      "statement": "At current net prices, the most effective incretin therapies (tirzepatide, semaglutide) are not cost-effective, and the price reductions required for equitable access (30.5% and 81.9% respectively to reach $100k/QALY) have not been achieved.",
+      "status": "open",
+      "why_it_matters": "Access and cost determine whether the demonstrated population-level health benefits are actually realized equitably rather than confined to those who can pay.",
+      "flagged_by": [
+        "hwang2025"
+      ]
+    },
+    {
+      "id": "o4",
+      "statement": "Long-term (multi-year) safety and tolerability of incretin agonists at obesity doses remains incompletely characterized; even in the largest outcomes trial, adverse-event-driven permanent discontinuation was roughly twice that of placebo (16.6% vs 8.2%).",
+      "status": "partially-addressed",
+      "why_it_matters": "Chronic indefinite dosing in a broad, often non-diabetic population makes durable tolerability and rare long-term safety signals decisive for the benefit-risk balance.",
+      "flagged_by": [
+        "lincoff2023"
+      ]
+    },
+    {
+      "id": "o5",
+      "statement": "Comparative long-term efficacy and safety across the rapidly expanding class — dual vs triple agonists, injectable vs oral, peptide vs small-molecule — is largely established only on short-to-medium-term surrogate endpoints (weight, HbA1c) rather than head-to-head hard-outcome data.",
+      "status": "partially-addressed",
+      "why_it_matters": "Clinicians and payers must choose among many agents; without head-to-head outcome trials, sequencing and selection rest on indirect comparison and surrogate endpoints.",
+      "flagged_by": [
+        "aronne2025",
+        "rosenstock2026",
+        "jastreboff2023",
+        "wharton2023"
+      ]
+    },
+    {
+      "id": "o6",
+      "statement": "The relative mechanistic contributions to weight loss — central vs peripheral GLP-1 action, vagal vs central GLP1R+ neuronal pathways, and reduced food intake vs altered energy expenditure — are not fully resolved, and the added value of GIP and glucagon co-agonism over GLP-1 alone is still being mapped to clinical effect.",
+      "status": "partially-addressed",
+      "why_it_matters": "Understanding which mechanisms drive efficacy guides rational design of next-generation single, dual, and triple agonists and predicts which combinations will translate to durable clinical benefit.",
+      "flagged_by": [
+        "drucker2022",
+        "coskun2018",
+        "campbell2013"
+      ]
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "Does a dual GIP/GLP-1 agonist (tirzepatide) deliver clinically superior weight loss compared with a GLP-1 receptor agonist (semaglutide) in obesity without diabetes?",
+      "resolved": true,
+      "positions": [
+        {
+          "stance": "Tirzepatide is superior to semaglutide for weight loss.",
+          "summary": "The head-to-head SURMOUNT-5 trial directly demonstrated greater weight reduction with maximum-tolerated-dose tirzepatide (-20.2%) than semaglutide 2.4 mg (-13.7%) at 72 weeks (P<0.001), and superiority for waist circumference, resolving the prior reliance on cross-trial comparisons. Preclinical work had already shown the dual agonist decreased weight more potently than a GLP-1 agonist in mice.",
+          "papers": [
+            "aronne2025",
+            "coskun2018",
+            "jastreboff2022"
+          ]
+        },
+        {
+          "stance": "Before the direct trial, the comparison was unresolved and rested on indirect evidence.",
+          "summary": "Prior to SURMOUNT-5 the comparative efficacy and safety of tirzepatide versus semaglutide in adults with obesity without diabetes was explicitly unknown, with single-agent pivotal trials (SURMOUNT-1 ~20.9% at 15 mg; STEP 1 -14.9%) only comparable across separate trial populations.",
+          "papers": [
+            "aronne2025",
+            "jastreboff2022",
+            "wilding2021"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "question": "Among oral GLP-1 options for cardiometabolic disease, does a small-molecule nonpeptide (orforglipron) or an oral peptide (oral semaglutide) offer the better benefit-risk profile?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Orforglipron offers greater glycemic efficacy.",
+          "summary": "In the ACHIEVE-3 head-to-head trial in type 2 diabetes, orforglipron 12 mg and 36 mg were non-inferior and superior to oral semaglutide 7 mg and 14 mg for HbA1c reduction at 52 weeks (treatment difference -0.48% for 12 mg vs 7 mg).",
+          "papers": [
+            "rosenstock2026",
+            "wharton2023"
+          ]
+        },
+        {
+          "stance": "The greater efficacy of orforglipron comes with a tolerability trade-off, and oral semaglutide already shows meaningful weight efficacy.",
+          "summary": "ACHIEVE-3 identified higher rates of gastrointestinal adverse events with orforglipron than oral semaglutide, while high-dose oral semaglutide 50 mg produced superior, clinically meaningful weight loss vs placebo in OASIS 1 — leaving the optimal oral choice unresolved across glycemic vs weight vs tolerability endpoints.",
+          "papers": [
+            "rosenstock2026",
+            "knop2023"
+          ]
+        }
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "b1",
+      "name": "STEP 1 mean body-weight change (week 68)",
+      "paper": "wilding2021",
+      "dataset": "Adults with overweight/obesity without diabetes (n=1961)",
+      "method": "Semaglutide 2.4 mg once weekly vs placebo",
+      "metric": "Mean % change in body weight",
+      "value": "-14.9% vs -2.4% (treatment difference -12.4 pp)"
+    },
+    {
+      "id": "b2",
+      "name": "SURMOUNT-1 mean body-weight change (week 72)",
+      "paper": "jastreboff2022",
+      "dataset": "Adults with obesity without diabetes (n=2539)",
+      "method": "Tirzepatide 5/10/15 mg once weekly vs placebo",
+      "metric": "Mean % change in body weight",
+      "value": "-15.0% / -19.5% / -20.9% vs -3.1% (placebo)"
+    },
+    {
+      "id": "b3",
+      "name": "SURMOUNT-5 head-to-head weight change (week 72)",
+      "paper": "aronne2025",
+      "dataset": "Adults with obesity without diabetes",
+      "method": "Max-tolerated tirzepatide vs semaglutide 2.4 mg",
+      "metric": "LS mean % change in body weight",
+      "value": "-20.2% vs -13.7% (P<0.001)"
+    },
+    {
+      "id": "b4",
+      "name": "STEP 8 head-to-head weight change (week 68)",
+      "paper": "rubino2022",
+      "dataset": "Adults with overweight/obesity without diabetes (n=338)",
+      "method": "Semaglutide 2.4 mg weekly vs liraglutide 3.0 mg daily",
+      "metric": "Mean % change in body weight",
+      "value": "-15.8% vs -6.4% (difference -9.4 pp)"
+    },
+    {
+      "id": "b5",
+      "name": "SELECT primary MACE outcome",
+      "paper": "lincoff2023",
+      "dataset": "Overweight/obese with established CVD, no diabetes (n=17,604)",
+      "method": "Semaglutide 2.4 mg weekly vs placebo",
+      "metric": "3-point MACE hazard ratio (event rate)",
+      "value": "HR 0.80 (6.5% vs 8.0%); mean follow-up 39.8 months"
+    },
+    {
+      "id": "b6",
+      "name": "FLOW primary kidney-CV composite outcome",
+      "paper": "perkovic2024",
+      "dataset": "Type 2 diabetes with chronic kidney disease",
+      "method": "Semaglutide vs placebo",
+      "metric": "Composite primary outcome hazard ratio",
+      "value": "HR 0.76 (331 vs 410 events; 24% lower risk)"
+    },
+    {
+      "id": "b8",
+      "name": "STEP 1 extension net weight loss after withdrawal (week 120)",
+      "paper": "wilding2022",
+      "dataset": "STEP 1 off-treatment extension (n=327)",
+      "method": "Semaglutide 2.4 mg then withdrawal",
+      "metric": "Net % weight change from baseline at week 120",
+      "value": "-5.6% net (17.3% lost, 11.6 pp regained)"
+    },
+    {
+      "id": "b9",
+      "name": "Retatrutide responders reaching >=15% weight loss (week 48)",
+      "paper": "jastreboff2023",
+      "dataset": "Adults with obesity (phase 2)",
+      "method": "Retatrutide 4/8/12 mg vs placebo",
+      "metric": "Proportion achieving >=15% weight loss",
+      "value": "60% / 75% / 83% vs 2% (placebo)"
+    },
+    {
+      "id": "b10",
+      "name": "Orforglipron weight change (week 26)",
+      "paper": "wharton2023",
+      "dataset": "Adults with obesity (phase 2)",
+      "method": "Oral orforglipron (dose cohorts) vs placebo",
+      "metric": "Mean % change in body weight",
+      "value": "-8.6% to -12.6% vs -2.0% (placebo)"
+    },
+    {
+      "id": "b11",
+      "name": "ACHIEVE-3 HbA1c treatment difference (week 52)",
+      "paper": "rosenstock2026",
+      "dataset": "Type 2 diabetes inadequately controlled on metformin",
+      "method": "Orforglipron 12 mg vs oral semaglutide 7 mg",
+      "metric": "Estimated treatment difference in HbA1c",
+      "value": "-0.48% (95% CI -0.65 to -0.31; p<0.0001)"
+    },
+    {
+      "id": "b12",
+      "name": "Cost-effectiveness ICER vs lifestyle modification",
+      "paper": "hwang2025",
+      "dataset": "US adults (lifetime microsimulation)",
+      "method": "Tirzepatide and semaglutide vs lifestyle modification",
+      "metric": "ICER ($/QALY) at current net prices",
+      "value": "$197,023 (tirzepatide); $467,676 (semaglutide)"
+    },
+    {
+      "id": "b13",
+      "name": "SELECT adverse-event discontinuation",
+      "paper": "lincoff2023",
+      "dataset": "Overweight/obese with CVD, no diabetes (n=17,604)",
+      "method": "Semaglutide 2.4 mg weekly vs placebo",
+      "metric": "Permanent discontinuation due to adverse events",
+      "value": "16.6% vs 8.2% (P<0.001)"
+    }
+  ],
+  "coverage": {
+    "sub_questions": [
+      "Mechanism: how GLP-1 and dual GIP/GLP-1 receptor agonists drive weight loss and glycemic control (appetite/satiety, gastric emptying, insulinotropic effects) — the established pharmacology.",
+      "Weight-loss efficacy: magnitude of weight reduction for semaglutide and tirzepatide in pivotal obesity trials (e.g. STEP, SURMOUNT), and head-to-head or indirect comparisons.",
+      "Cardiometabolic & cardiovascular outcomes: effects on MACE, blood pressure, lipids, HbA1c, and other endpoints in outcome trials (e.g. SELECT).",
+      "Adverse effects & tolerability: gastrointestinal events, discontinuation rates, weight regain on cessation, and safety signals.",
+      "Emerging agents & formulations: oral GLP-1 agents, triple agonists (e.g. retatrutide), and the 2024-2026 pipeline.",
+      "Open questions/limitations authors explicitly flag: durability, muscle-mass loss, access/cost, long-term safety, and unanswered comparative questions."
+    ],
+    "queries": [
+      "semaglutide obesity weight loss trial",
+      "tirzepatide SURMOUNT obesity",
+      "semaglutide cardiovascular outcomes SELECT",
+      "GLP-1 receptor agonist mechanism satiety",
+      "retatrutide triple agonist obesity",
+      "oral semaglutide obesity",
+      "incretin therapy weight regain discontinuation",
+      "tirzepatide vs semaglutide weight"
+    ]
+  }
+}
