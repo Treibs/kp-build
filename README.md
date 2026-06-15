@@ -40,7 +40,7 @@ spine, grounded claims, open problems, debates, a loadable `CONTEXT.md`, and a m
 but a package is verified knowledge instead of code, with `install` / `lock` / `compose` / `pack` / `share`.
 kp-build is the **authoring engine** for that ecosystem: it does the research, verification, and authoring;
 KPM handles distribution. Every build emits the KPM package contract (`knowledge.json`), so what you build
-is instantly shareable through KPM — there's no separate distribution layer to stand up.
+is shareable through KPM with no separate distribution layer to stand up.
 
 ### Why not just a deep-research report, or RAG?
 
@@ -154,9 +154,9 @@ check discriminate, and show kp-build works **beyond arXiv** (journal papers ver
 | package | the topic | `probe` | did it help? |
 |---|---|---|---|
 | **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | SKIP\* | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
-| `discrete-diffusion-llms` | model **fabricates** cites (recent ML) | BUILD | **yes** — fixes mislabeled cites (precision **0.62→1.0**) **and** coverage; f1 0.37 → 0.91 |
+| `discrete-diffusion-llms` | model **fabricates** cites (recent ML) | BUILD | **yes** — fixes mislabeled cites (precision **0.62→1.00**) **and** coverage; f1 0.37 → 0.91 |
 | `speculative-decoding-llms` | model **knows it cold** | SKIP | only on coverage — precision was already perfect |
-| `rubric-based-rl-nonverifiable` | model **hedges** (post-cutoff 2026) | BUILD | **hugely** — spine coverage 0.07 → 1.00 |
+| `rubric-based-rl-nonverifiable` | model **hedges** (post-cutoff 2026) | BUILD | **yes** — spine coverage 0.07 → 1.00 |
 | `glp1-incretin-obesity` | **biomedical** (non-arXiv, Crossref/DOI) | SKIP | on coverage — recall 0.26 → 0.95 with verifiable DOIs |
 
 \* **The probe under-fired on sleep — and that's the point.** The probe is a cheap *precision-only*

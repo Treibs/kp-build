@@ -10,7 +10,7 @@ is the **flagship** — an everyday-health topic anyone can use, with the eviden
 |---|---|---|---|
 | [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | model-**weak**, model *fabricates* | BUILD | **KP HELPS** — wins on *precision* (kills mislabeled cites) **and** recall |
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | model-**known** | SKIP | **KP HELPS on coverage only** — precision already 1.0; the win is pure recall |
-| [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | BUILD† | **KP HELPS hugely** — recall 0.07→1.00 |
+| [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | model-**weak**, model *hedges* (post-cutoff 2026) | BUILD† | **KP HELPS** — recall 0.07→1.00 |
 | [`glp1-incretin-obesity/`](#glp1-incretin-obesity) | **biomedical** (non-arXiv; Crossref/DOI) | SKIP | **KP HELPS on coverage** — recall 0.26→0.95 with verifiable DOIs |
 | [`sleep-insomnia-evidence/`](#sleep-insomnia-evidence) | **everyday health** (evidence-vs-hype) | SKIP | **KP HELPS** — base *fabricated* a study + missed ¾ of evidence; precision 0.90→1.00, recall 0.26→0.74, f1 0.40→0.85 |
 

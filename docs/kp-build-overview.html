@@ -163,7 +163,7 @@
     <p style="margin-top:10px">We asked a model to review the sleep evidence and cite studies. It cited
       <code>10.5665/sleep.6072</code> — confidently. That DOI resolves to nothing; it was invented. Nine of
       its ten cites were real, though — which is the trap: you can't tell which one is invented without
-      checking. It also engaged only 6 of the 23 real studies.</p>
+      checking. It also covered only 6 of the 23 real studies.</p>
     <p>So we built a verified package on it. Every claim is backed by a real, checked study, and its core is a
       five-way <b>evidence-vs-hype map</b>:</p>
     <ul class="clean">
@@ -188,8 +188,8 @@
     <div class="barkey"><span><i style="background:#aeb8c6"></i>unaided model</span><span><i style="background:#137a4a"></i>with the package</span></div>
     <p class="sub" style="margin:14px 0 0">The model was otherwise competent here — base precision was 0.90. It
       just invented one citation you couldn't have spotted, and covered only 6 of 23 studies. With the package:
-      0 fabrications, 17 of 23. (The cheap pre-screen even rated the model "fine" on sleep — the recall-aware
-      falsify caught the gap it missed. And when a package <i>doesn't</i> help, the tool says so.)</p>
+      0 fabrications, 17 of 23. (kp-build's cheap pre-screen — a single unaided answer — even rated the model "fine" on sleep; the
+      recall-aware falsify caught the gap it missed. And when a package <i>doesn't</i> help, the tool says so.)</p>
   </div>
   <p class="sub">The package is public — any agent can install it:
     <code>kpm add github:Treibs/kp-sleep-insomnia-evidence#v0.1.0</code></p>
@@ -257,7 +257,7 @@
         <tr class="hi"><td><b>sleep-insomnia-evidence</b></td><td>everyday health — evidence vs hype</td><td class="win">yes — base fabricated a study + missed ¾ of the evidence; f1 0.40 → 0.85</td></tr>
         <tr><td>discrete-diffusion-llms</td><td>recent ML (model fabricates)</td><td class="win">yes — fixes mislabeled cites + coverage; f1 0.37 → 0.91</td></tr>
         <tr><td>speculative-decoding-llms</td><td>ML the model knows cold</td><td class="neu">coverage only — precision was already perfect</td></tr>
-        <tr><td>rubric-based-rl-nonverifiable</td><td>a 2026-emergent ML topic</td><td class="win">hugely — coverage 0.07 → 1.00</td></tr>
+        <tr><td>rubric-based-rl-nonverifiable</td><td>a 2026-emergent ML topic</td><td class="win">yes — coverage 0.07 → 1.00</td></tr>
         <tr><td>glp1-incretin-obesity</td><td>biomedical (non-arXiv, by DOI)</td><td class="win">on coverage — recall 0.26 → 0.95</td></tr>
       </tbody>
     </table>
