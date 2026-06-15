@@ -24,10 +24,12 @@ digest plus a machine index). It is a reusable knowledge *asset*, not a report.
    lives — the single most valuable section, and the hardest to fabricate.*
 3. **Debate map** — contested points: competing positions and which papers hold them. (This is
    the doctrine's "value lives in the connections," finally pointed at something real.)
-4. **Claims** — findings/results/methods, each anchored to a verified paper + a drafter-quoted
-   passage + confidence. (Like axioms, but paper-anchored.) *Note: the passage is the drafter's
-   quote; the engine does not yet machine-verify the passage is present in the paper — confidence is
-   corpus-relative and the claim is not independently grounded. Passage-presence checking is planned.*
+4. **Claims** — findings/results/methods, each anchored to a verified paper + a supporting passage +
+   confidence. (Like axioms, but paper-anchored.) *The passage can be machine-grounded: `kp-build build
+   --ground` confirms it actually appears in the paper (the arXiv abstract for free, or ar5iv fulltext),
+   marking each claim `grounded` (✓, confirmed), `unconfirmed` (not in the abstract — may be in the
+   body), or `ungrounded` (checked the fulltext, not there → capped + flagged). Confidence stays
+   corpus-relative.*
 5. **Concepts** — definition/taxonomy scaffolding (least valuable; the model mostly has this).
 
 ## Package schema (v1) — a portable directory (and a valid 0xLT/kpm package)

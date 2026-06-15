@@ -114,6 +114,19 @@ def _arxiv_title(arxiv_id: str, get: Callable[[str], str]) -> tuple[Optional[str
     return (re.sub(r"\s+", " ", m.group(1)).strip() if m else None), ""
 
 
+def _arxiv_abstract(arxiv_id: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
+    """The arXiv abstract (Atom <summary>) — free, keyless, the same feed the title check already uses."""
+    aid = strip_arxiv_prefix(arxiv_id)
+    url = f"http://export.arxiv.org/api/query?id_list={urllib.parse.quote(aid, safe='')}&max_results=1"
+    raw, err = _safe(url, get)
+    if err:
+        return None, err
+    if not raw or "<entry>" not in raw:
+        return None, ""
+    m = re.search(r"<entry>.*?<summary>(.*?)</summary>", raw, re.S)
+    return (re.sub(r"\s+", " ", m.group(1)).strip() if m else None), ""
+
+
 def _crossref_doi_title(doi: str, get: Callable[[str], str]) -> tuple[Optional[str], str]:
     url = f"https://api.crossref.org/works/{urllib.parse.quote(doi.strip(), safe='')}"
     raw, err = _safe(url, get)

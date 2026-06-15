@@ -88,6 +88,10 @@ class Claim:
     #: did the claim survive a refuter pass (tried to break it with the beat's OTHER sources)?
     #: True if no refuter ran (v1 default) or it survived; False = a refuter broke it (shown capped/flagged)
     survived_refuter: bool = True
+    #: passage-presence grounding: was the supporting_passage machine-confirmed in the cited paper?
+    #: unchecked (default) | grounded (found) | unconfirmed (not in abstract; maybe body) | ungrounded
+    #: (checked fulltext, not there — capped/flagged)
+    grounded: str = "unchecked"
 
 
 @dataclass
@@ -210,7 +214,8 @@ def claim_from_md(text: str) -> Claim:
         supporting_passage=fm.get("supporting_passage", ""),
         claim_type=fm.get("claim_type") or "finding", confidence=fm.get("confidence") or "medium",
         corroborated_by=list(fm.get("corroborated_by") or []),
-        survived_refuter=bool(fm.get("survived_refuter", True)))
+        survived_refuter=bool(fm.get("survived_refuter", True)),
+        grounded=fm.get("grounded") or "unchecked")
 
 
 def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:

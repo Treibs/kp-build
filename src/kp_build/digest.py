@@ -36,16 +36,22 @@ _PREAMBLE = (
 
 def _claim_line(c, verified) -> str:
     corr = [k for k in c.corroborated_by if k in verified]   # only VERIFIED corroborators count
+    grounded = getattr(c, "grounded", "unchecked")
     conf, note = c.confidence, ""
+    flagged = (not c.survived_refuter) or grounded == "ungrounded"
     if not c.survived_refuter:
         conf, note = "low", " (⚠ refuter broke this — treat with suspicion)"   # capped + flagged
+    elif grounded == "ungrounded":
+        conf, note = "low", " (⚠ passage not found in the paper)"              # grounding failure -> capped
     elif c.claim_type == "result" and c.confidence == "high" and not corr:
         conf, note = "medium", " (single-source)"           # FMT-2: unearned 'high' is capped on display
     elif corr:
         note = f" (corroborated by {len(corr)})"
+    if grounded == "grounded":
+        note += " ✓grounded"                                # passage machine-confirmed in the source
     line = f"- _{c.claim_type}_ — {_data(c.statement)} *([{c.paper}], {conf}{note})*"
-    if c.survived_refuter and c.confidence == "high" and c.supporting_passage:  # FMT-1: carry evidence
-        line += f"\n    > {_data(c.supporting_passage)[:240]}"                  # (not for a broken claim)
+    if not flagged and c.confidence == "high" and c.supporting_passage:        # FMT-1: carry evidence
+        line += f"\n    > {_data(c.supporting_passage)[:240]}"                  # (not for a flagged claim)
     return line
 
 

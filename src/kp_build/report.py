@@ -250,9 +250,15 @@ def _panel_claims(claims, verified) -> str:
             passage = (f'<button class="passage-toggle">show passage ▸</button>'
                        f'<span class="teaser">{teaser}</span>'
                        f'<blockquote>{_esc(c.supporting_passage)}</blockquote>')
-        refuted = "" if c.survived_refuter else ' <span class="pill no">⚠ refuter broke this</span>'
-        items.append(f'<div class="row claim{"" if c.survived_refuter else " refuted"}" data-t="{_esc(c.claim_type)}">'
-                     f'<span class="tag t-{_esc(c.claim_type)}">{_esc(c.claim_type)}</span>{refuted}'
+        grounded = getattr(c, "grounded", "unchecked")
+        flagged = (not c.survived_refuter) or grounded == "ungrounded"
+        marks = "" if c.survived_refuter else ' <span class="pill no">⚠ refuter broke this</span>'
+        if grounded == "grounded":
+            marks += ' <span class="pill ok">✓ grounded</span>'
+        elif grounded == "ungrounded":
+            marks += ' <span class="pill no">⚠ passage not in paper</span>'
+        items.append(f'<div class="row claim{" refuted" if flagged else ""}" data-t="{_esc(c.claim_type)}">'
+                     f'<span class="tag t-{_esc(c.claim_type)}">{_esc(c.claim_type)}</span>{marks}'
                      f'<div class="cstmt">{_esc(c.statement)}</div>{passage}'
                      f'<div class="row-meta">{meta}</div></div>')
     return chips + f'<div id="claims">{"".join(items)}</div>'

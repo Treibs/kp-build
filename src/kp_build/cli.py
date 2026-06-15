@@ -241,6 +241,14 @@ def _cmd_build(args) -> int:
         summary = verify_all(pkg.papers, today=today, throttle=args.throttle,
                              skip_verified=args.reuse_verification)
 
+    if args.ground and not args.no_verify:
+        from .ground import ground_claims
+        src = "ar5iv fulltext" if args.ground_fulltext else "abstracts"
+        print(f"grounding {len(pkg.claims)} claim passages against {src} ...", file=sys.stderr)
+        g = ground_claims(pkg.papers, pkg.claims, fulltext=args.ground_fulltext, throttle=args.throttle)
+        print(f"  grounded {g['grounded']} · unconfirmed {g['unconfirmed']} · ungrounded {g['ungrounded']}",
+              file=sys.stderr)
+
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)
     res = validate(out)
@@ -398,6 +406,8 @@ def main(argv=None) -> int:
     b.add_argument("--no-verify", action="store_true", help="skip network citation checks (offline/testing)")
     b.add_argument("--throttle", type=float, default=0.4, help="base seconds between citation checks; adapts up on rate limits")
     b.add_argument("--reuse-verification", action="store_true", help="keep prior verdicts in <out> and re-check only the errored/unverified papers (cheap retry)")
+    b.add_argument("--ground", action="store_true", help="confirm each claim's passage appears in its paper (abstract-level, free)")
+    b.add_argument("--ground-fulltext", action="store_true", help="ground against ar5iv FULLTEXT (slower; enables the 'ungrounded' verdict)")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
     b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")

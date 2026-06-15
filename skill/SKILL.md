@@ -84,10 +84,11 @@ If a subagent can't find a real handle for a paper, it does not get cited — dr
 For each paper, dispatch extraction. Return, each tied to a **verbatim passage** from the paper:
 - **Claims** — its key results/methods/findings: `{id, statement, paper, supporting_passage,
   claim_type, confidence}`. The `supporting_passage` MUST be a near-verbatim quote from the paper and
-  the statement must not reach past it (no added scope/numbers/certainty). **Honesty note:** the engine
-  does NOT yet independently re-check that the passage actually appears in the paper — the claim is
-  drafter-quoted, not machine-grounded. So scope claims tightly and only quote text you actually read;
-  do not present these as independently verified. (A passage-presence gate is planned.)
+  the statement must not reach past it (no added scope/numbers/certainty). **Grounding:** the engine
+  CAN machine-confirm the passage is really in the paper — run `kp-build build --ground` (checks each
+  passage against the arXiv abstract, free; `--ground-fulltext` checks ar5iv fulltext and can mark a
+  passage `ungrounded`, which caps+flags the claim). A passage that grounds is verified, not just
+  quoted — so still quote text you actually read; a fabricated quote gets flagged.
 - **Open problems** — what THIS paper says is unsolved / future work / a limitation:
   `{id, statement, flagged_by:[cite_key], status, why_it_matters}`. This is the highest-value output.
 - **Debate position** — if the paper takes a side on a contested question, note it.
