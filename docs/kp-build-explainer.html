@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>kp-build — verified knowledge for AI, built once and shared</title>
+<style>
+:root{--ink:#13151a;--mut:#5b6472;--line:#e7e9ef;--bg:#f7f8fa;--card:#fff;--acc:#4f46e5;--acc2:#312e81;
+--good:#16a34a;--warn:#d97706;--shadow:0 1px 3px rgba(20,22,40,.06),0 8px 24px rgba(20,22,40,.04)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px}
+.num{font-variant-numeric:tabular-nums}
+/* hero */
+header{background:radial-gradient(1200px 400px at 70% -10%,#4f46e5 0%,#312e81 55%,#1e1b4b 100%);color:#fff;padding:64px 0 54px}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#c7d2fe;font-weight:600;margin:0 0 14px}
+h1{font-size:38px;line-height:1.12;margin:0 0 16px;font-weight:700;letter-spacing:-.01em;max-width:18ch}
+.lede{font-size:18px;color:#e0e1f5;max-width:62ch;margin:0 0 30px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:720px}
+.stat{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px 18px;backdrop-filter:blur(6px)}
+.stat b{display:block;font-size:24px;line-height:1.1;font-weight:700}
+.stat span{display:block;font-size:13px;color:#c7d2fe;margin-top:5px}
+/* sections */
+section{padding:48px 0;border-bottom:1px solid var(--line)}
+.kicker{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);font-weight:700;margin:0 0 10px}
+h2{font-size:25px;line-height:1.2;margin:0 0 14px;font-weight:700;letter-spacing:-.01em}
+p{margin:0 0 14px;max-width:68ch}p.big{font-size:18px;color:#2b2f3a}
+.mut{color:var(--mut)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+.box h3{margin:0 0 6px;font-size:16px}.box p{font-size:14.5px;color:var(--mut);margin:0}
+/* how it works */
+.flow{counter-reset:step;margin-top:6px}
+.step{display:grid;grid-template-columns:46px 1fr;gap:18px;padding:16px 0;border-top:1px solid var(--line)}
+.step:first-child{border-top:0}
+.step .n{counter-increment:step;width:42px;height:42px;border-radius:12px;background:#eef0fb;color:var(--acc);
+font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center}
+.step .n::before{content:counter(step)}
+.step h3{margin:0 0 3px;font-size:17px}.step p{margin:0;font-size:15px;color:var(--mut)}
+.step .tag{display:inline-block;font-size:11.5px;font-weight:600;color:var(--acc);background:#eef0fb;border-radius:99px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+/* proof callout */
+.proof{background:linear-gradient(180deg,#ffffff,#fbfbfe);border:1px solid var(--line);border-left:4px solid var(--good);
+border-radius:14px;padding:24px 26px;box-shadow:var(--shadow)}
+.proof .row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:16px 0 6px}
+.proof .m b{font-size:26px;font-weight:700;display:block;line-height:1}
+.proof .m span{font-size:13px;color:var(--mut)}
+.delta{color:var(--good);font-weight:700}
+/* next steps */
+.road{list-style:none;padding:0;margin:8px 0 0}
+.road li{display:grid;grid-template-columns:108px 1fr;gap:16px;padding:12px 0;border-top:1px solid var(--line);align-items:baseline}
+.road li:first-child{border-top:0}
+.phase{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fff;background:var(--acc);border-radius:99px;padding:4px 10px;text-align:center}
+.phase.now{background:var(--good)}.phase.next{background:var(--acc)}.phase.later{background:#94a3b8}
+.road b{font-weight:600}.road p{margin:2px 0 0;font-size:14px;color:var(--mut)}
+.foot{padding:30px 0 60px;color:var(--mut);font-size:13.5px}
+.note{background:#fffdf5;border:1px solid #fde9b8;border-radius:12px;padding:14px 18px;font-size:14px;color:#7c5a13;margin-top:18px}
+@media (max-width:680px){.stats,.proof .row{grid-template-columns:1fr}.two{grid-template-columns:1fr}h1{font-size:30px}.road li{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header><div class="wrap">
+  <p class="eyebrow">kp-build</p>
+  <h1>Research knowledge your AI can actually trust — built once, shared everywhere.</h1>
+  <p class="lede">The cutting edge of any field is exactly where AI is least reliable: it invents citations,
+  falls behind the latest work, and blurs conflicting findings into mush. kp-build packages a topic's
+  research landscape with <b>every source fact-checked against real databases</b> — so any AI agent inherits
+  it without re-researching, and you can <b>prove it made the AI better</b>.</p>
+  <div class="stats">
+    <div class="stat"><b>0</b><span>fabricated citations — every source verified vs arXiv &amp; Crossref</span></div>
+    <div class="stat"><b class="num">0.37&nbsp;→&nbsp;0.91</b><span>measured quality lift for an AI given the package</span></div>
+    <div class="stat"><b>build once</b><span>then every agent — and the whole org — reuses it</span></div>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <p class="kicker">The problem</p>
+  <h2>Confident, but wrong — and everyone pays for it twice</h2>
+  <p class="big">Large language models sound authoritative on recent, specialized research. In reality they
+  hallucinate papers that don't exist, miss anything past their training cut-off, and average competing
+  results into something bland and wrong.</p>
+  <p>So every team's AI re-spends compute reconstructing the <em>same</em> research landscape — and often
+  grounds real work (papers, strategy, product decisions) in sources that were never checked, or never
+  existed. That is wasted money and quiet reputational risk, repeated across every project.</p>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">What it is</p>
+  <h2>A fact-checked briefing your AI can load</h2>
+  <p class="big">A <b>knowledge package</b>: a portable, verified, AI-loadable map of a research topic — the
+  key papers (all confirmed real), the open problems, the live debates, the headline results.</p>
+  <div class="two">
+    <div class="box"><h3>Build it once</h3><p>An automated research pass produces the package and verifies every citation. It becomes a reusable asset — not a throwaway report.</p></div>
+    <div class="box"><h3>Every agent inherits it</h3><p>Any AI loads the package and starts from a verified, current landscape — no re-research, no invented sources, no stale picture.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">How it works</p>
+  <h2>Five steps — and verification is non-negotiable</h2>
+  <div class="flow">
+    <div class="step"><div class="n"></div><div><h3>Research</h3><p>AI agents survey the literature, then follow the citation graph — what each key paper cites and is cited by — to catch the seminal and the newest work a keyword search misses.</p></div></div>
+    <div class="step"><div class="n"></div><div><h3>Verify <span class="tag">the load-bearing guarantee</span></h3><p>Every citation is checked against real databases (arXiv, Crossref). A fabricated or mislabeled source is dropped, not shipped. This is what makes the package trustworthy.</p></div></div>
+    <div class="step"><div class="n"></div><div><h3>Package</h3><p>The verified knowledge is structured into a portable, AI-loadable format — spine of papers, open problems, debates, and reported results.</p></div></div>
+    <div class="step"><div class="n"></div><div><h3>Measure <span class="tag">does it actually help?</span></h3><p>A built-in test pits an AI <em>with</em> the package against an unaided AI on a held-out task, and scores the difference. No hand-waving — a number.</p></div></div>
+    <div class="step"><div class="n"></div><div><h3>Share</h3><p>The package ships in an open, standard format, so anyone can install and reuse it like a software dependency. Build once; the whole team — or ecosystem — benefits.</p></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">The proof</p>
+  <h2>Tested on a topic the AI is genuinely weak at</h2>
+  <p>We ran it on <b>diffusion language models</b> — a fast-moving field where roughly half the important
+  work is newer than the AI's training. Every core citation verified live, and the package
+  <b>measurably</b> improved the AI's research grounding:</p>
+  <div class="proof">
+    <div class="row">
+      <div class="m"><b class="num">19 / 19</b><span>core citations verified against arXiv, live</span></div>
+      <div class="m"><b class="num">0.37 <span class="delta">→ 0.91</span></b><span>quality score, unaided AI vs. AI given the package</span></div>
+      <div class="m"><b class="num">3 → 0</b><span>citation errors the package eliminated</span></div>
+    </div>
+    <p class="mut" style="margin:6px 0 0;font-size:14px">Unaided, the AI could ground only a fraction of the field and
+    <b>mislabeled 3 of its citations</b> (right ID, wrong paper). Loaded with the package, it cited the real,
+    verified landscape — no errors. Following the citation graph also surfaced <b>560+ real related papers</b>
+    the first keyword survey had missed.</p>
+  </div>
+  <div class="note">Honest by design: confidence is always stated relative to the sources, every citation is
+  <em>checked</em> rather than asserted, and the package is a research <em>foundation</em> — a verified
+  starting point — not a finished paper.</div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">Where it stands &amp; what's next</p>
+  <h2>Working today; compounding from here</h2>
+  <ul class="road">
+    <li><span class="phase now">Now</span><div><b>A working tool, proven on a live topic.</b><p>Builds verified packages, measures their value, and emits them in a shareable open format. Code reviewed and tested.</p></div></li>
+    <li><span class="phase next">Next</span><div><b>Deeper, more autonomous research.</b><p>Citation-graph expansion and adversarial fact-checking of claims — already partly built — so packages go deeper, not just broader.</p></div></li>
+    <li><span class="phase next">Next</span><div><b>A library of packages.</b><p>Cover more topics, so teams reach for a verified package instead of re-researching from scratch.</p></div></li>
+    <li><span class="phase later">Later</span><div><b>Open distribution.</b><p>Publish packages so they're shared and reused across the ecosystem like software dependencies — the compounding payoff of "build once."</p></div></li>
+  </ul>
+</div></section>
+
+<div class="wrap foot">
+  <b>kp-build</b> — verified, measurable, shareable research knowledge for AI agents.
+  The one-line takeaway: <b>stop letting AI invent its sources, and stop paying to rebuild the same knowledge.</b>
+</div>
+</body></html>
