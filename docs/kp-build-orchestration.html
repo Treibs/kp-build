@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How the /kp-build skill works — orchestration walkthrough</title>
+<style>
+:root{--ink:#14161c;--mut:#5b6472;--line:#e6e8ef;--bg:#f7f8fa;--card:#fff;
+--human:#d97706;--humanbg:#fff7ed;--agent:#4f46e5;--agentbg:#eef1fc;--engine:#475569;--enginebg:#f1f5f9;
+--good:#16a34a;--shadow:0 1px 2px rgba(20,22,40,.05),0 8px 22px rgba(20,22,40,.05)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:#eef0f4;border-radius:5px;padding:1px 6px}
+header{background:linear-gradient(135deg,#312e81,#4f46e5);color:#fff;padding:46px 0 40px}
+.eyebrow{font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;color:#c7d2fe;font-weight:600;margin:0 0 10px}
+h1{font-size:31px;line-height:1.15;margin:0 0 12px;font-weight:700;letter-spacing:-.01em}
+.lede{font-size:17px;color:#e0e1f5;max-width:70ch;margin:0}
+section{padding:42px 0;border-bottom:1px solid var(--line)}
+.kicker{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--agent);font-weight:700;margin:0 0 10px}
+h2{font-size:23px;line-height:1.2;margin:0 0 12px;font-weight:700;letter-spacing:-.01em}
+p{margin:0 0 13px;max-width:74ch}.mut{color:var(--mut)}
+/* actor legend */
+.actors{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.actor{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px 17px;box-shadow:var(--shadow);border-top:3px solid}
+.actor.h{border-top-color:var(--human)}.actor.a{border-top-color:var(--agent)}.actor.e{border-top-color:var(--engine)}
+.actor b{display:block;font-size:15px;margin-bottom:3px}.actor .who{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.actor.h .who{color:var(--human)}.actor.a .who{color:var(--agent)}.actor.e .who{color:var(--engine)}
+.actor p{font-size:13.5px;color:var(--mut);margin:6px 0 0}
+/* swim-lane diagram */
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-top:8px;overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:760px}
+.lane-l{font:700 13px -apple-system,sans-serif}.lane-s{font:11px -apple-system,sans-serif}
+.st{font:600 12.5px -apple-system,sans-serif;fill:#14161c}.st2{font:10.5px -apple-system,sans-serif}
+.gate-l{font:700 10px -apple-system,sans-serif;letter-spacing:.04em}
+.cap{font-size:13px;color:var(--mut);margin:10px 2px 0}
+/* step cards */
+.step{display:grid;grid-template-columns:54px 1fr;gap:18px;padding:22px 0;border-top:1px solid var(--line)}
+.step:first-of-type{border-top:0}
+.badge{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:19px;color:#fff}
+.b-h{background:var(--human)}.b-a{background:var(--agent)}.b-e{background:var(--engine)}.b-ae{background:linear-gradient(135deg,var(--agent),var(--engine))}
+.step h3{margin:0 0 4px;font-size:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.who-pill{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:99px;padding:2px 9px}
+.wp-h{background:var(--humanbg);color:var(--human)}.wp-a{background:var(--agentbg);color:var(--agent)}.wp-e{background:var(--enginebg);color:var(--engine)}
+.gate-pill{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:99px;padding:2px 9px;background:#dcfce7;color:#14532d}
+.step p{margin:0 0 8px;font-size:14.5px}
+.io{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0;font-size:12.5px}
+.io span{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:3px 9px;color:var(--mut)}
+.io .out{border-color:#c7d2fe;color:var(--agent);background:#f5f6ff}
+.disc{margin-top:9px;font-size:13px;border-left:3px solid var(--agent);background:#f7f8ff;padding:8px 12px;border-radius:0 8px 8px 0;color:#33384a}
+.disc.gate{border-left-color:var(--good);background:#f3fcf6}
+/* mini box-flow diagrams */
+.flowd{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:var(--shadow);margin-top:8px;overflow-x:auto}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;min-width:760px}
+.node{border:1px solid var(--line);border-radius:11px;padding:10px 13px;font-size:13px;background:#fff;flex:0 0 auto;width:180px}
+.node b{display:block;font-size:13.5px}.node small{color:var(--mut);font-size:11.5px}
+.node.h{background:var(--humanbg);border-color:#fcd9a6}.node.a{background:var(--agentbg);border-color:#c7d2fe}.node.e{background:var(--enginebg);border-color:#cbd5e1}
+.node.good{background:#f3fcf6;border-color:#bbf7d0}
+.arrow{color:#94a3b8;font-size:20px;flex:0 0 auto}
+.stack{display:flex;flex-direction:column;gap:9px}
+.wall{border-left:2px dashed var(--good);padding-left:14px;margin-left:4px;position:relative}
+.wall::before{content:"isolation wall";position:absolute;left:-2px;top:-16px;font-size:10px;font-weight:700;color:var(--good);text-transform:uppercase;letter-spacing:.04em}
+.foot{padding:28px 0 56px;color:var(--mut);font-size:13.5px}
+@media (max-width:680px){.actors{grid-template-columns:1fr}h1{font-size:25px}.row{align-items:stretch}}
+</style></head>
+<body>
+<header><div class="wrap">
+  <p class="eyebrow">/kp-build · orchestration</p>
+  <h1>How the skill works, step by step</h1>
+  <p class="lede">Building one verified knowledge package is a pipeline across three kinds of worker: a <b>human</b>
+  who scopes it, a fleet of <b>AI agents</b> that do the judgment (find, read, extract, refute, answer), and a
+  deterministic <b>engine</b> that does the mechanical part (verify, assemble, score). Two gates make it
+  trustworthy: a <b>verification gate</b> that drops invented citations, and an <b>acceptance gate</b> that proves it helps.</p>
+</div></header>
+
+<section><div class="wrap">
+  <p class="kicker">The three workers</p>
+  <h2>Who does what — and why the seam matters</h2>
+  <p class="mut">Judgment is delegated to agents; anything that must be exact and repeatable is delegated to the engine.
+  The engine can't be talked into accepting a fake citation.</p>
+  <div class="actors">
+    <div class="actor h"><span class="who">Human</span><b>You</b><p>Scope the narrow research area at the start, and read the delivered package + report at the end. Two touch-points — everything between is autonomous.</p></div>
+    <div class="actor a"><span class="who">AI agents</span><b>The judgment</b><p>Survey the literature, read papers, extract claims + open problems, try to refute claims, synthesize, and write the two falsification answers. Dispatched in parallel, in isolation.</p></div>
+    <div class="actor e"><span class="who">Engine</span><b>The mechanical core</b><p><code>kp_build</code> — verifies every citation against arXiv/Crossref, assembles the package, lints it, and scores the falsification. Deterministic; the trust anchor.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">The pipeline at a glance</p>
+  <h2>Seven stages across three lanes</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 1000 430" role="img" aria-label="kp-build orchestration swim-lane: human, agents, engine across seven stages">
+    <defs><marker id="ah" markerWidth="10" markerHeight="10" refX="7.5" refY="3" orient="auto">
+      <path d="M0,0 L7.5,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+    <!-- lane bands -->
+    <rect x="0" y="58" width="1000" height="88" fill="#fff7ed"/>
+    <rect x="0" y="150" width="1000" height="142" fill="#eef1fc"/>
+    <rect x="0" y="296" width="1000" height="92" fill="#f1f5f9"/>
+    <!-- lane labels -->
+    <circle cx="20" cy="98" r="5" fill="#d97706"/><text x="32" y="98" class="lane-l" fill="#b45309">Human</text><text x="32" y="113" class="lane-s" fill="#b45309">you</text>
+    <circle cx="20" cy="216" r="5" fill="#4f46e5"/><text x="32" y="216" class="lane-l" fill="#4f46e5">AI agents</text><text x="32" y="231" class="lane-s" fill="#4f46e5">judgment · parallel</text>
+    <circle cx="20" cy="342" r="5" fill="#475569"/><text x="32" y="342" class="lane-l" fill="#475569">Engine</text><text x="32" y="357" class="lane-s" fill="#475569">deterministic</text>
+    <!-- arrows (drawn first, under boxes) -->
+    <line x1="227" y1="102" x2="247" y2="186" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#ah)"/>
+    <line x1="343" y1="214" x2="354" y2="214" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#ah)"/>
+    <line x1="478" y1="214" x2="495" y2="214" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#ah)"/>
+    <line x1="593" y1="214" x2="620" y2="324" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#ah)"/>
+    <line x1="718" y1="342" x2="742" y2="288" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#ah)"/>
+    <line x1="836" y1="262" x2="858" y2="116" stroke="#94a3b8" stroke-width="1.6" marker-end="url(#ah)"/>
+    <!-- stage 1: Scope (human) -->
+    <g><rect x="131" y="78" width="96" height="48" rx="11" fill="#fff" stroke="#f0b366" stroke-width="1.4"/>
+      <text x="179" y="100" text-anchor="middle" class="st">1 · Scope</text><text x="179" y="115" text-anchor="middle" class="st2" fill="#b45309">define "done"</text></g>
+    <!-- stage 2: Survey (agents) -->
+    <g><rect x="247" y="188" width="96" height="52" rx="11" fill="#fff" stroke="#a5b4fc" stroke-width="1.4"/>
+      <text x="295" y="210" text-anchor="middle" class="st">2 · Survey</text><text x="295" y="225" text-anchor="middle" class="st2" fill="#4f46e5">search + expand</text></g>
+    <!-- stage 3: Extract/Ground/Refute (agents) -->
+    <g><rect x="354" y="184" width="124" height="60" rx="11" fill="#fff" stroke="#a5b4fc" stroke-width="1.4"/>
+      <text x="416" y="205" text-anchor="middle" class="st">3 · Extract</text><text x="416" y="220" text-anchor="middle" class="st2" fill="#4f46e5">ground · refute</text><text x="416" y="233" text-anchor="middle" class="st2" fill="#4f46e5">(isolated)</text></g>
+    <!-- stage 4: Synthesize (agents) -->
+    <g><rect x="495" y="188" width="98" height="52" rx="11" fill="#fff" stroke="#a5b4fc" stroke-width="1.4"/>
+      <text x="544" y="210" text-anchor="middle" class="st">4 · Synthesize</text><text x="544" y="225" text-anchor="middle" class="st2" fill="#4f46e5">merge · map</text></g>
+    <!-- stage 5: Assemble = VERIFICATION GATE (engine) -->
+    <g><rect x="620" y="320" width="98" height="52" rx="11" fill="#fff" stroke="#16a34a" stroke-width="2"/>
+      <text x="669" y="340" text-anchor="middle" class="st">5 · Assemble</text><text x="669" y="354" text-anchor="middle" class="gate-l" fill="#16a34a">VERIFY GATE</text>
+      <text x="669" y="366" text-anchor="middle" class="st2" fill="#475569">drops fakes</text></g>
+    <!-- stage 6: Falsify = ACCEPTANCE GATE (agents+engine, straddles boundary) -->
+    <g><rect x="742" y="238" width="104" height="66" rx="11" fill="#fff" stroke="#16a34a" stroke-width="2"/>
+      <text x="794" y="262" text-anchor="middle" class="st">6 · Falsify</text><text x="794" y="276" text-anchor="middle" class="gate-l" fill="#16a34a">ACCEPT GATE</text>
+      <text x="794" y="290" text-anchor="middle" class="st2" fill="#475569">does it help?</text></g>
+    <!-- stage 7: Deliver (human) -->
+    <g><rect x="858" y="80" width="104" height="50" rx="11" fill="#fff" stroke="#f0b366" stroke-width="1.4"/>
+      <text x="910" y="101" text-anchor="middle" class="st">7 · Deliver</text><text x="910" y="116" text-anchor="middle" class="st2" fill="#b45309">package + report</text></g>
+  </svg>
+  </div>
+  <p class="cap">Stages 2–4 fan out into many parallel agents. Stages 5–6 are the two trust gates (green): the engine
+  verifies citations before anything ships, and falsification proves the package beats an unaided agent before it's delivered.</p>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">Step by step</p>
+  <h2>The orchestration in full</h2>
+
+  <div class="step"><div class="badge b-h">1</div><div>
+    <h3>Scope <span class="who-pill wp-h">Human · you</span></h3>
+    <p>You and the orchestrator agree a <b>narrow</b> research area (one paper-sized topic, e.g. "speculative decoding for LLM inference"), the sub-questions a related-work section must answer, and what's in vs out of scope. This is the one upfront human step — it defines "done."</p>
+    <div class="io"><span>in: a research goal</span><span class="out">out: scope contract</span></div>
+  </div></div>
+
+  <div class="step"><div class="badge b-a">2</div><div>
+    <h3>Survey <span class="who-pill wp-a">AI agents · fan-out</span></h3>
+    <p>The orchestrator dispatches a survey agent per sub-question. Each does <b>two passes</b>: (a) keyword search (arXiv, Semantic Scholar, the venues) for the seed papers, then (b) <b>citation-graph expansion</b> — <code>kp-build expand</code> pulls the references and citers of the verified spine from Semantic Scholar, surfacing the seminal and newest papers a keyword search misses. Agents relevance-filter the candidates and keep only those with a real arXiv id / DOI.</p>
+    <div class="io"><span>in: scope contract</span><span class="out">out: real papers + handles</span></div>
+    <div class="disc"><b>Discipline:</b> a paper with no verifiable handle is dropped, never invented. Coverage is recorded so the gap is honest.</div>
+  </div></div>
+
+  <div class="step"><div class="badge b-a">3</div><div>
+    <h3>Extract · Ground · Refute <span class="who-pill wp-a">AI agents · per paper, isolated</span></h3>
+    <p>For each paper, an extraction agent pulls <b>claims</b> (each tied to a verbatim passage, scoped tightly to it), the <b>open problems</b> the paper flags as unsolved (the highest-value output), and any <b>debate position</b>. Then a <em>separate</em> refuter agent tries to <b>break</b> each high-stakes claim using the beat's <em>other</em> sources.</p>
+    <div class="io"><span>in: papers</span><span class="out">out: claims · open problems · positions · refuter verdicts</span></div>
+    <div class="disc"><b>Isolation:</b> the refuter sees only the claim and the other sources — never the drafter's reasoning. A claim it breaks is marked <code>survived_refuter:false</code>, and later shown capped + flagged, not silently dropped.</div>
+  </div></div>
+
+  <div class="step"><div class="badge b-a">4</div><div>
+    <h3>Synthesize <span class="who-pill wp-a">AI agents</span></h3>
+    <p>Cross-paper assembly: open problems that several papers flag are merged (corroboration that they're real), opposing positions are clustered into a <b>debate map</b>, and claims multiple independent papers support are marked <code>corroborated_by</code>. The output is one structured <code>research.json</code>.</p>
+    <div class="io"><span>in: per-paper extractions</span><span class="out">out: research.json</span></div>
+  </div></div>
+
+  <div class="step"><div class="badge b-e">5</div><div>
+    <h3>Assemble <span class="who-pill wp-e">Engine</span> <span class="gate-pill">Verification gate</span></h3>
+    <p><code>kp-build build</code> takes the research JSON and <b>verifies every citation live</b> against arXiv and Crossref (throttled so large packages don't trip rate limits). A paper that doesn't resolve — or whose id points at a different paper — is <b>dropped</b>, and its claims with it. Only verified-anchored nodes ship. The engine then writes the package, the agent-loadable <code>CONTEXT.md</code>, the <code>knowledge.json</code> contract, and lints it.</p>
+    <div class="io"><span>in: research.json</span><span class="out">out: verified package + CONTEXT.md</span></div>
+    <div class="disc gate"><b>This is the no-hallucination guarantee.</b> It's mechanical and unbribable — an invented citation cannot pass, no matter how confident the agent that drafted it was.</div>
+  </div></div>
+
+  <div class="step"><div class="badge b-ae">6</div><div>
+    <h3>Falsify <span class="who-pill wp-a">Agents</span> <span class="who-pill wp-e">+ Engine</span> <span class="gate-pill">Acceptance gate</span></h3>
+    <p>The acceptance test: two agents answer the <b>same held-out task</b> — one with <b>no package</b> (unaided recall), one <b>loaded with <code>CONTEXT.md</code></b>. The engine (<code>kp-build falsify</code>) scores both on citation <b>precision</b> (do the cited ids resolve <em>and</em> match the paper named?) and <b>recall</b> (how much of the verified spine they used), and records an <b>f1 verdict</b> in the manifest.</p>
+    <div class="io"><span>in: package + a held-out task</span><span class="out">out: HELPS / TIE / NO — a number</span></div>
+    <div class="disc gate"><b>If the loaded agent doesn't beat the unaided one, the package isn't adding value</b> — the skill says so plainly and either picks a more model-weak topic or deepens the survey. No hollow wins.</div>
+  </div></div>
+
+  <div class="step"><div class="badge b-h">7</div><div>
+    <h3>Deliver <span class="who-pill wp-e">Engine</span> <span class="who-pill wp-h">→ Human</span></h3>
+    <p>Falsify is a <b>prerequisite</b> of the report — <code>kp-build report</code> refuses to render a package that hasn't been measured. You receive the package, the human-readable report (verdict, verified spine, open problems, debates), and <code>CONTEXT.md</code> for any agent to load. The same build also emits a <code>knowledge.json</code>, so the package is shareable through the open <code>0xLT/kpm</code> manager — build once, anyone reuses it.</p>
+    <div class="io"><span>in: measured package</span><span class="out">out: report + shareable package</span></div>
+  </div></div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">Pattern · fan-out &amp; isolation</p>
+  <h2>How one sub-question becomes verified knowledge</h2>
+  <p class="mut">Stages 2–3 dispatch many agents in parallel. The grounding and refutation are deliberately walled off from
+  whoever drafted the claim — the same discipline that keeps the package honest.</p>
+  <div class="flowd"><div class="row">
+    <div class="node a"><b>Sub-question</b><small>one "beat" of the scope</small></div>
+    <div class="arrow">→</div>
+    <div class="node a"><b>Survey agent</b><small>search + citation-graph expand</small></div>
+    <div class="arrow">→</div>
+    <div class="stack">
+      <div class="node"><b>Paper A</b><small>verifiable handle</small></div>
+      <div class="node"><b>Paper B</b><small>verifiable handle</small></div>
+      <div class="node"><b>Paper …</b><small>relevance-filtered</small></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stack">
+      <div class="node a"><b>Extract agent</b><small>claim + verbatim passage</small></div>
+      <div class="wall"><div class="node good"><b>Refuter agent</b><small>sees only the claim + the <em>other</em> sources — never the drafter's reasoning</small></div></div>
+    </div>
+  </div></div>
+</div></section>
+
+<section><div class="wrap">
+  <p class="kicker">Pattern · the acceptance gate</p>
+  <h2>Proving the package helps</h2>
+  <div class="flowd"><div class="row">
+    <div class="node"><b>Held-out task</b><small>"write a related-work section + open problems, with citations"</small></div>
+    <div class="arrow">→</div>
+    <div class="stack">
+      <div class="node"><b>Base agent</b><small>memory only — no package</small></div>
+      <div class="node a"><b>KP agent</b><small>CONTEXT.md loaded</small></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="node e"><b>kp-build falsify</b><small>precision (cites resolve &amp; match?) · recall (spine used?) → f1</small></div>
+    <div class="arrow">→</div>
+    <div class="node good"><b>Verdict</b><small>e.g. f1 0.37 → 0.91 · HELPS · recorded in the manifest, gates the report</small></div>
+  </div></div>
+</div></section>
+
+<div class="wrap foot">
+  <b>/kp-build</b> — the orchestrator is the conductor; agents supply the judgment and the engine supplies the proof.
+  The whole run has exactly two human touch-points (scope in, read out) and two hard gates (verify, accept) — everything else is autonomous.
+</div>
+</body></html>
