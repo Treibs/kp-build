@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kp-build — verified knowledge packages for AI agents</title>
+<meta name="description" content="An open-source tool that builds verified, citation-checked knowledge packages an AI agent can load — so it answers from real, checked sources instead of guessing.">
+<style>
+  :root{
+    --ink:#11161d; --muted:#5b6675; --line:#e4e8ee; --bg:#f6f8fb; --card:#fff;
+    --accent:#3b4a8c; --good:#1c8b53; --good-bg:#eaf7f0; --amber:#b4791a; --amber-bg:#fdf6ea;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6;font-size:16px}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.86em;background:#eef1f5;padding:.1em .38em;border-radius:5px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px}
+  header.hero{background:linear-gradient(160deg,#161c27,#1f2940 72%,#26324f);color:#fff;padding:46px 0 40px}
+  h1{font-size:32px;margin:.1em 0 .12em;letter-spacing:-.01em}
+  .tag{color:#c7d2e6;font-size:18px;max-width:660px;margin:.2em 0 0}
+  .badges{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px}
+  .badge{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#eaf0fb;font-size:13px;padding:5px 11px;border-radius:999px}
+  .badge b{color:#fff}
+  section{padding:30px 0 4px}
+  h2{font-size:23px;margin:14px 0 4px;letter-spacing:-.01em}
+  h3{font-size:16.5px;margin:20px 0 4px}
+  .lede{color:var(--muted);font-size:17px;margin:.2em 0 14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px 22px;margin:14px 0;box-shadow:0 1px 2px rgba(20,30,50,.04)}
+  .card.flag{border-left:4px solid var(--amber)}
+  ul.clean{margin:8px 0;padding-left:18px} ul.clean li{margin:6px 0}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  tbody tr:last-child td{border-bottom:none}
+  .win{color:var(--good);font-weight:600} .neu{color:var(--muted)}
+  pre{background:#0d1117;color:#c9d1d9;border-radius:10px;padding:14px 16px;overflow:auto;font-family:var(--mono);font-size:13.5px;line-height:1.5}
+  pre .g{color:#3fb950} pre .a{color:#d29922} pre .c{color:#8b949e} pre .b{color:#58a6ff}
+  .grid{display:grid;gap:14px} .g3{grid-template-columns:1fr 1fr 1fr} @media(max-width:720px){.g3{grid-template-columns:1fr}}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .stat .n{font-size:23px;font-weight:700;line-height:1.1} .stat .l{font-size:13px;color:var(--muted);margin-top:3px}
+  .stat.good .n{color:var(--good)}
+  .quote{border-left:3px solid var(--accent);background:#f0f3fa;padding:11px 16px;border-radius:0 8px 8px 0;margin:14px 0;color:#2b3550}
+  footer{color:var(--muted);font-size:13.5px;padding:28px 0 48px;border-top:1px solid var(--line);margin-top:30px}
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="wrap">
+  <h1>kp-build</h1>
+  <p class="tag">An open-source tool that builds <b>verified, citation-checked knowledge packages</b> an AI
+    agent can load — so it answers from real, checked sources instead of guessing.</p>
+  <div class="badges">
+    <span class="badge">open-source · MIT</span>
+    <span class="badge"><code>pip install kp-build</code></span>
+    <span class="badge"><b>0</b> hallucinated citations — by construction</span>
+    <span class="badge"><b>$0</b> — verification is free public APIs</span>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+<section>
+  <p class="lede">Ask an AI assistant about something that matters — a health question, recent research, a
+    decision — and it sounds completely confident. Sometimes it's completely wrong. It will even cite a study
+    that doesn't exist.</p>
+  <p>kp-build fixes that for a given topic. It produces a <b>knowledge package</b>: a small, self-contained
+    folder of the real literature on a narrow subject —</p>
+  <ul class="clean">
+    <li>a <b>verified citation spine</b> — every paper checked live against arXiv / Crossref / OpenAlex; the ones that don't check out are dropped, not kept;</li>
+    <li><b>claims</b> — the key findings, each tied to a quoted line from its source;</li>
+    <li>the <b>open questions</b> the papers themselves flag as unsolved;</li>
+    <li>a <b>debate map</b> — the contested points, what's settled vs. what's hype;</li>
+    <li>and a small <b>briefing file</b> an agent loads to inherit the whole topic at once.</li>
+  </ul>
+  <p>An agent loads it and works from checked knowledge. It's a reusable, machine-checkable asset — not a
+    one-shot answer.</p>
+</section>
+
+<section>
+  <h2>A worked example: what actually improves sleep?</h2>
+  <p class="lede">An everyday question, and a good test — the kind of thing people ask AI all the time, where
+    being wrong matters and the internet is full of hype.</p>
+  <div class="card flag">
+    <p style="margin-top:0">We asked a model to review the sleep evidence and cite studies. It cited
+      <code>10.5665/sleep.6072</code> — confidently. That DOI resolves to nothing; it was invented. It also
+      engaged only about a quarter of the real evidence.</p>
+    <p>So we built a verified package on it. Every claim is backed by a real, checked study, and the package's
+      core is a five-way <b>evidence-vs-hype map</b>:</p>
+    <ul class="clean">
+      <li><b>CBT-I</b> (behavioral therapy) is the first-line, best-evidence treatment.</li>
+      <li><b>Low-dose melatonin</b>, timed right, has a small real effect; higher doses don't help more — and most supplements are mislabeled.</li>
+      <li><b>Mouth-taping, blue-light-blocking glasses, and tracker-driven "optimization"</b> are mostly hype — with the studies behind each call (sleep trackers can even feed insomnia, an effect researchers named "orthosomnia").</li>
+    </ul>
+    <p style="margin-bottom:0"><b>Does the package help?</b> The tool measures it: a model with the package vs.
+      one without, on a held-out question. Unaided: <b>f1 0.40</b> (1 fabricated citation, 6 of 23 studies
+      covered). With the package: <b>0 fabrications, 17 of 23, f1 0.85</b>.</p>
+  </div>
+  <p style="font-size:14.5px;color:var(--muted)">The package is public — any agent can install it:
+    <code>kpm add github:Treibs/kp-sleep-insomnia-evidence#v0.1.0</code></p>
+</section>
+
+<section>
+  <h2>How it works</h2>
+  <p class="lede">A research skill (you + AI subagents) gathers and drafts; a deterministic engine verifies,
+    assembles, and scores. The engine never trusts the drafting — it checks everything.</p>
+  <pre><span class="b">$</span> kp-build build -i sleep.research.json -o pkg
+<span class="c">verifying 23 citation(s) against Crossref / OpenAlex ...</span>
+<span class="g">  citations: 23/23 verified     validation: OK</span>
+<span class="g">  45 claims · 7 open problems · 5 debates</span>
+
+<span class="b">$</span> kp-build falsify pkg --base base.txt --kp pkg.txt
+<span class="c">  base:  cited a study that doesn't exist · covered 6/23</span>
+<span class="c">  pkg:   0 fabrications · covered 17/23</span>
+<span class="a">  VERDICT: KP HELPS — f1 0.40 → 0.85</span></pre>
+  <div class="grid g3">
+    <div class="card"><h3>① No fake citations</h3><p style="font-size:14.5px">A paper is kept only when an
+      explicit arXiv id or DOI resolves <i>and</i> its real title matches. A "real id, wrong paper" mislabel is
+      rejected. The gate never rescues a bad id with a fuzzy search.</p></div>
+    <div class="card"><h3>② Grounded claims</h3><p style="font-size:14.5px">Where the source text is reachable,
+      each claim's quoted passage is machine-confirmed to actually appear in the paper — not just asserted.</p></div>
+    <div class="card"><h3>③ It checks itself</h3><p style="font-size:14.5px">A <b>probe</b> first asks whether the
+      model is even weak on the topic (skip it if not). After building, <b>falsify</b> measures whether the
+      package actually beats an unaided agent — and says so honestly when it doesn't.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>More examples</h2>
+  <p class="lede">Five packages built end-to-end. Together they show what the checks discriminate — and that
+    kp-build works beyond arXiv (journal papers verified by DOI).</p>
+  <div class="card"><table>
+    <thead><tr><th>package</th><th>topic</th><th>did the package help?</th></tr></thead>
+    <tbody>
+      <tr><td><b>sleep-insomnia-evidence</b></td><td>everyday health — evidence vs hype</td><td class="win">yes — base fabricated a study + missed ¾ of the evidence; f1 0.40 → 0.85</td></tr>
+      <tr><td>discrete-diffusion-llms</td><td>recent ML (model fabricates)</td><td class="win">yes — fixes mislabeled cites and coverage; f1 0.37 → 0.91</td></tr>
+      <tr><td>speculative-decoding-llms</td><td>ML the model knows cold</td><td class="neu">on coverage only — and the tool says so</td></tr>
+      <tr><td>rubric-based-rl-nonverifiable</td><td>a 2026-emergent ML topic</td><td class="win">hugely — coverage 0.07 → 1.00</td></tr>
+      <tr><td>glp1-incretin-obesity</td><td>biomedical (non-arXiv, by DOI)</td><td class="win">on coverage — recall 0.26 → 0.95</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Honest about what it is</h2>
+  <ul class="clean">
+    <li><b>It pays off where the model is weak</b> — recent, niche, or fast-moving topics. On something the
+      model already knows cold, a package adds traceability and completeness, not accuracy — and the falsify
+      check will tell you that plainly instead of selling a hollow win.</li>
+    <li><b>Confidence is corpus-relative.</b> A claim is only as good as its sources; the package says so rather
+      than asserting absolute truth.</li>
+    <li><b>A package is a snapshot.</b> It carries the date it was built; when a field moves, a rebuild is a diff.</li>
+    <li><b>It's a foundation, not an oracle</b> — the verified state of the literature, with every citation checked to exist.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Use it</h2>
+  <pre><span class="c"># install the engine</span>
+<span class="b">$</span> pip install kp-build
+
+<span class="c"># or hand the repo to Claude Code and ask it to set up the /kp-build skill, then:</span>
+<span class="b">/kp-build</span>  the evidence on &lt;your everyday or research topic&gt;</pre>
+  <p>The engine is Python (stdlib-heavy; two small dependencies). Verification uses free public APIs — no keys,
+    no cost. Packages are shared through <a href="https://github.com/0xLT/kpm">KPM</a>, an open package manager
+    for knowledge — think npm, but the package is verified knowledge instead of code. Build a package once;
+    anyone's agent can install and load it.</p>
+  <div class="quote">The bet: verified knowledge as shareable packages. Build it once, checked, and nobody's
+    agent has to re-research — or re-hallucinate — the same field again.</div>
+</section>
+
+</div>
+
+<footer><div class="wrap">
+  kp-build · open-source (MIT) · <a href="https://github.com/Treibs/kp-build">github.com/Treibs/kp-build</a> ·
+  example package: <a href="https://github.com/Treibs/kp-sleep-insomnia-evidence">kp-sleep-insomnia-evidence</a>
+</div></footer>
+
+</body>
+</html>
