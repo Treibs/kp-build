@@ -159,6 +159,53 @@ def test_titled_masked_id_is_a_hedge_not_a_fabrication():
     assert v["decision"] == "build" and "hedged" in v["reason"]         # routed through the hedge branch
 
 
+# ── recency / recall-aware signal (cites only OLD work on a moving frontier) ────────────────────────
+
+def test_arxiv_ym_extracts_year_month():
+    from kp_build.falsify import _arxiv_ym
+    assert _arxiv_ym("2503.12345") == 2025 * 12 + 3
+    assert _arxiv_ym("arXiv:1706.03762") == 2017 * 12 + 6
+    assert _arxiv_ym("2513.00001") is None                  # month 13 is invalid
+    assert _arxiv_ym("10.1056/nejmoa2032183") is None       # a DOI carries no month
+
+
+def test_build_when_cites_are_all_stale():
+    # 3 real cites, none fabricated/hedged, but the NEWEST is years before as_of -> stale on the frontier
+    # -> BUILD (the recall-aware signal). The SAME cites SKIP when as_of is absent (next test).
+    ans = ("## Citations\n2211.17192 | Fast Inference\n2310.16834 | Score Entropy Discrete Diffusion\n"
+           "1706.03762 | Attention Is All You Need\n")
+    v = probe_verdict(ans, get=_get_real, as_of="2026-06")
+    assert v["decision"] == "build" and v["stale"] is True and "stale" in v["reason"]
+
+
+def test_recency_signal_abstains_without_as_of():
+    # no as_of reference -> the recency rule cannot fire -> same stale cites SKIP (backward compatible)
+    ans = ("## Citations\n2211.17192 | Fast Inference\n2310.16834 | Score Entropy Discrete Diffusion\n"
+           "1706.03762 | Attention Is All You Need\n")
+    v = probe_verdict(ans, get=_get_real)
+    assert v["decision"] == "skip" and v["stale"] is False
+
+
+def test_skip_when_a_recent_paper_is_cited():
+    # cites include a RECENT real paper -> not stale -> SKIP even with as_of set
+    def get(u):
+        return _hit("A 2025 Frontier Paper") if "2509.04474" in u else _get_real(u)
+    ans = ("## Citations\n2211.17192 | Fast Inference\n2310.16834 | Score Entropy Discrete Diffusion\n"
+           "2509.04474 | A 2025 Frontier Paper\n")
+    v = probe_verdict(ans, get=get, as_of="2026-06")
+    assert v["decision"] == "skip" and v["stale"] is False
+
+
+def test_recency_abstains_when_no_dated_cites(monkeypatch):
+    # DOI-only cites have no encoded month -> newest_real_ym None -> recency abstains -> SKIP (not stale)
+    import kp_build.falsify as F
+    monkeypatch.setattr(F, "score_citations", lambda a, get=None, **kw: {
+        "cited": 3, "checked": 3, "unresolved": 0, "real": 3, "fake": 0, "fake_list": [],
+        "newest_real_ym": None, "precision": 1.0, "hallucination_rate": 0.0})
+    v = F.probe_verdict("three real journal DOIs, no arxiv months", as_of="2026-06")
+    assert v["stale"] is False and v["decision"] == "skip"
+
+
 # ── CLI ──────────────────────────────────────────────────────────────────────────
 
 def test_cli_probe_emit_prompt(capsys):
@@ -187,6 +234,21 @@ def test_cli_probe_shows_hedged_count(tmp_path, monkeypatch, capsys):
         "decision": "build", "reason": "hedged on 2"})
     assert main(["probe", "--answer", str(ans)]) == 0
     assert "2 hedged" in capsys.readouterr().out
+
+
+def test_cli_probe_passes_as_of(tmp_path, monkeypatch):
+    # the CLI defaults the recency reference to today (YYYY-MM) and honors --as-of
+    import re as _re
+    import kp_build.falsify as F
+    ans = tmp_path / "a.txt"; ans.write_text("x", encoding="utf-8")
+    seen = {}
+    monkeypatch.setattr(F, "probe_verdict", lambda a, **kw: seen.update(kw) or {
+        "checked": 1, "cited": 1, "real": 1, "fake": 0, "hedged": 0, "hallucination_rate": 0.0,
+        "decision": "skip", "reason": "x"})
+    main(["probe", "--answer", str(ans)])
+    assert _re.match(r"\d{4}-\d{2}$", seen.get("as_of", ""))          # defaulted to today
+    main(["probe", "--answer", str(ans), "--as-of", "2030-01"])
+    assert seen["as_of"] == "2030-01"                                 # override honored
 
 
 def test_cli_probe_requires_answer_or_prompt(capsys):

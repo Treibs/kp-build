@@ -174,11 +174,23 @@ def _is_real(handle: str, title: str, get=_http_get, *, sleep=time.sleep, max_re
     return _title_ok(title, ct) if ct else False
 
 
+def _arxiv_ym(handle: str):
+    """Absolute month index (year*12+month) encoded in an arXiv id's YYMM prefix, else None. arXiv ids
+    are YYMM.NNNNN, so '2503.12345' -> March 2025. Lets the probe judge how RECENT a real cite is without
+    any network call (a DOI carries no date, so it returns None — the recency signal simply abstains)."""
+    m = re.match(r"\s*(?:arxiv:)?(\d{2})(\d{2})\.\d{4,5}", handle, re.I)
+    if not m:
+        return None
+    yy, mm = int(m.group(1)), int(m.group(2))
+    return (2000 + yy) * 12 + mm if 1 <= mm <= 12 else None
+
+
 def score_citations(answer: str, *, get=_http_get, throttle: float = 0.0, sleep=time.sleep) -> dict:
     """Precision / integrity: of the cited papers we could CHECK, how many actually exist and are the
     paper named. Citations the index couldn't resolve (transient) are excluded from the denominator so
     a rate-limited run neither inflates nor deflates precision. *throttle* sleeps between citation
-    checks to avoid bursting the index on a long citation list."""
+    checks to avoid bursting the index on a long citation list. Also reports ``newest_real_ym`` — the
+    month of the most recent REAL arXiv cite — so a recall-aware caller can spot a stale answer."""
     cites = parse_citations(answer)
     verdicts = []
     for i, (h, t) in enumerate(cites):
@@ -188,8 +200,10 @@ def score_citations(answer: str, *, get=_http_get, throttle: float = 0.0, sleep=
     checkable = [(h, t, v) for h, t, v in verdicts if v is not None]
     fake = [f"{h} | {t}" for h, t, v in checkable if not v]
     n = len(checkable)
+    real_yms = [ym for h, t, v in checkable if v for ym in (_arxiv_ym(h),) if ym]
     return {"cited": len(cites), "checked": n, "unresolved": len(cites) - n,
             "real": n - len(fake), "fake": len(fake), "fake_list": fake,
+            "newest_real_ym": max(real_yms) if real_yms else None,
             "precision": (n - len(fake)) / n if n else 0.0,
             "hallucination_rate": (len(fake) / n) if n else 0.0}
 
@@ -227,30 +241,41 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get,
             "f1": round(f1, 3) if f1 is not None else None}
 
 
+def _as_of_months(s) -> "int | None":
+    """Absolute month index for a YYYY-MM[-DD] reference date, else None (recency signal abstains)."""
+    m = re.match(r"\s*(\d{4})-(\d{2})", s or "")
+    return int(m.group(1)) * 12 + int(m.group(2)) if m else None
+
+
 def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, min_real: int = 3,
-                  min_sample: int = 3, throttle: float = 0.0, sleep=time.sleep) -> dict:
+                  min_sample: int = 3, throttle: float = 0.0, sleep=time.sleep,
+                  as_of: "str | None" = None, recency_months: int = 30) -> dict:
     """PRE-FLIGHT: should we even build a package for this topic? Score an UNAIDED agent's answer.
 
     A package only helps where the model is WEAK, which shows up as the base agent FABRICATING /
-    MISLABELING citations, HEDGING (writing placeholder ids it can't recall), or being unable to ground
-    at all. Decision tree (order matters):
+    MISLABELING citations, HEDGING (writing placeholder ids it can't recall), being STALE (citing only
+    old work on a moving frontier), or being unable to ground at all. Decision tree (order matters):
       1. cited nothing                                   -> BUILD (the model lacks the field)
       2. nothing resolvable (all transient)              -> INCONCLUSIVE (index unreachable; re-run)
       3. fabrication >= threshold, on >= min_sample cites -> BUILD (definitive — even if some unresolved)
       4. too few confirmed-real ONLY because cites were unreachable (real<min_real but real+unresolved>=
          min_real) -> INCONCLUSIVE (a transient must not masquerade as 'too thin' and force a build)
       5. genuinely grounded < min_real real papers       -> BUILD (too thin)
-      6. HEDGED on a citation it couldn't recall AND real < 2*min_real -> BUILD (the blind-spot fix: a
-         well-calibrated model that HEDGES rather than fabricates clears the precision screen, but a
-         masked id is proof it knows the frontier holds work it cannot name; only a broad real-cite
-         count >= 2*min_real overrides this and earns SKIP)
-      7. cites >= min_real real papers cleanly, no hedging -> SKIP (it already knows this — the TIE case)
+      6. HEDGED on a citation it couldn't recall AND real < 2*min_real -> BUILD (the hedging blind-spot:
+         a masked id is proof it knows the frontier holds work it cannot name)
+      7. STALE: every real cite is older than *recency_months* before *as_of* (recall-aware) -> BUILD
+         (it cites only older work and misses the recent frontier — the coverage weakness the precision
+         screen is blind to; needs *as_of* + at least one dated arXiv cite, else this rule abstains)
+      8. cites >= min_real real papers cleanly, recent, no hedging -> SKIP (it already knows this)
     The min_sample gate on (3) keeps a 0/0.5/1.0 fabrication rate from a 1-2 cite sample from flipping
-    the call. Returns the citation report plus {hedged, decision, reason}."""
+    the call. Returns the citation report plus {hedged, stale, decision, reason}."""
     rep = score_citations(base_answer, get=get, throttle=throttle, sleep=sleep)
     cited, checked, real, fake = rep["cited"], rep["checked"], rep["real"], rep["fake"]
     unresolved, hall = rep["unresolved"], rep["hallucination_rate"]
     hedged = count_hedges(base_answer)
+    asof_m, newest = _as_of_months(as_of), rep.get("newest_real_ym")
+    stale_by = (asof_m - newest) if (asof_m and newest) else None   # months since the newest real cite
+    stale = bool(stale_by is not None and stale_by > recency_months)
     if cited == 0:
         decision, reason = "build", "the unaided model cited no real papers at all — it lacks this field; a package will help"
     elif checked == 0:
@@ -269,11 +294,15 @@ def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, m
         decision, reason = "build", (f"the unaided model hedged on {hedged} citation(s) it could not recall "
                                      f"(placeholder ids like 'arXiv:2510.xxxxx') while grounding only {real} real "
                                      f"— it knows the frontier holds work it cannot name; a package will help")
+    elif stale and real >= min_real:
+        decision, reason = "build", (f"the unaided model's most recent real citation is ~{stale_by // 12}y old "
+                                     f"(nothing in the last {recency_months} months) — it cites only older work and "
+                                     f"is stale on the recent frontier; a package adds the current literature")
     else:
-        decision, reason = "skip", (f"the unaided model already cites {real} real papers cleanly "
+        decision, reason = "skip", (f"the unaided model already cites {real} real papers cleanly and recently "
                                     f"({hall:.0%} fabrication, {hedged} hedged) — it knows this field; a package "
                                     f"adds little value")
-    return {**rep, "hedged": hedged, "decision": decision, "reason": reason,
+    return {**rep, "hedged": hedged, "stale": stale, "decision": decision, "reason": reason,
             "threshold": threshold, "min_real": min_real}
 
 
