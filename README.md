@@ -153,7 +153,7 @@ check discriminate, and show kp-build works **beyond arXiv** (journal papers ver
 
 | package | the topic | `probe` | did it help? |
 |---|---|---|---|
-| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | SKIP\* | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
+| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | SKIP\* (under-fired) | **yes** — base *fabricated* a study + missed ¾ of the evidence; f1 0.40 → 0.85 |
 | `discrete-diffusion-llms` | model **fabricates** cites (recent ML) | BUILD | **yes** — fixes mislabeled cites (precision **0.62→1.00**) **and** coverage; f1 0.37 → 0.91 |
 | `speculative-decoding-llms` | model **knows it cold** | SKIP | only on coverage — precision was already perfect |
 | `rubric-based-rl-nonverifiable` | model **hedges** (post-cutoff 2026) | BUILD | **yes** — spine coverage 0.07 → 1.00 |
