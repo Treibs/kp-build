@@ -85,6 +85,9 @@ class Claim:
     claim_type: str = "finding"
     confidence: str = "medium"
     corroborated_by: List[str] = field(default_factory=list)  # other cite_keys
+    #: did the claim survive a refuter pass (tried to break it with the beat's OTHER sources)?
+    #: True if no refuter ran (v1 default) or it survived; False = a refuter broke it (shown capped/flagged)
+    survived_refuter: bool = True
 
 
 @dataclass
@@ -206,7 +209,8 @@ def claim_from_md(text: str) -> Claim:
         id=fm.get("id", ""), statement=fm.get("statement", ""), paper=fm.get("paper", ""),
         supporting_passage=fm.get("supporting_passage", ""),
         claim_type=fm.get("claim_type") or "finding", confidence=fm.get("confidence") or "medium",
-        corroborated_by=list(fm.get("corroborated_by") or []))
+        corroborated_by=list(fm.get("corroborated_by") or []),
+        survived_refuter=bool(fm.get("survived_refuter", True)))
 
 
 def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:

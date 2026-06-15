@@ -52,7 +52,12 @@ Dispatch survey subagents. Each must return real papers with a verifiable handle
   seed papers of the area.
 - (b) **Citation-graph expansion** — for the seed papers, follow their *references* (what they build
   on) and their *citations* (what builds on them). This is how you catch the seminal paper a keyword
-  search misses. Prefer the highly-cited and the most-recent.
+  search misses. Prefer the highly-cited and the most-recent. **Tool-backed:** once a first wave is
+  built, run `kp-build expand <pkg_dir> [--direction both|references|citations]` — it returns the actual
+  neighbor papers of the verified spine from Semantic Scholar (keyless), de-duped against what's already
+  in the package. Relevance-filter those candidates against the scope (a judgment call — most are
+  off-topic), verify the keepers, fold them in, and record how many you added in
+  `coverage.papers_via_expansion` (the report surfaces it as survey depth).
 Every `cite_key` must carry an `arxiv_id` or `doi` (or an exact title) so the engine can verify it.
 If a subagent can't find a real handle for a paper, it does not get cited — drop it, don't invent one.
 
@@ -67,6 +72,12 @@ For each paper, dispatch extraction. Return, each tied to a **verbatim passage**
 - **Open problems** — what THIS paper says is unsolved / future work / a limitation:
   `{id, statement, flagged_by:[cite_key], status, why_it_matters}`. This is the highest-value output.
 - **Debate position** — if the paper takes a side on a contested question, note it.
+- **Refuter (rigor, INDEPENDENT)** — for each surprising or high-stakes claim, dispatch a SEPARATE
+  refuter given the claim + the beat's *other* sources (not the claim's own), prompted to BREAK it:
+  *"find a concrete reason this is wrong, overstated, or contradicted by these other sources."* If it
+  succeeds, set `survived_refuter: false` on the claim. The engine then caps that claim to low
+  confidence and flags it (⚠) in `CONTEXT.md` and the report — surfaced, not silently dropped — so a
+  reader sees the contested ones. Claims with no refuter run default `survived_refuter: true`.
 
 ### 4 — Synthesize
 - Merge open problems that multiple papers flag (`flagged_by` grows — corroboration that it's real).

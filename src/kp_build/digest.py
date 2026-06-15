@@ -37,13 +37,15 @@ _PREAMBLE = (
 def _claim_line(c, verified) -> str:
     corr = [k for k in c.corroborated_by if k in verified]   # only VERIFIED corroborators count
     conf, note = c.confidence, ""
-    if c.claim_type == "result" and c.confidence == "high" and not corr:
+    if not c.survived_refuter:
+        conf, note = "low", " (⚠ refuter broke this — treat with suspicion)"   # capped + flagged
+    elif c.claim_type == "result" and c.confidence == "high" and not corr:
         conf, note = "medium", " (single-source)"           # FMT-2: unearned 'high' is capped on display
     elif corr:
         note = f" (corroborated by {len(corr)})"
     line = f"- _{c.claim_type}_ — {_data(c.statement)} *([{c.paper}], {conf}{note})*"
-    if c.confidence == "high" and c.supporting_passage:      # FMT-1: carry the grounding evidence
-        line += f"\n    > {_data(c.supporting_passage)[:240]}"
+    if c.survived_refuter and c.confidence == "high" and c.supporting_passage:  # FMT-1: carry evidence
+        line += f"\n    > {_data(c.supporting_passage)[:240]}"                  # (not for a broken claim)
     return line
 
 

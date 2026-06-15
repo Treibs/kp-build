@@ -138,7 +138,7 @@ def _load(path: str) -> Package:
         claims.append(Claim(id=str(c.get("id", "")), statement=str(c.get("statement", "")),
                             paper=str(c.get("paper", "")), supporting_passage=str(c.get("supporting_passage", "")),
                             claim_type=c.get("claim_type") or "finding", confidence=c.get("confidence") or "medium",
-                            corroborated_by=corr))
+                            corroborated_by=corr, survived_refuter=bool(c.get("survived_refuter", True))))
 
     problems = []
     for i, o in _section(d, "open_problems", errs):
@@ -278,6 +278,28 @@ def _cmd_falsify(args) -> int:
     return 0 if helped else 1
 
 
+def _cmd_expand(args) -> int:
+    """Citation-graph expansion: list candidate neighbor papers of a built package's verified spine,
+    for the orchestration to relevance-filter, verify, and fold in (deepening coverage past keywords)."""
+    import glob
+    from .expand import expand, DIRECTIONS
+    from .schema import paper_from_md
+    d = Path(args.package_dir)
+    papers = [paper_from_md(Path(f).read_text(encoding="utf-8")) for f in glob.glob(str(d / "papers" / "*.md"))]
+    seeds = [(p.arxiv_id or p.doi) for p in papers if p.verified.exists and (p.arxiv_id or p.doi)]
+    existing = [p.arxiv_id for p in papers if p.arxiv_id] + [p.doi for p in papers if p.doi]
+    dirs = {"both": DIRECTIONS, "references": ("references",), "citations": ("citations",)}[args.direction]
+    if not seeds:
+        print("error: no verified papers with an arXiv id / DOI to expand from", file=sys.stderr)
+        return 2
+    print(f"expanding from {len(seeds)} seed(s) via {args.direction} ...", file=sys.stderr)
+    cands = expand(seeds, per_seed=args.limit, directions=dirs, skip=existing)
+    print(json.dumps({"seeds": len(seeds), "candidates": cands}, indent=2))
+    print(f"  {len(cands)} candidate paper(s) not already in the package "
+          f"(relevance-filter + verify before adding)", file=sys.stderr)
+    return 0
+
+
 def _cmd_report(args) -> int:
     from .report import build_report
     out = Path(args.output or (Path(args.package_dir) / "report.html"))
@@ -317,6 +339,11 @@ def main(argv=None) -> int:
     fal.add_argument("--base", required=True, help="file with the base agent's answer")
     fal.add_argument("--kp", required=True, help="file with the KP-loaded agent's answer")
     fal.set_defaults(func=_cmd_falsify)
+    exp = sub.add_parser("expand", help="list citation-graph neighbors of a package's verified spine")
+    exp.add_argument("package_dir")
+    exp.add_argument("--limit", type=int, default=40, help="max neighbors per seed per direction")
+    exp.add_argument("--direction", choices=("both", "references", "citations"), default="both")
+    exp.set_defaults(func=_cmd_expand)
     rep = sub.add_parser("report", help="render a self-contained HTML report of a package")
     rep.add_argument("package_dir")
     rep.add_argument("--output", "-o", default="", help="output .html (default <package_dir>/report.html)")

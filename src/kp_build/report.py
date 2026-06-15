@@ -126,15 +126,17 @@ def _tile_citations(man: dict, verified: int, total: int) -> str:
             f'<div class="tile-sub">{_esc(sub)}</div>{fab}</div>')
 
 
-def _tile_counts(counts: dict) -> str:
+def _tile_counts(counts: dict, via_expansion=None) -> str:
     rows = [("papers", counts["papers"]), ("claims", counts["claims"]),
             ("problems", counts["open_problems"]), ("debates", counts["debates"]),
             ("benchmarks", counts["benchmarks"])]
     cells = "".join(f'<div class="ct"><b>{_esc(v)}</b><span>{lbl}</span></div>' for lbl, v in rows)
     gap = ('<div class="gap-note">⚠ no open problems — treat coverage with suspicion</div>'
            if counts["open_problems"] == 0 else "")
+    depth = (f'<div class="tile-sub">{_esc(via_expansion)} found via citation-graph expansion</div>'
+             if via_expansion else "")
     return (f'<div class="tile"><div class="tile-h">How much is here?</div>'
-            f'<div class="ct-grid">{cells}</div>{gap}</div>')
+            f'<div class="ct-grid">{cells}</div>{gap}{depth}</div>')
 
 
 def _bottom_line(man: dict, verified: int, total: int, counts: dict) -> str:
@@ -153,8 +155,9 @@ def _bottom_line(man: dict, verified: int, total: int, counts: dict) -> str:
 
 
 def _verdict_card(man, verified, total, counts) -> str:
+    via_exp = (man.get("coverage") or {}).get("papers_via_expansion")
     return (f'<section class="verdict-card">'
-            f'<div class="tiles">{_tile_help(man)}{_tile_citations(man, verified, total)}{_tile_counts(counts)}</div>'
+            f'<div class="tiles">{_tile_help(man)}{_tile_citations(man, verified, total)}{_tile_counts(counts, via_exp)}</div>'
             f'<div class="bottom-line">{_bottom_line(man, verified, total, counts)}</div></section>')
 
 
@@ -245,8 +248,9 @@ def _panel_claims(claims, verified) -> str:
             passage = (f'<button class="passage-toggle">show passage ▸</button>'
                        f'<span class="teaser">{teaser}</span>'
                        f'<blockquote>{_esc(c.supporting_passage)}</blockquote>')
-        items.append(f'<div class="row claim" data-t="{_esc(c.claim_type)}">'
-                     f'<span class="tag t-{_esc(c.claim_type)}">{_esc(c.claim_type)}</span>'
+        refuted = "" if c.survived_refuter else ' <span class="pill no">⚠ refuter broke this</span>'
+        items.append(f'<div class="row claim{"" if c.survived_refuter else " refuted"}" data-t="{_esc(c.claim_type)}">'
+                     f'<span class="tag t-{_esc(c.claim_type)}">{_esc(c.claim_type)}</span>{refuted}'
                      f'<div class="cstmt">{_esc(c.statement)}</div>{passage}'
                      f'<div class="row-meta">{meta}</div></div>')
     return chips + f'<div id="claims">{"".join(items)}</div>'
@@ -414,6 +418,7 @@ ul.spine li.flash{background:#eef0fb;transition:background .3s}
 .row{padding:11px 0 11px 11px;border-bottom:1px solid var(--line);border-left:3px solid var(--line)}
 .row:last-child{border-bottom:0}
 .row.problem{border-left-color:var(--problem)}.row.debate{border-left-color:var(--debate)}.row.claim{border-left-color:var(--claim)}
+.row.refuted{opacity:.62;border-left-color:var(--bad)}
 .row-stmt{font-weight:600;margin-bottom:3px}.row-sub{color:#374151;font-size:13px;margin-bottom:4px}
 .row-meta{color:var(--mut);font-size:12px;margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dq{font-weight:600;margin-bottom:7px}
