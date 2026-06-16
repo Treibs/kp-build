@@ -12,6 +12,8 @@ package; the **spine** = the package's set of verified, real papers.
 
 | package | what kind of topic | `probe` | did the package help? (after-build test) |
 |---|---|---|---|
+| [`agent-memory/`](#agent-memory) ⭐ | **LLM agent memory** — AI frontier | BUILD | **helps** — base **fabricated/mislabeled 10 of 16 cites**; precision 0.38 → 1.00, coverage 0.71 → 1.00, f1 0.49 → 1.00 |
+| [`coding-agents/`](#coding-agents) | **autonomous AI coding agents** — SWE-bench frontier | BUILD | **helps** — base **fabricated 14 of 25 cites**; precision 0.44 → 1.00, f1 0.48 → 1.00 |
 | [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | recent ML — model **gets cites wrong** | BUILD | **helps** — wins on *precision* (kills mislabeled cites) **and** coverage |
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | ML the model **knows cold** | SKIP | **helps on coverage only** — precision was already 1.0 |
 | [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | a 2026 topic the model **can't name** (post-cutoff) | BUILD† | **helps** — coverage 0.07 → 1.00 |
@@ -32,11 +34,81 @@ full, recall-aware falsification was the backstop that caught the value the old 
 
 **Each package is also published as a standalone, installable KPM package** — load one into any agent's vault
 with `kpm add github:Treibs/kp-<slug>#v0.1.0`:
+[kp-agent-memory](https://github.com/Treibs/kp-agent-memory) ·
+[kp-coding-agents](https://github.com/Treibs/kp-coding-agents) ·
 [kp-sleep-insomnia-evidence](https://github.com/Treibs/kp-sleep-insomnia-evidence) ·
 [kp-discrete-diffusion-llms](https://github.com/Treibs/kp-discrete-diffusion-llms) ·
 [kp-speculative-decoding-llms](https://github.com/Treibs/kp-speculative-decoding-llms) ·
 [kp-rubric-based-rl-nonverifiable](https://github.com/Treibs/kp-rubric-based-rl-nonverifiable) ·
 [kp-glp1-incretin-obesity](https://github.com/Treibs/kp-glp1-incretin-obesity)
+
+## `agent-memory/`
+
+The **flagship** — a knowledge package on **memory for LLM agents** (persistent / long-term memory
+architectures, 2023–2026): OS-style virtual context (MemGPT), memory streams (Generative Agents), episodic
+vs. semantic memory, consolidation/retrieval, and the long-context-vs-RAG-vs-explicit-memory debate. **21
+papers, all verified live against arXiv** — a genuinely model-weak AI-frontier topic, and the launch demo.
+
+| package facts | value |
+|---|---|
+| citations verified | **21 / 21** (live, arXiv) |
+| claims / open problems / debates | 35 / 8 / 4 |
+
+### Falsification — the model fabricates most of its citations here
+
+Held-out task: write the related-work section on the 2023–2026 agent-memory frontier, with arXiv citations.
+Base (unaided recall) vs KP-loaded:
+
+| metric | base (no package) | with package |
+|---|---|---|
+| precision | 0.38 | **1.00** |
+| coverage (papers found) | 15/21 (0.71) | **21/21 (1.00)** |
+| **f1** | **0.49** | **1.00** |
+
+**Verdict: KP HELPS.** Unaided, the model **fabricated or mislabeled 10 of its 16 citations** — it wrote
+wrong arXiv ids for real papers (MemGPT, HippoRAG, LoCoMo, Mem0) and hedged on the 2025–2026 frontier. The
+KP-loaded agent cited **21/21 real, 0 fabrications**, covering the whole verified spine. (Honest nuance: most
+base "fakes" are real papers with wrong attributions/ids, flagged by the live arXiv check — not invented
+titles.) Re-score with:
+
+```bash
+kp-build falsify examples/agent-memory \
+  --question "Memory for LLM agents — persistent / long-term memory architectures for autonomous agents (2023-2026)" \
+  --base examples/agent-memory.base-answer.txt \
+  --kp   examples/agent-memory.kp-answer.txt
+```
+
+## `coding-agents/`
+
+A knowledge package on **autonomous AI coding / software-engineering agents** (2023–2026): agentic program
+repair, repo-level navigation, plan-and-execute coding, self-debugging, and the SWE-bench evaluation line.
+**21 papers, all verified live against arXiv.**
+
+| package facts | value |
+|---|---|
+| citations verified | **21 / 21** (live, arXiv) |
+| claims / open problems / debates | 40 / 8 / 4 |
+
+### Falsification
+
+Held-out task: write the related-work on the 2023–2026 coding-agent frontier, with arXiv citations.
+
+| metric | base (no package) | with package |
+|---|---|---|
+| precision | 0.44 | **1.00** |
+| coverage (papers found) | 11/21 (0.52) | **21/21 (1.00)** |
+| **f1** | **0.48** | **1.00** |
+
+**Verdict: KP HELPS.** Unaided, the model **fabricated or mislabeled 14 of its 25 citations** — including
+wrong ids for SWE-bench, SWE-agent, and AutoCodeRover, plus placeholder ids (`2503.xxxxx`) for the most
+recent work. The KP-loaded agent: **21/21 real, 0 fabrications.** Re-score with:
+
+```bash
+kp-build falsify examples/coding-agents \
+  --question "Autonomous AI coding / software-engineering agents (2023-2026)" \
+  --base examples/coding-agents.base-answer.txt \
+  --kp   examples/coding-agents.kp-answer.txt
+```
 
 ## `discrete-diffusion-llms/`
 

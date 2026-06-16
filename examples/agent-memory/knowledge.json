@@ -1,0 +1,13 @@
+{
+  "name": "@kp/memory-for-llm-agents-persistent-long-term-memory",
+  "version": "0.1.0",
+  "description": "Persistent and long-term memory for autonomous LLM agents from 2023 to 2026. Covers: (a) foundational architectures (OS-style virtual context, memory streams, episodic buffers); (b) the episodic-vs-semantic memory distinction and how each is instantiated; (c) memory consolidation, updating, and forg",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

@@ -1,0 +1,1080 @@
+{
+  "topic": "Autonomous AI coding / software-engineering agents (2023\u20132026): agentic program repair, repo-level navigation, plan-and-execute coding, self-debugging, and the SWE-bench evaluation line",
+  "scope": "In scope: LLM agents that resolve real-world software-engineering tasks (GitHub issue\u2192PR resolution, program repair, repo-level navigation/localization), the scaffolding-vs-agent debate (SWE-agent ACI, OpenHands, CodeAct vs Agentless), plan-and-execute / multi-agent decomposition (MASAI, CodeR), self-debugging and verbal-reflection loops (Self-Debug, Reflexion), repo comprehension via code structure / graphs / KG+MCTS (AutoCodeRover, RepoAgent, LocAgent, LingmaAgent), training/RL data frontiers (SWE-Gym, SWE-RL, SWE-smith, Lingma SWE-GPT), and the SWE-bench evaluation line including generalization and contamination critiques (SWE-bench, SWE-bench Multimodal, SWE-Bench Pro, the memory-vs-ability critique). Out of scope: pure code-completion/autocomplete (Copilot-style), code LLM pretraining recipes unrelated to agents, non-software agent benchmarks (WebArena), formal verification, and IDE UX studies.",
+  "papers": [
+    {
+      "cite_key": "jimenez2024swebench",
+      "title": "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?",
+      "authors": [
+        "Carlos E. Jimenez",
+        "John Yang",
+        "Alexander Wettig",
+        "Shunyu Yao",
+        "Kexin Pei",
+        "Ofir Press",
+        "Karthik Narasimhan"
+      ],
+      "year": 2023,
+      "venue": "ICLR 2024",
+      "arxiv_id": "2310.06770",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2310.06770",
+      "key_contributions": [
+        "Introduces SWE-bench: 2,294 task instances from real GitHub issues and merged PRs across 12 popular Python repositories, evaluated by the repository's own test suite",
+        "Establishes the test-based 'resolve rate' evaluation paradigm the whole agentic-SE line reports against",
+        "Shows even strong LMs with retrieval resolve a tiny fraction (best model Claude 2 at 1.96%), exposing the gap between code completion and real issue resolution"
+      ]
+    },
+    {
+      "cite_key": "yang2024sweagent",
+      "title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "authors": [
+        "John Yang",
+        "Carlos E. Jimenez",
+        "Alexander Wettig",
+        "Kilian Lieret",
+        "Shunyu Yao",
+        "Karthik Narasimhan",
+        "Ofir Press"
+      ],
+      "year": 2024,
+      "venue": "NeurIPS 2024",
+      "arxiv_id": "2405.15793",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2405.15793",
+      "key_contributions": [
+        "Introduces the Agent-Computer Interface (ACI): purpose-built file viewer/editor, repo navigation and test-execution commands designed for LM agents rather than humans",
+        "Demonstrates that interface design (not just the base model) drives large gains, reaching 12.5% pass@1 on SWE-bench",
+        "Founds the 'scaffold matters' thesis for coding agents"
+      ]
+    },
+    {
+      "cite_key": "zhang2024autocoderover",
+      "title": "AutoCodeRover: Autonomous Program Improvement",
+      "authors": [
+        "Yuntong Zhang",
+        "Haifeng Ruan",
+        "Zhiyu Fan",
+        "Abhik Roychoudhury"
+      ],
+      "year": 2024,
+      "venue": "ISSTA 2024",
+      "arxiv_id": "2404.05427",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2404.05427",
+      "key_contributions": [
+        "Program-structure-aware code search over classes/methods (AST) rather than plain string matching for repo-level context retrieval",
+        "Adds spectrum-based fault localization from tests to sharpen repair context when a test suite is available",
+        "Solves 19% of SWE-bench-lite at low cost (~$0.43/issue), arguing structured retrieval beats brute-force agent exploration"
+      ]
+    },
+    {
+      "cite_key": "xia2024agentless",
+      "title": "Agentless: Demystifying LLM-based Software Engineering Agents",
+      "authors": [
+        "Chunqiu Steven Xia",
+        "Yinlin Deng",
+        "Soren Dunn",
+        "Lingming Zhang"
+      ],
+      "year": 2024,
+      "venue": "arXiv (FSE 2025)",
+      "arxiv_id": "2407.01489",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2407.01489",
+      "key_contributions": [
+        "A deliberately non-agentic three-phase pipeline (localization \u2192 repair \u2192 patch validation) with no autonomous control loop",
+        "Beats complex open-source agents on SWE-bench Lite (32.00%, 96 fixes) at low cost ($0.70/issue)",
+        "The central 'leaderboard hype vs what works' counterpoint: much agent complexity may be unnecessary"
+      ]
+    },
+    {
+      "cite_key": "wang2024codeact",
+      "title": "Executable Code Actions Elicit Better LLM Agents",
+      "authors": [
+        "Xingyao Wang",
+        "Yangyi Chen",
+        "Lifan Yuan",
+        "Yizhe Zhang",
+        "Yunzhu Li",
+        "Hao Peng",
+        "Heng Ji"
+      ],
+      "year": 2024,
+      "venue": "ICML 2024",
+      "arxiv_id": "2402.01030",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2402.01030",
+      "key_contributions": [
+        "Proposes CodeAct: consolidating an agent's action space into executable Python code instead of JSON/text tool calls, enabling control flow and composition",
+        "Reports up to 20% higher success rate vs constrained action formats",
+        "Releases CodeActInstruct tuning data and CodeActAgent; the action-space backbone underlying OpenHands"
+      ]
+    },
+    {
+      "cite_key": "wang2024openhands",
+      "title": "OpenHands: An Open Platform for AI Software Developers as Generalist Agents",
+      "authors": [
+        "Xingyao Wang",
+        "Boxuan Li",
+        "Yufan Song",
+        "Frank F. Xu",
+        "Xiangru Tang",
+        "Graham Neubig"
+      ],
+      "year": 2024,
+      "venue": "ICLR 2025",
+      "arxiv_id": "2407.16741",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2407.16741",
+      "key_contributions": [
+        "Open, sandboxed platform (formerly OpenDevin) for agents that write code, use the command line, and browse the web",
+        "Bundles an agent hub, event-stream architecture, and integrated evaluation across benchmarks including SWE-bench and WebArena",
+        "Became the de facto open-source reference harness for reproducible coding-agent research"
+      ]
+    },
+    {
+      "cite_key": "chen2023selfdebug",
+      "title": "Teaching Large Language Models to Self-Debug",
+      "authors": [
+        "Xinyun Chen",
+        "Maxwell Lin",
+        "Nathanael Sch\u00e4rli",
+        "Denny Zhou"
+      ],
+      "year": 2023,
+      "venue": "ICLR 2024",
+      "arxiv_id": "2304.05128",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2304.05128",
+      "key_contributions": [
+        "Introduces Self-Debugging: the model performs 'rubber duck debugging', explaining and inspecting execution results to fix its own code with no human error labels",
+        "Foundational self-correction technique for code generation, with SOTA on Spider (text-to-SQL), TransCoder, and MBPP",
+        "Precursor to the iterative repair/retry loops in modern coding agents"
+      ]
+    },
+    {
+      "cite_key": "shinn2023reflexion",
+      "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "authors": [
+        "Noah Shinn",
+        "Federico Cassano",
+        "Edward Berman",
+        "Ashwin Gopinath",
+        "Karthik Narasimhan",
+        "Shunyu Yao"
+      ],
+      "year": 2023,
+      "venue": "NeurIPS 2023",
+      "arxiv_id": "2303.11366",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2303.11366",
+      "key_contributions": [
+        "Verbal reinforcement: agents reflect on failure feedback into an episodic memory buffer to improve over trials without weight updates",
+        "Actor/Evaluator/Self-Reflection loop reaches 91% pass@1 on HumanEval (vs 80% for prior GPT-4)",
+        "Seeds the iterative self-debugging/retry behaviour reused by later coding agents"
+      ]
+    },
+    {
+      "cite_key": "luo2024repoagent",
+      "title": "RepoAgent: An LLM-Powered Open-Source Framework for Repository-level Code Documentation Generation",
+      "authors": [
+        "Qinyu Luo",
+        "Yining Ye",
+        "Shihao Liang",
+        "Zhong Zhang",
+        "Yujia Qin",
+        "Yaxi Lu",
+        "Yesai Wu",
+        "Xin Cong",
+        "Yankai Lin",
+        "Yingli Zhang",
+        "Xiaoyin Che",
+        "Zhiyuan Liu",
+        "Maosong Sun"
+      ],
+      "year": 2024,
+      "venue": "EMNLP 2024 (demo)",
+      "arxiv_id": "2402.16667",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2402.16667",
+      "key_contributions": [
+        "Repository-level documentation generation/maintenance driven by global code call-graph structure",
+        "A representative repo-level comprehension/navigation framework distinct from issue-resolution agents",
+        "Open-source framework demonstrating program-structure-aware traversal of whole repositories"
+      ]
+    },
+    {
+      "cite_key": "chen2024coder",
+      "title": "CodeR: Issue Resolving with Multi-Agent and Task Graphs",
+      "authors": [
+        "Dong Chen",
+        "Shaoxin Lin",
+        "Muhan Zeng",
+        "Daoguang Zan",
+        "Jian-Gang Wang",
+        "Anton Cheshkov",
+        "Jun Sun",
+        "Hao Yu",
+        "Guoliang Dong",
+        "Artem Aliev",
+        "Jie Wang",
+        "Xiao Cheng",
+        "Guangtai Liang",
+        "Yuchi Ma",
+        "Pan Bian",
+        "Tao Xie",
+        "Qianxiang Wang"
+      ],
+      "year": 2024,
+      "venue": "arXiv",
+      "arxiv_id": "2406.01304",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2406.01304",
+      "key_contributions": [
+        "Multi-agent framework with pre-defined task graphs (Manager, Reproducer, Fault Localizer, Editor, etc.) for issue resolution",
+        "Plan-structured role decomposition: solves 28.33% of SWE-bench Lite when submitting once per issue",
+        "Ablates the contribution of each role/task-graph component"
+      ]
+    },
+    {
+      "cite_key": "arora2024masai",
+      "title": "MASAI: Modular Architecture for Software-engineering AI Agents",
+      "authors": [
+        "Daman Arora",
+        "Atharv Sonwane",
+        "Nalin Wadhwa",
+        "Abhav Mehrotra",
+        "Saiteja Utpala",
+        "Ramakrishna Bairi",
+        "Aditya Kanade",
+        "Nagarajan Natarajan"
+      ],
+      "year": 2024,
+      "venue": "arXiv",
+      "arxiv_id": "2406.11638",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2406.11638",
+      "key_contributions": [
+        "Decomposes issue resolution into specialized LLM sub-agents, each with a well-defined objective and tuned strategy",
+        "Avoids long inflated trajectories/cost of monolithic agents; achieves 28.33% on SWE-bench Lite",
+        "Evidence point for the plan-and-execute / modular multi-agent decomposition thesis"
+      ]
+    },
+    {
+      "cite_key": "yang2024swebenchmm",
+      "title": "SWE-bench Multimodal: Do AI Systems Generalize to Visual Software Domains?",
+      "authors": [
+        "John Yang",
+        "Carlos E. Jimenez",
+        "Alex L. Zhang",
+        "Kilian Lieret",
+        "Joyce Yang",
+        "Xindi Wu",
+        "Ori Press",
+        "Niklas Muennighoff",
+        "Gabriel Synnaeve",
+        "Karthik Narasimhan",
+        "Diyi Yang",
+        "Sida I. Wang",
+        "Ofir Press"
+      ],
+      "year": 2024,
+      "venue": "ICLR 2025",
+      "arxiv_id": "2410.03859",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2410.03859",
+      "key_contributions": [
+        "Extends SWE-bench to 617 visual/front-end tasks from 17 JavaScript libraries with image-bearing issue statements",
+        "Shows top SWE-bench systems (Python-tuned) struggle and fail to generalize across language and visual modalities",
+        "A key evaluation-rigor paper exposing language/domain overfitting in the leaderboard line"
+      ]
+    },
+    {
+      "cite_key": "ma2024lingmaagent",
+      "title": "Alibaba LingmaAgent: Improving Automated Issue Resolution via Comprehensive Repository Exploration",
+      "authors": [
+        "Yingwei Ma",
+        "Qingping Yang",
+        "Rongyu Cao",
+        "Binhua Li",
+        "Fei Huang",
+        "Yongbin Li"
+      ],
+      "year": 2024,
+      "venue": "arXiv",
+      "arxiv_id": "2406.01422",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2406.01422",
+      "key_contributions": [
+        "Top-down condensation of a repository into a knowledge graph to reduce complexity for whole-repo understanding (RepoUnderstander prototype)",
+        "Monte Carlo Tree Search (MCTS) based exploration strategy for comprehensive repository understanding before patching",
+        "Reports an 18.5% relative improvement over SWE-agent on SWE-bench Lite"
+      ]
+    },
+    {
+      "cite_key": "zhang2024lingmaswegpt",
+      "title": "Lingma SWE-GPT: An Open Development-Process-Centric Language Model for Automated Software Improvement",
+      "authors": [
+        "Yingwei Ma",
+        "Rongyu Cao",
+        "Yongchang Cao",
+        "Yue Zhang",
+        "Jue Chen",
+        "Yibo Liu",
+        "Yuchen Liu",
+        "Binhua Li",
+        "Fei Huang",
+        "Yongbin Li"
+      ],
+      "year": 2024,
+      "venue": "arXiv",
+      "arxiv_id": "2411.00622",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2411.00622",
+      "key_contributions": [
+        "Argues static-code training lacks understanding of dynamic interactions / iterative problem-solving; trains on simulated software development process data",
+        "Open 7B/72B models; the 72B resolves 30.20% of SWE-bench Verified, approaching closed models",
+        "Process-centric training narrows the open-vs-closed gap for issue resolution"
+      ]
+    },
+    {
+      "cite_key": "pan2025swegym",
+      "title": "Training Software Engineering Agents and Verifiers with SWE-Gym",
+      "authors": [
+        "Jiayi Pan",
+        "Xingyao Wang",
+        "Graham Neubig",
+        "Navdeep Jaitly",
+        "Heng Ji",
+        "Alane Suhr",
+        "Yizhe Zhang"
+      ],
+      "year": 2024,
+      "venue": "ICML 2025",
+      "arxiv_id": "2412.21139",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2412.21139",
+      "key_contributions": [
+        "First training environment for real-world SWE agents: 2,438 real Python task instances with executable runtimes and unit tests",
+        "Fine-tuning plus trained trajectory verifiers for inference-time scaling reach 32.0%/26.0% on SWE-bench Verified/Lite",
+        "SOTA among open-weight agents at the time; the training-vs-prompting evidence point"
+      ]
+    },
+    {
+      "cite_key": "wei2025swerl",
+      "title": "SWE-RL: Advancing LLM Reasoning via Reinforcement Learning on Open Software Evolution",
+      "authors": [
+        "Yuxiang Wei",
+        "Olivier Duchenne",
+        "Jade Copet",
+        "Quentin Carbonneaux",
+        "Lingming Zhang",
+        "Daniel Fried",
+        "Gabriel Synnaeve",
+        "Rishabh Singh",
+        "Sida I. Wang"
+      ],
+      "year": 2025,
+      "venue": "NeurIPS 2025",
+      "arxiv_id": "2502.18449",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2502.18449",
+      "key_contributions": [
+        "First approach to scale rule-based RL for real-world SE, rewarding similarity between ground-truth and generated solutions over open-source PR/issue evolution data",
+        "Llama3-SWE-RL-70B reaches 41.0% on SWE-bench Verified, best among medium-sized models",
+        "Shows out-of-domain reasoning transfer (function coding, library use, code reasoning, math, language understanding) despite SE-only training"
+      ]
+    },
+    {
+      "cite_key": "yu2025locagent",
+      "title": "LocAgent: Graph-Guided LLM Agents for Code Localization",
+      "authors": [
+        "Zhaoling Chen",
+        "Xiangru Tang",
+        "Gangda Deng",
+        "Fang Wu",
+        "Jialong Wu",
+        "Zhiwei Jiang",
+        "Viktor Prasanna",
+        "Arman Cohan",
+        "Xingyao Wang"
+      ],
+      "year": 2025,
+      "venue": "ACL 2025",
+      "arxiv_id": "2503.09089",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2503.09089",
+      "key_contributions": [
+        "Parses repos into directed heterogeneous graphs (files/classes/functions + import/invocation/inheritance edges) for multi-hop localization reasoning",
+        "Fine-tuned Qwen-2.5-Coder-32B reaches 92.7% file-level localization accuracy at ~86% lower cost than proprietary SOTA",
+        "Lifts downstream issue-resolution success (Pass@10) by 12%"
+      ]
+    },
+    {
+      "cite_key": "yang2025swesmith",
+      "title": "SWE-smith: Scaling Data for Software Engineering Agents",
+      "authors": [
+        "John Yang",
+        "Kilian Lieret",
+        "Carlos E. Jimenez",
+        "Alexander Wettig",
+        "Kabir Khandpur",
+        "Yanzhe Zhang",
+        "Binyuan Hui",
+        "Ofir Press",
+        "Ludwig Schmidt",
+        "Diyi Yang"
+      ],
+      "year": 2025,
+      "venue": "NeurIPS 2025",
+      "arxiv_id": "2504.21798",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2504.21798",
+      "key_contributions": [
+        "Pipeline that auto-synthesizes thousands of task instances per repo by breaking existing tests, yielding 50,000 instances from 128 repositories",
+        "An order of magnitude more training data than prior work, with low storage overhead",
+        "Trains SWE-agent-LM-32B to 40.2% Pass@1 on SWE-bench Verified, SOTA among open-source models"
+      ]
+    },
+    {
+      "cite_key": "deng2025swebenchpro",
+      "title": "SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?",
+      "authors": [
+        "Xiang Deng",
+        "Jeff Da",
+        "Edwin Pan",
+        "Yannis Yiming He",
+        "Charles Ide",
+        "Kanak Garg",
+        "Niklas Lauffer",
+        "Andrew Park",
+        "Nitin Pasari",
+        "Chetan Rane",
+        "Bodhisattwa Prasad Majumder"
+      ],
+      "year": 2025,
+      "venue": "arXiv",
+      "arxiv_id": "2509.16941",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2509.16941",
+      "key_contributions": [
+        "Harder, contamination-resistant benchmark: 1,865 long-horizon enterprise problems across 41 actively maintained repositories",
+        "Three tiers \u2014 public (11 repos), held-out (12 repos), and commercial/proprietary (18 repos) \u2014 requiring multi-file patches",
+        "Characterizes agent failure modes and provides a testbed that more faithfully captures real-world complexity"
+      ]
+    },
+    {
+      "cite_key": "liu2024llmagentsurvey",
+      "title": "Large Language Model-Based Agents for Software Engineering: A Survey",
+      "authors": [
+        "Junwei Liu",
+        "Kaixin Wang",
+        "Yixuan Chen",
+        "Xin Peng",
+        "Zhenpeng Chen",
+        "Lingming Zhang",
+        "Yiling Lou"
+      ],
+      "year": 2024,
+      "venue": "arXiv (TOSEM)",
+      "arxiv_id": "2409.02977",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2409.02977",
+      "key_contributions": [
+        "Systematic review of 124 papers, categorized from both SE and agent perspectives",
+        "Canonical taxonomy/landscape reference for the LLM-agents-for-SE field",
+        "Explicitly discusses open challenges and future directions in the domain"
+      ]
+    },
+    {
+      "cite_key": "prathifkumar2025swememory",
+      "title": "Does SWE-Bench-Verified Test Agent Ability or Model Memory?",
+      "authors": [
+        "Prathif Kumar",
+        "et al."
+      ],
+      "year": 2025,
+      "venue": "arXiv",
+      "arxiv_id": "2512.10218",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2512.10218",
+      "key_contributions": [
+        "Direct contamination critique: models perform ~3x better at resolving issues and ~6x better at finding edited files on SWE-bench Verified than on decontaminated benchmarks given identical context",
+        "Compares against contamination-aware sets (SWE-rebench, BeetleBox) and interprets the gap as memorization, not genuine problem-solving",
+        "The sharpest 'leaderboard hype vs real capability' empirical paper in the package"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "statement": "SWE-bench consists of 2,294 task instances drawn from real GitHub issues and their corresponding merged pull requests across 12 popular Python repositories, evaluated by the repository's own tests.",
+      "paper": "jimenez2024swebench",
+      "supporting_passage": "2,294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 12 popular Python repositories",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "statement": "On the original SWE-bench, the best-performing model (Claude 2) resolved only 1.96% of the issues, exposing how far frontier LMs were from real issue resolution.",
+      "paper": "jimenez2024swebench",
+      "supporting_passage": "The best-performing model, Claude 2, is able to solve a mere 1.96% of the issues.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "statement": "SWE-agent's purpose-built Agent-Computer Interface (ACI) \u2014 custom file editing, repository navigation, and test/program execution commands \u2014 significantly enhances the agent's ability to operate on a codebase.",
+      "paper": "yang2024sweagent",
+      "supporting_passage": "SWE-agent's custom agent-computer interface (ACI) significantly enhances an agent's ability to create and edit code files, navigate entire repositories, and execute tests and other programs.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "statement": "SWE-agent achieves a 12.5% pass@1 resolve rate on SWE-bench, a then-state-of-the-art over non-interactive language-model baselines.",
+      "paper": "yang2024sweagent",
+      "supporting_passage": "a pass@1 rate of 12.5%",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "statement": "AutoCodeRover exploits program structure (classes/methods) in its code search to improve the LLM's understanding of an issue's root cause, rather than relying on plain string matching.",
+      "paper": "zhang2024autocoderover",
+      "supporting_passage": "Our code search exploits the program structure in the form of classes/methods to enhance LLM's understanding of the issue's root cause",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c6",
+      "statement": "AutoCodeRover adds spectrum-based fault localization using tests to further sharpen repair context when a test suite is available.",
+      "paper": "zhang2024autocoderover",
+      "supporting_passage": "The use of spectrum-based fault localization using tests, further sharpens the context, as long as a test-suite is available",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "statement": "AutoCodeRover solves 19% of SWE-bench-lite (300 issues) at an average cost of about $0.43 per issue, far cheaper than baselines.",
+      "paper": "zhang2024autocoderover",
+      "supporting_passage": "Experiments on SWE-bench-lite (300 real-life GitHub issues) show increased efficacy in solving GitHub issues (19% on SWE-bench-lite) ... AutoCodeRover achieved this efficacy with significantly lower cost (on average, $0.43 USD), compared to other baselines",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "statement": "Agentless uses a simplistic, fixed three-phase process of localization, repair, and patch validation with no autonomous agent control loop.",
+      "paper": "xia2024agentless",
+      "supporting_passage": "Agentless employs a simplistic three-phase process of localization, repair, and patch validation",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "statement": "Agentless achieves the highest performance (32.00%, 96 correct fixes) and low cost ($0.70) compared with existing open-source software agents, challenging the assumption that complex autonomous agents are necessary.",
+      "paper": "xia2024agentless",
+      "supporting_passage": "the simplistic Agentless is able to achieve both the highest performance (32.00%, 96 correct fixes) and low cost ($0.70) compared with all existing open-source software agents",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10",
+      "statement": "CodeAct consolidates an LLM agent's actions into a unified action space of executable Python code, instead of JSON or text tool calls.",
+      "paper": "wang2024codeact",
+      "supporting_passage": "use executable Python code to consolidate LLM agents' actions into a unified action space (CodeAct)",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "statement": "CodeAct outperforms widely used alternative action formats by up to 20% higher success rate.",
+      "paper": "wang2024codeact",
+      "supporting_passage": "CodeAct outperforms widely used alternatives (up to 20% higher success rate)",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c12",
+      "statement": "OpenHands (formerly OpenDevin) is a platform for AI agents that interact with the world like a human developer: by writing code, interacting with a command line, and browsing the web.",
+      "paper": "wang2024openhands",
+      "supporting_passage": "a platform for the development of powerful and flexible AI agents that interact with the world in similar ways to those of a human developer: by writing code, interacting with a command line, and browsing the web",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "statement": "Self-Debugging teaches an LLM to perform 'rubber duck debugging' \u2014 identifying its own mistakes by investigating execution results and explaining the generated code in natural language \u2014 without any human feedback on correctness or error messages.",
+      "paper": "chen2023selfdebug",
+      "supporting_passage": "rubber duck debugging; i.e., without any human feedback on the code correctness or error messages, the model is able to identify its mistakes by investigating the execution results and explaining the generated code in natural language",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "shinn2023reflexion"
+      ]
+    },
+    {
+      "id": "c14",
+      "statement": "Reflexion agents verbally reflect on task feedback and store the reflective text in an episodic memory buffer to improve decision-making in subsequent trials, without updating model weights.",
+      "paper": "shinn2023reflexion",
+      "supporting_passage": "Reflexion agents verbally reflect on task feedback signals, then maintain their own reflective text in an episodic memory buffer to induce better decision-making in subsequent trials.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "chen2023selfdebug"
+      ]
+    },
+    {
+      "id": "c15",
+      "statement": "Reflexion reaches 91% pass@1 on the HumanEval coding benchmark, surpassing a prior GPT-4 result of 80%.",
+      "paper": "shinn2023reflexion",
+      "supporting_passage": "Reflexion achieves a 91% pass@1 accuracy on the HumanEval coding benchmark, surpassing the previous state-of-the-art GPT-4 that achieves 80%.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "statement": "CodeR uses a multi-agent framework with pre-defined task graphs to repair and resolve bugs and add features within a code repository.",
+      "paper": "chen2024coder",
+      "supporting_passage": "a multi-agent framework and pre-defined task graphs to Repair & Resolve reported bugs and add new features within code Repository",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "arora2024masai"
+      ]
+    },
+    {
+      "id": "c17",
+      "statement": "CodeR solves 28.33% of SWE-bench Lite issues when submitting only once per issue.",
+      "paper": "chen2024coder",
+      "supporting_passage": "CodeR is able to solve 28.33% of issues, when submitting only once for each issue",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "statement": "MASAI instantiates different LLM-powered sub-agents, each with well-defined objectives and strategies tuned to achieve those objectives, to modularize software-engineering tasks.",
+      "paper": "arora2024masai",
+      "supporting_passage": "different LLM-powered sub-agents are instantiated with well-defined objectives and strategies tuned to achieve those objectives",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "chen2024coder"
+      ]
+    },
+    {
+      "id": "c19",
+      "statement": "MASAI achieves a 28.33% resolution rate on SWE-bench Lite (300 GitHub issues from 11 Python repositories).",
+      "paper": "arora2024masai",
+      "supporting_passage": "28.33% resolution rate",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "statement": "SWE-bench Multimodal comprises 617 task instances collected from 17 JavaScript libraries, targeting bugs in visual, user-facing software with image-bearing issue statements.",
+      "paper": "yang2024swebenchmm",
+      "supporting_passage": "617 task instances collected from 17 JavaScript libraries",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c21",
+      "statement": "Top-performing SWE-bench systems struggle on SWE-bench Multimodal, revealing limitations in visual problem-solving and cross-language generalization.",
+      "paper": "yang2024swebenchmm",
+      "supporting_passage": "top-performing SWE-bench systems struggle with SWE-bench M, revealing limitations in visual problem-solving and cross-language generalization",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "prathifkumar2025swememory"
+      ]
+    },
+    {
+      "id": "c22",
+      "statement": "LingmaAgent condenses critical repository information into a knowledge graph (top-down) to reduce complexity for whole-repository understanding.",
+      "paper": "ma2024lingmaagent",
+      "supporting_passage": "introduces a top-down method to condense critical repository information into a knowledge graph, reducing complexity",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "yu2025locagent"
+      ]
+    },
+    {
+      "id": "c23",
+      "statement": "LingmaAgent employs a Monte Carlo Tree Search based strategy enabling agents to explore and understand entire repositories before patching.",
+      "paper": "ma2024lingmaagent",
+      "supporting_passage": "employs a Monte Carlo tree search based strategy enabling agents to explore and understand entire repositories",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "statement": "Lingma SWE-GPT argues that models trained predominantly on static code data lack understanding of the dynamic interactions, iterative problem-solving, and evolutionary characteristics inherent in software development, motivating development-process-centric training.",
+      "paper": "zhang2024lingmaswegpt",
+      "supporting_passage": "these models are predominantly trained on static code data, lacking a deep understanding of the dynamic interactions, iterative problem-solving processes, and evolutionary characteristics inherent in software development",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c25",
+      "statement": "Lingma SWE-GPT 72B successfully resolves 30.20% of SWE-bench Verified GitHub issues, narrowing the gap to closed models among open development-process-centric models.",
+      "paper": "zhang2024lingmaswegpt",
+      "supporting_passage": "Lingma SWE-GPT 72B successfully resolves 30.20% of the GitHub issues, marking a significant improvement in automatic issue resolution",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c26",
+      "statement": "SWE-Gym contains 2,438 real-world Python task instances, each a codebase with an executable runtime environment, unit tests, and a natural-language task specification.",
+      "paper": "pan2025swegym",
+      "supporting_passage": "SWE-Gym contains 2,438 real-world Python task instances, each comprising a codebase with an executable runtime environment, unit tests, and a task specified in natural language.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "statement": "Agents fine-tuned with SWE-Gym, combined with trained verifiers for inference-time scaling, reach 32.0% and 26.0% on SWE-bench Verified and Lite respectively \u2014 the best for openly available agents at the time.",
+      "paper": "pan2025swegym",
+      "supporting_passage": "32.0% and 26.0% on SWE-Bench Verified and Lite, respectively",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "statement": "SWE-RL is the first approach to scale RL-based LLM reasoning for real-world software engineering, using a lightweight rule-based reward such as the similarity score between ground-truth and generated solutions.",
+      "paper": "wei2025swerl",
+      "supporting_passage": "the first approach to scale RL-based LLM reasoning for real-world software engineering ... a lightweight rule-based reward (e.g., the similarity score between ground-truth and LLM-generated solutions)",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c29",
+      "statement": "Llama3-SWE-RL-70B achieves a 41.0% solve rate on SWE-bench Verified, the best result reported for medium-sized models.",
+      "paper": "wei2025swerl",
+      "supporting_passage": "a 41.0% solve rate on SWE-bench Verified",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "yang2025swesmith"
+      ]
+    },
+    {
+      "id": "c30",
+      "statement": "Despite training only on software-evolution data, the SWE-RL model shows improved results on five out-of-domain tasks: function coding, library use, code reasoning, mathematics, and general language understanding.",
+      "paper": "wei2025swerl",
+      "supporting_passage": "improved results on five out-of-domain tasks, namely, function coding, library use, code reasoning, mathematics, and general language understanding",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "statement": "LocAgent parses codebases into directed heterogeneous graphs (files, classes, functions and import/invocation/inheritance edges), enabling LLM agents to locate relevant entities via multi-hop reasoning.",
+      "paper": "yu2025locagent",
+      "supporting_passage": "parsing codebases into directed heterogeneous graphs ... enables LLM agents to effectively search and locate relevant entities through powerful multi-hop reasoning",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "ma2024lingmaagent",
+        "zhang2024autocoderover"
+      ]
+    },
+    {
+      "id": "c32",
+      "statement": "LocAgent with a fine-tuned Qwen-2.5-Coder-32B reaches 92.7% file-level localization accuracy at roughly 86% lower cost than proprietary SOTA models, and improves downstream issue resolution (Pass@10) by 12%.",
+      "paper": "yu2025locagent",
+      "supporting_passage": "92.7% accuracy on file-level localization ... achieves comparable results to SOTA proprietary models at greatly reduced cost (approximately 86% reduction)",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "statement": "SWE-smith automatically synthesizes task instances by breaking existing tests in any Python codebase, producing 50,000 instances from 128 GitHub repositories \u2014 an order of magnitude more than prior work.",
+      "paper": "yang2025swesmith",
+      "supporting_passage": "50,000 instances sourced from 128 GitHub repositories, an order of magnitude larger than all previous works",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "statement": "SWE-agent-LM-32B, trained on SWE-smith data, achieves 40.2% Pass@1 on SWE-bench Verified, the best among open-source models at the time.",
+      "paper": "yang2025swesmith",
+      "supporting_passage": "SWE-agent-LM-32B, achieving 40.2% Pass@1 resolve rate on SWE-bench Verified, representing the best performance among open-source models",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "wei2025swerl"
+      ]
+    },
+    {
+      "id": "c35",
+      "statement": "SWE-Bench Pro contains 1,865 problems sourced from 41 actively maintained repositories, partitioned into a public set (11 repos), a held-out set (12 repos), and a commercial set of 18 proprietary repositories.",
+      "paper": "deng2025swebenchpro",
+      "supporting_passage": "SWE-BENCH PRO contains 1,865 problems sourced from a diverse set of 41 actively maintained repositories ... a public set with open access to problems sourced from 11 repositories, a held-out set of 12 repositories and a commercial set of 18 proprietary repositories",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c36",
+      "statement": "SWE-Bench Pro is designed as a contamination-resistant testbed that more faithfully captures the complexity and diversity of real-world software development.",
+      "paper": "deng2025swebenchpro",
+      "supporting_passage": "SWE-BENCH PRO provides a contamination-resistant testbed that more faithfully captures the complexity and diversity of real-world software development",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "prathifkumar2025swememory"
+      ]
+    },
+    {
+      "id": "c37",
+      "statement": "Models perform roughly 3x better at resolving issues and 6x better at finding edited files on SWE-Bench-Verified than on decontaminated benchmarks given identical context, which the authors interpret as evidence of memorization rather than genuine problem-solving.",
+      "paper": "prathifkumar2025swememory",
+      "supporting_passage": "models performed 3 times better on SWE-Bench-Verified. They were also 6 times better at finding edited files",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "deng2025swebenchpro"
+      ]
+    },
+    {
+      "id": "c38",
+      "statement": "The LLM-agents-for-SE survey collects and categorizes 124 papers from both the software-engineering and agent perspectives, and discusses open challenges and future directions for the field.",
+      "paper": "liu2024llmagentsurvey",
+      "supporting_passage": "We collect 124 papers and categorize them from two perspectives, i.e., the SE and agent perspectives ... we discuss open challenges and future directions in this critical domain.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c39",
+      "statement": "RepoAgent is an LLM-powered open-source framework that generates and maintains repository-level code documentation, representing repo-level comprehension distinct from issue-resolution agents.",
+      "paper": "luo2024repoagent",
+      "supporting_passage": "RepoAgent: An LLM-Powered Open-Source Framework for Repository-level Code Documentation Generation",
+      "claim_type": "definition",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c40",
+      "statement": "LingmaAgent's comprehensive repository exploration yields an 18.5% relative improvement over SWE-agent on SWE-bench Lite.",
+      "paper": "ma2024lingmaagent",
+      "supporting_passage": "achieving an 18.5% improvement over SWE-agent on the SWE-bench Lite benchmark",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "op1",
+      "statement": "Benchmark contamination / memorization confounds SWE-bench leaderboard scores: models do markedly better on the public Verified set than on decontaminated sets given identical context, so reported resolve rates may overstate genuine agent ability.",
+      "flagged_by": [
+        "prathifkumar2025swememory",
+        "deng2025swebenchpro"
+      ],
+      "status": "partially-addressed",
+      "why_it_matters": "If headline numbers reflect training-data recall rather than reasoning, the entire 'progress' narrative on SWE-bench is unreliable; contamination-resistant benchmarks (held-out/commercial splits) are the partial fix but not yet standard practice."
+    },
+    {
+      "id": "op2",
+      "statement": "Coding agents tuned on Python issue-resolution fail to generalize to other languages and to visual/front-end software domains.",
+      "flagged_by": [
+        "yang2024swebenchmm"
+      ],
+      "status": "open",
+      "why_it_matters": "Real software is multi-language and increasingly visual/UI-driven; brittleness across language and modality means leaderboard leaders do not transfer to the breadth of actual engineering work."
+    },
+    {
+      "id": "op3",
+      "statement": "Whether elaborate autonomous agent scaffolding adds value over simple fixed pipelines is unresolved: a non-agentic three-phase pipeline matched or beat complex agents at lower cost, suggesting much agent complexity may be unnecessary.",
+      "flagged_by": [
+        "xia2024agentless",
+        "zhang2024autocoderover"
+      ],
+      "status": "open",
+      "why_it_matters": "The field's investment in increasingly complex multi-agent architectures may be misdirected if a simple localize-repair-validate pipeline is a stronger cost-adjusted baseline; this reframes what 'progress' should mean."
+    },
+    {
+      "id": "op4",
+      "statement": "Long-horizon, enterprise-scale software tasks (multi-file patches, tasks taking a professional hours-to-days) remain largely unsolved; current agents are evaluated mostly on shorter, single-PR issues.",
+      "flagged_by": [
+        "deng2025swebenchpro"
+      ],
+      "status": "open",
+      "why_it_matters": "Most economically valuable engineering is long-horizon; a benchmark of 1,865 long-horizon problems exists precisely because existing agents do not yet handle this regime well."
+    },
+    {
+      "id": "op5",
+      "statement": "Agents trained predominantly on static code lack understanding of the dynamic, iterative, evolutionary process of real software development; capturing development-process trajectories (vs static snapshots) is an open training-data problem.",
+      "flagged_by": [
+        "zhang2024lingmaswegpt",
+        "pan2025swegym",
+        "yang2025swesmith"
+      ],
+      "status": "partially-addressed",
+      "why_it_matters": "Process-centric / executable-environment training (SWE-Gym, SWE-smith, Lingma SWE-GPT) narrows the open-vs-closed gap, but scalable high-quality trajectory/data generation is still the bottleneck for open-weight agents."
+    },
+    {
+      "id": "op6",
+      "statement": "Reliable fault localization and repo-level navigation at scale remains hard; localization accuracy is a major bottleneck on downstream issue resolution.",
+      "flagged_by": [
+        "yu2025locagent",
+        "ma2024lingmaagent",
+        "zhang2024autocoderover"
+      ],
+      "status": "partially-addressed",
+      "why_it_matters": "Graph-guided and KG+MCTS approaches improve localization and lift downstream Pass@10, but multi-hop reasoning over large heterogeneous codebases is not solved, and localization errors cap end-to-end resolution."
+    },
+    {
+      "id": "op7",
+      "statement": "Reward design and credit assignment for RL on software engineering are immature: current rewards are rule-based similarity-to-ground-truth proxies rather than true correctness signals, and verifier quality limits inference-time scaling.",
+      "flagged_by": [
+        "wei2025swerl",
+        "pan2025swegym"
+      ],
+      "status": "open",
+      "why_it_matters": "Outcome-reward RL shows promise (and surprising out-of-domain transfer), but similarity proxies and learned verifiers are imperfect; better, scalable, execution-grounded reward/verifier signals are needed to push the training frontier."
+    },
+    {
+      "id": "op8",
+      "statement": "Cost, trajectory length, and reliability of agentic systems are poorly controlled \u2014 monolithic agents produce long inflated trajectories, and cost-adjusted comparisons are not standardized across the field.",
+      "flagged_by": [
+        "arora2024masai",
+        "xia2024agentless",
+        "liu2024llmagentsurvey"
+      ],
+      "status": "open",
+      "why_it_matters": "Without standardized cost/latency accounting, leaderboard 'wins' can hide that a method is far more expensive; modular decomposition helps but a principled treatment of the accuracy-cost frontier is still missing."
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "Do complex autonomous agent scaffolds actually help, or do simple fixed pipelines win on a cost-adjusted basis?",
+      "positions": [
+        {
+          "stance": "Scaffolding/agency matters: purpose-built interfaces and autonomous loops drive the gains.",
+          "papers": [
+            "yang2024sweagent",
+            "wang2024openhands",
+            "wang2024codeact"
+          ],
+          "summary": "SWE-agent shows the ACI (not just the model) drives large SWE-bench gains; OpenHands and CodeAct argue rich, code-native action spaces and sandboxed agent loops are what enable real software work."
+        },
+        {
+          "stance": "Agency is overrated: a simple localize-repair-validate pipeline matches or beats complex agents at much lower cost.",
+          "papers": [
+            "xia2024agentless",
+            "zhang2024autocoderover"
+          ],
+          "summary": "Agentless beats complex open-source agents on SWE-bench Lite at $0.70/issue with no agent control loop; AutoCodeRover gets competitive results via structured search at ~$0.43/issue, suggesting much agent complexity is unnecessary."
+        }
+      ],
+      "resolved": false
+    },
+    {
+      "id": "d2",
+      "question": "Do SWE-bench leaderboard scores measure genuine engineering ability or training-data memorization?",
+      "positions": [
+        {
+          "stance": "Scores are inflated by contamination/memorization and poor generalization.",
+          "papers": [
+            "prathifkumar2025swememory",
+            "yang2024swebenchmm",
+            "deng2025swebenchpro"
+          ],
+          "summary": "Models do ~3x better at resolving and ~6x better at localizing edited files on Verified than on decontaminated sets; Python-tuned systems fail to generalize to JavaScript/visual tasks; harder contamination-resistant benchmarks recalibrate scores downward."
+        },
+        {
+          "stance": "The benchmark measures a real, hard capability that is genuinely improving.",
+          "papers": [
+            "jimenez2024swebench",
+            "wei2025swerl",
+            "yang2025swesmith"
+          ],
+          "summary": "SWE-bench was built from real issue\u2192PR pairs with real test validation and started at <2% resolve; subsequent training/RL advances (SWE-RL 41%, SWE-agent-LM 40.2%) show real, test-validated gains rather than pure recall."
+        }
+      ],
+      "resolved": false
+    },
+    {
+      "id": "d3",
+      "question": "Where does the next leap come from \u2014 better scaffolding/prompting at inference time, or training/RL on software-evolution data?",
+      "positions": [
+        {
+          "stance": "Inference-time scaffolding, action design, and decomposition.",
+          "papers": [
+            "yang2024sweagent",
+            "xia2024agentless",
+            "arora2024masai",
+            "chen2024coder",
+            "wang2024codeact"
+          ],
+          "summary": "Gains come from interface/action design, fixed pipelines, and modular/multi-agent decomposition \u2014 improving how a fixed model is orchestrated rather than retraining it."
+        },
+        {
+          "stance": "Training and RL on real software evolution / executable environments.",
+          "papers": [
+            "wei2025swerl",
+            "pan2025swegym",
+            "yang2025swesmith",
+            "zhang2024lingmaswegpt"
+          ],
+          "summary": "SWE-RL, SWE-Gym, SWE-smith, and Lingma SWE-GPT argue the leap comes from training on process/evolution data and executable environments \u2014 and that this also transfers out-of-domain \u2014 outperforming pure scaffolding for open-weight models."
+        }
+      ],
+      "resolved": false
+    },
+    {
+      "id": "d4",
+      "question": "Is heavyweight whole-repository comprehension (knowledge graphs, MCTS, graph traversal) worth it, or is targeted structured retrieval enough?",
+      "positions": [
+        {
+          "stance": "Whole-repo comprehension via graphs/KG/MCTS pays off for navigation and localization.",
+          "papers": [
+            "ma2024lingmaagent",
+            "yu2025locagent",
+            "luo2024repoagent"
+          ],
+          "summary": "LingmaAgent (KG + MCTS) improves over SWE-agent by 18.5% on Lite; LocAgent's heterogeneous graph hits 92.7% file localization and lifts downstream resolution; RepoAgent uses global call-graph structure for repo comprehension."
+        },
+        {
+          "stance": "Targeted, structure-aware retrieval (AST search + spectrum FL) is sufficient and far cheaper.",
+          "papers": [
+            "zhang2024autocoderover",
+            "xia2024agentless"
+          ],
+          "summary": "AutoCodeRover gets competitive resolution with AST-based search plus spectrum-based fault localization at ~$0.43/issue; Agentless's simple hierarchical localization is enough to top complex agents \u2014 questioning the cost of heavyweight repo modeling."
+        }
+      ],
+      "resolved": false
+    }
+  ]
+}

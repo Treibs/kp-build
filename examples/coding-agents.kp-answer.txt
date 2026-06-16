@@ -1,0 +1,34 @@
+## Related work
+
+The emergence of autonomous AI coding agents has been driven and disciplined by a single evaluation line: SWE-bench, which posed the task of resolving real GitHub issue→PR pairs with test validation and exposed how far frontier models were from real software work, with the best system (Claude 2) resolving under 2% of issues [jimenez2024swebench]. Progress since has split along two methodological axes. The first is *inference-time scaffolding*: SWE-agent showed that a purpose-built agent-computer interface (ACI) for navigating, editing, and executing code is itself a major driver of gains [yang2024sweagent], a thesis extended by code-native action spaces in CodeAct [wang2024codeact], the OpenHands generalist-agent platform [wang2024openhands], and verbal self-correction loops descending from Self-Debug [chen2023selfdebug] and Reflexion [shinn2023reflexion]. Decomposition approaches push this further, casting issue resolution as multi-agent or task-graph problems in CodeR [chen2024coder] and MASAI [arora2024masai]. Against this, a *minimalist* counter-current argues that elaborate agency is overrated: Agentless matches or beats complex agents with a fixed localize-repair-validate pipeline at ~$0.70/issue [xia2024agentless], and AutoCodeRover reaches competitive resolution via AST-structured search plus spectrum-based fault localization at ~$0.43/issue [zhang2024autocoderover]. A parallel thread tackles *repo-level comprehension*: heavyweight whole-repository modeling via knowledge graphs and MCTS in LingmaAgent [ma2024lingmaagent], heterogeneous graph navigation for localization in LocAgent [yu2025locagent], and call-graph-based comprehension in RepoAgent [luo2024repoagent]. The second axis is *training and RL on software evolution* rather than orchestration of a frozen model: SWE-RL applies rule-based-reward RL over open software evolution and reports 41% on SWE-bench Verified with surprising out-of-domain transfer [wei2025swerl]; SWE-Gym [pan2025swegym], SWE-smith [yang2025swesmith], and the development-process-centric Lingma SWE-GPT [zhang2024lingmaswegpt] supply executable environments and trajectory data to close the open-vs-closed gap. Surveys consolidate the landscape [liu2024llmagentsurvey], even as a growing critique—covering visual/cross-language generalization failures [yang2024swebenchmm], contamination-resistant long-horizon testbeds [deng2025swebenchpro], and a memorization-vs-ability audit showing ~3x inflated resolve rates on the public Verified set [prathifkumar2025swememory]—questions whether reported leaderboard progress reflects genuine engineering ability.
+
+## Three most important open problems
+
+1. **Benchmark contamination and the memorization-vs-ability confound.** Models do markedly better on the public SWE-bench Verified set than on decontaminated sets given identical context (roughly 3x at resolving issues and 6x at locating edited files), suggesting headline resolve rates partly reflect training-data recall rather than reasoning [prathifkumar2025swememory]. Contamination-resistant, commercially-held-out benchmarks are the partial fix but are not yet standard practice [deng2025swebenchpro], leaving the field's entire "progress" narrative on uncertain footing.
+
+2. **Generalization beyond Python single-PR issues to long-horizon, multi-language, and visual work.** Top SWE-bench systems struggle on SWE-bench Multimodal, revealing brittleness in visual problem-solving and cross-language transfer [yang2024swebenchmm], while long-horizon enterprise tasks—multi-file patches taking a professional hours to days—remain largely unsolved, motivating the 1,865-problem SWE-Bench Pro [deng2025swebenchpro]. Most economically valuable engineering lives in exactly these regimes that current agents handle poorly.
+
+3. **Reward/verifier design and the unstandardized accuracy-cost frontier.** RL for software engineering still relies on rule-based similarity-to-ground-truth proxies rather than true correctness signals, and verifier quality caps inference-time scaling [wei2025swerl, pan2025swegym]. Compounding this, reliable fault localization over large heterogeneous codebases is unsolved and bottlenecks downstream resolution [yu2025locagent, ma2024lingmaagent], and cost/trajectory accounting is not standardized—so leaderboard "wins" can hide that a method is far more expensive, with the minimalist baselines a sharp reminder that agency must justify its cost [xia2024agentless, arora2024masai].
+
+## Citations
+2310.06770 | SWE-bench: Can Language Models Resolve Real-World GitHub Issues?
+2405.15793 | SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering
+2404.05427 | AutoCodeRover: Autonomous Program Improvement
+2407.01489 | Agentless: Demystifying LLM-based Software Engineering Agents
+2402.01030 | Executable Code Actions Elicit Better LLM Agents
+2407.16741 | OpenHands: An Open Platform for AI Software Developers as Generalist Agents
+2304.05128 | Teaching Large Language Models to Self-Debug
+2303.11366 | Reflexion: Language Agents with Verbal Reinforcement Learning
+2402.16667 | RepoAgent: An LLM-Powered Open-Source Framework for Repository-level Code Documentation Generation
+2406.01304 | CodeR: Issue Resolving with Multi-Agent and Task Graphs
+2406.11638 | MASAI: Modular Architecture for Software-engineering AI Agents
+2410.03859 | SWE-bench Multimodal: Do AI Systems Generalize to Visual Software Domains?
+2406.01422 | Alibaba LingmaAgent: Improving Automated Issue Resolution via Comprehensive Repository Exploration
+2411.00622 | Lingma SWE-GPT: An Open Development-Process-Centric Language Model for Automated Software Improvement
+2412.21139 | Training Software Engineering Agents and Verifiers with SWE-Gym
+2502.18449 | SWE-RL: Advancing LLM Reasoning via Reinforcement Learning on Open Software Evolution
+2503.09089 | LocAgent: Graph-Guided LLM Agents for Code Localization
+2504.21798 | SWE-smith: Scaling Data for Software Engineering Agents
+2509.16941 | SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?
+2409.02977 | Large Language Model-Based Agents for Software Engineering: A Survey
+2512.10218 | Does SWE-Bench-Verified Test Agent Ability or Model Memory?

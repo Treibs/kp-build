@@ -1,0 +1,13 @@
+{
+  "name": "@kp/autonomous-ai-coding-software-engineering-agents-2023-2026",
+  "version": "0.1.0",
+  "description": "In scope: LLM agents that resolve real-world software-engineering tasks (GitHub issue\u2192PR resolution, program repair, repo-level navigation/localization), the scaffolding-vs-agent debate (SWE-agent ACI, OpenHands, CodeAct vs Agentless), plan-and-execute / multi-agent decomposition (MASAI, CodeR), sel",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

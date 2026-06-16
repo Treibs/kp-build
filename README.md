@@ -59,26 +59,26 @@ Crossref, and OpenAlex APIs (no keys, no cost).
 
 ## Quickstart — run the shipped examples
 
-`examples/` ships five real packages with their inputs, so you can run the engine end-to-end on a clean
-clone (no Claude Code needed). Start with **`sleep-insomnia-evidence`** — an everyday topic ("does X
-actually help me sleep?") that shows the whole flow. The engine's input is a `research.json` (papers,
-claims, open problems, debates):
+`examples/` ships seven real packages with their inputs, so you can run the engine end-to-end on a clean
+clone (no Claude Code needed). Start with **`agent-memory`** — an AI-frontier topic ("how should my agent
+remember across sessions?") where the unaided model fabricates most of its citations. The engine's input is
+a `research.json` (papers, claims, open problems, debates):
 
 ```bash
 # `build` takes a research.json and writes a package DIRECTORY:
-kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg --no-verify   # offline
-kp-build build -i examples/sleep-insomnia-evidence.research.json -o /tmp/pkg               # live: verify every citation
+kp-build build -i examples/agent-memory.research.json -o /tmp/pkg --no-verify   # offline
+kp-build build -i examples/agent-memory.research.json -o /tmp/pkg               # live: verify every citation
 
 # `falsify` and `report` run on a built package directory — examples/ ships pre-built ones:
 
 # did the package help? score an unaided agent vs a package-loaded one (answers shipped in examples/)
-kp-build falsify examples/sleep-insomnia-evidence \
-  --question "Evidence-based interventions to improve sleep and treat insomnia in adults" \
-  --base examples/sleep-insomnia-evidence.base-answer.txt \
-  --kp   examples/sleep-insomnia-evidence.kp-answer.txt
+kp-build falsify examples/agent-memory \
+  --question "Memory for LLM agents — persistent / long-term memory architectures for autonomous agents (2023-2026)" \
+  --base examples/agent-memory.base-answer.txt \
+  --kp   examples/agent-memory.kp-answer.txt
 
 # render a self-contained HTML report (verdict, verified spine, open problems, debates)
-kp-build report examples/sleep-insomnia-evidence
+kp-build report examples/agent-memory
 ```
 
 ## Build your own package (Claude Code)
@@ -136,13 +136,16 @@ assemble, ground, lint, score. Two hard gates run at build time:
 
 ## The example packages
 
-`examples/` ships five real packages built end-to-end (also kept as regression fixtures). Start with the
-first — an everyday health question anyone can relate to; the others map what the probe and falsification
-check discriminate, and show kp-build works **beyond arXiv** (journal papers verified via Crossref/DOI):
+`examples/` ships seven real packages built end-to-end (also kept as regression fixtures). Start with the
+first two — **AI-frontier topics** (agent memory, coding agents) where the unaided model fabricates most of
+its citations; the rest map what the probe and falsification check discriminate, and show kp-build works
+**beyond arXiv** (journal papers verified via Crossref/DOI):
 
 | package | the topic | pre-screen (cheap check: build or skip?) | did the package actually help? |
 |---|---|---|---|
-| **`sleep-insomnia-evidence`** ⭐ | **everyday health** — what actually improves sleep, evidence vs hype | skip\* — *but wrong* | **yes** — the cheap check missed it; the real falsify caught that the unaided model *fabricated* a study + missed ¾ of the evidence (covered just 6/23); f1 0.40 → 0.85 |
+| **`agent-memory`** ⭐ | **LLM agent memory** — how an AI agent remembers across sessions | build (model is weak) | **yes** — base **fabricated/mislabeled 10 of 16 cites**; precision 0.38 → 1.00, coverage 0.71 → 1.00, f1 0.49 → 1.00 |
+| **`coding-agents`** | **autonomous AI coding agents** — the SWE-bench frontier | build (model is weak) | **yes** — base **fabricated/mislabeled 14 of 25 cites**; precision 0.44 → 1.00, f1 0.48 → 1.00 |
+| `sleep-insomnia-evidence` | **everyday health** — what actually improves sleep, evidence vs hype | skip\* — *but wrong* | **yes** — the cheap check missed it; the real falsify caught that the unaided model *fabricated* a study + missed ¾ of the evidence (covered just 6/23); f1 0.40 → 0.85 |
 | `discrete-diffusion-llms` | recent ML the model **gets wrong** | build (model looks weak) | **yes** — kills mislabeled cites (precision **0.62 → 1.00**) **and** adds coverage; f1 0.37 → 0.91 |
 | `speculative-decoding-llms` | ML the model **knows cold** | skip (model looks fine) | helped on **coverage only** — precision was already perfect |
 | `rubric-based-rl-nonverifiable` | a 2026 topic the model **can't name** (post-cutoff) | build (model looks weak) | **yes** — coverage 0.07 → 1.00 |
@@ -159,7 +162,8 @@ see [`examples/README.md`](examples/README.md) for the same blind spot dissected
 
 Each is also a public, installable **KPM package** — load one into any agent's vault with
 `kpm add github:Treibs/kp-<slug>#v0.1.0` (e.g. the flagship
-[`kp-sleep-insomnia-evidence`](https://github.com/Treibs/kp-sleep-insomnia-evidence)).
+[`kp-agent-memory`](https://github.com/Treibs/kp-agent-memory) or
+[`kp-coding-agents`](https://github.com/Treibs/kp-coding-agents)).
 See [`examples/README.md`](examples/README.md) for the full story on each — including how the rubric-RL
 example exposed, and drove a fix for, a blind spot in the probe.
 

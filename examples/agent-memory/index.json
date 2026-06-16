@@ -1,0 +1,795 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "packer2023memgpt",
+      "title": "MemGPT: Towards LLMs as Operating Systems",
+      "year": 2023,
+      "arxiv_id": "2310.08560",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "park2023generative",
+      "title": "Generative Agents: Interactive Simulacra of Human Behavior",
+      "year": 2023,
+      "arxiv_id": "2304.03442",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "shinn2023reflexion",
+      "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "year": 2023,
+      "arxiv_id": "2303.11366",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "zhong2023memorybank",
+      "title": "MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+      "year": 2023,
+      "arxiv_id": "2305.10250",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "liu2023lostmiddle",
+      "title": "Lost in the Middle: How Language Models Use Long Contexts",
+      "year": 2023,
+      "arxiv_id": "2307.03172",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wang2024memoryllm",
+      "title": "MEMORYLLM: Towards Self-Updatable Large Language Models",
+      "year": 2024,
+      "arxiv_id": "2402.04624",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "li2024ragvslongcontext",
+      "title": "Retrieval Augmented Generation or Long-Context LLMs? A Comprehensive Study and Hybrid Approach",
+      "year": 2024,
+      "arxiv_id": "2407.16833",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "li2025longcontextvsrag",
+      "title": "Long Context vs. RAG for LLMs: An Evaluation and Revisits",
+      "year": 2025,
+      "arxiv_id": "2501.01880",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "maharana2024locomo",
+      "title": "Evaluating Very Long-Term Conversational Memory of LLM Agents",
+      "year": 2024,
+      "arxiv_id": "2402.17753",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "gutierrez2024hipporag",
+      "title": "HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models",
+      "year": 2024,
+      "arxiv_id": "2405.14831",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "gutierrez2025hipporag2",
+      "title": "From RAG to Memory: Non-Parametric Continual Learning for Large Language Models",
+      "year": 2025,
+      "arxiv_id": "2502.14802",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "rasmussen2025zep",
+      "title": "Zep: A Temporal Knowledge Graph Architecture for Agent Memory",
+      "year": 2025,
+      "arxiv_id": "2501.13956",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "xu2025amem",
+      "title": "A-MEM: Agentic Memory for LLM Agents",
+      "year": 2025,
+      "arxiv_id": "2502.12110",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "chhikara2025mem0",
+      "title": "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory",
+      "year": 2025,
+      "arxiv_id": "2504.19413",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wu2024longmemeval",
+      "title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+      "year": 2024,
+      "arxiv_id": "2410.10813",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "tan2025membench",
+      "title": "MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-based Agents",
+      "year": 2025,
+      "arxiv_id": "2506.21605",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "hu2025memoryagentbench",
+      "title": "Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions (MemoryAgentBench)",
+      "year": 2025,
+      "arxiv_id": "2507.05257",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "zhang2024memorysurvey",
+      "title": "A Survey on the Memory Mechanism of Large Language Model based Agents",
+      "year": 2024,
+      "arxiv_id": "2404.13501",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "du2025rethinkingmemory",
+      "title": "Rethinking Memory in LLM based Agents: Representations, Operations, and Emerging Topics",
+      "year": 2025,
+      "arxiv_id": "2505.00675",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "pink2025episodic",
+      "title": "Position: Episodic Memory is the Missing Piece for Long-Term LLM Agents",
+      "year": 2025,
+      "arxiv_id": "2502.06975",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "huang2026secondhalf",
+      "title": "Rethinking Memory Mechanisms of Foundation Agents in the Second Half: A Survey",
+      "year": 2026,
+      "arxiv_id": "2602.06052",
+      "doi": "",
+      "verified": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "packer2023memgpt",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "packer2023memgpt",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "park2023generative",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "park2023generative",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "paper": "shinn2023reflexion",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c6",
+      "paper": "shinn2023reflexion",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "paper": "zhong2023memorybank",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "liu2023lostmiddle",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "paper": "wang2024memoryllm",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10",
+      "paper": "wang2024memoryllm",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "paper": "li2024ragvslongcontext",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c12",
+      "paper": "li2024ragvslongcontext",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "li2025longcontextvsrag",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c14",
+      "paper": "maharana2024locomo",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c15",
+      "paper": "maharana2024locomo",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "paper": "gutierrez2024hipporag",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c17",
+      "paper": "gutierrez2024hipporag",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "paper": "gutierrez2025hipporag2",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c19",
+      "paper": "gutierrez2025hipporag2",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "paper": "rasmussen2025zep",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c21",
+      "paper": "rasmussen2025zep",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c22",
+      "paper": "xu2025amem",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c23",
+      "paper": "xu2025amem",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "paper": "chhikara2025mem0",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c25",
+      "paper": "chhikara2025mem0",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c26",
+      "paper": "wu2024longmemeval",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "paper": "wu2024longmemeval",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "paper": "wu2024longmemeval",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c29",
+      "paper": "tan2025membench",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c30",
+      "paper": "hu2025memoryagentbench",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "paper": "du2025rethinkingmemory",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c32",
+      "paper": "pink2025episodic",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "paper": "huang2026secondhalf",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "paper": "zhang2024memorysurvey",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c35",
+      "paper": "gutierrez2024hipporag",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "op1",
+      "flagged_by": [
+        "hu2025memoryagentbench"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op2",
+      "flagged_by": [
+        "maharana2024locomo",
+        "wu2024longmemeval"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op3",
+      "flagged_by": [
+        "gutierrez2025hipporag2",
+        "rasmussen2025zep"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "op4",
+      "flagged_by": [
+        "du2025rethinkingmemory",
+        "wang2024memoryllm",
+        "pink2025episodic"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op5",
+      "flagged_by": [
+        "pink2025episodic"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op6",
+      "flagged_by": [
+        "zhong2023memorybank",
+        "chhikara2025mem0",
+        "du2025rethinkingmemory",
+        "hu2025memoryagentbench"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op7",
+      "flagged_by": [
+        "tan2025membench",
+        "hu2025memoryagentbench",
+        "zhang2024memorysurvey"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op8",
+      "flagged_by": [
+        "li2024ragvslongcontext",
+        "li2025longcontextvsrag",
+        "liu2023lostmiddle"
+      ],
+      "status": "open"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "Long-context wins on accuracy when resourced",
+        "Retrieval/explicit memory wins on cost and some query types, and long context is unreliable",
+        "Hybrid routing is the practical resolution"
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "Parametric / self-updatable memory",
+        "Contextual / external memory (non-parametric continual learning)",
+        "Both are needed; the open question is allocation"
+      ]
+    },
+    {
+      "id": "d3",
+      "positions": [
+        "Episodic memory is the missing piece",
+        "Reflective/experiential episodic buffers already deliver much of the value",
+        "Both episodic and semantic are facets of a broader memory taxonomy"
+      ]
+    },
+    {
+      "id": "d4",
+      "positions": [
+        "Structure helps multi-hop, associative, and temporal recall",
+        "Structure can hurt basic factual recall"
+      ]
+    }
+  ],
+  "benchmarks": [],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "packer2023memgpt",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "packer2023memgpt",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "park2023generative",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "park2023generative",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "shinn2023reflexion",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "shinn2023reflexion",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "zhong2023memorybank",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "liu2023lostmiddle",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "wang2024memoryllm",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "wang2024memoryllm",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "li2024ragvslongcontext",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "li2024ragvslongcontext",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "li2025longcontextvsrag",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "maharana2024locomo",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "maharana2024locomo",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "gutierrez2024hipporag",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "gutierrez2024hipporag",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "gutierrez2025hipporag2",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "gutierrez2025hipporag2",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "rasmussen2025zep",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "rasmussen2025zep",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "xu2025amem",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "xu2025amem",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "chhikara2025mem0",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c25",
+      "to": "chhikara2025mem0",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c26",
+      "to": "wu2024longmemeval",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c27",
+      "to": "wu2024longmemeval",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c28",
+      "to": "wu2024longmemeval",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "tan2025membench",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "hu2025memoryagentbench",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "du2025rethinkingmemory",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "pink2025episodic",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "huang2026secondhalf",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "zhang2024memorysurvey",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "gutierrez2024hipporag",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "op1",
+      "to": "hu2025memoryagentbench",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op2",
+      "to": "maharana2024locomo",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op2",
+      "to": "wu2024longmemeval",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "gutierrez2025hipporag2",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "rasmussen2025zep",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op4",
+      "to": "du2025rethinkingmemory",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op4",
+      "to": "wang2024memoryllm",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op4",
+      "to": "pink2025episodic",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op5",
+      "to": "pink2025episodic",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "zhong2023memorybank",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "chhikara2025mem0",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "du2025rethinkingmemory",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "hu2025memoryagentbench",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op7",
+      "to": "tan2025membench",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op7",
+      "to": "hu2025memoryagentbench",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op7",
+      "to": "zhang2024memorysurvey",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "li2024ragvslongcontext",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "li2025longcontextvsrag",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "liu2023lostmiddle",
+      "rel": "flagged-by"
+    }
+  ]
+}

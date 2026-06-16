@@ -1,0 +1,25 @@
+## Unaided baseline (related-work paragraph from memory)
+
+Persistent memory for LLM agents has become a distinct subfield since 2023. Early work established the two dominant paradigms. Park et al.'s *Generative Agents* introduced the "memory stream" — a natural-language log of experiences retrieved by a weighted combination of recency, importance, and relevance — together with periodic "reflection" that distills observations into higher-level memories; this is the canonical episodic-plus-reflection design. In parallel, *Reflexion* (Shinn et al.) framed self-generated verbal feedback stored in an episodic buffer as a form of "verbal reinforcement learning," and *MemGPT* (Packer et al.) reframed memory as operating-system-style virtual context management, paging information between an in-context working memory and external storage via function calls; MemGPT later became the Letta system. *MemoryBank* (Zhong et al.) added human-inspired consolidation via an Ebbinghaus-forgetting-curve update rule. A recurring motivation for explicit memory over simply enlarging the context window is the "lost in the middle" finding (Liu et al.), that models underuse information in the middle of long contexts. Subsequent architectures diverged along the parametric-vs-external axis: MEMORYLLM (Wang et al.) bakes a self-updatable memory pool into the transformer's latent space, while a wave of external-store systems — HippoRAG (hippocampal indexing with knowledge graphs and Personalized PageRank), A-MEM (Zettelkasten-style linked notes), Mem0 (production extract-consolidate-retrieve with ADD/UPDATE/DELETE operators), and Zep/Graphiti (temporal knowledge graphs) — pushed structured, editable memory. The long-context-vs-RAG debate was sharpened by Li et al.'s comparative study (long context wins on accuracy when resourced, RAG wins on cost, with a Self-Route hybrid). Evaluation matured through LoCoMo (very long conversations), LongMemEval (five memory abilities, ~30% accuracy drops), and newer benchmarks like MemBench and MemoryAgentBench. Several 2024–2025 surveys (Zhang et al.; Du et al.) organize the design space into memory forms and operations. I'm fairly confident about the seminal architectures and the major benchmarks; I'm less sure about exact arXiv ids for the most recent (2025–2026) entries and about precise quantitative results, which I may be misremembering.
+
+### Three open problems (from memory)
+1. **Consolidation and forgetting are unsolved.** There's no agreed mechanism for what to forget, when to merge/overwrite superseded memories, or how to bound memory growth without losing critical facts — approaches range from decay curves to LLM-driven edit operators with little head-to-head evaluation.
+2. **Parametric vs. external memory allocation.** It's unclear which knowledge should live in weights (self-updating) vs. in editable external stores, and how to keep multi-source memory consistent, auditable, and deletable (privacy/right-to-forget).
+3. **Evaluation hasn't converged.** Long-term temporal reasoning and multi-session consistency remain well below human level, and the proliferation of benchmarks (LoCoMo, LongMemEval, MemBench, MemoryAgentBench) signals the community lacks a standard way to measure memory utility, cost, and capacity jointly rather than single-axis accuracy.
+
+## Citations
+- arXiv:2304.03442 — Generative Agents: Interactive Simulacra of Human Behavior (Park et al., 2023)
+- arXiv:2303.11366 — Reflexion: Language Agents with Verbal Reinforcement Learning (Shinn et al., 2023)
+- arXiv:2310.08560 — MemGPT: Towards LLMs as Operating Systems (Packer et al., 2023)
+- arXiv:2305.10250 — MemoryBank: Enhancing LLMs with Long-Term Memory (Zhong et al., 2023)
+- arXiv:2307.03172 — Lost in the Middle (Liu et al., 2023)
+- arXiv:2402.04624 — MEMORYLLM: Towards Self-Updatable LLMs (Wang et al., 2024)
+- arXiv:2405.14831 — HippoRAG (Gutiérrez et al., 2024)
+- arXiv:2407.16833 — RAG or Long-Context LLMs? (Li et al., 2024)
+- arXiv:2402.17753 — Evaluating Very Long-Term Conversational Memory / LoCoMo (Maharana et al., 2024)
+- arXiv:2410.10813 — LongMemEval (Wu et al., 2024)
+- arXiv:2404.13501 — Survey on Memory Mechanism of LLM-based Agents (Zhang et al., 2024)
+- arXiv:2502.12110 — A-MEM: Agentic Memory for LLM Agents (Xu et al., 2025)
+- arXiv:2504.19413 — Mem0 (Chhikara et al., 2025)
+- arXiv:2501.13956 — Zep: Temporal Knowledge Graph for Agent Memory (2025)
+- (lower confidence on exact id) Position: Episodic Memory is the Missing Piece — ~arXiv:2502.06975 (Pink et al., 2025)

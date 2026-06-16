@@ -1,0 +1,34 @@
+Persistent memory for autonomous LLM agents has cohered into a recognizable subfield since 2023, organized around how an agent stores, consolidates, and retrieves experience beyond a single context window. The foundational architectures framed memory as a systems problem: MemGPT cast the LLM as an operating system that pages information between an in-context tier and external stores under the model's own control [packer2023memgpt], while Generative Agents introduced the memory stream — a natural-language log synthesized over time into higher-level reflections and retrieved to plan behavior [park2023generative], and Reflexion showed that storing verbal self-reflections in an episodic buffer improves later trials without weight updates [shinn2023reflexion]. Subsequent work split along the episodic-versus-semantic axis and along representation: MemoryBank added Ebbinghaus-style decay and consolidation [zhong2023memorybank], A-MEM and Mem0 built editable, scalable external stores for production agents [xu2025amem, chhikara2025mem0], and a structured-retrieval line — HippoRAG's hippocampally-inspired PageRank indexing [gutierrez2024hipporag], its non-parametric continual-learning successor [gutierrez2025hipporag2], and Zep's temporal knowledge graph [rasmussen2025zep] — pushed associative and temporal recall, with Zep beating MemGPT on its own DMR benchmark. A parallel parametric thread, exemplified by MEMORYLLM's self-updatable latent memory pool surviving ~1M updates [wang2024memoryllm], contests whether memory belongs in weights or in external data; recent surveys taxonomize both forms and their operations [zhang2024memorysurvey, du2025rethinkingmemory, huang2026secondhalf], and a position paper argues episodic memory is the catalytic missing piece [pink2025episodic].
+
+Cutting across these architectures is an unresolved practical debate over long-context LLMs versus RAG versus explicit memory. Long context wins on accuracy when sufficiently resourced [li2024ragvslongcontext, li2025longcontextvsrag], yet suffers "lost-in-the-middle" positional failures [liu2023lostmiddle] and a ~30% accuracy drop over sustained interactions [wu2024longmemeval], leaving RAG/explicit memory preferable on cost and dialogue-style queries, with hybrid self-routing offered only as a heuristic [li2024ragvslongcontext]. Evaluation has likewise proliferated rather than converged — LoCoMo's 300-turn conversations [maharana2024locomo], LongMemEval's five memory abilities [wu2024longmemeval], MemBench's effectiveness/efficiency/capacity axes [tan2025membench], and MemoryAgentBench's four competencies [hu2025memoryagentbench] — signaling the field has not agreed on how to measure long-term memory.
+
+**Three most important open problems**
+
+1. **No agent masters all core memory competencies at once.** MemoryAgentBench shows current methods fail to jointly achieve accurate retrieval, test-time learning, long-range understanding, and selective forgetting [hu2025memoryagentbench]; the field has optimized retrieval in isolation while consolidation, continual learning, and forgetting — the capabilities that distinguish memory from search — remain unsolved. Long-term conversational memory still lags humans badly on temporal and causal reasoning even with long context or RAG [maharana2024locomo, wu2024longmemeval].
+
+2. **Parametric versus contextual memory, and how to combine them, is unsettled.** Self-updating weight/latent memory avoids retrieval latency but is opaque and hard to audit or delete [wang2024memoryllm], while external editable stores are inspectable but bolted-on; no principled account exists of which knowledge belongs where or how to keep multi-source memory consistent — bearing directly on auditability, privacy, and forgetting [du2025rethinkingmemory, pink2025episodic]. Relatedly, adding graph structure improves associative recall but historically degraded basic factual lookup below plain vector RAG, a trade-off only partly reconciled [gutierrez2025hipporag2, rasmussen2025zep].
+
+3. **Selective forgetting and consolidation lack principled, benchmarked mechanisms.** Approaches range from Ebbinghaus decay [zhong2023memorybank] to LLM-driven ADD/UPDATE/DELETE operators [chhikara2025mem0], but there is no consensus on when or what to forget; unbounded growth causes cost explosion and retrieval noise, yet wrong forgetting loses or fails to update critical facts. This is listed as a core operation [du2025rethinkingmemory] yet is the least benchmarked of the memory competencies [hu2025memoryagentbench].
+
+## Citations
+2310.08560 | MemGPT: Towards LLMs as Operating Systems
+2304.03442 | Generative Agents: Interactive Simulacra of Human Behavior
+2303.11366 | Reflexion: Language Agents with Verbal Reinforcement Learning
+2305.10250 | MemoryBank: Enhancing Large Language Models with Long-Term Memory
+2307.03172 | Lost in the Middle: How Language Models Use Long Contexts
+2402.04624 | MEMORYLLM: Towards Self-Updatable Large Language Models
+2407.16833 | Retrieval Augmented Generation or Long-Context LLMs? A Comprehensive Study and Hybrid Approach
+2501.01880 | Long Context vs. RAG for LLMs: An Evaluation and Revisits
+2402.17753 | Evaluating Very Long-Term Conversational Memory of LLM Agents
+2405.14831 | HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models
+2502.14802 | From RAG to Memory: Non-Parametric Continual Learning for Large Language Models
+2501.13956 | Zep: A Temporal Knowledge Graph Architecture for Agent Memory
+2502.12110 | A-MEM: Agentic Memory for LLM Agents
+2504.19413 | Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory
+2410.10813 | LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory
+2506.21605 | MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-based Agents
+2507.05257 | Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions (MemoryAgentBench)
+2404.13501 | A Survey on the Memory Mechanism of Large Language Model based Agents
+2505.00675 | Rethinking Memory in LLM based Agents: Representations, Operations, and Emerging Topics
+2502.06975 | Position: Episodic Memory is the Missing Piece for Long-Term LLM Agents
+2602.06052 | Rethinking Memory Mechanisms of Foundation Agents in the Second Half: A Survey

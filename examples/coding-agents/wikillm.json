@@ -1,0 +1,79 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Autonomous AI coding / software-engineering agents (2023\u20132026): agentic program repair, repo-level navigation, plan-and-execute coding, self-debugging, and the SWE-bench evaluation line",
+  "scope": "In scope: LLM agents that resolve real-world software-engineering tasks (GitHub issue\u2192PR resolution, program repair, repo-level navigation/localization), the scaffolding-vs-agent debate (SWE-agent ACI, OpenHands, CodeAct vs Agentless), plan-and-execute / multi-agent decomposition (MASAI, CodeR), self-debugging and verbal-reflection loops (Self-Debug, Reflexion), repo comprehension via code structure / graphs / KG+MCTS (AutoCodeRover, RepoAgent, LocAgent, LingmaAgent), training/RL data frontiers (SWE-Gym, SWE-RL, SWE-smith, Lingma SWE-GPT), and the SWE-bench evaluation line including generalization and contamination critiques (SWE-bench, SWE-bench Multimodal, SWE-Bench Pro, the memory-vs-ability critique). Out of scope: pure code-completion/autocomplete (Copilot-style), code LLM pretraining recipes unrelated to agents, non-software agent benchmarks (WebArena), formal verification, and IDE UX studies.",
+  "built": "2026-06-15",
+  "stats": {
+    "papers_verified": 21,
+    "papers_total": 21,
+    "claims": 40,
+    "open_problems": 8,
+    "debates": 4,
+    "benchmarks": 0,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0
+    }
+  },
+  "source_span": {
+    "oldest": 2023,
+    "newest": 2025,
+    "latest_checked": "2026-06-15"
+  },
+  "coverage": {
+    "note": "not recorded \u2014 coverage completeness is unverified"
+  },
+  "falsification": {
+    "run": true,
+    "question": "Autonomous AI coding / software-engineering agents (2023-2026)",
+    "base": {
+      "cited": 25,
+      "checked": 25,
+      "unresolved": 0,
+      "real": 11,
+      "fake": 14,
+      "fake_list": [
+        "Jimenez et al. | SWE-bench: Can Language Models Resolve Real-World GitHub Issues? \u2014 arXiv:2310.06770",
+        "Yang et al. | SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering \u2014 arXiv:2405.15793",
+        "Xia et al. | Agentless: Demystifying LLM-based Software Engineering Agents \u2014 arXiv:2407.01489",
+        "Zhang et al. | AutoCodeRover: Autonomous Program Improvement \u2014 arXiv:2404.05427",
+        "Wang et al. | Executable Code Actions Elicit Better LLM Agents (CodeAct) \u2014 arXiv:2402.01030",
+        "Chen et al. | Teaching Large Language Models to Self-Debug \u2014 arXiv:2304.05128",
+        "Shinn et al. | Reflexion: Language Agents with Verbal Reinforcement Learning \u2014 arXiv:2303.11366",
+        "Arora et al. | MASAI: Modular Architecture for Software-engineering AI Agents \u2014 arXiv:2406.11638",
+        "Pan et al. | SWE-Gym: Training Software Engineering Agents and Verifiers \u2014 arXiv:2412.xxxxx (id uncertain)",
+        "Wei et al. | SWE-RL: RL on Open Software Evolution \u2014 arXiv:2502.18449 (id approximate)",
+        "LocAgent: Graph-Guided LLM Agents for Code Localization | arXiv:2503.xxxxx (id uncertain, recent)",
+        "SWE-smith: Scaling Data for Software Engineering Agents | arXiv:25xx.xxxxx (id uncertain, recent)",
+        "SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks? | arXiv:25xx.xxxxx (id uncertain, recent)",
+        "\"Does SWE-Bench-Verified Test Agent Ability or Model Memory?\" | arXiv id unknown (very recent; may be misremembering title)"
+      ],
+      "newest_real_ym": 24302,
+      "precision": 0.44,
+      "hallucination_rate": 0.56,
+      "recall": 0.5238095238095238,
+      "spine_covered": 11,
+      "spine_size": 21,
+      "f1": 0.478
+    },
+    "kp": {
+      "cited": 21,
+      "checked": 21,
+      "unresolved": 0,
+      "real": 21,
+      "fake": 0,
+      "fake_list": [],
+      "newest_real_ym": 24312,
+      "precision": 1.0,
+      "hallucination_rate": 0.0,
+      "recall": 1.0,
+      "spine_covered": 21,
+      "spine_size": 21,
+      "f1": 1.0
+    },
+    "verdict": "KP HELPS \u2014 f1 0.48 (base) \u2192 1.00 (KP). precision 0.44\u21921.00, recall 0.52\u21921.00, 14 fake cites in base vs 0 in KP."
+  }
+}

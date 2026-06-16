@@ -1,0 +1,923 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "jimenez2024swebench",
+      "title": "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?",
+      "year": 2023,
+      "arxiv_id": "2310.06770",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "yang2024sweagent",
+      "title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "year": 2024,
+      "arxiv_id": "2405.15793",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "zhang2024autocoderover",
+      "title": "AutoCodeRover: Autonomous Program Improvement",
+      "year": 2024,
+      "arxiv_id": "2404.05427",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "xia2024agentless",
+      "title": "Agentless: Demystifying LLM-based Software Engineering Agents",
+      "year": 2024,
+      "arxiv_id": "2407.01489",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wang2024codeact",
+      "title": "Executable Code Actions Elicit Better LLM Agents",
+      "year": 2024,
+      "arxiv_id": "2402.01030",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wang2024openhands",
+      "title": "OpenHands: An Open Platform for AI Software Developers as Generalist Agents",
+      "year": 2024,
+      "arxiv_id": "2407.16741",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "chen2023selfdebug",
+      "title": "Teaching Large Language Models to Self-Debug",
+      "year": 2023,
+      "arxiv_id": "2304.05128",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "shinn2023reflexion",
+      "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "year": 2023,
+      "arxiv_id": "2303.11366",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "luo2024repoagent",
+      "title": "RepoAgent: An LLM-Powered Open-Source Framework for Repository-level Code Documentation Generation",
+      "year": 2024,
+      "arxiv_id": "2402.16667",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "chen2024coder",
+      "title": "CodeR: Issue Resolving with Multi-Agent and Task Graphs",
+      "year": 2024,
+      "arxiv_id": "2406.01304",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "arora2024masai",
+      "title": "MASAI: Modular Architecture for Software-engineering AI Agents",
+      "year": 2024,
+      "arxiv_id": "2406.11638",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "yang2024swebenchmm",
+      "title": "SWE-bench Multimodal: Do AI Systems Generalize to Visual Software Domains?",
+      "year": 2024,
+      "arxiv_id": "2410.03859",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "ma2024lingmaagent",
+      "title": "Alibaba LingmaAgent: Improving Automated Issue Resolution via Comprehensive Repository Exploration",
+      "year": 2024,
+      "arxiv_id": "2406.01422",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "zhang2024lingmaswegpt",
+      "title": "Lingma SWE-GPT: An Open Development-Process-Centric Language Model for Automated Software Improvement",
+      "year": 2024,
+      "arxiv_id": "2411.00622",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "pan2025swegym",
+      "title": "Training Software Engineering Agents and Verifiers with SWE-Gym",
+      "year": 2024,
+      "arxiv_id": "2412.21139",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "wei2025swerl",
+      "title": "SWE-RL: Advancing LLM Reasoning via Reinforcement Learning on Open Software Evolution",
+      "year": 2025,
+      "arxiv_id": "2502.18449",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "yu2025locagent",
+      "title": "LocAgent: Graph-Guided LLM Agents for Code Localization",
+      "year": 2025,
+      "arxiv_id": "2503.09089",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "yang2025swesmith",
+      "title": "SWE-smith: Scaling Data for Software Engineering Agents",
+      "year": 2025,
+      "arxiv_id": "2504.21798",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "deng2025swebenchpro",
+      "title": "SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?",
+      "year": 2025,
+      "arxiv_id": "2509.16941",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "liu2024llmagentsurvey",
+      "title": "Large Language Model-Based Agents for Software Engineering: A Survey",
+      "year": 2024,
+      "arxiv_id": "2409.02977",
+      "doi": "",
+      "verified": true
+    },
+    {
+      "cite_key": "prathifkumar2025swememory",
+      "title": "Does SWE-Bench-Verified Test Agent Ability or Model Memory?",
+      "year": 2025,
+      "arxiv_id": "2512.10218",
+      "doi": "",
+      "verified": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "jimenez2024swebench",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "jimenez2024swebench",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "yang2024sweagent",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "yang2024sweagent",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c5",
+      "paper": "zhang2024autocoderover",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c6",
+      "paper": "zhang2024autocoderover",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c7",
+      "paper": "zhang2024autocoderover",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "xia2024agentless",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c9",
+      "paper": "xia2024agentless",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c10",
+      "paper": "wang2024codeact",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c11",
+      "paper": "wang2024codeact",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c12",
+      "paper": "wang2024openhands",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "chen2023selfdebug",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "shinn2023reflexion"
+      ]
+    },
+    {
+      "id": "c14",
+      "paper": "shinn2023reflexion",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "chen2023selfdebug"
+      ]
+    },
+    {
+      "id": "c15",
+      "paper": "shinn2023reflexion",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "paper": "chen2024coder",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "arora2024masai"
+      ]
+    },
+    {
+      "id": "c17",
+      "paper": "chen2024coder",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c18",
+      "paper": "arora2024masai",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "chen2024coder"
+      ]
+    },
+    {
+      "id": "c19",
+      "paper": "arora2024masai",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c20",
+      "paper": "yang2024swebenchmm",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c21",
+      "paper": "yang2024swebenchmm",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "prathifkumar2025swememory"
+      ]
+    },
+    {
+      "id": "c22",
+      "paper": "ma2024lingmaagent",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "yu2025locagent"
+      ]
+    },
+    {
+      "id": "c23",
+      "paper": "ma2024lingmaagent",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "paper": "zhang2024lingmaswegpt",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c25",
+      "paper": "zhang2024lingmaswegpt",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c26",
+      "paper": "pan2025swegym",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c27",
+      "paper": "pan2025swegym",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "paper": "wei2025swerl",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c29",
+      "paper": "wei2025swerl",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "yang2025swesmith"
+      ]
+    },
+    {
+      "id": "c30",
+      "paper": "wei2025swerl",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "paper": "yu2025locagent",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "ma2024lingmaagent",
+        "zhang2024autocoderover"
+      ]
+    },
+    {
+      "id": "c32",
+      "paper": "yu2025locagent",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c33",
+      "paper": "yang2025swesmith",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "paper": "yang2025swesmith",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "wei2025swerl"
+      ]
+    },
+    {
+      "id": "c35",
+      "paper": "deng2025swebenchpro",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c36",
+      "paper": "deng2025swebenchpro",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "prathifkumar2025swememory"
+      ]
+    },
+    {
+      "id": "c37",
+      "paper": "prathifkumar2025swememory",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "deng2025swebenchpro"
+      ]
+    },
+    {
+      "id": "c38",
+      "paper": "liu2024llmagentsurvey",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c39",
+      "paper": "luo2024repoagent",
+      "type": "definition",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c40",
+      "paper": "ma2024lingmaagent",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "op1",
+      "flagged_by": [
+        "prathifkumar2025swememory",
+        "deng2025swebenchpro"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "op2",
+      "flagged_by": [
+        "yang2024swebenchmm"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op3",
+      "flagged_by": [
+        "xia2024agentless",
+        "zhang2024autocoderover"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op4",
+      "flagged_by": [
+        "deng2025swebenchpro"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op5",
+      "flagged_by": [
+        "zhang2024lingmaswegpt",
+        "pan2025swegym",
+        "yang2025swesmith"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "op6",
+      "flagged_by": [
+        "yu2025locagent",
+        "ma2024lingmaagent",
+        "zhang2024autocoderover"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "op7",
+      "flagged_by": [
+        "wei2025swerl",
+        "pan2025swegym"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op8",
+      "flagged_by": [
+        "arora2024masai",
+        "xia2024agentless",
+        "liu2024llmagentsurvey"
+      ],
+      "status": "open"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "Scaffolding/agency matters: purpose-built interfaces and autonomous loops drive the gains.",
+        "Agency is overrated: a simple localize-repair-validate pipeline matches or beats complex agents at much lower cost."
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "Scores are inflated by contamination/memorization and poor generalization.",
+        "The benchmark measures a real, hard capability that is genuinely improving."
+      ]
+    },
+    {
+      "id": "d3",
+      "positions": [
+        "Inference-time scaffolding, action design, and decomposition.",
+        "Training and RL on real software evolution / executable environments."
+      ]
+    },
+    {
+      "id": "d4",
+      "positions": [
+        "Whole-repo comprehension via graphs/KG/MCTS pays off for navigation and localization.",
+        "Targeted, structure-aware retrieval (AST search + spectrum FL) is sufficient and far cheaper."
+      ]
+    }
+  ],
+  "benchmarks": [],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "jimenez2024swebench",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "jimenez2024swebench",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "yang2024sweagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "yang2024sweagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "zhang2024autocoderover",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "zhang2024autocoderover",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "zhang2024autocoderover",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "xia2024agentless",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "xia2024agentless",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "wang2024codeact",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "wang2024codeact",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "wang2024openhands",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "chen2023selfdebug",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "shinn2023reflexion",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "shinn2023reflexion",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "chen2024coder",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "chen2024coder",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "arora2024masai",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "arora2024masai",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "yang2024swebenchmm",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "yang2024swebenchmm",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "ma2024lingmaagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "ma2024lingmaagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "zhang2024lingmaswegpt",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c25",
+      "to": "zhang2024lingmaswegpt",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c26",
+      "to": "pan2025swegym",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c27",
+      "to": "pan2025swegym",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c28",
+      "to": "wei2025swerl",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "wei2025swerl",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "wei2025swerl",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "yu2025locagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "yu2025locagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "yang2025swesmith",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "yang2025swesmith",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "deng2025swebenchpro",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c36",
+      "to": "deng2025swebenchpro",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c37",
+      "to": "prathifkumar2025swememory",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c38",
+      "to": "liu2024llmagentsurvey",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c39",
+      "to": "luo2024repoagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c40",
+      "to": "ma2024lingmaagent",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "op1",
+      "to": "prathifkumar2025swememory",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op1",
+      "to": "deng2025swebenchpro",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op2",
+      "to": "yang2024swebenchmm",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "xia2024agentless",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "zhang2024autocoderover",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op4",
+      "to": "deng2025swebenchpro",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op5",
+      "to": "zhang2024lingmaswegpt",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op5",
+      "to": "pan2025swegym",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op5",
+      "to": "yang2025swesmith",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "yu2025locagent",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "ma2024lingmaagent",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "zhang2024autocoderover",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op7",
+      "to": "wei2025swerl",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op7",
+      "to": "pan2025swegym",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "arora2024masai",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "xia2024agentless",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "liu2024llmagentsurvey",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "c13",
+      "to": "shinn2023reflexion",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c14",
+      "to": "chen2023selfdebug",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c16",
+      "to": "arora2024masai",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c18",
+      "to": "chen2024coder",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c21",
+      "to": "prathifkumar2025swememory",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c22",
+      "to": "yu2025locagent",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c29",
+      "to": "yang2025swesmith",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c31",
+      "to": "ma2024lingmaagent",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c31",
+      "to": "zhang2024autocoderover",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c34",
+      "to": "wei2025swerl",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c36",
+      "to": "prathifkumar2025swememory",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c37",
+      "to": "deng2025swebenchpro",
+      "rel": "corroborated-by"
+    }
+  ]
+}

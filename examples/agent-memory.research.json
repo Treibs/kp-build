@@ -1,0 +1,931 @@
+{
+  "topic": "Memory for LLM Agents \u2014 persistent / long-term memory architectures for autonomous agents (2023\u20132026)",
+  "scope": "Persistent and long-term memory for autonomous LLM agents from 2023 to 2026. Covers: (a) foundational architectures (OS-style virtual context, memory streams, episodic buffers); (b) the episodic-vs-semantic memory distinction and how each is instantiated; (c) memory consolidation, updating, and forgetting (Ebbinghaus curves, ADD/UPDATE/DELETE operators, parametric self-update); (d) retrieval mechanisms (vector RAG, knowledge-graph / hippocampal indexing, temporal KGs); (e) the long-context-vs-RAG-vs-explicit-memory debate (cost vs accuracy, routing); and (f) evaluation/benchmarks for long-term interactive memory. Excludes pure long-context modeling (positional encodings, attention efficiency) except where it bears directly on the memory debate, and excludes general RAG retrieval research not framed as agent memory.",
+  "papers": [
+    {
+      "cite_key": "packer2023memgpt",
+      "title": "MemGPT: Towards LLMs as Operating Systems",
+      "year": 2023,
+      "arxiv_id": "2310.08560",
+      "authors": [
+        "Charles Packer",
+        "Sarah Wooders",
+        "Kevin Lin",
+        "Vivian Fang",
+        "Shishir G. Patil",
+        "Ion Stoica",
+        "Joseph E. Gonzalez"
+      ],
+      "venue": "arXiv preprint (became Letta)",
+      "url": "https://arxiv.org/abs/2310.08560",
+      "key_contributions": [
+        "Virtual context management: an OS-inspired hierarchical memory (main context vs. external storage) that gives a finite-context LLM the appearance of unbounded memory via data movement between fast and slow tiers",
+        "LLM-issued function calls and interrupts to page information in and out and manage control flow, enabling long document analysis and multi-session chat",
+        "Foundational 'memory as paging' framing; basis for the Letta system"
+      ]
+    },
+    {
+      "cite_key": "park2023generative",
+      "title": "Generative Agents: Interactive Simulacra of Human Behavior",
+      "year": 2023,
+      "arxiv_id": "2304.03442",
+      "authors": [
+        "Joon Sung Park",
+        "Joseph C. O'Brien",
+        "Carrie J. Cai",
+        "Meredith Ringel Morris",
+        "Percy Liang",
+        "Michael S. Bernstein"
+      ],
+      "venue": "UIST 2023",
+      "url": "https://arxiv.org/abs/2304.03442",
+      "key_contributions": [
+        "Memory-stream architecture that stores a complete natural-language record of an agent's experiences",
+        "Reflection mechanism that synthesizes low-level observations into higher-level memories",
+        "Dynamic retrieval (recency + importance + relevance) feeding planning; ablation shows observation, planning, and reflection each contribute to believability"
+      ]
+    },
+    {
+      "cite_key": "shinn2023reflexion",
+      "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "year": 2023,
+      "arxiv_id": "2303.11366",
+      "authors": [
+        "Noah Shinn",
+        "Federico Cassano",
+        "Edward Berman",
+        "Ashwin Gopinath",
+        "Karthik Narasimhan",
+        "Shunyu Yao"
+      ],
+      "venue": "NeurIPS 2023",
+      "url": "https://arxiv.org/abs/2303.11366",
+      "key_contributions": [
+        "Reinforces language agents via linguistic feedback rather than weight updates",
+        "Stores verbal self-reflections in an episodic memory buffer to improve decisions in subsequent trials",
+        "91% pass@1 on HumanEval, surpassing the prior GPT-4 state of the art (80%)"
+      ]
+    },
+    {
+      "cite_key": "zhong2023memorybank",
+      "title": "MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+      "year": 2023,
+      "arxiv_id": "2305.10250",
+      "authors": [
+        "Wanjun Zhong",
+        "Lianghong Guo",
+        "Qiqi Gao",
+        "He Ye",
+        "Yanlin Wang"
+      ],
+      "venue": "AAAI 2024",
+      "url": "https://arxiv.org/abs/2305.10250",
+      "key_contributions": [
+        "Long-term memory mechanism with retrieval, continual updating, and user-personality synthesis across sessions",
+        "Ebbinghaus-Forgetting-Curve-inspired updating that forgets/reinforces memory by elapsed time and significance",
+        "Demonstrated via the SiliconFriend companion chatbot"
+      ]
+    },
+    {
+      "cite_key": "liu2023lostmiddle",
+      "title": "Lost in the Middle: How Language Models Use Long Contexts",
+      "year": 2023,
+      "arxiv_id": "2307.03172",
+      "authors": [
+        "Nelson F. Liu",
+        "Kevin Lin",
+        "John Hewitt",
+        "Ashwin Paranjape",
+        "Michele Bevilacqua",
+        "Fabio Petroni",
+        "Percy Liang"
+      ],
+      "venue": "TACL 2024",
+      "url": "https://arxiv.org/abs/2307.03172",
+      "key_contributions": [
+        "Shows a U-shaped positional bias: performance is highest when relevant info is at the start or end of the context and degrades in the middle",
+        "Bias holds even for explicitly long-context models",
+        "Provides the empirical motivation for explicit memory/retrieval over naive long-context stuffing"
+      ]
+    },
+    {
+      "cite_key": "wang2024memoryllm",
+      "title": "MEMORYLLM: Towards Self-Updatable Large Language Models",
+      "year": 2024,
+      "arxiv_id": "2402.04624",
+      "authors": [
+        "Yu Wang",
+        "Yifan Gao",
+        "Xiusi Chen",
+        "Haoming Jiang",
+        "Shiyang Li",
+        "Jingfeng Yang",
+        "Qingyu Yin",
+        "Zheng Li",
+        "Xian Li",
+        "Bing Yin",
+        "Jingbo Shang",
+        "Julian McAuley"
+      ],
+      "venue": "ICML 2024",
+      "url": "https://arxiv.org/abs/2402.04624",
+      "key_contributions": [
+        "Embeds a fixed-size memory pool in the transformer's latent space (parametric memory, not text retrieval)",
+        "Self-updates with injected text knowledge and retains earlier knowledge",
+        "No performance degradation after nearly a million memory updates"
+      ]
+    },
+    {
+      "cite_key": "li2024ragvslongcontext",
+      "title": "Retrieval Augmented Generation or Long-Context LLMs? A Comprehensive Study and Hybrid Approach",
+      "year": 2024,
+      "arxiv_id": "2407.16833",
+      "authors": [
+        "Zhuowan Li",
+        "Cheng Li",
+        "Mingyang Zhang",
+        "Qiaozhu Mei",
+        "Michael Bendersky"
+      ],
+      "venue": "EMNLP 2024 Industry Track",
+      "url": "https://arxiv.org/abs/2407.16833",
+      "key_contributions": [
+        "Head-to-head comparison: long-context LLMs consistently outperform RAG on average when sufficiently resourced",
+        "RAG retains a significant cost advantage",
+        "Self-Route routes each query to RAG or long-context via model self-reflection, cutting cost at near-parity"
+      ]
+    },
+    {
+      "cite_key": "li2025longcontextvsrag",
+      "title": "Long Context vs. RAG for LLMs: An Evaluation and Revisits",
+      "year": 2025,
+      "arxiv_id": "2501.01880",
+      "authors": [
+        "Xinze Li",
+        "Yixin Cao",
+        "Yubo Ma",
+        "Aixin Sun"
+      ],
+      "venue": "ACL 2025",
+      "url": "https://arxiv.org/abs/2501.01880",
+      "key_contributions": [
+        "Revisits LC-vs-RAG studies after filtering questions answerable without external context",
+        "Finds LC generally outperforms RAG on QA (especially Wikipedia-based), but RAG wins on dialogue/general queries",
+        "Summarization-based retrieval is comparable to LC; chunk-based retrieval lags; stresses context relevance"
+      ]
+    },
+    {
+      "cite_key": "maharana2024locomo",
+      "title": "Evaluating Very Long-Term Conversational Memory of LLM Agents",
+      "year": 2024,
+      "arxiv_id": "2402.17753",
+      "authors": [
+        "Adyasha Maharana",
+        "Dong-Ho Lee",
+        "Sergey Tulyakov",
+        "Mohit Bansal",
+        "Francesco Barbieri",
+        "Yuwei Fang"
+      ],
+      "venue": "ACL 2024",
+      "url": "https://arxiv.org/abs/2402.17753",
+      "key_contributions": [
+        "LoCoMo benchmark: very-long-term multi-session dialogues (~300 turns, ~9K tokens, up to 35 sessions) grounded on personas and temporal event graphs",
+        "Machine-human generation pipeline with human verification for long-range consistency",
+        "Shows long-context LLMs and RAG still lag human performance on long-range temporal/causal memory"
+      ]
+    },
+    {
+      "cite_key": "gutierrez2024hipporag",
+      "title": "HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models",
+      "year": 2024,
+      "arxiv_id": "2405.14831",
+      "authors": [
+        "Bernal Jim\u00e9nez Guti\u00e9rrez",
+        "Yiheng Shu",
+        "Yu Gu",
+        "Michihiro Yasunaga",
+        "Yu Su"
+      ],
+      "venue": "NeurIPS 2024",
+      "url": "https://arxiv.org/abs/2405.14831",
+      "key_contributions": [
+        "Retrieval framework inspired by the hippocampal indexing theory of human long-term memory",
+        "Orchestrates LLMs, knowledge graphs, and Personalized PageRank to mimic neocortex/hippocampus roles",
+        "Single-step multi-hop retrieval: up to 20% better multi-hop QA, 10-30x cheaper and 6-13x faster than iterative retrieval (IRCoT)"
+      ]
+    },
+    {
+      "cite_key": "gutierrez2025hipporag2",
+      "title": "From RAG to Memory: Non-Parametric Continual Learning for Large Language Models",
+      "year": 2025,
+      "arxiv_id": "2502.14802",
+      "authors": [
+        "Bernal Jim\u00e9nez Guti\u00e9rrez",
+        "Yiheng Shu",
+        "Weijian Qi",
+        "Sizhe Zhou",
+        "Yu Su"
+      ],
+      "venue": "ICML 2025",
+      "url": "https://arxiv.org/abs/2502.14802",
+      "key_contributions": [
+        "HippoRAG 2: dual-node (passage + phrase) KG memory with deeper passage integration and online LLM use",
+        "Outperforms standard RAG across factual, sense-making, and associative memory tasks (+7% on associative over SOTA embeddings)",
+        "Frames non-parametric continual learning as a route toward human-like long-term memory"
+      ]
+    },
+    {
+      "cite_key": "rasmussen2025zep",
+      "title": "Zep: A Temporal Knowledge Graph Architecture for Agent Memory",
+      "year": 2025,
+      "arxiv_id": "2501.13956",
+      "authors": [
+        "Preston Rasmussen",
+        "Pavlo Paliychuk",
+        "Travis Beauvais",
+        "Jack Ryan",
+        "Daniel Chalef"
+      ],
+      "venue": "arXiv preprint",
+      "url": "https://arxiv.org/abs/2501.13956",
+      "key_contributions": [
+        "Graphiti: a temporally-aware knowledge-graph engine synthesizing unstructured conversational and structured business data",
+        "Beats MemGPT on the Deep Memory Retrieval (DMR) benchmark (94.8% vs 93.4%)",
+        "Up to 18.5% accuracy gains with 90% lower latency on LongMemEval-style enterprise temporal reasoning"
+      ]
+    },
+    {
+      "cite_key": "xu2025amem",
+      "title": "A-MEM: Agentic Memory for LLM Agents",
+      "year": 2025,
+      "arxiv_id": "2502.12110",
+      "authors": [
+        "Wujiang Xu",
+        "Zujie Liang",
+        "Kai Mei",
+        "Hang Gao",
+        "Juntao Tan",
+        "Yongfeng Zhang"
+      ],
+      "venue": "NeurIPS 2025",
+      "url": "https://arxiv.org/abs/2502.12110",
+      "key_contributions": [
+        "Zettelkasten-inspired agentic memory that auto-generates structured notes (contextual description, keywords, tags)",
+        "Dynamically links memories into an interconnected knowledge network and triggers memory evolution of existing notes",
+        "Superior improvement against SOTA baselines across six foundation models"
+      ]
+    },
+    {
+      "cite_key": "chhikara2025mem0",
+      "title": "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory",
+      "year": 2025,
+      "arxiv_id": "2504.19413",
+      "authors": [
+        "Prateek Chhikara",
+        "Dev Khant",
+        "Saket Aryan",
+        "Taranjeet Singh",
+        "Deshraj Yadav"
+      ],
+      "venue": "arXiv preprint",
+      "url": "https://arxiv.org/abs/2504.19413",
+      "key_contributions": [
+        "Memory-centric architecture that dynamically extracts, consolidates, and retrieves salient conversation information",
+        "Graph-memory variant capturing relational structure; consolidation via LLM-driven operations",
+        "On LoCoMo: 91% lower p95 latency and >90% token-cost savings vs. full-context, with accuracy gains (26% over OpenAI on LLM-as-Judge)"
+      ]
+    },
+    {
+      "cite_key": "wu2024longmemeval",
+      "title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+      "year": 2024,
+      "arxiv_id": "2410.10813",
+      "authors": [
+        "Di Wu",
+        "Hongwei Wang",
+        "Wenhao Yu",
+        "Yuwei Zhang",
+        "Kai-Wei Chang",
+        "Dong Yu"
+      ],
+      "venue": "ICLR 2025",
+      "url": "https://arxiv.org/abs/2410.10813",
+      "key_contributions": [
+        "500-question benchmark over five core long-term memory abilities: information extraction, multi-session reasoning, temporal reasoning, knowledge updates, abstention",
+        "Shows ~30% accuracy drop for commercial assistants and long-context LLMs on sustained interactions",
+        "Unified index\u2013retrieve\u2013read framework with optimizations (session decomposition, fact-augmented key expansion, time-aware query expansion)"
+      ]
+    },
+    {
+      "cite_key": "tan2025membench",
+      "title": "MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-based Agents",
+      "year": 2025,
+      "arxiv_id": "2506.21605",
+      "authors": [
+        "Haoran Tan",
+        "Zeyu Zhang",
+        "Chen Ma",
+        "Xu Chen",
+        "Quanyu Dai",
+        "Zhenhua Dong"
+      ],
+      "venue": "Findings of ACL 2025",
+      "url": "https://arxiv.org/abs/2506.21605",
+      "key_contributions": [
+        "Benchmark distinguishing factual vs. reflective memory levels and participation vs. observation interactive scenarios",
+        "Multi-aspect metrics: effectiveness, efficiency, and capacity",
+        "Addresses prior evaluations' limited diversity of memory levels and single-axis metrics"
+      ]
+    },
+    {
+      "cite_key": "hu2025memoryagentbench",
+      "title": "Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions (MemoryAgentBench)",
+      "year": 2025,
+      "arxiv_id": "2507.05257",
+      "authors": [
+        "Yuanzhe Hu",
+        "Yu Wang",
+        "Julian McAuley"
+      ],
+      "venue": "arXiv preprint",
+      "url": "https://arxiv.org/abs/2507.05257",
+      "key_contributions": [
+        "Identifies four core memory-agent competencies: accurate retrieval, test-time learning, long-range understanding, selective forgetting",
+        "Transforms long-context datasets into multi-turn, incremental 'accumulate-then-query' format (incl. EventQA, FactConsolidation)",
+        "Shows current methods (context, RAG, external-memory agents) fall short of mastering all four competencies"
+      ]
+    },
+    {
+      "cite_key": "zhang2024memorysurvey",
+      "title": "A Survey on the Memory Mechanism of Large Language Model based Agents",
+      "year": 2024,
+      "arxiv_id": "2404.13501",
+      "authors": [
+        "Zeyu Zhang",
+        "Xiaohe Bo",
+        "Chen Ma",
+        "Rui Li",
+        "Xu Chen",
+        "Quanyu Dai",
+        "Jieming Zhu",
+        "Zhenhua Dong",
+        "Ji-Rong Wen"
+      ],
+      "venue": "arXiv preprint (ACM TOIS)",
+      "url": "https://arxiv.org/abs/2404.13501",
+      "key_contributions": [
+        "Systematic survey/taxonomy: what memory is and why agents need it, how to design it (sources, forms, operations), how to evaluate it",
+        "Reviews memory-augmented agent applications",
+        "Analyzes limitations of existing work and outlines future directions"
+      ]
+    },
+    {
+      "cite_key": "du2025rethinkingmemory",
+      "title": "Rethinking Memory in LLM based Agents: Representations, Operations, and Emerging Topics",
+      "year": 2025,
+      "arxiv_id": "2505.00675",
+      "authors": [
+        "Yiming Du",
+        "Wenyu Huang",
+        "Danna Zheng",
+        "Zhaowei Wang",
+        "Sebastien Montella",
+        "Mirella Lapata",
+        "Kam-Fai Wong",
+        "Jeff Z. Pan"
+      ],
+      "venue": "arXiv preprint",
+      "url": "https://arxiv.org/abs/2505.00675",
+      "key_contributions": [
+        "Categorizes memory into parametric (in weights) vs. contextual (external, structured/unstructured) forms",
+        "Defines six core operations: Consolidation, Updating, Indexing, Forgetting, Retrieval, Condensation",
+        "Maps these to four research topics: long-term, long-context, parametric modification, multi-source memory"
+      ]
+    },
+    {
+      "cite_key": "pink2025episodic",
+      "title": "Position: Episodic Memory is the Missing Piece for Long-Term LLM Agents",
+      "year": 2025,
+      "arxiv_id": "2502.06975",
+      "authors": [
+        "Mathis Pink",
+        "Qinyuan Wu",
+        "Vy Ai Vo",
+        "Javier Turek",
+        "Jianing Mu",
+        "Alexander Huth",
+        "Mariya Toneva"
+      ],
+      "venue": "arXiv preprint (ICML 2025 Position)",
+      "url": "https://arxiv.org/abs/2502.06975",
+      "key_contributions": [
+        "Argues episodic memory (single-shot learning of instance-specific contexts) is the missing capability for long-term agents",
+        "Centers five key properties of episodic memory underlying adaptive, context-sensitive behavior",
+        "Outlines a roadmap uniting partial research efforts to support all five properties"
+      ]
+    },
+    {
+      "cite_key": "huang2026secondhalf",
+      "title": "Rethinking Memory Mechanisms of Foundation Agents in the Second Half: A Survey",
+      "year": 2026,
+      "arxiv_id": "2602.06052",
+      "authors": [
+        "Foundation Agent Memory Survey Authors"
+      ],
+      "venue": "arXiv preprint",
+      "url": "https://arxiv.org/abs/2602.06052",
+      "key_contributions": [
+        "Unifies agent memory along three dimensions: substrate (internal/external), cognitive mechanism (episodic/semantic/sensory/working/procedural), and subject (agent-/user-centric)",
+        "Analyzes how memory is instantiated under different agent topologies and learning policies over memory operations",
+        "Reviews evaluation benchmarks/metrics for memory utility and outlines open challenges"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "statement": "MemGPT introduces virtual context management, an OS-inspired technique that moves data between fast (in-context) and slow (external) memory tiers so a finite-context LLM gains the appearance of large memory resources.",
+      "paper": "packer2023memgpt",
+      "supporting_passage": "we propose virtual context management, a technique drawing inspiration from hierarchical memory systems in traditional operating systems that provide the appearance of large memory resources through data movement between fast and slow memory.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c2",
+      "statement": "In MemGPT, the LLM itself manages control flow over its memory tiers using interrupts to page information in and out of context.",
+      "paper": "packer2023memgpt",
+      "supporting_passage": "MemGPT (Memory-GPT), a system that intelligently manages different memory tiers in order to effectively provide extended context within the LLM's limited context window, and utilizes interrupts to manage control flow between itself and the user.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c3",
+      "statement": "Generative Agents store a complete natural-language record of an agent's experiences, synthesize them over time into higher-level reflections, and retrieve them dynamically to plan behavior.",
+      "paper": "park2023generative",
+      "supporting_passage": "an architecture that extends a large language model to store a complete record of the agent's experiences using natural language, synthesize those memories over time into higher-level reflections, and retrieve them dynamically to plan behavior.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c4",
+      "statement": "Ablation shows the observation, planning, and reflection components of the Generative Agents architecture each contribute critically to believable behavior.",
+      "paper": "park2023generative",
+      "supporting_passage": "We demonstrate through ablation that the components of our agent architecture--observation, planning, and reflection--each contribute critically to the believability of agent behavior.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c5",
+      "statement": "Reflexion reinforces language agents through linguistic feedback rather than weight updates, having agents verbally reflect on task feedback and store the reflections in an episodic memory buffer to improve subsequent trials.",
+      "paper": "shinn2023reflexion",
+      "supporting_passage": "We propose Reflexion, a novel framework to reinforce language agents not by updating weights, but instead through linguistic feedback. Concretely, Reflexion agents verbally reflect on task feedback signals, then maintain their own reflective text in an episodic memory buffer to induce better decision-making in subsequent trials.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c6",
+      "statement": "Reflexion reaches 91% pass@1 on HumanEval, surpassing the prior GPT-4 state of the art at 80%.",
+      "paper": "shinn2023reflexion",
+      "supporting_passage": "Reflexion achieves a 91% pass@1 accuracy on the HumanEval coding benchmark, surpassing the previous state-of-the-art GPT-4 that achieves 80%.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c7",
+      "statement": "MemoryBank implements a forgetting mechanism inspired by the Ebbinghaus Forgetting Curve, allowing the model to forget and reinforce memories based on elapsed time and the relative significance of each memory.",
+      "paper": "zhong2023memorybank",
+      "supporting_passage": "MemoryBank incorporates a memory updating mechanism, inspired by the Ebbinghaus Forgetting Curve theory, which permits the AI to forget and reinforce memory based on time elapsed and the relative significance of the memory, thereby offering a human-like memory mechanism.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c8",
+      "statement": "Language models exhibit a U-shaped positional bias: they use information best when it appears at the start or end of the input context, and performance degrades significantly when relevant information is in the middle, even for explicitly long-context models.",
+      "paper": "liu2023lostmiddle",
+      "supporting_passage": "performance is often highest when relevant information occurs at the beginning or end of the input context, and significantly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c9",
+      "statement": "MEMORYLLM embeds a fixed-size memory pool within the transformer's latent space that self-updates with injected text knowledge, representing parametric (implicit) rather than retrieval-based memory.",
+      "paper": "wang2024memoryllm",
+      "supporting_passage": "we introduce MEMORYLLM, a model that comprises a transformer and a fixed-size memory pool within the latent space of the transformer. MEMORYLLM can self-update with text knowledge and memorize the knowledge injected earlier.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c10",
+      "statement": "MEMORYLLM shows operational integrity with no sign of performance degradation even after nearly a million memory updates.",
+      "paper": "wang2024memoryllm",
+      "supporting_passage": "MEMORYLLM also shows operational integrity without any sign of performance degradation even after nearly a million memory updates.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c11",
+      "statement": "When sufficiently resourced, long-context LLMs consistently outperform RAG in average performance, but RAG retains a significantly lower cost.",
+      "paper": "li2024ragvslongcontext",
+      "supporting_passage": "Results reveal that when resourced sufficiently, LC consistently outperforms RAG in terms of average performance. However, RAG's significantly lower cost remains a distinct advantage.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c12",
+      "statement": "Self-Route routes each query to either RAG or long-context based on the model's self-reflection, significantly reducing computation cost while keeping performance comparable to long-context.",
+      "paper": "li2024ragvslongcontext",
+      "supporting_passage": "we propose Self-Route, a simple yet effective method that routes queries to RAG or LC based on model self-reflection. Self-Route significantly reduces the computation cost while maintaining a comparable performance to LC.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c13",
+      "statement": "A revisited large-scale evaluation finds long-context generally outperforms RAG on QA benchmarks (especially Wikipedia-based), while RAG has advantages on dialogue-based and general queries.",
+      "paper": "li2025longcontextvsrag",
+      "supporting_passage": "We show that LC generally outperforms RAG in question-answering benchmarks, especially for Wikipedia-based questions. ... However, RAG has advantages in dialogue-based and general question queries.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c14",
+      "statement": "On the LoCoMo benchmark of very long-term conversations, both long-context LLMs and RAG offer improvements but still substantially lag human performance on long-range temporal and causal reasoning.",
+      "paper": "maharana2024locomo",
+      "supporting_passage": "Employing strategies like long-context LLMs or RAG can offer improvements but these models still substantially lag behind human performance.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c15",
+      "statement": "LoCoMo consists of very long-term conversations averaging 300 turns and 9K tokens over up to 35 sessions, grounded on personas and temporal event graphs and human-verified for long-range consistency.",
+      "paper": "maharana2024locomo",
+      "supporting_passage": "we collect LoCoMo, a dataset of very long-term conversations, each encompassing 300 turns and 9K tokens on avg., over up to 35 sessions.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c16",
+      "statement": "HippoRAG, inspired by the hippocampal indexing theory of human long-term memory, orchestrates LLMs, knowledge graphs, and the Personalized PageRank algorithm to enable single-step multi-hop knowledge integration.",
+      "paper": "gutierrez2024hipporag",
+      "supporting_passage": "HippoRAG synergistically orchestrates LLMs, knowledge graphs, and the Personalized PageRank algorithm to mimic the different roles of neocortex and hippocampus in human memory.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c17",
+      "statement": "HippoRAG outperforms state-of-the-art RAG on multi-hop QA by up to 20%, and its single-step retrieval is 10-30x cheaper and 6-13x faster than iterative retrieval like IRCoT while matching or beating its performance.",
+      "paper": "gutierrez2024hipporag",
+      "supporting_passage": "Single-step retrieval with HippoRAG achieves comparable or better performance than iterative retrieval like IRCoT while being 10-30 times cheaper and 6-13 times faster",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c18",
+      "statement": "Augmenting vector RAG with structures like knowledge graphs improves sense-making and associativity but causes performance on basic factual memory tasks to drop considerably below standard RAG.",
+      "paper": "gutierrez2025hipporag2",
+      "supporting_passage": "Recent RAG approaches augment vector embeddings with various structures like knowledge graphs to address some of these gaps, namely sense-making and associativity. However, their performance on more basic factual memory tasks drops considerably below standard RAG.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c19",
+      "statement": "HippoRAG 2 outperforms standard RAG comprehensively on factual, sense-making, and associative memory tasks, improving ~7% on associative memory over the state-of-the-art embedding model, advancing non-parametric continual learning.",
+      "paper": "gutierrez2025hipporag2",
+      "supporting_passage": "HippoRAG 2 ... achieving a 7% improvement in associative memory tasks over the state-of-the-art embedding model while also exhibiting superior factual knowledge and sense-making memory capabilities. This work paves the way for non-parametric continual learning for LLMs.",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c20",
+      "statement": "Zep's Graphiti is a temporally-aware knowledge-graph engine that synthesizes both unstructured conversational data and structured business data while maintaining historical relationships.",
+      "paper": "rasmussen2025zep",
+      "supporting_passage": "Zep addresses this fundamental limitation through its core component Graphiti -- a temporally-aware knowledge graph engine that dynamically synthesizes both unstructured conversational data and structured business data while maintaining historical relationships.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c21",
+      "statement": "Zep outperforms MemGPT on the Deep Memory Retrieval (DMR) benchmark (94.8% vs 93.4%).",
+      "paper": "rasmussen2025zep",
+      "supporting_passage": "In the DMR benchmark, which the MemGPT team established as their primary evaluation metric, Zep demonstrates superior performance (94.8% vs 93.4%).",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c22",
+      "statement": "A-MEM applies the Zettelkasten method: each new memory becomes a structured note (contextual description, keywords, tags) that is dynamically linked into an interconnected knowledge network and can trigger evolution of existing notes.",
+      "paper": "xu2025amem",
+      "supporting_passage": "Following the basic principles of the Zettelkasten method, we designed our memory system to create interconnected knowledge networks through dynamic indexing and linking. When a new memory is added, we generate a comprehensive note containing multiple structured attributes, including contextual descriptions, keywords, and tags.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c23",
+      "statement": "A-MEM enables memory evolution: integrating new memories can trigger updates to the contextual representations and attributes of existing historical memories.",
+      "paper": "xu2025amem",
+      "supporting_passage": "this process enables memory evolution - as new memories are integrated, they can trigger updates to the contextual representations and attributes of existing historical memories, allowing the memory network to continuously refine its understanding.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c24",
+      "statement": "Mem0 is a memory-centric architecture that dynamically extracts, consolidates, and retrieves salient information from ongoing conversations, with an enhanced graph-memory variant capturing relational structure.",
+      "paper": "chhikara2025mem0",
+      "supporting_passage": "We introduce Mem0, a scalable memory-centric architecture that addresses this issue by dynamically extracting, consolidating, and retrieving salient information from ongoing conversations. Building on this foundation, we further propose an enhanced variant that leverages graph-based memory representations to capture complex relational structures among conversational elements.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c25",
+      "statement": "On LoCoMo, Mem0 attains 91% lower p95 latency and saves more than 90% token cost relative to a full-context approach, while improving accuracy (26% over OpenAI on the LLM-as-Judge metric).",
+      "paper": "chhikara2025mem0",
+      "supporting_passage": "Mem0 attains a 91% lower p95 latency and saves more than 90% token cost ... Mem0 achieves 26% relative improvements in the LLM-as-a-Judge metric over OpenAI",
+      "claim_type": "result",
+      "confidence": "high"
+    },
+    {
+      "id": "c26",
+      "statement": "LongMemEval evaluates five core long-term memory abilities of chat assistants: information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention.",
+      "paper": "wu2024longmemeval",
+      "supporting_passage": "LongMemEval, a comprehensive benchmark designed to evaluate five core long-term memory abilities of chat assistants: information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c27",
+      "statement": "On LongMemEval, commercial chat assistants and long-context LLMs show a 30% accuracy drop when memorizing information across sustained interactions.",
+      "paper": "wu2024longmemeval",
+      "supporting_passage": "LongMemEval presents a significant challenge to existing long-term memory systems, with commercial chat assistants and long-context LLMs showing a 30% accuracy drop on memorizing information across sustained interactions.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c28",
+      "statement": "LongMemEval frames long-term memory design as three stages \u2014 indexing, retrieval, and reading \u2014 and proposes optimizations including session decomposition, fact-augmented key expansion, and time-aware query expansion.",
+      "paper": "wu2024longmemeval",
+      "supporting_passage": "we present a unified framework that breaks down the long-term memory design into three stages: indexing, retrieval, and reading. ... we propose several memory design optimizations including session decomposition for value granularity, fact-augmented key expansion for indexing, and time-aware query expansion for refining the search scope.",
+      "claim_type": "method",
+      "confidence": "high"
+    },
+    {
+      "id": "c29",
+      "statement": "MemBench evaluates agent memory along effectiveness, efficiency, and capacity, distinguishing factual vs. reflective memory levels and participation vs. observation interactive scenarios.",
+      "paper": "tan2025membench",
+      "supporting_passage": "Our dataset incorporates factual memory and reflective memory as different levels, and proposes participation and observation as various interactive scenarios. ... we present a benchmark, named MemBench, to evaluate the memory capability of LLM-based agents from multiple aspects, including their effectiveness, efficiency, and capacity.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c30",
+      "statement": "MemoryAgentBench identifies four core memory-agent competencies \u2014 accurate retrieval, test-time learning, long-range understanding, and selective forgetting \u2014 and shows current methods fall short of mastering all four.",
+      "paper": "hu2025memoryagentbench",
+      "supporting_passage": "we identify four core competencies essential for memory agents: accurate retrieval, test-time learning, long-range understanding, and selective forgetting. ... Empirical results reveal that current methods fall short of mastering all four competencies",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c31",
+      "statement": "The Rethinking-Memory survey categorizes agent memory into parametric (implicit in weights) and contextual (explicit external, structured/unstructured) forms and defines six core operations: Consolidation, Updating, Indexing, Forgetting, Retrieval, and Condensation.",
+      "paper": "du2025rethinkingmemory",
+      "supporting_passage": "This work categorizes memory into parametric (implicit in model weights) and contextual (explicit external data, structured/unstructured) forms, and defines six core operations: Consolidation, Updating, Indexing, Forgetting, Retrieval, and Condensation.",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c32",
+      "statement": "The episodic-memory position paper argues that episodic memory \u2014 supporting single-shot learning of instance-specific contexts \u2014 is the key missing capability for long-term LLM agents, and centers five required properties.",
+      "paper": "pink2025episodic",
+      "supporting_passage": "Many biological systems solve these challenges with episodic memory, which supports single-shot learning of instance-specific contexts. Inspired by this, we present an episodic memory framework for LLM agents, centered around five key properties of episodic memory that underlie adaptive and context-sensitive behavior.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c33",
+      "statement": "The 'second half' survey unifies foundation-agent memory along three dimensions: substrate (internal/external), cognitive mechanism (episodic, semantic, sensory, working, procedural), and subject (agent- vs. user-centric).",
+      "paper": "huang2026secondhalf",
+      "supporting_passage": "we provide a unified view of foundation agent memory along three dimensions: memory substrate (internal and external), cognitive mechanism (episodic, semantic, sensory, working, and procedural), and memory subject (agent- and user-centric).",
+      "claim_type": "definition",
+      "confidence": "high"
+    },
+    {
+      "id": "c34",
+      "statement": "The agent-memory survey notes that prior memory mechanisms are scattered across papers with no systematic holistic review, motivating an explicit taxonomy of design and evaluation methods.",
+      "paper": "zhang2024memorysurvey",
+      "supporting_passage": "While previous studies have proposed many promising memory mechanisms, they are scattered in different papers, and there lacks a systematical review to summarize and compare these works from a holistic perspective, failing to abstract common and effective designing patterns for inspiring future studies.",
+      "claim_type": "finding",
+      "confidence": "high"
+    },
+    {
+      "id": "c35",
+      "statement": "Even with retrieval-augmented generation, LLMs still struggle to efficiently and effectively integrate large amounts of new experiences after pre-training while avoiding catastrophic forgetting.",
+      "paper": "gutierrez2024hipporag",
+      "supporting_passage": "Despite the impressive accomplishments, large language models (LLMs), even with retrieval-augmented generation (RAG), still struggle to efficiently and effectively integrate a large amount of new experiences after pre-training.",
+      "claim_type": "finding",
+      "confidence": "high"
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "op1",
+      "statement": "No current memory agent masters all four core memory competencies (accurate retrieval, test-time learning, long-range understanding, selective forgetting) simultaneously.",
+      "flagged_by": [
+        "hu2025memoryagentbench"
+      ],
+      "status": "open",
+      "why_it_matters": "If a system can retrieve but cannot learn at test time or forget stale facts, it fails in real deployments. The benchmark result shows the field has optimized retrieval in isolation while leaving consolidation, continual learning, and forgetting unsolved \u2014 these are the capabilities that distinguish memory from search."
+    },
+    {
+      "id": "op2",
+      "statement": "Long-term conversational memory remains substantially below human performance on long-range temporal and causal reasoning, even with long-context LLMs or RAG.",
+      "flagged_by": [
+        "maharana2024locomo",
+        "wu2024longmemeval"
+      ],
+      "status": "open",
+      "why_it_matters": "Temporal reasoning (what was true when, knowledge updates, abstention) is precisely what persistent agents need over months of interaction. The ~30% accuracy drop on LongMemEval and the human gap on LoCoMo show neither stuffing context nor naive retrieval solves it; temporal modeling of memory is an unsolved core problem."
+    },
+    {
+      "id": "op3",
+      "statement": "Adding knowledge-graph structure to retrieval improves sense-making and associativity but degrades basic factual memory below plain vector RAG \u2014 a tension no single architecture had resolved before HippoRAG 2, and the general trade-off remains active.",
+      "flagged_by": [
+        "gutierrez2025hipporag2",
+        "rasmussen2025zep"
+      ],
+      "status": "partially-addressed",
+      "why_it_matters": "Structured memory (KGs, temporal graphs) is the leading direction for associative/multi-hop recall, but if it sacrifices simple fact lookup it is not a drop-in replacement. Reconciling structured and unstructured memory so both factual and associative recall improve is a live design problem."
+    },
+    {
+      "id": "op4",
+      "statement": "It is unresolved whether memory should be parametric (self-updating weights / latent pools) or contextual (external editable stores), and how to combine them; multi-source memory integration is flagged as an open research topic.",
+      "flagged_by": [
+        "du2025rethinkingmemory",
+        "wang2024memoryllm",
+        "pink2025episodic"
+      ],
+      "status": "open",
+      "why_it_matters": "Parametric memory (MEMORYLLM) avoids retrieval latency and integrates knowledge but is opaque and hard to audit/delete; contextual memory is editable and inspectable but bolted-on. The field lacks a principled account of which knowledge belongs where and how to keep them consistent \u2014 directly bearing on auditability, privacy, and forgetting."
+    },
+    {
+      "id": "op5",
+      "statement": "Episodic memory \u2014 single-shot learning of instance-specific, contextually-bound experiences \u2014 is argued to be a missing capability distinct from semantic memory and RAG, and no system yet supports all five proposed episodic-memory properties together.",
+      "flagged_by": [
+        "pink2025episodic"
+      ],
+      "status": "open",
+      "why_it_matters": "Most deployed 'memory' is semantic (facts about the user) or flat retrieval. True episodic memory (explicit reasoning over instance-specific events with contextual binding) is what lets agents learn from a single experience without retraining \u2014 the position paper frames this as the catalytic missing piece for long-term agents."
+    },
+    {
+      "id": "op6",
+      "statement": "Selective forgetting / memory consolidation lacks principled, evaluated mechanisms; existing approaches range from Ebbinghaus-style decay to LLM-driven ADD/UPDATE/DELETE operators, but no consensus on when and what to forget.",
+      "flagged_by": [
+        "zhong2023memorybank",
+        "chhikara2025mem0",
+        "du2025rethinkingmemory",
+        "hu2025memoryagentbench"
+      ],
+      "status": "open",
+      "why_it_matters": "Unbounded memory growth causes cost explosion and retrieval noise; wrong forgetting loses critical facts or fails to update superseded ones. Forgetting and consolidation are listed as core operations yet are the least benchmarked, making this a high-value gap for deployable agents."
+    },
+    {
+      "id": "op7",
+      "statement": "Memory evaluation itself is immature: prior benchmarks are limited in memory levels, interactive scenarios, and metric diversity, and most measure single axes rather than effectiveness, efficiency, and capacity jointly.",
+      "flagged_by": [
+        "tan2025membench",
+        "hu2025memoryagentbench",
+        "zhang2024memorysurvey"
+      ],
+      "status": "open",
+      "why_it_matters": "Without benchmarks that test participation vs. observation, factual vs. reflective memory, and cost/capacity alongside accuracy, reported gains may not transfer to real long-horizon use. The proliferation of new benchmarks (LoCoMo, LongMemEval, MemBench, MemoryAgentBench) signals the community has not converged on how to measure memory."
+    },
+    {
+      "id": "op8",
+      "statement": "The long-context-vs-RAG-vs-explicit-memory choice is not settled: results depend on resourcing, question type, and dataset, and dynamic routing (e.g., Self-Route) is a heuristic rather than a principled solution.",
+      "flagged_by": [
+        "li2024ragvslongcontext",
+        "li2025longcontextvsrag",
+        "liu2023lostmiddle"
+      ],
+      "status": "open",
+      "why_it_matters": "Practitioners must choose between paying for long context, building retrieval, or maintaining explicit memory stores. Because long-context still has 'lost-in-the-middle' failures and RAG wins on cost and on some query types, there is no general rule; a principled cost-aware policy for when to use each remains open."
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "When should an agent use long-context LLMs versus retrieval (RAG) versus an explicit external memory store?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Long-context wins on accuracy when resourced",
+          "summary": "When sufficiently resourced, long-context LLMs consistently outperform RAG on average and on QA (especially Wikipedia-based); the right move is to feed more context when you can afford it, optionally routing cheaper queries to RAG.",
+          "papers": [
+            "li2024ragvslongcontext",
+            "li2025longcontextvsrag"
+          ]
+        },
+        {
+          "stance": "Retrieval/explicit memory wins on cost and some query types, and long context is unreliable",
+          "summary": "RAG is far cheaper and wins on dialogue/general queries; long-context models suffer 'lost-in-the-middle' positional failures and a ~30% accuracy drop on sustained interactions, so explicit retrieval/memory is preferable for long-horizon, cost-sensitive deployment.",
+          "papers": [
+            "liu2023lostmiddle",
+            "li2025longcontextvsrag",
+            "wu2024longmemeval",
+            "chhikara2025mem0"
+          ]
+        },
+        {
+          "stance": "Hybrid routing is the practical resolution",
+          "summary": "Neither is universally best; route each query to RAG or long-context via model self-reflection (Self-Route) to capture most of the accuracy at a fraction of the cost.",
+          "papers": [
+            "li2024ragvslongcontext"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "question": "Should agent memory be parametric (stored in/near model weights, self-updating) or contextual (external, editable, retrieved)?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Parametric / self-updatable memory",
+          "summary": "Integrate a fixed-size self-updatable memory pool into the transformer's latent space so the model absorbs new knowledge directly and retains it across ~1M updates without retrieval latency or degradation.",
+          "papers": [
+            "wang2024memoryllm"
+          ]
+        },
+        {
+          "stance": "Contextual / external memory (non-parametric continual learning)",
+          "summary": "Keep memory as explicit, editable external data (notes, KGs, temporal graphs) \u2014 auditable, updatable, and supporting non-parametric continual learning that better mimics the dynamic, interconnected nature of human long-term memory.",
+          "papers": [
+            "gutierrez2025hipporag2",
+            "rasmussen2025zep",
+            "xu2025amem",
+            "chhikara2025mem0"
+          ]
+        },
+        {
+          "stance": "Both are needed; the open question is allocation",
+          "summary": "Memory should be taxonomized into parametric and contextual forms with operations spanning both; the unresolved problem is which knowledge belongs where and how to keep multi-source memory consistent.",
+          "papers": [
+            "du2025rethinkingmemory",
+            "huang2026secondhalf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "question": "Is episodic memory a distinct, missing capability, or is semantic memory / retrieval sufficient for long-term agents?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Episodic memory is the missing piece",
+          "summary": "Single-shot, instance-specific, contextually-bound episodic memory is qualitatively different from semantic memory and RAG and is the catalytic capability for long-term agents; the field should focus explicitly on its five required properties.",
+          "papers": [
+            "pink2025episodic"
+          ]
+        },
+        {
+          "stance": "Reflective/experiential episodic buffers already deliver much of the value",
+          "summary": "Storing and reflecting on past episodes in an episodic buffer (Reflexion) or memory stream with reflection (Generative Agents) already improves decision-making and believability without weight updates, suggesting practical episodic mechanisms are tractable today.",
+          "papers": [
+            "shinn2023reflexion",
+            "park2023generative"
+          ]
+        },
+        {
+          "stance": "Both episodic and semantic are facets of a broader memory taxonomy",
+          "summary": "Episodic and semantic are two of several cognitive mechanisms (alongside sensory, working, procedural); the design question is how to instantiate and coordinate all of them rather than privileging one.",
+          "papers": [
+            "huang2026secondhalf",
+            "du2025rethinkingmemory"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "question": "Does adding structure (knowledge graphs, temporal graphs) to memory help or hurt compared to plain vector retrieval?",
+      "resolved": false,
+      "positions": [
+        {
+          "stance": "Structure helps multi-hop, associative, and temporal recall",
+          "summary": "KG/PageRank indexing enables single-step multi-hop retrieval with large accuracy and cost wins; temporal KGs add auditable temporal reasoning and beat MemGPT and baselines.",
+          "papers": [
+            "gutierrez2024hipporag",
+            "rasmussen2025zep",
+            "gutierrez2025hipporag2"
+          ]
+        },
+        {
+          "stance": "Structure can hurt basic factual recall",
+          "summary": "Graph-augmented RAG improves sense-making and associativity but historically dropped basic factual memory below standard vector RAG \u2014 a regression that had to be explicitly fixed.",
+          "papers": [
+            "gutierrez2025hipporag2"
+          ]
+        }
+      ]
+    }
+  ]
+}

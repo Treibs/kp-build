@@ -1,0 +1,29 @@
+## Unaided baseline (related-work paragraph, from memory)
+
+Autonomous AI coding agents have advanced rapidly since 2023, organized largely around the SWE-bench evaluation line. SWE-bench (Jimenez et al., 2023/ICLR 2024) introduced the now-standard task of resolving real GitHub issues with test-based validation, and early frontier models resolved only a low-single-digit percentage. The dominant response was better "scaffolding": SWE-agent (Yang et al., 2024) argued that an Agent-Computer Interface — purpose-built file editing, navigation, and execution commands — drives most of the gains, and OpenHands/OpenDevin (Wang et al., 2024) became the de facto open agent platform, building on the CodeAct idea (Wang et al., 2024) of using executable code as the agent action space. A counter-current argued that elaborate agency is overrated: Agentless (Xia et al., 2024) showed a fixed localize-repair-validate pipeline beating complex agents at far lower cost, while AutoCodeRover (Zhang et al., 2024) reached competitive resolve rates with AST-aware code search plus spectrum-based fault localization. Plan-and-execute and multi-agent decomposition appeared in MASAI and CodeR (2024). The self-debugging line traces to Self-Debug (Chen et al., 2023) and Reflexion (Shinn et al., 2023), which established verbal reflection / execution-feedback loops reused inside agents. Repo-level navigation moved from string matching to structure: AST search (AutoCodeRover), knowledge-graph + MCTS exploration (the RepoUnderstander/LingmaAgent line), and graph-guided localization (LocAgent, 2025). The 2024–2025 frontier shifted toward training rather than prompting — SWE-Gym (executable training environments), SWE-smith (synthetic data by breaking tests), Lingma SWE-GPT (process-centric training), and SWE-RL (rule-based RL on software evolution, reportedly ~41% on Verified). Finally, an evaluation-rigor strand questions leaderboard validity: SWE-bench Multimodal exposed poor cross-language/visual generalization, SWE-Bench Pro targets long-horizon enterprise tasks, and contamination/memorization critiques argue Verified scores partly reflect training-data recall.
+
+I am fairly confident about the existence and identities of SWE-bench, SWE-agent, Agentless, AutoCodeRover, CodeAct, OpenHands, Self-Debug, Reflexion, MASAI, CodeR, SWE-bench Multimodal, SWE-Gym, and SWE-RL. I am less certain about exact arXiv ids — I would not bet on the trailing digits for several of these from memory — and I am least certain about the very recent (late-2025) papers (SWE-Bench Pro, LocAgent, SWE-smith, and the "does SWE-bench test memory" contamination critique), whose ids and even exact titles I may be misremembering or which may postdate my reliable recall.
+
+## Open problems (from memory)
+1. Benchmark contamination/memorization may inflate SWE-bench (esp. Verified) scores; decontaminated and held-out/commercial benchmarks are needed to measure real ability.
+2. Poor generalization beyond Python single-PR issues — to other languages, visual/UI software, and long-horizon multi-file enterprise tasks.
+3. The unresolved scaffolding-vs-training question (and the related agency-vs-simple-pipeline question), plus immature reward/verifier design for RL on code and unstandardized cost-adjusted comparison.
+
+## Citations
+- Jimenez et al. — SWE-bench: Can Language Models Resolve Real-World GitHub Issues? — arXiv:2310.06770
+- Yang et al. — SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering — arXiv:2405.15793
+- Xia et al. — Agentless: Demystifying LLM-based Software Engineering Agents — arXiv:2407.01489
+- Zhang et al. — AutoCodeRover: Autonomous Program Improvement — arXiv:2404.05427
+- Wang et al. — Executable Code Actions Elicit Better LLM Agents (CodeAct) — arXiv:2402.01030
+- Wang et al. — OpenHands (formerly OpenDevin) — arXiv:2407.16741
+- Chen et al. — Teaching Large Language Models to Self-Debug — arXiv:2304.05128
+- Shinn et al. — Reflexion: Language Agents with Verbal Reinforcement Learning — arXiv:2303.11366
+- Arora et al. — MASAI: Modular Architecture for Software-engineering AI Agents — arXiv:2406.11638
+- Chen et al. — CodeR: Issue Resolving with Multi-Agent and Task Graphs — arXiv:2406.0xxxx (uncertain)
+- Yang et al. — SWE-bench Multimodal — arXiv:2410.03859 (id uncertain)
+- Pan et al. — SWE-Gym: Training Software Engineering Agents and Verifiers — arXiv:2412.xxxxx (id uncertain)
+- Wei et al. — SWE-RL: RL on Open Software Evolution — arXiv:2502.18449 (id approximate)
+- LocAgent: Graph-Guided LLM Agents for Code Localization — arXiv:2503.xxxxx (id uncertain, recent)
+- SWE-smith: Scaling Data for Software Engineering Agents — arXiv:25xx.xxxxx (id uncertain, recent)
+- SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks? — arXiv:25xx.xxxxx (id uncertain, recent)
+- "Does SWE-Bench-Verified Test Agent Ability or Model Memory?" — arXiv id unknown (very recent; may be misremembering title)
