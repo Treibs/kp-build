@@ -67,14 +67,15 @@ class DocGroundingVerifier:
 
     A source MISSING from the corpus -> ``ungrounded-unreachable``: a COVERAGE DEBT (an oracle exists in
     principle, we just don't hold the text), NEVER laundered into ``verified`` (the review's two-stamp scheme).
-    Operates on a **Claim** — grounding its ``supporting_passage`` against ``corpus[claim.paper]`` (the corpus
-    is keyed by ``cite_key``).
+    Operates on a **Claim** (or a directive namespace) — grounding its ``supporting_passage`` against
+    ``corpus[source]``, where ``source`` is the claim's ``paper`` (cite_key) or its grounding directive's
+    ``source`` key.
 
-    NOTE (review M6 — honest deferral): this is a tested LIBRARY building block for offline re-grounding; it is
-    **not yet wired into ``kp-build build``** (no research.json directive declares a grounding-claim, and the
-    mesh pack is citation-verified via the existing path). So ``kind='grounding'`` is *declared, not yet
-    build-enforced*. Grounding a **Relation** is NOT supported here (the corpus is cite_key-keyed, not node-id)
-    — both await a future increment.
+    WIRED INTO BUILD (V2-b): :func:`verify_grounding_claims` runs this on every claim carrying a ``grounding``
+    directive under ``kp-build build --ground-verify``, and :func:`load_grounding_corpus` assembles the pinned
+    corpus from committed ``corpus/<source>.txt`` files (offline) with a Crossref-abstract fallback for DOI
+    sources. See ``examples/http-semantics-grounding`` and ``examples/vwt-grounding``. Still out of scope:
+    grounding a **Relation** (the corpus is source-keyed, not node-id-keyed) — a future increment.
     """
 
     kind = "grounding"

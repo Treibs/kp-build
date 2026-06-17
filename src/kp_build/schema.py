@@ -53,7 +53,7 @@ class Verification:
     ``via`` (e.g. ``hyperframes-cli@0.6.91``, ``astm-d570``).
 
     ``kind``    : existence | execution | grounding | unverifiable-aesthetic | ungrounded-unreachable
-                  (grounding = declared; the DocGroundingVerifier is a library block, not yet build-enforced)
+                  (grounding is build-enforced via ``build --ground-verify``; aesthetic awaits the v2-b judge)
     ``status``  : verified | unconfirmed | id-title-mismatch | not-found | error | unverified
                   | output-mismatch        (execution: ran clean but produced the wrong output)
     ``canonical_title`` / ``match_score`` are citation-specific (empty/0.0 for other kinds).
