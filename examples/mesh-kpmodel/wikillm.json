@@ -1,0 +1,162 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Material composition and finishing chemistry for all-weather lacrosse mesh: polymer family selection, moisture plasticization, protective coatings, construction, and the test standards and rules that define mesh KPIs",
+  "scope": "This package scopes the material-science decision space for an all-weather lacrosse mesh against the eight KPIs that govern its on-field performance and legality: strength (yarn/knot/mesh breaking force and tenacity), water-absorption (equilibrium and 24 h uptake), wet-stretch / dimensional-stability (moisture- and load-driven elongation, creep, permanent set, swelling), weight (areal/linear density and density-driven wet weight gain), UV-durability (strength and toughness retention under sunlight/xenon-arc aging), abrasion (wear resistance of fiber/coating under repeated contact), pocket-legality (governing-body crosse and pocket-depth/hole-size limits that the material must hold wet and under load), and stiffness/hold (modulus and pocket consistency governing ball hold and release). It synthesizes fiber-family chemistry (nylon 6, nylon 6/6, PET polyester, HDPE, UHMWPE/HPPE, polypropylene) and how amide vs ester vs polyolefin backbones set baseline tenacity, water uptake, density, and UV resistance; the moisture-plasticization mechanism that drops nylon's Tg, modulus, and dimensional stability (causing wet elongation / \"bagging out\") while PET/polyolefins stay dimensionally stable when wet; finishing/coating chemistry (paraffin wax, polyurethane/TPU, silicone/PDMS, carbon black, HALS) that trades water-resistance and UV-durability against stiffness, weight, and hold; construction effects (knotted vs knotless, mono- vs multifilament, heat-set, diamond-mesh solidity); and the ASTM/ISO test standards and NCAA/NFHS/World Lacrosse rules that operationalize these KPIs.",
+  "built": "2026-06-17",
+  "stats": {
+    "papers_verified": 33,
+    "papers_total": 41,
+    "claims": 45,
+    "open_problems": 8,
+    "debates": 5,
+    "benchmarks": 0,
+    "relations": 4,
+    "dropped": {
+      "claims": 14,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0,
+      "relations": 4
+    }
+  },
+  "goals": {
+    "choose_all_weather_mesh": "Choose a mesh fiber/finish/construction that hits the all-weather performance targets AND stays rules-legal (pocket holds its shape wet and under load)."
+  },
+  "goal_metrics": [
+    {
+      "name": "strength",
+      "description": "yarn/knot/mesh break force & tenacity",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "N or g/denier",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "water_absorption",
+      "description": "equilibrium / 24h water uptake",
+      "baseline": "nylon ~8%",
+      "target": "<0.7%",
+      "direction": "lower",
+      "unit": "%",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "wet_stretch",
+      "description": "wet elongation / modulus loss -> bagging out",
+      "baseline": "",
+      "target": "",
+      "direction": "lower",
+      "unit": "% modulus loss",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "none"
+    },
+    {
+      "name": "weight",
+      "description": "areal/linear density & wet weight gain",
+      "baseline": "",
+      "target": "",
+      "direction": "lower",
+      "unit": "g",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "uv_durability",
+      "description": "strength retention after UV/xenon-arc aging",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "% retained",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "abrasion_resistance",
+      "description": "wear resistance of fiber/coating",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "pocket_legality",
+      "description": "compliance with NCAA/NFHS/World Lacrosse pocket-depth/legality",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "hold_release",
+      "description": "pocket consistency / throw \u2014 stiffness vs hold balance",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "none"
+    }
+  ],
+  "source_span": {
+    "oldest": 1958,
+    "newest": 2026,
+    "latest_checked": "2026-06-17"
+  },
+  "coverage": {
+    "sub_questions": [
+      "FIBER POLYMER FAMILIES & intrinsic property tradeoffs for netting: nylon 6/6 vs nylon 6 vs polyester (PET) vs HDPE vs UHMWPE - how amide vs ester vs polyolefin chemistry sets the baseline for tensile strength/tenacity, equilibrium water absorption, density/weight, and UV resistance",
+      "MOISTURE PLASTICIZATION & WET MECHANICAL BEHAVIOR of polyamides vs polyester/polyolefin: how absorbed water plasticizes nylon (drops Tg, modulus, dimensional stability) causing wet elongation / bagging out, and why PET/HDPE are dimensionally stable when wet",
+      "Finishing & coating chemistry for water resistance and durability of lacrosse mesh nets/textiles: wax impregnation, polyurethane/TPU and silicone coatings, and UV stabilizers (HALS, carbon black) - how they reduce water uptake and UV degradation and at what cost to strength, stiffness, weight, and hold/release",
+      "Construction-level mechanics for netting: knotted vs knotless drag/solidity, mono- vs multifilament strength/abrasion, knot strength loss, permanent creep/structural strain, and how diamond-mesh geometry sets pocket shape and bagging-out",
+      "Test standards (ASTM, ISO) and governing-body rules (NCAA, NFHS, World Lacrosse) that define the lacrosse-mesh KPIs - exact designations, what each measures/limits, and pocket-depth/crosse legality"
+    ],
+    "queries": [
+      "nylon 6 vs nylon 6/6 vs PET vs HDPE vs UHMWPE netting tensile tenacity water absorption density UV resistance",
+      "polyamide water absorption plasticization Tg modulus reduction wet nylon dimensional stability",
+      "PET polyester equilibrium water absorption dimensional stability hydrophobic crystallinity",
+      "UHMWPE HPPE fiber strength to weight ratio abrasion fatigue netting",
+      "UHMWPE net UV aging marine salt spray breaking strength loss carbonyl FTIR",
+      "HDPE UHMWPE blend monofilament UV aging carbonyl unsaturation breaking strength retention",
+      "paraffin wax emulsion water repellent textile stiffness finishing",
+      "polyurethane PU TPU textile coating water resistance abrasion tensile",
+      "silicone PDMS superhydrophobic coating cotton textile durable self-healing contact angle",
+      "carbon black UV stabilizer polyolefin film dispersion particle size",
+      "hindered amine light stabilizer HALS mechanism nitroxyl radical photostabilization nylon polyolefin",
+      "nylon 66 polyester UV degradation toughness loss woven fabric exposure time",
+      "knot strength loss netting PA6 PBSAT monofilament curvature gillnet",
+      "knotted vs knotless netting drag projected area hydrodynamics purse seine",
+      "diamond mesh solidity twine diameter bar length hanging angle knot projected area",
+      "UHMWPE netting creep structural strain permanent set Raschel knitted",
+      "natural sunlight UV polyamide 6 fishing net breaking strength elongation yarn diameter",
+      "ASTM D2256 yarn tensile breaking force tenacity wet knotted looped",
+      "ASTM D6775 webbing tape braided breaking strength elongation split drum",
+      "ASTM D570 water absorption plastics immersion 24 hour percent",
+      "ASTM D4355 geotextile xenon arc UV moisture heat strength retention",
+      "ASTM G155 xenon arc weathering sunlight rain dew non-metallic",
+      "ASTM D3884 abrasion resistance textile rotary platform double head Taber",
+      "ISO 9554 fibre rope general specifications heat set dimensional stability polyamide polyester",
+      "ISO 1805 ISO 1806 fishing net breaking force knot mesh wet testing",
+      "World Lacrosse mens rules pocket depth sidewall legality crosse head width trick stringing",
+      "NFHS boys lacrosse 1-7-1 hole gap 1.68 inches golf ball stringing stretch entrap ball"
+    ]
+  },
+  "falsification": {
+    "run": false
+  }
+}

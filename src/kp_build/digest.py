@@ -80,12 +80,22 @@ def _emit(head: list[str], sections: list[tuple], budget: int) -> str:
 def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
     verified = {p.cite_key: p for p in pkg.papers if p.verified.exists}
 
+    # The verification basis stated to the loading agent must match how the pack was actually checked.
+    # A citation pack has a paper spine; an execution/grounding pack has none, and saying its spine was
+    # "verified to exist by arXiv id / DOI" would misframe a zero-citation pack as citation-grounded.
+    if pkg.papers:
+        basis = ("Every paper in the spine was verified to exist by arXiv id / DOI; do not invent "
+                 "citations beyond this list.")
+    else:
+        kind = "execution gates" if any(getattr(c, "execution", None) for c in pkg.claims) else "verifier checks"
+        basis = (f"This package has no citation spine — its claims ship on {kind}, not citations; "
+                 "do not invent citations.")
+
     head = [
         f"# Field briefing: {_data(pkg.topic)}",
         "",
         f"*A wikillm knowledge package (built {built}). Load this to inherit the research landscape of "
-        f"this topic. Confidence is corpus-relative. Every paper in the spine was verified to exist by "
-        f"arXiv id / DOI; do not invent citations beyond this list.*",
+        f"this topic. Confidence is corpus-relative. {basis}*",
         "",
         _PREAMBLE,
         "",

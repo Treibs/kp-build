@@ -1,0 +1,1707 @@
+{
+  "topic": "Material composition and finishing chemistry for all-weather lacrosse mesh: polymer family selection, moisture plasticization, protective coatings, construction, and the test standards and rules that define mesh KPIs",
+  "scope": "This package scopes the material-science decision space for an all-weather lacrosse mesh against the eight KPIs that govern its on-field performance and legality: strength (yarn/knot/mesh breaking force and tenacity), water-absorption (equilibrium and 24 h uptake), wet-stretch / dimensional-stability (moisture- and load-driven elongation, creep, permanent set, swelling), weight (areal/linear density and density-driven wet weight gain), UV-durability (strength and toughness retention under sunlight/xenon-arc aging), abrasion (wear resistance of fiber/coating under repeated contact), pocket-legality (governing-body crosse and pocket-depth/hole-size limits that the material must hold wet and under load), and stiffness/hold (modulus and pocket consistency governing ball hold and release). It synthesizes fiber-family chemistry (nylon 6, nylon 6/6, PET polyester, HDPE, UHMWPE/HPPE, polypropylene) and how amide vs ester vs polyolefin backbones set baseline tenacity, water uptake, density, and UV resistance; the moisture-plasticization mechanism that drops nylon's Tg, modulus, and dimensional stability (causing wet elongation / \"bagging out\") while PET/polyolefins stay dimensionally stable when wet; finishing/coating chemistry (paraffin wax, polyurethane/TPU, silicone/PDMS, carbon black, HALS) that trades water-resistance and UV-durability against stiffness, weight, and hold; construction effects (knotted vs knotless, mono- vs multifilament, heat-set, diamond-mesh solidity); and the ASTM/ISO test standards and NCAA/NFHS/World Lacrosse rules that operationalize these KPIs.",
+  "papers": [
+    {
+      "cite_key": "moe2007netting",
+      "title": "Tensile properties for netting materials used in aquaculture net cages",
+      "authors": "Moe, H.; Olsen, A.; Hopperstad, O.S.; Jensen, O.; Fredheim, A.",
+      "year": 2007,
+      "venue": "Aquacultural Engineering, vol. 37",
+      "arxiv_id": "",
+      "doi": "10.1016/j.aquaeng.2007.08.001",
+      "url": "https://doi.org/10.1016/j.aquaeng.2007.08.001",
+      "key_contributions": [
+        "Directly tests tensile/breaking properties of competing netting polymers (nylon/polyamide, polyester/PES, polyethylene) as used in real net cages",
+        "Establishes that nylon (polyamide) has higher initial breaking load and higher elongation than polyester, giving better working force under load",
+        "Provides netting-specific (not just bulk-polymer) comparison data and a tensile test method for knotless Raschel knitted PA6 netting"
+      ]
+    },
+    {
+      "cite_key": "pagnotta2025netting",
+      "title": "Sustainable Netting Materials for Marine and Agricultural Applications: A Perspective on Polymeric and Composite Developments",
+      "authors": "Pagnotta, L.",
+      "year": 2025,
+      "venue": "Polymers, vol. 17, no. 11, art. 1454",
+      "arxiv_id": "",
+      "doi": "10.3390/polym17111454",
+      "url": "https://doi.org/10.3390/polym17111454",
+      "key_contributions": [
+        "Cross-polymer review of netting materials (PA/nylon, PET/polyester, HDPE, UHMWPE) for marine/agricultural service",
+        "Frames the trade space: HDPE is low-cost, low-density, UV/abrasion/chemical resistant and floats; UHMWPE gives extreme strength-to-weight",
+        "Identifies operating stressors for nets: UV radiation, hydrolysis, biofouling, salinity, continuous mechanical abrasion"
+      ]
+    },
+    {
+      "cite_key": "zhang2022uhmwpenet",
+      "title": "Study on the Aging Behavior of an Ultra-High Molecular Weight Polyethylene Fiber Barrier Net in a Marine Environment",
+      "authors": "Zhang, W.; Jing, X.; Bai, Y.; Shan, X.; Qi, X.; Yan, M.; Cui, Z.",
+      "year": 2022,
+      "venue": "Materials, vol. 15, no. 16, art. 5599",
+      "arxiv_id": "",
+      "doi": "10.3390/ma15165599",
+      "url": "https://doi.org/10.3390/ma15165599",
+      "key_contributions": [
+        "Quantifies breaking-strength loss of a UHMWPE fiber net under UV, salt spray, and hygrothermal marine aging",
+        "Shows UV environment drives the most rapid breaking-strength loss of the three exposures",
+        "Links FTIR C=O / C-O-C / C=C growth to UV-accelerated oxidative degradation of polyolefin fiber"
+      ]
+    },
+    {
+      "cite_key": "faruk2023uhmwpe",
+      "title": "A Comprehensive Review of Ultrahigh Molecular Weight Polyethylene Fibers for Applications Based on Their Different Preparation Techniques",
+      "authors": "Faruk, O.; Yang, et al.",
+      "year": 2023,
+      "venue": "Advances in Polymer Technology, art. 6656692",
+      "arxiv_id": "",
+      "doi": "10.1155/2023/6656692",
+      "url": "https://doi.org/10.1155/2023/6656692",
+      "key_contributions": [
+        "Authoritative review of UHMWPE fiber properties: high strength-to-weight ratio, toughness, chemical/abrasion resistance",
+        "Documents intrinsic polyolefin tenacity ceiling (multi-GPa) and the strength advantage over conventional fibers",
+        "Covers preparation-technique dependence of UHMWPE mechanical performance"
+      ]
+    },
+    {
+      "cite_key": "xue2026hdpeuhmwpe",
+      "title": "Research on the Anti-Ultraviolet Aging Performance of Fishery HDPE/UHMWPE-Blended Monofilaments",
+      "authors": "Xue, Z.; Shi, J.; Zhang, J.; Zhang, W.; Jin, D.; Chen, Y.; Ding, Y.; Song, H.; Han, P.",
+      "year": 2026,
+      "venue": "Polymers, vol. 18, no. 3, art. 392",
+      "arxiv_id": "",
+      "doi": "10.3390/polym18030392",
+      "url": "https://doi.org/10.3390/polym18030392",
+      "key_contributions": [
+        "Quantifies UV-aging mechanical retention of pure HDPE vs HDPE/UHMWPE blend monofilament (600 h)",
+        "Shows UHMWPE blending cuts carbonyl/unsaturation indices and slows breaking-strength and elongation loss",
+        "Explains UHMWPE entangled micro-regions as oxygen/radical diffusion barrier and load-bearing skeleton"
+      ]
+    },
+    {
+      "cite_key": "sambale2021pa6",
+      "title": "Characterisation and FE Modelling of the Sorption and Swelling Behaviour of Polyamide 6 in Water",
+      "authors": "Sambale, A.K.; Stanko, M.; Emde, J.; Stommel, M.",
+      "year": 2021,
+      "venue": "Polymers, vol. 13, no. 9, art. 1480",
+      "arxiv_id": "",
+      "doi": "10.3390/polym13091480",
+      "url": "https://doi.org/10.3390/polym13091480",
+      "key_contributions": [
+        "Quantifies polyamide 6 (nylon 6) equilibrium water uptake across conditions (up to ~8.83% in 80C water bath)",
+        "Shows water plasticization drops Young's modulus from ~1100 MPa (dry) to ~330 MPa (saturated)",
+        "Documents reversible swelling and Tg depression from ~60C (dry) to ~-20C (saturated)"
+      ]
+    },
+    {
+      "cite_key": "franco2022petgeotextile",
+      "title": "Accelerated Aging Ultraviolet of a PET Nonwoven Geotextile and Thermoanalytical Evaluation",
+      "authors": "Franco, R.A.M.; Valentin, C.A.; Kobelnik, M.; Lins da Silva, J.; Ribeiro, C.A.; da Luz, M.P.",
+      "year": 2022,
+      "venue": "Materials, vol. 15, no. 12, art. 4157",
+      "arxiv_id": "",
+      "doi": "10.3390/ma15124157",
+      "url": "https://doi.org/10.3390/ma15124157",
+      "key_contributions": [
+        "Quantifies PET (polyester) tensile-strength retention under accelerated UV aging (81.5% retained at 1000 h)",
+        "Establishes UV degradation mechanism in PET: chain scission forming carboxyl groups",
+        "Shows UV stabilizers (carbon black) delay but do not prevent ester-backbone degradation"
+      ]
+    },
+    {
+      "cite_key": "egan2022biodegradability",
+      "title": "Strategies and progress in synthetic textile fiber biodegradability",
+      "authors": "Egan, J.; Salmon, S.",
+      "year": 2022,
+      "venue": "SN Applied Sciences, vol. 4, art. 22",
+      "arxiv_id": "",
+      "doi": "10.1007/s42452-021-04851-7",
+      "url": "https://doi.org/10.1007/s42452-021-04851-7",
+      "key_contributions": [
+        "Reviews backbone chemistry of synthetic textile fibers (polyester/ester, polyamide/amide, polyolefin)",
+        "Explains that polyester high crystallinity and hydrophobicity drive its resistance to degradation",
+        "Provides the chemistry-baseline framing for why ester/amide/polyolefin families differ in water and durability"
+      ]
+    },
+    {
+      "cite_key": "LeGac2017",
+      "title": "Yield stress changes induced by water in polyamide 6: Characterization and modeling",
+      "authors": "Le Gac, P.-Y.; Arhant, M.; Le Gall, M.; Davies, P.",
+      "year": 2017,
+      "venue": "Polymer Degradation and Stability, vol. 137, pp. 272-280",
+      "arxiv_id": "",
+      "doi": "10.1016/j.polymdegradstab.2017.02.003",
+      "url": "https://doi.org/10.1016/j.polymdegradstab.2017.02.003",
+      "key_contributions": [
+        "Quantifies that water diffusion into PA6 plasticizes the polymer, increasing chain mobility and producing a large decrease in both Young's modulus and yield stress while increasing elongation at break",
+        "Cites Silva et al.'s finding of an 80% modulus decrease when PA6 is saturated with water at 20 C",
+        "Builds a physically-based model relating water content to yield stress for lifetime prediction of PA6 in humid/marine environments when plasticization (not hydrolysis) is dominant"
+      ]
+    },
+    {
+      "cite_key": "Wetzel2023",
+      "title": "Hygromechanical Behavior of Polyamide 6.6: Experiments and Modeling",
+      "authors": "Wetzel, P.; Sambale, A.K.; Uhlig, K.; Stommel, M.; Schneider, B.; Kaiser, J.-M.",
+      "year": 2023,
+      "venue": "Polymers (Basel), vol. 15, no. 16, art. 3387",
+      "arxiv_id": "",
+      "doi": "10.3390/polym15163387",
+      "url": "https://doi.org/10.3390/polym15163387",
+      "key_contributions": [
+        "Measures the Tg of PA6.6 dropping from 58 C (dry) to -24 C (water-saturated), an over-80 K reduction attributed to water-induced plasticization",
+        "Measures Young's modulus falling from 2.885 GPa (dry) to 0.598 GPa (saturated), a factor of ~4.8 reduction",
+        "Documents anisotropic hygroscopic swelling scaling linearly with moisture content, establishing dimensional instability of nylon when wet"
+      ]
+    },
+    {
+      "cite_key": "Humeau2018",
+      "title": "Influence of water on the short and long term mechanical behaviour of polyamide 6 (nylon) fibres and yarns",
+      "authors": "Humeau, C.; Davies, P.; Le Gac, P.-Y.; Jacquemin, F.",
+      "year": 2018,
+      "venue": "Multiscale and Multidisciplinary Modeling, Experiments and Design, vol. 1, pp. 317-327",
+      "arxiv_id": "",
+      "doi": "10.1007/s41939-018-0036-6",
+      "url": "https://doi.org/10.1007/s41939-018-0036-6",
+      "key_contributions": [
+        "Directly studies nylon 6 fibre yarns: moisture reduces the Tg of the amorphous structure (Tg ~55 C dry at 0%RH), small effect on short-term tensile behaviour but strong effect on long-term creep",
+        "Identifies a Schapery non-linear viscoelastic/viscoplastic creep model; instantaneous compliance increases with stress and RH, and recovery shows permanent (irreversible) elongation",
+        "Concludes moisture-driven creep must be quantified for any long-term immersed nylon application, the mechanistic basis for wet elongation / bagging out"
+      ]
+    },
+    {
+      "cite_key": "Quistwater1958",
+      "title": "Dynamic mechanical properties of nylon 66 and the plasticizing effect of water vapor on nylon",
+      "authors": "Quistwater, J.M.R.; Dunell, B.A.",
+      "year": 1958,
+      "venue": "Journal of Polymer Science, vol. 28, pp. 309-318",
+      "arxiv_id": "",
+      "doi": "10.1002/pol.1958.1202811706",
+      "url": "https://doi.org/10.1002/pol.1958.1202811706",
+      "key_contributions": [
+        "Foundational dynamic-mechanical study establishing that absorbed water vapor acts as a plasticizer on nylon 66, increasing chain-segment mobility in the amorphous region",
+        "Among the earliest quantitative demonstrations that water lowers the mechanical softening/transition behaviour of nylon"
+      ]
+    },
+    {
+      "cite_key": "Arhant2016",
+      "title": "Modelling the non Fickian water absorption in polyamide 6",
+      "authors": "Arhant, M.; Le Gac, P.-Y.; Le Gall, M.; Burtin, C.; Briancon, C.; Davies, P.",
+      "year": 2016,
+      "venue": "Polymer Degradation and Stability, vol. 133, pp. 404-412",
+      "arxiv_id": "",
+      "doi": "10.1016/j.polymdegradstab.2016.09.001",
+      "url": "https://doi.org/10.1016/j.polymdegradstab.2016.09.001",
+      "key_contributions": [
+        "Shows PA6 water absorption is non-Fickian (case II) because water diffusivity changes as the polymer passes from glassy to rubbery state during wet ageing",
+        "Couples local water content to a local Tg (via Simha-Boyer) and a state-dependent diffusivity, explaining why absorbed water both rises with humidity and self-accelerates uptake by plasticizing the matrix"
+      ]
+    },
+    {
+      "cite_key": "HuntDarlington1979",
+      "title": "Prediction of creep of nylon-6,6 at constant stress, temperature and moisture content",
+      "authors": "Hunt, D.G.; Darlington, M.W.",
+      "year": 1979,
+      "venue": "Polymer, vol. 20, no. 2, pp. 241-246",
+      "arxiv_id": "",
+      "doi": "10.1016/0032-3861(79)90228-3",
+      "url": "https://doi.org/10.1016/0032-3861(79)90228-3",
+      "key_contributions": [
+        "Classic quantitative study showing nylon-6,6 creep is a strong function of moisture content (and humidity), enabling prediction of creep at constant stress/temperature/moisture",
+        "Establishes that increasing moisture content increases the time-dependent creep deformation of nylon, the long-term driver of wet stretch"
+      ]
+    },
+    {
+      "cite_key": "AZoM_PET_TDS",
+      "title": "Properties of Polyethylene Terephthalate Polyester (PET, PETP)",
+      "authors": "AZoM (materials property datasheet)",
+      "year": 2001,
+      "venue": "AZoM.com Materials Database, article 2047",
+      "arxiv_id": "",
+      "doi": "",
+      "url": "https://www.azom.com/article.aspx?ArticleID=2047",
+      "key_contributions": [
+        "Reports PET equilibrium water absorption <0.7% and 24-hour water absorption 0.1%, with PET described as dimensionally stable with very low water absorption",
+        "Provides the dimensional-stability contrast to nylon: PET barely absorbs water, so it does not plasticize or swell when wet"
+      ]
+    },
+    {
+      "cite_key": "Miceli2016LacrosseMesh",
+      "title": "Lacrosse mesh",
+      "authors": "Miceli, James (inventor); Epoch Lacrosse LLC (assignee)",
+      "year": 2016,
+      "venue": "United States Patent US9468824B1 (granted)",
+      "arxiv_id": "",
+      "doi": "",
+      "url": "https://patents.google.com/patent/US9468824B1/en",
+      "key_contributions": [
+        "Directly addresses lacrosse mesh material/coating trade-offs: argues a hydrophobic polypropylene yarn (INNEGRA S, density 0.84 g/cm3) is intrinsically water-resistant and needs no wax/polymer coating, unlike nylon/cotton",
+        "Quantifies that conventional nylon (1.15 g/cm3) and cotton (1.54 g/cm3) absorb liquid and gain weight, changing pocket consistency and flexibility when wet",
+        "Claims the uncoated hydrophobic mesh is about 50% lighter than conventional hard, wax, or soft mesh and stretches no more than ~11%; notes prior-art coatings deteriorate or require replenishment over time"
+      ]
+    },
+    {
+      "cite_key": "AboShosha2008ParaffinWax",
+      "title": "Paraffin Wax Emulsion as Water Repellent for Cotton/Polyester Blended Fabric",
+      "authors": "Abo-Shosha, M.H.; El-Hilw, Z.H.; Aly, A.A.; Amr, A.; El Nagdy, Al Said I.",
+      "year": 2008,
+      "venue": "Journal of Industrial Textiles, vol. 37",
+      "arxiv_id": "",
+      "doi": "10.1177/1528083707083793",
+      "url": "https://doi.org/10.1177/1528083707083793",
+      "key_contributions": [
+        "Formulates a paraffin-wax/stearic-acid/triethanolamine emulsion water repellent and optimizes cure (~160 C, 5 min) to reach a maximum water repellency rating of 100 on cotton/polyester fabric",
+        "Documents the stiffness penalty of wax finishing: treatment increases fabric stiffness (cantilever, ASTM D1388), imparting body to the fabric",
+        "Provides the wax-impregnation mechanism analog directly relevant to wax-coated lacrosse mesh"
+      ]
+    },
+    {
+      "cite_key": "Sikdar2022PUTextiles",
+      "title": "Polyurethane (PU) based multifunctional materials: Emerging paradigm for functional textiles, smart, and biomedical applications",
+      "authors": "Sikdar, P.; Dip, T.M.; Dhar, A.K.; Bhattacharjee, M.; Hoque, M.S.; Ali, S.B.",
+      "year": 2022,
+      "venue": "Journal of Applied Polymer Science, vol. 139, no. 38",
+      "arxiv_id": "",
+      "doi": "10.1002/app.52832",
+      "url": "https://doi.org/10.1002/app.52832",
+      "key_contributions": [
+        "Comprehensive review establishing why PU is the dominant textile coating: good substrate bonding, tensile/tear strength, abrasion and impact resistance, elongation, light resistance, and water/solvent resistance",
+        "Connects PU chemistry to waterproof/breathable coated fabrics combining water repellency with moisture-vapor permeability",
+        "Covers TPU and PU dispersion coatings as the polymer family for durable water-resistant finishes"
+      ]
+    },
+    {
+      "cite_key": "Jannatun2020PDMSCotton",
+      "title": "A facile cross-linking approach to fabricate durable and self-healing superhydrophobic coatings of SiO2-PVA@PDMS on cotton textile",
+      "authors": "Jannatun, N.; Taraqqi-A-Kamal, A.; Rehman, R.; Kuker, J.; Lahiri, S.K.",
+      "year": 2020,
+      "venue": "European Polymer Journal, vol. 134",
+      "arxiv_id": "",
+      "doi": "10.1016/j.eurpolymj.2020.109836",
+      "url": "https://doi.org/10.1016/j.eurpolymj.2020.109836",
+      "key_contributions": [
+        "Demonstrates a silicone (PDMS) plus crosslinked SiO2-PVA superhydrophobic coating on cotton textile achieving water contact angle >150 deg and sliding angle <5 deg via simple two-step dip-dry",
+        "Shows the coating is durable and self-healing, addressing the central failure mode of water-repellent finishes (loss of repellency under abrasion/washing)",
+        "Provides a model for silicone-based hydrophobic finishing of textiles relevant to all-weather net coatings"
+      ]
+    },
+    {
+      "cite_key": "Liu2002CarbonBlackLLDPE",
+      "title": "Effect of Carbon Black on UV stability of LLDPE films under artificial weathering conditions",
+      "authors": "Liu, M.; Horrocks, A.R.",
+      "year": 2002,
+      "venue": "Polymer Degradation and Stability, vol. 75",
+      "arxiv_id": "",
+      "doi": "10.1016/S0141-3910(01)00252-X",
+      "url": "https://doi.org/10.1016/S0141-3910(01)00252-X",
+      "key_contributions": [
+        "Quantifies that carbon black improves UV stability of polyolefin films, with stabilization governed by carbon-black type, particle size, concentration, and degree of dispersion",
+        "Identifies the dual photostabilization mechanism: physical surface-area-dependent UV absorption plus photochemical (free-radical/peroxide) activity, delaying loss of ultimate elongation",
+        "Provides the carbon-black UV-stabilizer evidence base for outdoor net/fiber pigmentation"
+      ]
+    },
+    {
+      "cite_key": "ChirinosPadron1990HALS",
+      "title": "Performance and Mechanisms of Hindered Amine Light Stabilizers in Polymer Photostabilization",
+      "authors": "Chirinos-Padron, A.J.",
+      "year": 1990,
+      "venue": "Journal of Macromolecular Science, Part C: Polymer Reviews, vol. 30",
+      "arxiv_id": "",
+      "doi": "10.1080/07366579008050906",
+      "url": "https://doi.org/10.1080/07366579008050906",
+      "key_contributions": [
+        "Authoritative review of HALS mechanism: nitroxyl-radical formation and regenerative scavenging cycle (Denisov cycle) that does not rely on UV absorption",
+        "Documents HALS efficacy across polyolefins, PVC, polystyrene, rubbers and polyamides relevant to nylon/PP net fibers",
+        "Establishes HALS as the leading additive class for polymer photostabilization"
+      ]
+    },
+    {
+      "cite_key": "Moezzi2013NylonPolyesterToughness",
+      "title": "The effect of UV degradation on toughness of nylon 66/polyester woven fabrics",
+      "authors": "Moezzi, M.; Ghane, M.",
+      "year": 2013,
+      "venue": "Journal of the Textile Institute, vol. 104, no. 12",
+      "arxiv_id": "",
+      "doi": "10.1080/00405000.2013.796629",
+      "url": "https://doi.org/10.1080/00405000.2013.796629",
+      "key_contributions": [
+        "Quantifies UV-driven toughness loss in nylon 66/polyester woven fabric: breaking toughness in the nylon (weft) direction dropped ~55% after only 7 hours of UV exposure",
+        "Demonstrates that unstabilized nylon woven textiles lose mechanical performance rapidly under UV, motivating UV stabilization for outdoor netting",
+        "Models toughness vs exposure time and direction from load-elongation curves"
+      ]
+    },
+    {
+      "cite_key": "Moezzi2019Nylon66ConveyorUV",
+      "title": "The effects of UV degradation on the physical, thermal, and morphological properties of industrial nylon 66 conveyor belt fabrics",
+      "authors": "Moezzi, M.; Yekrang, J.; Ghane, M.; Hatami, M.",
+      "year": 2019,
+      "venue": "Journal of Industrial Textiles, vol. 50",
+      "arxiv_id": "",
+      "doi": "10.1177/1528083718825316",
+      "url": "https://doi.org/10.1177/1528083718825316",
+      "key_contributions": [
+        "Characterizes how UV exposure degrades the physical, thermal, and morphological properties of industrial nylon 66 fabric (the polyamide family used in lacrosse mesh)",
+        "Provides surface/morphology evidence of UV-induced embrittlement and property loss in heavy-duty nylon textiles",
+        "Reinforces the need for UV stabilization (HALS/carbon black) in nylon-based outdoor netting"
+      ]
+    },
+    {
+      "cite_key": "Wanchana2002HPPEFatigue",
+      "title": "Fatigue property of high-performance polyethylene netting twine",
+      "authors": "Wanchana, W.; et al.",
+      "year": 2002,
+      "venue": "Fisheries Science, 68(2), 371-379",
+      "arxiv_id": "",
+      "doi": "10.1046/j.1444-2906.2002.00435.x",
+      "url": "https://doi.org/10.1046/j.1444-2906.2002.00435.x",
+      "key_contributions": [
+        "Compares high-performance polyethylene (HPPE/UHMWPE) against other netting twines under tensile and knot fatigue",
+        "Shows HPPE has the best tensile-fatigue durability and least abrasion damage",
+        "Identifies nylon monofilament as having the best knot-fatigue durability"
+      ]
+    },
+    {
+      "cite_key": "Tang2019NettingHydrodynamics",
+      "title": "Variations in hydrodynamic characteristics of netting panels",
+      "authors": "Tang, H.; et al.",
+      "year": 2019,
+      "venue": "Scientific Reports, 9, 1923",
+      "arxiv_id": "",
+      "doi": "10.1038/s41598-018-35907-1",
+      "url": "https://doi.org/10.1038/s41598-018-35907-1",
+      "key_contributions": [
+        "Quantifies that knots account for ~21% of total drag in nylon netting",
+        "Shows a knotless panel has ~79% of the drag of a knotted one",
+        "Provides knot-vs-knotless construction evidence for projected-area and flow performance"
+      ]
+    },
+    {
+      "cite_key": "Tang2018KnotlessPurseSeine",
+      "title": "Hydrodynamic characteristics of knotted and knotless purse seine netting panels",
+      "authors": "Tang, H.; et al.",
+      "year": 2018,
+      "venue": "PLoS ONE, 13(2), e0192206",
+      "arxiv_id": "",
+      "doi": "10.1371/journal.pone.0192206",
+      "url": "https://doi.org/10.1371/journal.pone.0192206",
+      "key_contributions": [
+        "Quantifies knot contribution to netting drag at 15-25% of total",
+        "Shows a knotless panel has ~83% of the drag of a knotted panel",
+        "Corroborates the projected-area penalty of knots in netting construction"
+      ]
+    },
+    {
+      "cite_key": "Bottero2025DiamondSolidity",
+      "title": "Characterization of the solidity of knotted single-twine diamond mesh netting",
+      "authors": "Bottero, F.; Gonzalez, M.",
+      "year": 2025,
+      "venue": "Applied Ocean Research, 154, 104295",
+      "arxiv_id": "",
+      "doi": "10.1016/j.apor.2024.104295",
+      "url": "https://doi.org/10.1016/j.apor.2024.104295",
+      "key_contributions": [
+        "Derives diamond-mesh solidity as a function of twine diameter, bar length, and hanging angle",
+        "Shows the knot adds projected area to the diamond mesh",
+        "Provides the geometry model linking construction levers to mesh solidity (relevant to pocket geometry)"
+      ]
+    },
+    {
+      "cite_key": "Thomas2006SunlightPA6",
+      "title": "The effect of natural sunlight on the strength of polyamide 6 multifilament and monofilament fishing net materials",
+      "authors": "Thomas, S.N.; Hridayanathan, C.",
+      "year": 2006,
+      "venue": "Fisheries Research, 81(2-3), 326-330",
+      "arxiv_id": "",
+      "doi": "10.1016/j.fishres.2006.06.012",
+      "url": "https://doi.org/10.1016/j.fishres.2006.06.012",
+      "key_contributions": [
+        "Shows natural sunlight UV reduces breaking strength and elongation of PA6 net materials (mono- and multifilament)",
+        "Demonstrates that larger yarn diameter gives higher breaking load and elongation",
+        "Provides real-sunlight (not just lab) UV evidence for nylon net degradation"
+      ]
+    },
+    {
+      "cite_key": "LeGue2024KnotBiodegradable",
+      "title": "Influence of knot strength on the mechanical performance of a biodegradable gillnet",
+      "authors": "Le Gue, L.; et al.",
+      "year": 2024,
+      "venue": "Scientific Reports, 14, 15450",
+      "arxiv_id": "",
+      "doi": "10.1038/s41598-024-66474-3",
+      "url": "https://doi.org/10.1038/s41598-024-66474-3",
+      "key_contributions": [
+        "Quantifies knot strength loss: PA6 nylon knot ~30% loss, brittle PBSAT knot ~62% loss",
+        "Identifies the knot as the strength-limiting feature with rupture initiating at curvature peaks",
+        "Establishes that net-scale strength cannot be predicted from monofilament strength alone"
+      ]
+    },
+    {
+      "cite_key": "MoeFore2016UHMWPECreep",
+      "title": "Temporary-Creep and Postcreep Properties of Aquaculture Netting Materials With UHMWPE Fibers",
+      "authors": "Moe-Fore, H.; et al.",
+      "year": 2016,
+      "venue": "J. Offshore Mech. Arct. Eng., 138(3), 031201",
+      "arxiv_id": "",
+      "doi": "10.1115/1.4032893",
+      "url": "https://doi.org/10.1115/1.4032893",
+      "key_contributions": [
+        "Measures on-loading structural strain of 8.8-27.8% that is largely permanent in Raschel-knitted UHMWPE netting",
+        "Distinguishes largely permanent structural strain from smaller elastic creep strain (1.3-4.5%)",
+        "Provides the permanent-set / dimensional-instability evidence directly analogous to lacrosse pocket bagging-out"
+      ]
+    },
+    {
+      "cite_key": "ISO1805_2006",
+      "title": "Fishing nets - Determination of breaking force and knot breaking force of netting yarns",
+      "authors": "ISO TC 38 Textiles",
+      "year": 2006,
+      "venue": "ISO 1805:2006",
+      "arxiv_id": "",
+      "doi": "",
+      "url": "https://www.iso.org/standard/30041.html",
+      "key_contributions": [
+        "Defines yarn breaking force and knot breaking force for netting yarns",
+        "Specifies wet testing to capture in-use behavior",
+        "Complements ISO 1806 for netting strength characterization"
+      ]
+    },
+    {
+      "cite_key": "ISO1806_2002",
+      "title": "Fishing nets - Determination of mesh breaking force of netting",
+      "authors": "ISO TC 38 Textiles",
+      "year": 2002,
+      "venue": "ISO 1806:2002",
+      "arxiv_id": "",
+      "doi": "",
+      "url": "https://www.iso.org/standard/28360.html",
+      "key_contributions": [
+        "Defines mesh breaking force of netting (net-scale, not just yarn)",
+        "Specifies wet testing for in-use behavior",
+        "Complements ISO 1805 yarn/knot breaking-force determination"
+      ]
+    },
+    {
+      "cite_key": "ASTM_D2256",
+      "title": "ASTM D2256/D2256M-21 Standard Test Method for Tensile Properties of Yarns by the Single-Strand Method",
+      "authors": "ASTM International Committee D13 on Textiles",
+      "year": 2021,
+      "venue": "ASTM International, West Conshohocken, PA. Standard designation D2256/D2256M-21",
+      "arxiv_id": "",
+      "doi": "10.1520/D2256_D2256M-21",
+      "url": "https://store.astm.org/d2256_d2256m-21.html",
+      "key_contributions": [
+        "Defines single-strand tensile test for monofilament, multifilament, and spun yarns (strand-level method underlying mesh-yarn strength claims)",
+        "Specifies measurement of breaking force and elongation plus calculation of breaking tenacity, initial modulus, chord modulus, and breaking toughness",
+        "Provides wet (immersed/not-immersed), oven-dried, and conditioned-air test conditions plus straight, knotted, and looped specimen forms"
+      ]
+    },
+    {
+      "cite_key": "ASTM_D6775",
+      "title": "ASTM D6775-13(2024) Standard Test Method for Breaking Strength and Elongation of Textile Webbing, Tape and Braided Material",
+      "authors": "ASTM International Committee D13 on Textiles",
+      "year": 2024,
+      "venue": "ASTM International, West Conshohocken, PA. Standard designation D6775-13(2024)",
+      "arxiv_id": "",
+      "doi": "10.1520/D6775-13R24",
+      "url": "https://store.astm.org/d6775-13r17.html",
+      "key_contributions": [
+        "Defines breaking strength and elongation test for braided/webbing materials using a split-drum clamp, applicable to braided mesh cord and sidewall string",
+        "Bounds applicability to widths up to 90 mm and breaking strength up to 89,000 N",
+        "Complements single-strand D2256 for the braided-construction portion of lacrosse mesh and stringing"
+      ]
+    },
+    {
+      "cite_key": "ASTM_D570",
+      "title": "ASTM D570-98(2018) Standard Test Method for Water Absorption of Plastics",
+      "authors": "ASTM International Committee D20 on Plastics",
+      "year": 2018,
+      "venue": "ASTM International, West Conshohocken, PA. Standard designation D570-98(2018)",
+      "arxiv_id": "",
+      "doi": "10.1520/D0570-98R18",
+      "url": "https://store.astm.org/d0570-98r05.html",
+      "key_contributions": [
+        "Defines the relative rate of water absorption of plastics by immersion (24 h at 23 +/- 1 C, weighing to 0.001 g)",
+        "Quantifies percent water absorbed, the KPI metric for how much water a coated/polymer mesh takes on",
+        "Notes ISO 62 equivalence and that water uptake influences dimensional and mechanical properties"
+      ]
+    },
+    {
+      "cite_key": "ASTM_D4355",
+      "title": "ASTM D4355/D4355M-21 Standard Test Method for Deterioration of Geotextiles by Exposure to Light, Moisture, and Heat in a Xenon Arc-Type Apparatus",
+      "authors": "ASTM International Committee D35 on Geosynthetics",
+      "year": 2021,
+      "venue": "ASTM International, West Conshohocken, PA. Standard designation D4355/D4355M-21",
+      "arxiv_id": "",
+      "doi": "10.1520/D4355_D4355M-21",
+      "url": "https://store.astm.org/d4355_d4355m-14r18.html",
+      "key_contributions": [
+        "Defines accelerated UV/moisture/heat degradation test measuring tensile-strength retention of synthetic netting/geotextiles in a xenon-arc apparatus",
+        "Specifies exposure intervals (0, 150, 300, 500 h) with 120-min cycles (90 min light at 65 C, 30 min light+water spray) and percent-strength-retained curve",
+        "Provides the standardized protocol for quantifying UV-durability (strength loss after sunlight) of polymer mesh fibers"
+      ]
+    },
+    {
+      "cite_key": "ASTM_G155",
+      "title": "ASTM G155-21 Standard Practice for Operating Xenon Arc Lamp Apparatus for Exposure of Materials",
+      "authors": "ASTM International Committee G03 on Weathering and Durability",
+      "year": 2021,
+      "venue": "ASTM International, West Conshohocken, PA. Standard designation G155-21",
+      "arxiv_id": "",
+      "doi": "10.1520/G0155-21",
+      "url": "https://store.astm.org/g0155-21.html",
+      "key_contributions": [
+        "Defines xenon-arc light+water apparatus operating procedure to reproduce sunlight + rain/dew weathering on non-metallic materials including plastics, coatings, textiles, composites",
+        "Specifies xenon source types, filter combinations, and controlled light/temperature/humidity/spray variables",
+        "Provides the general (non-geotextile-specific) UV-durability apparatus practice for plastics/textile mesh weathering"
+      ]
+    },
+    {
+      "cite_key": "ASTM_D3884",
+      "title": "ASTM D3884-09(2017) Standard Guide for Abrasion Resistance of Textile Fabrics (Rotary Platform, Double-Head Method)",
+      "authors": "ASTM International Committee D13 on Textiles",
+      "year": 2017,
+      "venue": "ASTM International, West Conshohocken, PA. Standard designation D3884-09(2017)",
+      "arxiv_id": "",
+      "doi": "10.1520/D3884-09R17",
+      "url": "https://www.astm.org/d3884-09r13.html",
+      "key_contributions": [
+        "Defines abrasion-resistance test of textile fabrics using a rotary-platform double-head (RPDH/Taber) abrader",
+        "Describes the two-wheel inward/outward rubbing producing graded abrasion damage from none to near-complete",
+        "Notes abrasion resistance depends on fiber mechanical properties, fiber/yarn dimensions, fabric construction, and finishing"
+      ]
+    },
+    {
+      "cite_key": "ISO_9554",
+      "title": "ISO 9554:2019 Fibre ropes - General specifications",
+      "authors": "ISO Technical Committee TC 38 (Textiles)",
+      "year": 2019,
+      "venue": "International Organization for Standardization, Geneva. Standard designation ISO 9554:2019",
+      "arxiv_id": "",
+      "doi": "",
+      "url": "https://www.iso.org/standard/72077.html",
+      "key_contributions": [
+        "Specifies general characteristics of fibre ropes and their constituent materials (PA/nylon, PES/polyester, PP, PE, HMPE, aramid, LCP) used in netting/cordage",
+        "Distinguishes heat-set (type 1) vs non-heat-set (type 2) polyamide/polyester laid ropes for dimensional stability, relevant to wet-stretch",
+        "Provides inspection and retirement criteria, used with product-specific standards covering physical properties"
+      ]
+    },
+    {
+      "cite_key": "WorldLacrosse_MensRules_2025",
+      "title": "Rules of Men's Field Lacrosse 2025-2027 (Ver 1.0) - Rule 15 (The Stick) and Rule 16 (Illegal Sticks)",
+      "authors": "World Lacrosse",
+      "year": 2025,
+      "venue": "World Lacrosse Official Playing Rules, 2025-2027 edition, Rules 15-16",
+      "arxiv_id": "",
+      "doi": "",
+      "url": "https://worldlacrosse.sport/wp-content/uploads/2025/01/WL_Mens-Rules_25-27.pdf",
+      "key_contributions": [
+        "Defines the pocket-depth legality test: ball top surface must not sit below the bottom edge of the sidewalls when held horizontal",
+        "Sets crosse head width 15.24-25.40 cm (6-10 in) inside measurement, goalkeeper head up to 38.10 cm (15 in)",
+        "Prohibits stringing/construction that withholds the ball or retards normal/free dislodgement (trick stringing)"
+      ]
+    },
+    {
+      "cite_key": "NFHS_BoysLax_2023",
+      "title": "NFHS Boys Lacrosse Rules Changes 2023 - Rule 1-7-1 (Crosse Pocket/Net Hole Size)",
+      "authors": "National Federation of State High School Associations (NFHS) Boys Lacrosse Rules Committee",
+      "year": 2023,
+      "venue": "NFHS Boys Lacrosse Rules Book 2023, Rule 1-7-1 Art. 4",
+      "arxiv_id": "",
+      "doi": "",
+      "url": "https://www.nfhs.org/sports-resource-content/boys-lacrosse-rules-changes-2023/",
+      "key_contributions": [
+        "Defines the maximum pocket/net hole-or-gap size: no holes or gaps larger than 1.68 inches in diameter (an American golf ball)",
+        "States the rationale: a stringing technique that passes a static stick check but stretches the mesh under force to entrap the ball",
+        "Standardizes the pocket-legality spec across NFHS Girls Lacrosse and NCAA Men's Lacrosse"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "statement": "In aquaculture netting, nylon (polyamide) has a higher initial breaking load and higher elongation than polyester, yielding a better working force under load.",
+      "paper": "moe2007netting",
+      "supporting_passage": "Nylon has a slightly stronger initial breaking load when compared to Polyester and its elongation is also higher thus leading to a better working force.",
+      "claim_type": "result",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "statement": "HDPE is durable, low-cost, low-density, resistant to UV, abrasion, and chemicals, floats well, and dominates commercial fishing nets and aquaculture cages.",
+      "paper": "pagnotta2025netting",
+      "supporting_passage": "HDPE is highly durable, resistant to UV, abrasion, and chemicals; floats well; cost-effective; and is dominant in commercial fishing nets, aquaculture cages, and trawls.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "statement": "Netting fibers in saline service are continuously attacked by UV radiation, hydrolysis, biofouling, and mechanical abrasion, which set the all-weather durability requirement.",
+      "paper": "pagnotta2025netting",
+      "supporting_passage": "Fishing and aquaculture nets operate in saline environments, sometimes at variable temperatures, and are subject to biofouling, exposure to UV radiation, hydrolysis, and continuous mechanical abrasion.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "statement": "For a UHMWPE fiber net under marine aging, the UV environment produces the most rapid breaking-strength loss compared with salt spray or hygrothermal exposure, with salt spray reducing breaking strength from 850 N to 655 N over 60 days.",
+      "paper": "zhang2022uhmwpenet",
+      "supporting_passage": "UV environment (10 days): Breaking strength dropped dramatically, showing 'more rapid' loss than salt spray or hygrothermal treatments. Salt spray (60 days): Breaking strength decreased to 655 N from an initial 850 N.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "xue2026hdpeuhmwpe",
+        "Thomas2006SunlightPA6",
+        "franco2022petgeotextile"
+      ]
+    },
+    {
+      "id": "c5",
+      "statement": "UHMWPE fiber is recognized for an exceptionally high strength-to-weight ratio together with toughness and chemical resistance.",
+      "paper": "faruk2023uhmwpe",
+      "supporting_passage": "UHMWPE fiber is widely recognized for its exceptional properties, including high strength-to-weight ratio, toughness, and chemical resistance.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "pagnotta2025netting",
+        "Wanchana2002HPPEFatigue"
+      ]
+    },
+    {
+      "id": "c6",
+      "statement": "Blending UHMWPE into HDPE monofilament reduces UV-aging damage: after 600 h, the blend's carbonyl index was about 55% lower and its unsaturation index about 40% of pure HDPE, and breaking-strength decline was 43.7% (blend) versus 54.5% (pure HDPE).",
+      "paper": "xue2026hdpeuhmwpe",
+      "supporting_passage": "Pure HDPE carbonyl index reached approximately 4.52%, while the blend's was ~55% lower ... blend was 'approximately 40% of those of pure HDPE' ... Pure HDPE: breaking strength declined 54.5%, elongation dropped 66.0% ... HDPE/UHMWPE blend: breaking strength declined 43.7%, elongation dropped 54.0%.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "zhang2022uhmwpenet"
+      ]
+    },
+    {
+      "id": "c7",
+      "statement": "The UHMWPE phase improves UV durability by forming highly entangled dense micro-regions that act as a physical barrier impeding oxygen and free-radical diffusion and as a load-bearing skeleton, shifting failure from rapid brittle failure to progressive slow deterioration.",
+      "paper": "xue2026hdpeuhmwpe",
+      "supporting_passage": "'highly entangled, dense micro-regions' establish barriers impeding oxygen and free radical diffusion, reducing oxidation ... function as load-bearing support during later degradation stages, preserving mechanical integrity and shifting failure from 'rapid brittle failure' to 'progressive slow deterioration.'",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "statement": "Polyamide 6 (nylon 6) absorbs substantial water, with average saturation around 8.83% in an 80 C water bath, and this water plasticizes the polymer, dropping Young's modulus from roughly 1100 MPa (dry) to roughly 330 MPa (fully saturated).",
+      "paper": "sambale2021pa6",
+      "supporting_passage": "At 80C in water bath: average saturation concentration of 8.83% ... Young's modulus reduced from ~1100 MPa (dry) to ~330 MPa (fully saturated in water) ... Water 'significantly reduces the stiffness and strength of PA6'.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "LeGac2017",
+        "Wetzel2023",
+        "Miceli2016LacrosseMesh"
+      ]
+    },
+    {
+      "id": "c9",
+      "statement": "Water absorption in nylon 6 is a reversible swelling process that lowers the glass transition temperature from about 60 C (dry) to about -20 C (water-saturated), explaining the loss of stiffness when wet.",
+      "paper": "sambale2021pa6",
+      "supporting_passage": "'lowers the glass transition temperature of the material from about 60 C for dry PA6 to about -20 C for completely water-saturated material' ... Swelling is 'reversible process'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "Wetzel2023",
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c10",
+      "statement": "PET polyester is more UV-durable than polyamide: a PET nonwoven retained 81.5% of original tensile strength after 1000 h of accelerated UV exposure, with degradation proceeding by chain scission that forms carboxyl groups.",
+      "paper": "franco2022petgeotextile",
+      "supporting_passage": "At 1000 hours of exposure, the geotextile retained only 81.5% of original tensile strength ... 'In the case of polyester (PET), the UV degradation causes polymer chain scission, forming a carboxyl group.'",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2013NylonPolyesterToughness"
+      ]
+    },
+    {
+      "id": "c11",
+      "statement": "UV stabilizers such as carbon black delay but do not prevent PET ester-backbone degradation; in the geotextile study additives protected the material for 500 h before visible degradation by 1000 h.",
+      "paper": "franco2022petgeotextile",
+      "supporting_passage": "Commercial UV stabilizers (typically carbon black) provide limited defense - in this study, additives protected the material for 500 hours but degradation became visible at 1000 hours of accelerated testing.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "Liu2002CarbonBlackLLDPE"
+      ]
+    },
+    {
+      "id": "c12",
+      "statement": "Polyester (PET) fibers resist degradation because of their high crystallinity and hydrophobic nature, the chemistry baseline that distinguishes the ester family from more water-absorbing amide fibers.",
+      "paper": "egan2022biodegradability",
+      "supporting_passage": "Polyester fibers are highly resistant to degradation due to their high crystallinity and hydrophobic nature.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "AZoM_PET_TDS"
+      ]
+    },
+    {
+      "id": "c13",
+      "statement": "Absorbed water plasticizes polyamide 6 by increasing macromolecular chain mobility, which causes a large decrease in both Young's modulus and yield stress while increasing elongation at break.",
+      "paper": "LeGac2017",
+      "supporting_passage": "The presence of water in PA6 leads to a large modification of mechanical properties induced by an increase in the mobility of macromolecular chains. This increase in mobility leads to a decrease in both Young's modulus and yield stress, whereas elongation at break is increased.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Wetzel2023",
+        "Quistwater1958"
+      ]
+    },
+    {
+      "id": "c14",
+      "statement": "When polyamide 6 is saturated with water at 20 C, its modulus decreases by about 80%, demonstrating the magnitude of moisture plasticization.",
+      "paper": "LeGac2017",
+      "supporting_passage": "For example, Silva et al. found a decrease of 80% in modulus when PA6 was saturated with water at 20 C.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Wetzel2023"
+      ]
+    },
+    {
+      "id": "c15",
+      "statement": "In humid environments, plasticization of polyamide 6 by absorbed water is a physical degradation that induces a large decrease in mechanical properties such as yield stress or modulus, distinct from hydrolysis.",
+      "paper": "LeGac2017",
+      "supporting_passage": "Considering now humid environment, two main types of degradation can occur; first, plasticization of the polymer occurs due to water diffusion from the external environment into the polymer. This physical degradation induces a large decrease in mechanical properties such as stress at yield or modulus.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "statement": "Water saturation drops the glass transition temperature of polyamide 6.6 from 58 C (dry) to about -24 C (saturated), a reduction exceeding 80 K, consistent with a water-induced plasticizing effect.",
+      "paper": "Wetzel2023",
+      "supporting_passage": "The study documented a dramatic Tg drop: from 58 C (dry) to -24 C (water-saturated) - a reduction exceeding 80 K. The researchers noted this shift aligns with water-induced plasticizing effect.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c17",
+      "statement": "Water saturation reduces the Young's modulus of polyamide 6.6 from 2.885 GPa (dry) to 0.598 GPa (saturated), roughly a factor of 4.8.",
+      "paper": "Wetzel2023",
+      "supporting_passage": "Young's modulus decreased from 2.885 GPa (dry) to 0.598 GPa (water-saturated) - a reduction by factor of ~4.8.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "LeGac2017"
+      ]
+    },
+    {
+      "id": "c18",
+      "statement": "Moisture uptake in polyamide 6.6 produces anisotropic hygroscopic swelling that correlates linearly with moisture content, so wet nylon is not dimensionally stable.",
+      "paper": "Wetzel2023",
+      "supporting_passage": "Hygroscopic swelling proved anisotropic, with expansion in thickness direction substantially exceeding lateral directions. Volumetric swelling correlated linearly with moisture content across equilibrium states.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6"
+      ]
+    },
+    {
+      "id": "c19",
+      "statement": "For nylon 6 fibres, moisture reduces the Tg of the amorphous structure and has only a small influence on static tensile properties but a significant effect on long-term creep behaviour.",
+      "paper": "Humeau2018",
+      "supporting_passage": "Nylon fibres are particularly sensitive to moisture, which reduces the Tg of the amorphous structure. This can be predicted, and has a small influence on the static tensile properties but a significant effect on the long term behaviour.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "HuntDarlington1979",
+        "MoeFore2016UHMWPECreep"
+      ]
+    },
+    {
+      "id": "c20",
+      "statement": "In humid nylon 6 fibre, instantaneous creep compliance increases with both stress and relative humidity, and recovery data reveal a permanent (irreversible) elongation.",
+      "paper": "Humeau2018",
+      "supporting_passage": "the instantaneous compliance (g0D0), the creep rate (g2D1) ... increases with increasing stress and relative humidity. ... The recovery data show a permanent elongation",
+      "claim_type": "result",
+      "confidence": "medium",
+      "corroborated_by": [
+        "HuntDarlington1979",
+        "MoeFore2016UHMWPECreep"
+      ]
+    },
+    {
+      "id": "c21",
+      "statement": "The dry glass transition temperature of nylon 6 yarn is about 55 C at 0% RH (slightly above bulk PA6 ~50 C); humidity drives it down, making the amorphous phase mobile near service conditions.",
+      "paper": "Humeau2018",
+      "supporting_passage": "In the reference state (0%RH) the Tg value reaches 55 C on average, which is a little higher than for bulk polyamide 6 (around 50 C).",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Wetzel2023"
+      ]
+    },
+    {
+      "id": "c22",
+      "statement": "Absorbed water vapor acts as a plasticizer on nylon 66, the foundational identification of moisture-driven plasticization in polyamides.",
+      "paper": "Quistwater1958",
+      "supporting_passage": "Dynamic mechanical properties of nylon 66 and the plasticizing effect of water vapor on nylon.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "LeGac2017",
+        "sambale2021pa6",
+        "Wetzel2023"
+      ]
+    },
+    {
+      "id": "c23",
+      "statement": "Water absorption in polyamide 6 is non-Fickian (case II) because water diffusivity changes as the polymer transitions from the glassy to the rubbery state during wet ageing.",
+      "paper": "Arhant2016",
+      "supporting_passage": "It was shown that water absorption in PA6 cannot be described by a simple Fickian behavior due to changes in water diffusivity with water activity when the polymer goes from the glassy to the rubbery state; this behavior is known as case II diffusion.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "statement": "Creep of nylon-6,6 can be predicted as a function of moisture content at constant stress and temperature, establishing moisture content as a primary driver of nylon's time-dependent deformation.",
+      "paper": "HuntDarlington1979",
+      "supporting_passage": "Prediction of creep of nylon-6,6 at constant stress, temperature and moisture content.",
+      "claim_type": "method",
+      "confidence": "medium",
+      "corroborated_by": [
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c25",
+      "statement": "PET polyester has equilibrium water absorption below 0.7% and 24-hour water absorption of only 0.1%, and is dimensionally stable with very low water absorption, so it does not plasticize or swell appreciably when wet.",
+      "paper": "AZoM_PET_TDS",
+      "supporting_passage": "Water absorption - equilibrium ( % ): <0.7 ... Water absorption - over 24 hours ( % ): 0.1 ... PET has very low water absorption behavior.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "egan2022biodegradability"
+      ]
+    },
+    {
+      "id": "c26",
+      "statement": "Hydrophobic polypropylene-based lacrosse mesh yarn does not absorb water, whereas conventional nylon and cotton mesh are fluid-pervious and gain weight when wet, changing pocket consistency and flexibility.",
+      "paper": "Miceli2016LacrosseMesh",
+      "supporting_passage": "Traditional materials like nylon and cotton are fluid pervious. As such, they absorb liquid, thereby increasing their weight and changing their consistency and flexibility. ... [polypropylene/INNEGRA S is] hydrophobic, meaning it will not absorb water, with extremely low moisture absorption, if any.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "AZoM_PET_TDS"
+      ]
+    },
+    {
+      "id": "c27",
+      "statement": "Using an intrinsically hydrophobic, low-density yarn can make lacrosse mesh about 50% lighter than conventional hard, wax, or soft mesh and limit stretch to no more than about 11%, while eliminating the need for wax or polymer coatings.",
+      "paper": "Miceli2016LacrosseMesh",
+      "supporting_passage": "About 50% lighter than conventional hard, wax or soft mesh ... will only stretch no more than 11% ... [INNEGRA S] requires no coatings or other surface treatments.",
+      "claim_type": "result",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c28",
+      "statement": "Coatings applied to mesh for stiffness, waterproofing, or debris removal deteriorate over time and require replenishment, representing a durability cost of finishing approaches.",
+      "paper": "Miceli2016LacrosseMesh",
+      "supporting_passage": "Prior art meshes used coatings applied over the mesh for stiffness, waterproofing, or debris removal, but these often deteriorate or otherwise require replenishment.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "Jannatun2020PDMSCotton"
+      ]
+    },
+    {
+      "id": "c29",
+      "statement": "A paraffin-wax emulsion finish can raise fabric water repellency to a maximum rating of 100, but the wax treatment increases fabric stiffness.",
+      "paper": "AboShosha2008ParaffinWax",
+      "supporting_passage": "Water repellency rating reached a maximum of 100 with optimal conditions at 160 C for 5 minutes ... treating the fabric with the deactivated emulsion resulted in increasing stiffness ... the emulsion can be used to acquire body to fabric.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Miceli2016LacrosseMesh"
+      ]
+    },
+    {
+      "id": "c30",
+      "statement": "Polyurethane is used extensively as a textile coating because it provides good bonding with the substrate, tensile and tear strength, impact and abrasion resistance, good elongation, light resistance, and solvent/chemical/water resistance.",
+      "paper": "Sikdar2022PUTextiles",
+      "supporting_passage": "Polyurethane is used extensively for textile coating because of its good bonding with substrate, tensile strength, tear resistance, impact resistance, abrasion resistance, good elongation, light resistance and solvent/chemical/water resistance.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "statement": "A silicone (PDMS) plus crosslinked SiO2-PVA coating on cotton textile produces a durable, self-healing superhydrophobic surface with water contact angle above 150 degrees and sliding angle below 5 degrees.",
+      "paper": "Jannatun2020PDMSCotton",
+      "supporting_passage": "The modified cotton textile showed remarkable superhydrophobicity with a water contact angle higher than 150 and sliding angle less than 5 ... durable and self-healing superhydrophobic coatings of SiO2-PVA@PDMS on cotton textile.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c32",
+      "statement": "Carbon black improves UV stability of polyolefin films, with its effectiveness depending on carbon-black type, particle size, concentration, and degree of dispersion in the polymer.",
+      "paper": "Liu2002CarbonBlackLLDPE",
+      "supporting_passage": "UV stabilization character of carbon black is related to the type and particle size of the CB as well as to its concentration and its degree of dispersion in the polymer. ... The photostabilising efficiency of carbon black is based on both physical surface-area-dependent UV absorption and photochemical activity.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "franco2022petgeotextile"
+      ]
+    },
+    {
+      "id": "c33",
+      "statement": "Hindered amine light stabilizers (HALS) protect polymers without absorbing UV, instead cycling through nitroxyl radicals that scavenge alkyl and peroxy radicals to interrupt photo-oxidation in polyolefins, polyamides, and rubbers.",
+      "paper": "ChirinosPadron1990HALS",
+      "supporting_passage": "The tetramethylpiperidine moiety, which is the basic structure of HALS, is initially oxidized to produce a nitroxyl radical by UV irradiation. This nitroxyl radical then acts as a scavenger of an alkyl radical originating from the substrate polymer chain to form an alkylated aminoether. From the aminoether, the nitroxyl radical is regenerated in turn through quenching another peroxyradical.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "statement": "Unstabilized nylon 66/polyester woven fabric loses about 55% of its breaking toughness in the nylon direction after only 7 hours of UV exposure.",
+      "paper": "Moezzi2013NylonPolyesterToughness",
+      "supporting_passage": "Breaking toughness in the weft direction of nylon/polyester fabrics decreased by 55% after only 7 hours of UV light exposure.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2019Nylon66ConveyorUV",
+        "Thomas2006SunlightPA6"
+      ]
+    },
+    {
+      "id": "c35",
+      "statement": "UV exposure degrades the physical, thermal, and morphological properties of industrial nylon 66 fabric, making it brittle and yellow, the polyamide class used in conventional lacrosse mesh.",
+      "paper": "Moezzi2019Nylon66ConveyorUV",
+      "supporting_passage": "The effects of UV degradation on the physical, thermal, and morphological properties of industrial nylon 66 conveyor belt fabrics ... nylon undergoes undesirable changes in mechanical properties, becomes brittle and becomes yellow in colour.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2013NylonPolyesterToughness",
+        "Thomas2006SunlightPA6"
+      ]
+    },
+    {
+      "id": "c36",
+      "statement": "A PA6 nylon knot loses about 30% of monofilament strength while a brittle PBSAT knot loses about 62%, showing the knot is a major strength penalty whose magnitude depends on fiber ductility.",
+      "paper": "LeGue2024KnotBiodegradable",
+      "supporting_passage": "The PBSAT knot experiences a loss of strength of -62%, whereas, for PA6, the loss is -30%.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "ISO1805_2006"
+      ]
+    },
+    {
+      "id": "c37",
+      "statement": "The knot is the strength-limiting feature of netting, with knot rupture initiating at curvature peaks, so net-scale strength cannot be predicted from monofilament strength alone.",
+      "paper": "LeGue2024KnotBiodegradable",
+      "supporting_passage": "knot rupture occurs at curvature peaks.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "ISO1805_2006"
+      ]
+    },
+    {
+      "id": "c38",
+      "statement": "High-performance polyethylene (HPPE/UHMWPE) has the highest tensile-fatigue durability and least abrasion damage, while nylon monofilament has the best knot-fatigue durability.",
+      "paper": "Wanchana2002HPPEFatigue",
+      "supporting_passage": "The durability of HPPE under tensile fatigue testing was largest ... HPPE suffered the least damage from abrasion compared with the other twines.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "faruk2023uhmwpe",
+        "pagnotta2025netting"
+      ]
+    },
+    {
+      "id": "c39",
+      "statement": "Knots account for about 21% of total drag in nylon netting, so a knotless panel has roughly 79% of the drag of a knotted one.",
+      "paper": "Tang2019NettingHydrodynamics",
+      "supporting_passage": "The drag generated by knot accounted for 21% of the total drag of nylon (PA) netting. ... knotless PA netting panel was ~79% of that of knotted netting.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Tang2018KnotlessPurseSeine",
+        "Bottero2025DiamondSolidity"
+      ]
+    },
+    {
+      "id": "c40",
+      "statement": "Knots add 15-25% to netting drag, so a knotless panel has roughly 83% of the drag of a knotted panel, corroborating the projected-area penalty of knots.",
+      "paper": "Tang2018KnotlessPurseSeine",
+      "supporting_passage": "the drag generated by knot accounted for 15-25% of total drag ... knotless PA netting panel is approximately 83% of that of knotted netting.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Tang2019NettingHydrodynamics",
+        "Bottero2025DiamondSolidity"
+      ]
+    },
+    {
+      "id": "c41",
+      "statement": "Diamond-mesh solidity is a function of twine diameter, bar length, and hanging angle, with the knot adding projected area, the geometry that maps construction levers to mesh pocket shape.",
+      "paper": "Bottero2025DiamondSolidity",
+      "supporting_passage": "solidity of knotted single-twine diamond mesh netting [twine diameter, bar length, hanging angle; knot adds projected area].",
+      "claim_type": "definition",
+      "confidence": "medium",
+      "corroborated_by": [
+        "Tang2019NettingHydrodynamics",
+        "Tang2018KnotlessPurseSeine"
+      ]
+    },
+    {
+      "id": "c42",
+      "statement": "Natural sunlight UV reduces breaking strength and elongation of PA6 net materials, while larger yarn diameter gives higher breaking load and elongation.",
+      "paper": "Thomas2006SunlightPA6",
+      "supporting_passage": "reduced breaking strength and elongation at break of samples exposed to sunlight. ... Higher yarn diameter ... higher breaking load and higher elongation.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2013NylonPolyesterToughness",
+        "Moezzi2019Nylon66ConveyorUV"
+      ]
+    },
+    {
+      "id": "c43",
+      "statement": "In Raschel-knitted UHMWPE netting, on-loading structural strain of 8.8-27.8% is largely permanent while the additional creep strain (1.3-4.5%) is comparatively small, so even high-modulus polyolefin nets take a permanent set under load.",
+      "paper": "MoeFore2016UHMWPECreep",
+      "supporting_passage": "structural strain of 8.8-27.8% ... long lasting and possibly permanent.",
+      "claim_type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c44",
+      "statement": "ISO 1805:2006 defines the determination of breaking force and knot breaking force of netting yarns and specifies wet testing to capture in-use behavior.",
+      "paper": "ISO1805_2006",
+      "supporting_passage": "Fishing nets - Determination of breaking force and knot breaking force of netting yarns; yarn and knot breaking force; wet testing for in-use behavior.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "ISO1806_2002",
+        "ASTM_D2256"
+      ]
+    },
+    {
+      "id": "c45",
+      "statement": "ISO 1806:2002 defines the determination of mesh breaking force of netting at the net scale, with wet testing, complementing ISO 1805 yarn/knot breaking-force determination.",
+      "paper": "ISO1806_2002",
+      "supporting_passage": "Fishing nets - Determination of mesh breaking force of netting; mesh breaking force; wet testing; complements ISO 1805.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "ISO1805_2006"
+      ]
+    },
+    {
+      "id": "c46",
+      "statement": "ASTM D2256 measures yarn breaking force and elongation and is used to calculate breaking tenacity, initial modulus, chord modulus, and breaking toughness of single, plied, or cabled yarns.",
+      "paper": "ASTM_D2256",
+      "supporting_passage": "The test method covers the measurement of breaking force and elongation of yarns and includes directions for the calculation of breaking tenacity, initial modulus, chord modulus, and breaking toughness.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "ASTM_D6775"
+      ]
+    },
+    {
+      "id": "c47",
+      "statement": "ASTM D2256 includes wet (not-immersed and immersed), oven-dried, and conditioned-air test conditions, plus straight, knotted, and looped specimen forms, enabling direct dry-vs-wet yarn strength comparison.",
+      "paper": "ASTM_D2256",
+      "supporting_passage": "Options are included for the testing of specimens in straight, knotted, and looped form, with conditions of test including conditioned air, wet (not immersed or immersed), oven-dried, and exposed to elevated or low temperature.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "ISO1805_2006"
+      ]
+    },
+    {
+      "id": "c48",
+      "statement": "ASTM D6775 determines breaking strength and elongation of textile webbing, tape, and braided material using a split-drum clamp, applicable to materials up to 90 mm wide and 89,000 N breaking strength.",
+      "paper": "ASTM_D6775",
+      "supporting_passage": "ASTM D6775 is a test method that covers the determination of the breaking strength and elongation of textile webbing, tape and braided materials using a split-drum type specimen clamp ... limited to materials with a maximum width of 90 mm (3.5 in.) and a maximum breaking strength of no more than 89000 N (20000 lb).",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "ASTM_D2256"
+      ]
+    },
+    {
+      "id": "c49",
+      "statement": "ASTM D570 quantifies water absorption of plastics by 24-hour immersion at 23 +/- 1 C with weighing to the nearest 0.001 g, and notes water uptake influences mechanical and dimensional properties.",
+      "paper": "ASTM_D570",
+      "supporting_passage": "the conditioned specimen is placed in a container filled with distilled water, and its temperature should be maintained at 23 +/- 1 C ... a specimen may be weighed to the nearest 0.001 g, then returned to the water and weighed again after 24 hours ... characterizes the dimensional stability and also influences the electrical and mechanical properties of plastics when exposed to humid or wet conditions.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "AZoM_PET_TDS"
+      ]
+    },
+    {
+      "id": "c50",
+      "statement": "ASTM D4355 determines deterioration in tensile strength of geotextiles from xenon-arc light, moisture, and heat, exposing specimens for 0/150/300/500 hours in 120-minute cycles (90 min light at 65 C, 30 min light plus water spray) and reporting percent strength retained.",
+      "paper": "ASTM_D4355",
+      "supporting_passage": "Exposure consists of 120 minute cycles as follows: 90 minutes of light only at 65 C uninsulated black panel temperature and 50% relative humidity followed by 30 minutes of light plus water spray. The average breaking strength in each direction is compared to that of the original control specimens. The percent strength retained is plotted to produce a degradation curve.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "ASTM_G155",
+        "franco2022petgeotextile"
+      ]
+    },
+    {
+      "id": "c51",
+      "statement": "ASTM G155 specifies xenon-arc light-and-water apparatus operation to reproduce sunlight and rain/dew weathering on non-metallic materials including plastics, coatings, textiles, and composites.",
+      "paper": "ASTM_G155",
+      "supporting_passage": "This practice covers the basic principles and operating procedures for using xenon arc light and water apparatus intended to reproduce the weathering effects that occur when materials are exposed to sunlight (either direct or through window glass) and moisture as rain or dew in actual use.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "ASTM_D4355"
+      ]
+    },
+    {
+      "id": "c52",
+      "statement": "ASTM D3884 determines abrasion resistance of textile fabrics with a rotary-platform double-head (Taber) abrader using two wheels that rub the sample inward and outward to produce graded abrasion damage.",
+      "paper": "ASTM_D3884",
+      "supporting_passage": "technicians place the sample on a rotating platform containing two wheels, with one wheel rubbing the sample inwardly and the other rubbing it outwardly. The friction causes abrasion marks that technicians label according to their severity, ranging from no visible damage to almost complete damage.",
+      "claim_type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c53",
+      "statement": "ISO 9554:2019 specifies the general characteristics of fibre ropes and their constituent materials and is intended to be used with type-specific standards covering physical properties and requirements.",
+      "paper": "ISO_9554",
+      "supporting_passage": "This document specifies the general characteristics of fibre ropes and their constituent materials. It is intended to be used in conjunction with the standards for the individual types of fibre rope, which cover the physical properties and specific requirements for that particular product type.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c54",
+      "statement": "ISO 9554:2019 distinguishes heat-set (type 1) from non-heat-set (type 2) polyamide and polyester laid ropes, where heat setting ensures lay and dimensional stability, naming heat-set as the mechanism for dimensional stability without giving an acceptance threshold.",
+      "paper": "ISO_9554",
+      "supporting_passage": "Polyamide and polyester laid ropes that are required to be heat set to ensure lay and dimensional stability are designated as type 1 ropes in the relevant product standard. In other cases, polyamide and polyester laid ropes that are not required to have a heat setting on the rope are designated as type 2 ropes.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c55",
+      "statement": "World Lacrosse Rule 16.1 makes a stick illegal if the pocket has sagged so the top surface of a ball placed in it is below the bottom edge of the sidewalls when the stick is held horizontal with the net to the bottom; this does not apply to the goalkeeper's stick.",
+      "paper": "WorldLacrosse_MensRules_2025",
+      "supporting_passage": "No Player shall use a stick in which the pocket has been permitted to sag to such a depth that the top surface of a lacrosse ball placed therein is below the bottom edge of the sidewalls when the stick is held horizontal to the ground with the net to the bottom of the stick. This prohibition shall not apply to the stick of the Designated Goalkeeper.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "NFHS_BoysLax_2023"
+      ]
+    },
+    {
+      "id": "c56",
+      "statement": "World Lacrosse Rule 15.3 sets the non-goalkeeper crosse head to measure between 15.24 cm (6 in) and 25.40 cm (10 in) inside measurement at its widest point, with goalkeeper heads permitted up to 38.10 cm (15 in).",
+      "paper": "WorldLacrosse_MensRules_2025",
+      "supporting_passage": "The head of the stick shall measure between 15.24cm (6in) and 25.40cm (10in) inside measurement at its widest point ... The Designated Goalkeeper may use a stick that measures from 15.24cm (6in) up to 38.10cm (15in) inside measurement at its widest point.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c57",
+      "statement": "World Lacrosse Rules 16.2-16.3 prohibit sticks constructed or strung to withhold the ball from play, or of trick construction/stringing that retards normal and free dislodgement of the ball by an opponent.",
+      "paper": "WorldLacrosse_MensRules_2025",
+      "supporting_passage": "No Player shall use a stick that is constructed or strung so as to be designed to withhold the ball from play ... No Player shall use a stick of trick construction or stringing which tends to retard the normal and free dislodgement of the ball by an opponent.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "NFHS_BoysLax_2023"
+      ]
+    },
+    {
+      "id": "c58",
+      "statement": "NFHS Boys Lacrosse Rule 1-7-1 requires the pocket/net to be completely attached to the head and side walls with no holes or gaps larger than 1.68 inches in diameter (an American golf ball).",
+      "paper": "NFHS_BoysLax_2023",
+      "supporting_passage": "The pocket/net shall be completely attached to the head and the side walls, having no holes or gaps larger than 1.68 inches in diameter (i.e. an American golf ball).",
+      "claim_type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "WorldLacrosse_MensRules_2025"
+      ]
+    },
+    {
+      "id": "c59",
+      "statement": "The NFHS 1.68-inch hole rule targets a stringing technique that passes a static stick check but stretches the mesh net under force to entrap the ball, identifying load-driven mesh stretch as the legality-evasion failure mode.",
+      "paper": "NFHS_BoysLax_2023",
+      "supporting_passage": "There has been an increased use of a stringing technique which allows for trapping the ball in such a manner where the stick will pass a stick check, but when force is applied stretches the mesh net to entrap the ball.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "WorldLacrosse_MensRules_2025",
+        "Humeau2018",
+        "MoeFore2016UHMWPECreep"
+      ]
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "op1",
+      "statement": "Accelerated-aging acceleration ratios (e.g. the UHMWPE net study's ~5.45x-8x environmental-spectrum-to-real-service factors) are not standardized, so lab UV/marine aging hours cannot yet be reliably mapped to real all-weather field lifetimes for a given netting polymer, and the dramatic lab UV toughness loss (e.g. ~55% in 7 h) has not been correlated to real outdoor field-exposure lifetimes for stabilized vs unstabilized lacrosse mesh yarns.",
+      "flagged_by": [
+        "zhang2022uhmwpenet",
+        "Moezzi2013NylonPolyesterToughness",
+        "Moezzi2019Nylon66ConveyorUV",
+        "ASTM_D4355",
+        "ASTM_G155"
+      ],
+      "status": "open",
+      "why_it_matters": "Without a validated lab-to-field correlation, UV-durability KPI targets for lacrosse mesh cannot be specified in field-equivalent seasons or years, only in arbitrary chamber hours, so manufacturers cannot size a UV-stabilizer package to retain legal pocket performance over a season of sun."
+    },
+    {
+      "id": "op2",
+      "statement": "UHMWPE's extreme tenacity and abrasion resistance come paired with intrinsic polyolefin weaknesses (creep, very low melting point, poor dyeability/adhesion) that the reviews note but do not fully quantify for fine netting geometries, and Raschel UHMWPE nets show 8.8-27.8% largely permanent on-loading strain.",
+      "flagged_by": [
+        "faruk2023uhmwpe",
+        "pagnotta2025netting",
+        "MoeFore2016UHMWPECreep"
+      ],
+      "status": "partially-addressed",
+      "why_it_matters": "Creep, permanent set, low melt point and poor dyeability bear directly on wet-stretch/pocket-legality and on dyeing/printing of a finished lacrosse mesh, so the strength-to-weight win may be offset by dimensional drift under sustained string tension and by limited color options."
+    },
+    {
+      "id": "op3",
+      "statement": "There is no unified, netting-specific dataset that reports tenacity (g/denier), equilibrium water absorption (%), density, and UV-strength-retention for nylon 6, nylon 6/6, PET, HDPE, polypropylene, and UHMWPE under the same test protocol; values are scattered across bulk-polymer and application-specific studies, and no single ASTM/ISO designation jointly specifies the mesh-relevant KPI set (strength, water absorption, UV, abrasion are siloed across textile, plastics, geosynthetics, and weathering committees).",
+      "flagged_by": [
+        "moe2007netting",
+        "pagnotta2025netting",
+        "egan2022biodegradability",
+        "ASTM_D2256",
+        "ASTM_D570",
+        "ASTM_D4355",
+        "ASTM_D3884"
+      ],
+      "status": "open",
+      "why_it_matters": "Cross-family material selection for all-weather mesh currently requires stitching together incommensurable datasets and cross-domain test methods, raising the risk of comparing dry-vs-wet or fiber-vs-monofilament numbers on unequal footing and leaving gaps (e.g. wet-abrasion, post-UV wet-stretch) uncovered."
+    },
+    {
+      "id": "op4",
+      "statement": "The amide family's wet-property penalty is well quantified for nylon 6 (modulus ~1100 to ~330 MPa, ~8.8% saturation; Tg ~60 to ~-20 C) and nylon 6.6 (2.885 to 0.598 GPa; Tg 58 to -24 C), but the 6 vs 6/6 wet-stiffness and wet-strength curves are not co-reported under the same sorption protocol, leaving the 6-vs-6/6 wet-stretch trade-off under-specified; long-term moisture-driven creep (the bagging-out mechanism) is itself flagged as the critical under-quantified failure mode for immersed nylon fibres.",
+      "flagged_by": [
+        "sambale2021pa6",
+        "Wetzel2023",
+        "Humeau2018"
+      ],
+      "status": "partially-addressed",
+      "why_it_matters": "Wet-stretch and pocket-legality after rain hinge on the exact wet modulus and long-term creep of the chosen amide grade; the 6-vs-6/6 gap and the long-term creep curve are the central all-weather decisions for nylon mesh and remain only qualitatively bounded."
+    },
+    {
+      "id": "op5",
+      "statement": "Existing yield-stress/plasticization models for PA6 deliberately exclude hydrolysis (chain scission) by keeping ageing times short, and PA6 water absorption is non-Fickian/case II with a moving glassy-to-rubbery front and state-dependent diffusivity, so coupled plasticization-plus-hydrolysis behaviour and through-thickness water/property gradients over long real-world wet/dry cycling remain hard to predict simply.",
+      "flagged_by": [
+        "LeGac2017",
+        "Arhant2016"
+      ],
+      "status": "open",
+      "why_it_matters": "All-weather lacrosse mesh undergoes years of wet/dry cycling where both reversible plasticization and irreversible hydrolysis act and strands wet/dry non-uniformly; a model valid only for the plasticization-only or Fickian regime may under-predict long-term strength, stiffness/hold, and dimensional loss."
+    },
+    {
+      "id": "op6",
+      "statement": "Water-repellent and UV-stabilizer finishes are characterized in isolation but not as the realistic combined package on fine pigmented braided mesh: wax/emulsion finishes raise stiffness without quantified effect on pocket hold/release, coatings are reported to deteriorate without published abrasion/wash/UV-to-failure curves under lacrosse loading, optimal carbon-black loading/dispersion for thin colored yarns is unestablished, and HALS-carbon-black-coating interactions (synergy or antagonism) are uncharacterized.",
+      "flagged_by": [
+        "AboShosha2008ParaffinWax",
+        "Miceli2016LacrosseMesh",
+        "Jannatun2020PDMSCotton",
+        "Liu2002CarbonBlackLLDPE",
+        "ChirinosPadron1990HALS"
+      ],
+      "status": "open",
+      "why_it_matters": "Pocket legality and ball hold/release are governed by stiffness and stretch, and a finish that stiffens dry, softens wet, or wears off faster than the net's service life can move a pocket in or out of spec; choosing between intrinsically hydrophobic yarn and coated/stabilized nylon requires the missing coating-durability-vs-performance and additive-interaction data."
+    },
+    {
+      "id": "op7",
+      "statement": "Pocket-depth and hole-size legality are static, room-temperature visual checks, yet governing bodies acknowledge mesh can pass a static check and then deform under applied force; no rule or standard defines a dynamic/wet/loaded pocket-depth or hole-size test, and ISO 9554 names heat-set as the dimensional-stability mechanism without giving a netting wet-stretch acceptance threshold.",
+      "flagged_by": [
+        "NFHS_BoysLax_2023",
+        "WorldLacrosse_MensRules_2025",
+        "ISO_9554",
+        "MoeFore2016UHMWPECreep"
+      ],
+      "status": "open",
+      "why_it_matters": "Wet/loaded mesh stretch and permanent set are the exact failure modes that let an illegal pocket pass inspection or push a legal pocket out of spec; an all-weather mesh must hold legal depth and hole size when wet and under load, a condition the rules and standards do not yet quantify."
+    },
+    {
+      "id": "op8",
+      "statement": "Knot mechanics in nets are poorly understood: net-scale strength cannot be predicted from monofilament strength alone (knot loss 30-62% depending on fiber), and no sport-specific standard maps construction levers (denier, mono- vs multifilament, knot type, heat-set, diamond geometry) to wet/dry pocket consistency and retention.",
+      "flagged_by": [
+        "LeGue2024KnotBiodegradable",
+        "MoeFore2016UHMWPECreep",
+        "ISO1805_2006",
+        "Bottero2025DiamondSolidity"
+      ],
+      "status": "open",
+      "why_it_matters": "The lacrosse diamond junction sets pocket geometry and is the failure site, and permanent set drives bagging-out; without a standard mapping construction to wet/dry pocket retention, designers cannot translate fiber/knot choices into a guaranteed all-weather legal pocket."
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "question": "For all-weather lacrosse mesh, does the higher dry strength and elongation of nylon (polyamide) outweigh its heavy water absorption and wet-stretch, versus the dimensionally stable but lower-uptake PET/polyolefin families?",
+      "positions": [
+        {
+          "stance": "Nylon wins on strength/working force and is the conventional choice; its wet penalty is a manageable, reversible plasticization effect.",
+          "papers": [
+            "moe2007netting",
+            "Wanchana2002HPPEFatigue"
+          ],
+          "summary": "Nylon shows a higher initial breaking load and higher elongation than polyester in netting, giving a better working force under load, and nylon monofilament has the best knot-fatigue durability. This is why polyamide dominates conventional mesh and gives the broken-in feel players want."
+        },
+        {
+          "stance": "Nylon's water absorption and wet-stretch are disqualifying for all-weather use because absorbed water plasticizes it, collapsing modulus and dimensional stability and driving the bagging-out failure.",
+          "papers": [
+            "sambale2021pa6",
+            "LeGac2017",
+            "Wetzel2023",
+            "Humeau2018",
+            "Miceli2016LacrosseMesh"
+          ],
+          "summary": "Nylon 6 takes up ~8.8% water and its modulus drops from ~1100 to ~330 MPa (nylon 6.6: 2.885 to 0.598 GPa, ~4.8x), with Tg falling below room temperature, anisotropic swelling, and permanent creep elongation when wet; the lacrosse-mesh patent explicitly cites this weight gain and consistency change as the reason to avoid nylon."
+        },
+        {
+          "stance": "PET/polyolefin (PET, HDPE, polypropylene, UHMWPE) trade some dry feel for near-zero water uptake and dimensional stability, the better all-weather baseline.",
+          "papers": [
+            "AZoM_PET_TDS",
+            "egan2022biodegradability",
+            "pagnotta2025netting",
+            "faruk2023uhmwpe",
+            "Miceli2016LacrosseMesh"
+          ],
+          "summary": "PET absorbs <0.7% water and is dimensionally stable; HDPE is low-density, UV/abrasion resistant and floats; UHMWPE has an exceptional strength-to-weight ratio; a hydrophobic polypropylene mesh yarn absorbs essentially no water and is ~50% lighter, so the ester/polyolefin families hold their wet dimensions where nylon does not."
+        }
+      ],
+      "resolved": false
+    },
+    {
+      "id": "d2",
+      "question": "Should water resistance and UV durability be achieved with applied finishes (wax, PU/TPU, silicone, carbon black, HALS) or by selecting an intrinsically hydrophobic, stable fiber?",
+      "positions": [
+        {
+          "stance": "Coatings deliver strong water and UV protection and add useful body/abrasion resistance to existing nylon mesh.",
+          "papers": [
+            "AboShosha2008ParaffinWax",
+            "Sikdar2022PUTextiles",
+            "Jannatun2020PDMSCotton",
+            "Liu2002CarbonBlackLLDPE",
+            "ChirinosPadron1990HALS"
+          ],
+          "summary": "Paraffin wax raises water repellency to a max rating of 100; PU coatings add bonding, tensile/tear/abrasion resistance, light resistance and water resistance; a silicone PDMS coating gives durable self-healing superhydrophobicity (>150 deg contact angle); carbon black and HALS substantially slow UV degradation, so a finish package can retrofit all-weather performance onto a strong nylon substrate."
+        },
+        {
+          "stance": "Finishes carry stiffness/weight/hold and durability costs and wear off, so an intrinsically hydrophobic, stable yarn is preferable.",
+          "papers": [
+            "AboShosha2008ParaffinWax",
+            "Miceli2016LacrosseMesh"
+          ],
+          "summary": "Wax finishing increases fabric stiffness (changing pocket feel), and coatings applied for stiffness/waterproofing deteriorate and need replenishment; the lacrosse-mesh patent argues an uncoated hydrophobic polypropylene yarn avoids the coating-wear and weight penalties entirely while staying ~50% lighter and stretching <=11%."
+        },
+        {
+          "stance": "Coatings and stabilizers delay but do not eliminate degradation, and their combined behavior on fine pigmented mesh is unverified.",
+          "papers": [
+            "franco2022petgeotextile",
+            "Liu2002CarbonBlackLLDPE",
+            "ChirinosPadron1990HALS",
+            "Jannatun2020PDMSCotton"
+          ],
+          "summary": "Carbon-black/UV stabilizers protected PET for only 500 h before visible degradation by 1000 h, carbon-black efficacy depends sensitively on particle size/loading/dispersion, and HALS-carbon-black-coating interactions plus coating durability on thin colored braided yarn are uncharacterized, so a finish-only strategy has unquantified risk."
+        }
+      ],
+      "resolved": false
+    },
+    {
+      "id": "d3",
+      "question": "Knotted vs knotless construction for the lacrosse diamond mesh: which better serves strength, projected area/weight, and pocket geometry?",
+      "positions": [
+        {
+          "stance": "Knotless construction reduces projected area/drag and removes the knot strength-loss site, favoring a cleaner, lighter, stronger mesh.",
+          "papers": [
+            "Tang2019NettingHydrodynamics",
+            "Tang2018KnotlessPurseSeine",
+            "LeGue2024KnotBiodegradable"
+          ],
+          "summary": "Knots add roughly 15-25% (PA ~21%) to netting projected-area drag, so a knotless panel has only ~79-83% of the drag, and the knot is the strength-limiting feature (30-62% loss with rupture at curvature peaks); removing knots removes the weakest link and reduces projected area."
+        },
+        {
+          "stance": "Knots and knotted geometry are the controllable levers that set diamond solidity and pocket shape, and nylon knotted mono can have the best knot-fatigue durability.",
+          "papers": [
+            "Bottero2025DiamondSolidity",
+            "Wanchana2002HPPEFatigue",
+            "moe2007netting"
+          ],
+          "summary": "Diamond-mesh solidity (and thus pocket geometry) is governed by twine diameter, bar length, hanging angle, and the knot's added projected area, so the knotted diamond is the design handle for pocket shape; nylon monofilament also has the best knot-fatigue durability, meaning a well-chosen knotted nylon construction can be both legal-geometry-tunable and durable."
+        }
+      ],
+      "resolved": false
+    },
+    {
+      "id": "d4",
+      "question": "Monofilament vs multifilament yarn for mesh: which best balances strength, water/weight, abrasion, and stiffness/hold?",
+      "positions": [
+        {
+          "stance": "Monofilament minimizes water-trapping surface and is the basis of the best-characterized knot/strength behavior, and larger-diameter mono gives higher breaking load.",
+          "papers": [
+            "Thomas2006SunlightPA6",
+            "LeGue2024KnotBiodegradable",
+            "Wanchana2002HPPEFatigue"
+          ],
+          "summary": "In PA6 nets, higher yarn diameter gives higher breaking load and elongation, monofilament knot behavior is the reference case for knot-strength loss, and nylon monofilament has the best knot-fatigue durability, so a monofilament construction offers predictable strength and less internal water-trapping surface area."
+        },
+        {
+          "stance": "Multifilament yarns and high-performance polyethylene filament give superior tensile-fatigue and abrasion behavior, relevant to long service life.",
+          "papers": [
+            "Wanchana2002HPPEFatigue",
+            "faruk2023uhmwpe",
+            "Thomas2006SunlightPA6"
+          ],
+          "summary": "HPPE/UHMWPE filament has the highest tensile-fatigue durability and least abrasion damage and an exceptional strength-to-weight ratio; the PA6 sunlight study covers both mono- and multifilament, indicating multifilament/filament constructions can win on fatigue and abrasion where mono wins on knot behavior, so the choice trades knot-strength predictability against fatigue/abrasion life."
+        }
+      ],
+      "resolved": false
+    },
+    {
+      "id": "d5",
+      "question": "Is UHMWPE the ideal all-weather mesh fiber given its strength-to-weight and UV-blend potential, or do its creep/permanent-set and processing weaknesses undercut pocket-legality?",
+      "positions": [
+        {
+          "stance": "UHMWPE/HPPE is the strongest, lightest, most abrasion- and fatigue-resistant netting fiber and can be UV-hardened by blending.",
+          "papers": [
+            "faruk2023uhmwpe",
+            "pagnotta2025netting",
+            "Wanchana2002HPPEFatigue",
+            "xue2026hdpeuhmwpe"
+          ],
+          "summary": "UHMWPE has an exceptional strength-to-weight ratio, toughness, and chemical resistance, the best tensile-fatigue durability and least abrasion, and blending UHMWPE into HDPE cuts UV-aging strength loss (43.7% vs 54.5%) via entangled barrier micro-regions, making it a compelling all-weather, low-water fiber."
+        },
+        {
+          "stance": "UHMWPE takes large permanent set under load and degrades fastest under UV unprotected, so its dimensional behavior threatens wet/loaded pocket-legality.",
+          "papers": [
+            "MoeFore2016UHMWPECreep",
+            "zhang2022uhmwpenet",
+            "faruk2023uhmwpe"
+          ],
+          "summary": "Raschel UHMWPE netting shows 8.8-27.8% largely permanent on-loading structural strain, a bare UHMWPE net loses breaking strength fastest under UV of the marine exposures, and reviews flag intrinsic polyolefin creep, very low melt point, and poor dyeability/adhesion; these permanent-set and processing weaknesses bear directly on bagging-out, pocket-legality under load, and coloring of a finished mesh."
+        }
+      ],
+      "resolved": false
+    }
+  ],
+  "coverage": {
+    "sub_questions": [
+      "FIBER POLYMER FAMILIES & intrinsic property tradeoffs for netting: nylon 6/6 vs nylon 6 vs polyester (PET) vs HDPE vs UHMWPE - how amide vs ester vs polyolefin chemistry sets the baseline for tensile strength/tenacity, equilibrium water absorption, density/weight, and UV resistance",
+      "MOISTURE PLASTICIZATION & WET MECHANICAL BEHAVIOR of polyamides vs polyester/polyolefin: how absorbed water plasticizes nylon (drops Tg, modulus, dimensional stability) causing wet elongation / bagging out, and why PET/HDPE are dimensionally stable when wet",
+      "Finishing & coating chemistry for water resistance and durability of lacrosse mesh nets/textiles: wax impregnation, polyurethane/TPU and silicone coatings, and UV stabilizers (HALS, carbon black) - how they reduce water uptake and UV degradation and at what cost to strength, stiffness, weight, and hold/release",
+      "Construction-level mechanics for netting: knotted vs knotless drag/solidity, mono- vs multifilament strength/abrasion, knot strength loss, permanent creep/structural strain, and how diamond-mesh geometry sets pocket shape and bagging-out",
+      "Test standards (ASTM, ISO) and governing-body rules (NCAA, NFHS, World Lacrosse) that define the lacrosse-mesh KPIs - exact designations, what each measures/limits, and pocket-depth/crosse legality"
+    ],
+    "queries": [
+      "nylon 6 vs nylon 6/6 vs PET vs HDPE vs UHMWPE netting tensile tenacity water absorption density UV resistance",
+      "polyamide water absorption plasticization Tg modulus reduction wet nylon dimensional stability",
+      "PET polyester equilibrium water absorption dimensional stability hydrophobic crystallinity",
+      "UHMWPE HPPE fiber strength to weight ratio abrasion fatigue netting",
+      "UHMWPE net UV aging marine salt spray breaking strength loss carbonyl FTIR",
+      "HDPE UHMWPE blend monofilament UV aging carbonyl unsaturation breaking strength retention",
+      "paraffin wax emulsion water repellent textile stiffness finishing",
+      "polyurethane PU TPU textile coating water resistance abrasion tensile",
+      "silicone PDMS superhydrophobic coating cotton textile durable self-healing contact angle",
+      "carbon black UV stabilizer polyolefin film dispersion particle size",
+      "hindered amine light stabilizer HALS mechanism nitroxyl radical photostabilization nylon polyolefin",
+      "nylon 66 polyester UV degradation toughness loss woven fabric exposure time",
+      "knot strength loss netting PA6 PBSAT monofilament curvature gillnet",
+      "knotted vs knotless netting drag projected area hydrodynamics purse seine",
+      "diamond mesh solidity twine diameter bar length hanging angle knot projected area",
+      "UHMWPE netting creep structural strain permanent set Raschel knitted",
+      "natural sunlight UV polyamide 6 fishing net breaking strength elongation yarn diameter",
+      "ASTM D2256 yarn tensile breaking force tenacity wet knotted looped",
+      "ASTM D6775 webbing tape braided breaking strength elongation split drum",
+      "ASTM D570 water absorption plastics immersion 24 hour percent",
+      "ASTM D4355 geotextile xenon arc UV moisture heat strength retention",
+      "ASTM G155 xenon arc weathering sunlight rain dew non-metallic",
+      "ASTM D3884 abrasion resistance textile rotary platform double head Taber",
+      "ISO 9554 fibre rope general specifications heat set dimensional stability polyamide polyester",
+      "ISO 1805 ISO 1806 fishing net breaking force knot mesh wet testing",
+      "World Lacrosse mens rules pocket depth sidewall legality crosse head width trick stringing",
+      "NFHS boys lacrosse 1-7-1 hole gap 1.68 inches golf ball stringing stretch entrap ball"
+    ]
+  },
+  "goals": {
+    "choose_all_weather_mesh": "Choose a mesh fiber/finish/construction that hits the all-weather performance targets AND stays rules-legal (pocket holds its shape wet and under load)."
+  },
+  "goal_metrics": [
+    {
+      "name": "strength",
+      "description": "yarn/knot/mesh break force & tenacity",
+      "direction": "higher",
+      "oracle_kind": "grounding",
+      "unit": "N or g/denier"
+    },
+    {
+      "name": "water_absorption",
+      "description": "equilibrium / 24h water uptake",
+      "baseline": "nylon ~8%",
+      "target": "<0.7%",
+      "direction": "lower",
+      "oracle_kind": "grounding",
+      "unit": "%"
+    },
+    {
+      "name": "wet_stretch",
+      "description": "wet elongation / modulus loss -> bagging out",
+      "direction": "lower",
+      "oracle_kind": "none",
+      "unit": "% modulus loss"
+    },
+    {
+      "name": "weight",
+      "description": "areal/linear density & wet weight gain",
+      "direction": "lower",
+      "oracle_kind": "grounding",
+      "unit": "g"
+    },
+    {
+      "name": "uv_durability",
+      "description": "strength retention after UV/xenon-arc aging",
+      "direction": "higher",
+      "oracle_kind": "grounding",
+      "unit": "% retained"
+    },
+    {
+      "name": "abrasion_resistance",
+      "description": "wear resistance of fiber/coating",
+      "direction": "higher",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "pocket_legality",
+      "description": "compliance with NCAA/NFHS/World Lacrosse pocket-depth/legality",
+      "direction": "higher",
+      "oracle_kind": "grounding"
+    },
+    {
+      "name": "hold_release",
+      "description": "pocket consistency / throw \u2014 stiffness vs hold balance",
+      "direction": "higher",
+      "oracle_kind": "none"
+    }
+  ],
+  "relations": [
+    {
+      "id": "mr1",
+      "source": "c1",
+      "target": "c8",
+      "type": "tradeoff",
+      "kpis": [
+        "strength",
+        "water_absorption"
+      ],
+      "description": "Nylon's high dry breaking load (c1) comes bundled with ~8.8% water uptake (c8) \u2014 the core all-weather tradeoff."
+    },
+    {
+      "id": "mr2",
+      "source": "c8",
+      "target": "c14",
+      "type": "explains",
+      "kpis": [
+        "water_absorption",
+        "wet_stretch"
+      ],
+      "description": "Absorbed water (c8) plasticizes nylon, collapsing its wet modulus ~80% (c14) \u2014 the mechanism behind a pocket that bags out."
+    },
+    {
+      "id": "mr3",
+      "source": "c1",
+      "target": "c25",
+      "type": "tradeoff",
+      "kpis": [
+        "strength",
+        "water_absorption"
+      ],
+      "description": "Choosing PET over nylon trades nylon's dry strength (c1) for PET's <0.7% water absorption (c25) \u2014 the fiber-family decision."
+    },
+    {
+      "id": "mr4",
+      "source": "c34",
+      "target": "c1",
+      "type": "tradeoff",
+      "kpis": [
+        "strength",
+        "uv_durability"
+      ],
+      "description": "Nylon's strength edge (c1) erodes outdoors \u2014 unstabilized nylon/PET loses ~55% breaking toughness under UV (c34)."
+    },
+    {
+      "id": "mr5",
+      "source": "c26",
+      "target": "c27",
+      "type": "supports",
+      "kpis": [
+        "water_absorption",
+        "weight"
+      ],
+      "description": "A hydrophobic PP yarn (c26) avoids water uptake AND runs ~50% lighter (c27) \u2014 a route that improves two KPIs at once."
+    },
+    {
+      "id": "mr6",
+      "source": "c29",
+      "target": "c28",
+      "type": "tradeoff",
+      "kpis": [
+        "water_absorption",
+        "abrasion_resistance"
+      ],
+      "description": "A wax finish raises water repellency (c29) but such coatings deteriorate with wear (c28) \u2014 water resistance bought against durability."
+    },
+    {
+      "id": "mr7",
+      "source": "c36",
+      "target": "c39",
+      "type": "tradeoff",
+      "kpis": [
+        "strength",
+        "hold_release"
+      ],
+      "description": "A knot caps strand strength (~30% loss, c36); going knotless cuts ~17% of drag (c39), aiding throw consistency."
+    },
+    {
+      "id": "mr8",
+      "source": "c55",
+      "target": "c14",
+      "type": "addresses",
+      "kpis": [
+        "pocket_legality",
+        "wet_stretch"
+      ],
+      "description": "Wet plasticization/sag (c14) is exactly what World Lacrosse Rule 16.1 (c55) outlaws \u2014 wet stability is a legality constraint, not just performance."
+    }
+  ]
+}

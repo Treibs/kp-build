@@ -1,0 +1,94 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Hyperframes composition fundamentals",
+  "scope": "The execution-verifiable fundamentals of authoring a hyperframes composition that renders clean, legible, deterministic, and structurally valid.",
+  "built": "2026-06-17",
+  "stats": {
+    "papers_verified": 0,
+    "papers_total": 0,
+    "claims": 14,
+    "open_problems": 0,
+    "debates": 0,
+    "benchmarks": 0,
+    "relations": 4,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0,
+      "relations": 0
+    }
+  },
+  "goals": {
+    "author_clean_composition": "Author a hyperframes composition that renders to MP4 clean, on-brand, legible, and deterministic."
+  },
+  "goal_metrics": [
+    {
+      "name": "determinism",
+      "description": "renders identically every frame",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "execution"
+    },
+    {
+      "name": "render_integrity",
+      "description": "loads + renders without breakage",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "execution"
+    },
+    {
+      "name": "overflow_free",
+      "description": "no text/box/canvas/container overflow",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "execution"
+    },
+    {
+      "name": "legibility",
+      "description": "WCAG AA contrast",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "execution"
+    },
+    {
+      "name": "structural_validity",
+      "description": "registered timeline + correct data-* + class=clip",
+      "baseline": "",
+      "target": "",
+      "direction": "higher",
+      "unit": "",
+      "acceptance_threshold": "",
+      "measurement_method": "",
+      "oracle_kind": "execution"
+    }
+  ],
+  "source_span": {
+    "oldest": null,
+    "newest": null,
+    "latest_checked": "2026-06-17"
+  },
+  "coverage": {
+    "note": "not recorded \u2014 coverage completeness is unverified"
+  },
+  "falsification": {
+    "run": false
+  }
+}

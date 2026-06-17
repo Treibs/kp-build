@@ -1,0 +1,1557 @@
+{
+  "schema": "wikillm/1",
+  "papers": [
+    {
+      "cite_key": "moe2007netting",
+      "title": "Tensile properties for netting materials used in aquaculture net cages",
+      "year": 2007,
+      "arxiv_id": "",
+      "doi": "10.1016/j.aquaeng.2007.08.001",
+      "verified": true
+    },
+    {
+      "cite_key": "pagnotta2025netting",
+      "title": "Sustainable Netting Materials for Marine and Agricultural Applications: A Perspective on Polymeric and Composite Developments",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.3390/polym17111454",
+      "verified": true
+    },
+    {
+      "cite_key": "zhang2022uhmwpenet",
+      "title": "Study on the Aging Behavior of an Ultra-High Molecular Weight Polyethylene Fiber Barrier Net in a Marine Environment",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.3390/ma15165599",
+      "verified": true
+    },
+    {
+      "cite_key": "faruk2023uhmwpe",
+      "title": "A Comprehensive Review of Ultrahigh Molecular Weight Polyethylene Fibers for Applications Based on Their Different Preparation Techniques",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.1155/2023/6656692",
+      "verified": true
+    },
+    {
+      "cite_key": "xue2026hdpeuhmwpe",
+      "title": "Research on the Anti-Ultraviolet Aging Performance of Fishery HDPE/UHMWPE-Blended Monofilaments",
+      "year": 2026,
+      "arxiv_id": "",
+      "doi": "10.3390/polym18030392",
+      "verified": true
+    },
+    {
+      "cite_key": "sambale2021pa6",
+      "title": "Characterisation and FE Modelling of the Sorption and Swelling Behaviour of Polyamide 6 in Water",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.3390/polym13091480",
+      "verified": true
+    },
+    {
+      "cite_key": "franco2022petgeotextile",
+      "title": "Accelerated Aging Ultraviolet of a PET Nonwoven Geotextile and Thermoanalytical Evaluation",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.3390/ma15124157",
+      "verified": true
+    },
+    {
+      "cite_key": "egan2022biodegradability",
+      "title": "Strategies and progress in synthetic textile fiber biodegradability",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1007/s42452-021-04851-7",
+      "verified": true
+    },
+    {
+      "cite_key": "LeGac2017",
+      "title": "Yield stress changes induced by water in polyamide 6: Characterization and modeling",
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.1016/j.polymdegradstab.2017.02.003",
+      "verified": true
+    },
+    {
+      "cite_key": "Wetzel2023",
+      "title": "Hygromechanical Behavior of Polyamide 6.6: Experiments and Modeling",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "10.3390/polym15163387",
+      "verified": true
+    },
+    {
+      "cite_key": "Humeau2018",
+      "title": "Influence of water on the short and long term mechanical behaviour of polyamide 6 (nylon) fibres and yarns",
+      "year": 2018,
+      "arxiv_id": "",
+      "doi": "10.1007/s41939-018-0036-6",
+      "verified": true
+    },
+    {
+      "cite_key": "Quistwater1958",
+      "title": "Dynamic mechanical properties of nylon 66 and the plasticizing effect of water vapor on nylon",
+      "year": 1958,
+      "arxiv_id": "",
+      "doi": "10.1002/pol.1958.1202811706",
+      "verified": true
+    },
+    {
+      "cite_key": "Arhant2016",
+      "title": "Modelling the non Fickian water absorption in polyamide 6",
+      "year": 2016,
+      "arxiv_id": "",
+      "doi": "10.1016/j.polymdegradstab.2016.09.001",
+      "verified": true
+    },
+    {
+      "cite_key": "HuntDarlington1979",
+      "title": "Prediction of creep of nylon-6,6 at constant stress, temperature and moisture content",
+      "year": 1979,
+      "arxiv_id": "",
+      "doi": "10.1016/0032-3861(79)90228-3",
+      "verified": true
+    },
+    {
+      "cite_key": "AZoM_PET_TDS",
+      "title": "Properties of Polyethylene Terephthalate Polyester (PET, PETP)",
+      "year": 2001,
+      "arxiv_id": "",
+      "doi": "",
+      "verified": false
+    },
+    {
+      "cite_key": "Miceli2016LacrosseMesh",
+      "title": "Lacrosse mesh",
+      "year": 2016,
+      "arxiv_id": "",
+      "doi": "",
+      "verified": false
+    },
+    {
+      "cite_key": "AboShosha2008ParaffinWax",
+      "title": "Paraffin Wax Emulsion as Water Repellent for Cotton/Polyester Blended Fabric",
+      "year": 2008,
+      "arxiv_id": "",
+      "doi": "10.1177/1528083707083793",
+      "verified": true
+    },
+    {
+      "cite_key": "Sikdar2022PUTextiles",
+      "title": "Polyurethane (PU) based multifunctional materials: Emerging paradigm for functional textiles, smart, and biomedical applications",
+      "year": 2022,
+      "arxiv_id": "",
+      "doi": "10.1002/app.52832",
+      "verified": true
+    },
+    {
+      "cite_key": "Jannatun2020PDMSCotton",
+      "title": "A facile cross-linking approach to fabricate durable and self-healing superhydrophobic coatings of SiO2-PVA@PDMS on cotton textile",
+      "year": 2020,
+      "arxiv_id": "",
+      "doi": "10.1016/j.eurpolymj.2020.109836",
+      "verified": true
+    },
+    {
+      "cite_key": "Liu2002CarbonBlackLLDPE",
+      "title": "Effect of Carbon Black on UV stability of LLDPE films under artificial weathering conditions",
+      "year": 2002,
+      "arxiv_id": "",
+      "doi": "10.1016/S0141-3910(01)00252-X",
+      "verified": true
+    },
+    {
+      "cite_key": "ChirinosPadron1990HALS",
+      "title": "Performance and Mechanisms of Hindered Amine Light Stabilizers in Polymer Photostabilization",
+      "year": 1990,
+      "arxiv_id": "",
+      "doi": "10.1080/07366579008050906",
+      "verified": true
+    },
+    {
+      "cite_key": "Moezzi2013NylonPolyesterToughness",
+      "title": "The effect of UV degradation on toughness of nylon 66/polyester woven fabrics",
+      "year": 2013,
+      "arxiv_id": "",
+      "doi": "10.1080/00405000.2013.796629",
+      "verified": true
+    },
+    {
+      "cite_key": "Moezzi2019Nylon66ConveyorUV",
+      "title": "The effects of UV degradation on the physical, thermal, and morphological properties of industrial nylon 66 conveyor belt fabrics",
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1177/1528083718825316",
+      "verified": true
+    },
+    {
+      "cite_key": "Wanchana2002HPPEFatigue",
+      "title": "Fatigue property of high-performance polyethylene netting twine",
+      "year": 2002,
+      "arxiv_id": "",
+      "doi": "10.1046/j.1444-2906.2002.00435.x",
+      "verified": true
+    },
+    {
+      "cite_key": "Tang2019NettingHydrodynamics",
+      "title": "Variations in hydrodynamic characteristics of netting panels",
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "10.1038/s41598-018-35907-1",
+      "verified": true
+    },
+    {
+      "cite_key": "Tang2018KnotlessPurseSeine",
+      "title": "Hydrodynamic characteristics of knotted and knotless purse seine netting panels",
+      "year": 2018,
+      "arxiv_id": "",
+      "doi": "10.1371/journal.pone.0192206",
+      "verified": true
+    },
+    {
+      "cite_key": "Bottero2025DiamondSolidity",
+      "title": "Characterization of the solidity of knotted single-twine diamond mesh netting",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "10.1016/j.apor.2024.104295",
+      "verified": true
+    },
+    {
+      "cite_key": "Thomas2006SunlightPA6",
+      "title": "The effect of natural sunlight on the strength of polyamide 6 multifilament and monofilament fishing net materials",
+      "year": 2006,
+      "arxiv_id": "",
+      "doi": "10.1016/j.fishres.2006.06.012",
+      "verified": true
+    },
+    {
+      "cite_key": "LeGue2024KnotBiodegradable",
+      "title": "Influence of knot strength on the mechanical performance of a biodegradable gillnet",
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1038/s41598-024-66474-3",
+      "verified": true
+    },
+    {
+      "cite_key": "MoeFore2016UHMWPECreep",
+      "title": "Temporary-Creep and Postcreep Properties of Aquaculture Netting Materials With UHMWPE Fibers",
+      "year": 2016,
+      "arxiv_id": "",
+      "doi": "10.1115/1.4032893",
+      "verified": true
+    },
+    {
+      "cite_key": "ISO1805_2006",
+      "title": "Fishing nets - Determination of breaking force and knot breaking force of netting yarns",
+      "year": 2006,
+      "arxiv_id": "",
+      "doi": "",
+      "verified": false
+    },
+    {
+      "cite_key": "ISO1806_2002",
+      "title": "Fishing nets - Determination of mesh breaking force of netting",
+      "year": 2002,
+      "arxiv_id": "",
+      "doi": "",
+      "verified": false
+    },
+    {
+      "cite_key": "ASTM_D2256",
+      "title": "ASTM D2256/D2256M-21 Standard Test Method for Tensile Properties of Yarns by the Single-Strand Method",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1520/D2256_D2256M-21",
+      "verified": true
+    },
+    {
+      "cite_key": "ASTM_D6775",
+      "title": "ASTM D6775-13(2024) Standard Test Method for Breaking Strength and Elongation of Textile Webbing, Tape and Braided Material",
+      "year": 2024,
+      "arxiv_id": "",
+      "doi": "10.1520/D6775-13R24",
+      "verified": true
+    },
+    {
+      "cite_key": "ASTM_D570",
+      "title": "ASTM D570-98(2018) Standard Test Method for Water Absorption of Plastics",
+      "year": 2018,
+      "arxiv_id": "",
+      "doi": "10.1520/D0570-98R18",
+      "verified": true
+    },
+    {
+      "cite_key": "ASTM_D4355",
+      "title": "ASTM D4355/D4355M-21 Standard Test Method for Deterioration of Geotextiles by Exposure to Light, Moisture, and Heat in a Xenon Arc-Type Apparatus",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1520/D4355_D4355M-21",
+      "verified": true
+    },
+    {
+      "cite_key": "ASTM_G155",
+      "title": "ASTM G155-21 Standard Practice for Operating Xenon Arc Lamp Apparatus for Exposure of Materials",
+      "year": 2021,
+      "arxiv_id": "",
+      "doi": "10.1520/G0155-21",
+      "verified": false
+    },
+    {
+      "cite_key": "ASTM_D3884",
+      "title": "ASTM D3884-09(2017) Standard Guide for Abrasion Resistance of Textile Fabrics (Rotary Platform, Double-Head Method)",
+      "year": 2017,
+      "arxiv_id": "",
+      "doi": "10.1520/D3884-09R17",
+      "verified": true
+    },
+    {
+      "cite_key": "ISO_9554",
+      "title": "ISO 9554:2019 Fibre ropes - General specifications",
+      "year": 2019,
+      "arxiv_id": "",
+      "doi": "",
+      "verified": false
+    },
+    {
+      "cite_key": "WorldLacrosse_MensRules_2025",
+      "title": "Rules of Men's Field Lacrosse 2025-2027 (Ver 1.0) - Rule 15 (The Stick) and Rule 16 (Illegal Sticks)",
+      "year": 2025,
+      "arxiv_id": "",
+      "doi": "",
+      "verified": false
+    },
+    {
+      "cite_key": "NFHS_BoysLax_2023",
+      "title": "NFHS Boys Lacrosse Rules Changes 2023 - Rule 1-7-1 (Crosse Pocket/Net Hole Size)",
+      "year": 2023,
+      "arxiv_id": "",
+      "doi": "",
+      "verified": false
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "paper": "moe2007netting",
+      "type": "result",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c2",
+      "paper": "pagnotta2025netting",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c3",
+      "paper": "pagnotta2025netting",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c4",
+      "paper": "zhang2022uhmwpenet",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "xue2026hdpeuhmwpe",
+        "Thomas2006SunlightPA6",
+        "franco2022petgeotextile"
+      ]
+    },
+    {
+      "id": "c5",
+      "paper": "faruk2023uhmwpe",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "pagnotta2025netting",
+        "Wanchana2002HPPEFatigue"
+      ]
+    },
+    {
+      "id": "c6",
+      "paper": "xue2026hdpeuhmwpe",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "zhang2022uhmwpenet"
+      ]
+    },
+    {
+      "id": "c7",
+      "paper": "xue2026hdpeuhmwpe",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c8",
+      "paper": "sambale2021pa6",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "LeGac2017",
+        "Wetzel2023"
+      ]
+    },
+    {
+      "id": "c9",
+      "paper": "sambale2021pa6",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "Wetzel2023",
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c10",
+      "paper": "franco2022petgeotextile",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2013NylonPolyesterToughness"
+      ]
+    },
+    {
+      "id": "c11",
+      "paper": "franco2022petgeotextile",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "Liu2002CarbonBlackLLDPE"
+      ]
+    },
+    {
+      "id": "c12",
+      "paper": "egan2022biodegradability",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "c13",
+      "paper": "LeGac2017",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Wetzel2023",
+        "Quistwater1958"
+      ]
+    },
+    {
+      "id": "c14",
+      "paper": "LeGac2017",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Wetzel2023"
+      ]
+    },
+    {
+      "id": "c15",
+      "paper": "LeGac2017",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c16",
+      "paper": "Wetzel2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c17",
+      "paper": "Wetzel2023",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "LeGac2017"
+      ]
+    },
+    {
+      "id": "c18",
+      "paper": "Wetzel2023",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6"
+      ]
+    },
+    {
+      "id": "c19",
+      "paper": "Humeau2018",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "HuntDarlington1979",
+        "MoeFore2016UHMWPECreep"
+      ]
+    },
+    {
+      "id": "c20",
+      "paper": "Humeau2018",
+      "type": "result",
+      "confidence": "medium",
+      "corroborated_by": [
+        "HuntDarlington1979",
+        "MoeFore2016UHMWPECreep"
+      ]
+    },
+    {
+      "id": "c21",
+      "paper": "Humeau2018",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6",
+        "Wetzel2023"
+      ]
+    },
+    {
+      "id": "c22",
+      "paper": "Quistwater1958",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": [
+        "LeGac2017",
+        "sambale2021pa6",
+        "Wetzel2023"
+      ]
+    },
+    {
+      "id": "c23",
+      "paper": "Arhant2016",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c24",
+      "paper": "HuntDarlington1979",
+      "type": "method",
+      "confidence": "medium",
+      "corroborated_by": [
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c29",
+      "paper": "AboShosha2008ParaffinWax",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c30",
+      "paper": "Sikdar2022PUTextiles",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c31",
+      "paper": "Jannatun2020PDMSCotton",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c32",
+      "paper": "Liu2002CarbonBlackLLDPE",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "franco2022petgeotextile"
+      ]
+    },
+    {
+      "id": "c33",
+      "paper": "ChirinosPadron1990HALS",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c34",
+      "paper": "Moezzi2013NylonPolyesterToughness",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2019Nylon66ConveyorUV",
+        "Thomas2006SunlightPA6"
+      ]
+    },
+    {
+      "id": "c35",
+      "paper": "Moezzi2019Nylon66ConveyorUV",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2013NylonPolyesterToughness",
+        "Thomas2006SunlightPA6"
+      ]
+    },
+    {
+      "id": "c36",
+      "paper": "LeGue2024KnotBiodegradable",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c37",
+      "paper": "LeGue2024KnotBiodegradable",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c38",
+      "paper": "Wanchana2002HPPEFatigue",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "faruk2023uhmwpe",
+        "pagnotta2025netting"
+      ]
+    },
+    {
+      "id": "c39",
+      "paper": "Tang2019NettingHydrodynamics",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Tang2018KnotlessPurseSeine",
+        "Bottero2025DiamondSolidity"
+      ]
+    },
+    {
+      "id": "c40",
+      "paper": "Tang2018KnotlessPurseSeine",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Tang2019NettingHydrodynamics",
+        "Bottero2025DiamondSolidity"
+      ]
+    },
+    {
+      "id": "c41",
+      "paper": "Bottero2025DiamondSolidity",
+      "type": "definition",
+      "confidence": "medium",
+      "corroborated_by": [
+        "Tang2019NettingHydrodynamics",
+        "Tang2018KnotlessPurseSeine"
+      ]
+    },
+    {
+      "id": "c42",
+      "paper": "Thomas2006SunlightPA6",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Moezzi2013NylonPolyesterToughness",
+        "Moezzi2019Nylon66ConveyorUV"
+      ]
+    },
+    {
+      "id": "c43",
+      "paper": "MoeFore2016UHMWPECreep",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": [
+        "Humeau2018"
+      ]
+    },
+    {
+      "id": "c46",
+      "paper": "ASTM_D2256",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "ASTM_D6775"
+      ]
+    },
+    {
+      "id": "c47",
+      "paper": "ASTM_D2256",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "c48",
+      "paper": "ASTM_D6775",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": [
+        "ASTM_D2256"
+      ]
+    },
+    {
+      "id": "c49",
+      "paper": "ASTM_D570",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "sambale2021pa6"
+      ]
+    },
+    {
+      "id": "c50",
+      "paper": "ASTM_D4355",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": [
+        "franco2022petgeotextile"
+      ]
+    },
+    {
+      "id": "c52",
+      "paper": "ASTM_D3884",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [
+    {
+      "id": "op1",
+      "flagged_by": [
+        "zhang2022uhmwpenet",
+        "Moezzi2013NylonPolyesterToughness",
+        "Moezzi2019Nylon66ConveyorUV",
+        "ASTM_D4355"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op2",
+      "flagged_by": [
+        "faruk2023uhmwpe",
+        "pagnotta2025netting",
+        "MoeFore2016UHMWPECreep"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "op3",
+      "flagged_by": [
+        "moe2007netting",
+        "pagnotta2025netting",
+        "egan2022biodegradability",
+        "ASTM_D2256",
+        "ASTM_D570",
+        "ASTM_D4355",
+        "ASTM_D3884"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op4",
+      "flagged_by": [
+        "sambale2021pa6",
+        "Wetzel2023",
+        "Humeau2018"
+      ],
+      "status": "partially-addressed"
+    },
+    {
+      "id": "op5",
+      "flagged_by": [
+        "LeGac2017",
+        "Arhant2016"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op6",
+      "flagged_by": [
+        "AboShosha2008ParaffinWax",
+        "Jannatun2020PDMSCotton",
+        "Liu2002CarbonBlackLLDPE",
+        "ChirinosPadron1990HALS"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op7",
+      "flagged_by": [
+        "MoeFore2016UHMWPECreep"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "op8",
+      "flagged_by": [
+        "LeGue2024KnotBiodegradable",
+        "MoeFore2016UHMWPECreep",
+        "Bottero2025DiamondSolidity"
+      ],
+      "status": "open"
+    }
+  ],
+  "debates": [
+    {
+      "id": "d1",
+      "positions": [
+        "Nylon wins on strength/working force and is the conventional choice; its wet penalty is a manageable, reversible plasticization effect.",
+        "Nylon's water absorption and wet-stretch are disqualifying for all-weather use because absorbed water plasticizes it, collapsing modulus and dimensional stability and driving the bagging-out failure.",
+        "PET/polyolefin (PET, HDPE, polypropylene, UHMWPE) trade some dry feel for near-zero water uptake and dimensional stability, the better all-weather baseline."
+      ]
+    },
+    {
+      "id": "d2",
+      "positions": [
+        "Coatings deliver strong water and UV protection and add useful body/abrasion resistance to existing nylon mesh.",
+        "Finishes carry stiffness/weight/hold and durability costs and wear off, so an intrinsically hydrophobic, stable yarn is preferable.",
+        "Coatings and stabilizers delay but do not eliminate degradation, and their combined behavior on fine pigmented mesh is unverified."
+      ]
+    },
+    {
+      "id": "d3",
+      "positions": [
+        "Knotless construction reduces projected area/drag and removes the knot strength-loss site, favoring a cleaner, lighter, stronger mesh.",
+        "Knots and knotted geometry are the controllable levers that set diamond solidity and pocket shape, and nylon knotted mono can have the best knot-fatigue durability."
+      ]
+    },
+    {
+      "id": "d4",
+      "positions": [
+        "Monofilament minimizes water-trapping surface and is the basis of the best-characterized knot/strength behavior, and larger-diameter mono gives higher breaking load.",
+        "Multifilament yarns and high-performance polyethylene filament give superior tensile-fatigue and abrasion behavior, relevant to long service life."
+      ]
+    },
+    {
+      "id": "d5",
+      "positions": [
+        "UHMWPE/HPPE is the strongest, lightest, most abrasion- and fatigue-resistant netting fiber and can be UV-hardened by blending.",
+        "UHMWPE takes large permanent set under load and degrades fastest under UV unprotected, so its dimensional behavior threatens wet/loaded pocket-legality."
+      ]
+    }
+  ],
+  "benchmarks": [],
+  "relations": [
+    {
+      "id": "mr1",
+      "source": "c1",
+      "target": "c8",
+      "type": "tradeoff",
+      "kpis": [
+        "strength",
+        "water_absorption"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "id": "mr2",
+      "source": "c8",
+      "target": "c14",
+      "type": "explains",
+      "kpis": [
+        "water_absorption",
+        "wet_stretch"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "id": "mr4",
+      "source": "c34",
+      "target": "c1",
+      "type": "tradeoff",
+      "kpis": [
+        "strength",
+        "uv_durability"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "id": "mr7",
+      "source": "c36",
+      "target": "c39",
+      "type": "tradeoff",
+      "kpis": [
+        "strength",
+        "hold_release"
+      ],
+      "verification": "unrun"
+    }
+  ],
+  "edges": [
+    {
+      "from": "c1",
+      "to": "moe2007netting",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c2",
+      "to": "pagnotta2025netting",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c3",
+      "to": "pagnotta2025netting",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c4",
+      "to": "zhang2022uhmwpenet",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c5",
+      "to": "faruk2023uhmwpe",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c6",
+      "to": "xue2026hdpeuhmwpe",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c7",
+      "to": "xue2026hdpeuhmwpe",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c8",
+      "to": "sambale2021pa6",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c9",
+      "to": "sambale2021pa6",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c10",
+      "to": "franco2022petgeotextile",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c11",
+      "to": "franco2022petgeotextile",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c12",
+      "to": "egan2022biodegradability",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c13",
+      "to": "LeGac2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c14",
+      "to": "LeGac2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c15",
+      "to": "LeGac2017",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c16",
+      "to": "Wetzel2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c17",
+      "to": "Wetzel2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c18",
+      "to": "Wetzel2023",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c19",
+      "to": "Humeau2018",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c20",
+      "to": "Humeau2018",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c21",
+      "to": "Humeau2018",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c22",
+      "to": "Quistwater1958",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c23",
+      "to": "Arhant2016",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c24",
+      "to": "HuntDarlington1979",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c29",
+      "to": "AboShosha2008ParaffinWax",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c30",
+      "to": "Sikdar2022PUTextiles",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c31",
+      "to": "Jannatun2020PDMSCotton",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c32",
+      "to": "Liu2002CarbonBlackLLDPE",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c33",
+      "to": "ChirinosPadron1990HALS",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c34",
+      "to": "Moezzi2013NylonPolyesterToughness",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c35",
+      "to": "Moezzi2019Nylon66ConveyorUV",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c36",
+      "to": "LeGue2024KnotBiodegradable",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c37",
+      "to": "LeGue2024KnotBiodegradable",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c38",
+      "to": "Wanchana2002HPPEFatigue",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c39",
+      "to": "Tang2019NettingHydrodynamics",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c40",
+      "to": "Tang2018KnotlessPurseSeine",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c41",
+      "to": "Bottero2025DiamondSolidity",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c42",
+      "to": "Thomas2006SunlightPA6",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c43",
+      "to": "MoeFore2016UHMWPECreep",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c46",
+      "to": "ASTM_D2256",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c47",
+      "to": "ASTM_D2256",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c48",
+      "to": "ASTM_D6775",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c49",
+      "to": "ASTM_D570",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c50",
+      "to": "ASTM_D4355",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "c52",
+      "to": "ASTM_D3884",
+      "rel": "anchored-by"
+    },
+    {
+      "from": "op1",
+      "to": "zhang2022uhmwpenet",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op1",
+      "to": "Moezzi2013NylonPolyesterToughness",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op1",
+      "to": "Moezzi2019Nylon66ConveyorUV",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op1",
+      "to": "ASTM_D4355",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op2",
+      "to": "faruk2023uhmwpe",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op2",
+      "to": "pagnotta2025netting",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op2",
+      "to": "MoeFore2016UHMWPECreep",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "moe2007netting",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "pagnotta2025netting",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "egan2022biodegradability",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "ASTM_D2256",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "ASTM_D570",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "ASTM_D4355",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op3",
+      "to": "ASTM_D3884",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op4",
+      "to": "sambale2021pa6",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op4",
+      "to": "Wetzel2023",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op4",
+      "to": "Humeau2018",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op5",
+      "to": "LeGac2017",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op5",
+      "to": "Arhant2016",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "AboShosha2008ParaffinWax",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "Jannatun2020PDMSCotton",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "Liu2002CarbonBlackLLDPE",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op6",
+      "to": "ChirinosPadron1990HALS",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op7",
+      "to": "MoeFore2016UHMWPECreep",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "LeGue2024KnotBiodegradable",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "MoeFore2016UHMWPECreep",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "op8",
+      "to": "Bottero2025DiamondSolidity",
+      "rel": "flagged-by"
+    },
+    {
+      "from": "c4",
+      "to": "xue2026hdpeuhmwpe",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c4",
+      "to": "Thomas2006SunlightPA6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c4",
+      "to": "franco2022petgeotextile",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c5",
+      "to": "pagnotta2025netting",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c5",
+      "to": "Wanchana2002HPPEFatigue",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c6",
+      "to": "zhang2022uhmwpenet",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c8",
+      "to": "LeGac2017",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c8",
+      "to": "Wetzel2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c9",
+      "to": "Wetzel2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c9",
+      "to": "Humeau2018",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c10",
+      "to": "Moezzi2013NylonPolyesterToughness",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c11",
+      "to": "Liu2002CarbonBlackLLDPE",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c13",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c13",
+      "to": "Wetzel2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c13",
+      "to": "Quistwater1958",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c14",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c14",
+      "to": "Wetzel2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c16",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c16",
+      "to": "Humeau2018",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c17",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c17",
+      "to": "LeGac2017",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c18",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c19",
+      "to": "HuntDarlington1979",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c19",
+      "to": "MoeFore2016UHMWPECreep",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c20",
+      "to": "HuntDarlington1979",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c20",
+      "to": "MoeFore2016UHMWPECreep",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c21",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c21",
+      "to": "Wetzel2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c22",
+      "to": "LeGac2017",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c22",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c22",
+      "to": "Wetzel2023",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c24",
+      "to": "Humeau2018",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c32",
+      "to": "franco2022petgeotextile",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c34",
+      "to": "Moezzi2019Nylon66ConveyorUV",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c34",
+      "to": "Thomas2006SunlightPA6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c35",
+      "to": "Moezzi2013NylonPolyesterToughness",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c35",
+      "to": "Thomas2006SunlightPA6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c38",
+      "to": "faruk2023uhmwpe",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c38",
+      "to": "pagnotta2025netting",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c39",
+      "to": "Tang2018KnotlessPurseSeine",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c39",
+      "to": "Bottero2025DiamondSolidity",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c40",
+      "to": "Tang2019NettingHydrodynamics",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c40",
+      "to": "Bottero2025DiamondSolidity",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c41",
+      "to": "Tang2019NettingHydrodynamics",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c41",
+      "to": "Tang2018KnotlessPurseSeine",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c42",
+      "to": "Moezzi2013NylonPolyesterToughness",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c42",
+      "to": "Moezzi2019Nylon66ConveyorUV",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c43",
+      "to": "Humeau2018",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c46",
+      "to": "ASTM_D6775",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c48",
+      "to": "ASTM_D2256",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c49",
+      "to": "sambale2021pa6",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c50",
+      "to": "franco2022petgeotextile",
+      "rel": "corroborated-by"
+    },
+    {
+      "from": "c1",
+      "to": "c8",
+      "rel": "tradeoff",
+      "kpis": [
+        "strength",
+        "water_absorption"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "from": "c8",
+      "to": "c14",
+      "rel": "explains",
+      "kpis": [
+        "water_absorption",
+        "wet_stretch"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "from": "c34",
+      "to": "c1",
+      "rel": "tradeoff",
+      "kpis": [
+        "strength",
+        "uv_durability"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "from": "c36",
+      "to": "c39",
+      "rel": "tradeoff",
+      "kpis": [
+        "strength",
+        "hold_release"
+      ],
+      "verification": "unrun"
+    }
+  ]
+}

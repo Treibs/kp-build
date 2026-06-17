@@ -167,6 +167,18 @@ Each is also a public, installable **KPM package** — load one into any agent's
 See [`examples/README.md`](examples/README.md) for the full story on each — including how the rubric-RL
 example exposed, and drove a fix for, a blind spot in the probe.
 
+### Beyond citations: pluggable verifiers (V2-a)
+
+The seven packages above all use the **citation** verifier. The engine now has a **pluggable verifier seam** —
+a claim's "is this real?" check can be **citation** (does the paper resolve?), **doc-grounding** (does the
+quoted passage appear in a pinned source?), or **execution** (does running the artifact through a tool gate
+clear?) — and a package can carry **goals + KPIs** and first-class **KPI-anchored connections**, not just a
+flat claim list. Two example packs demonstrate it across the spectrum:
+[`examples/mesh-kpmodel/`](examples/mesh-kpmodel/) (material-science, citation) and
+[`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution**-verified). Honest scope: execution
+verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding is wired as a library, not yet a
+build step. See [`examples/README.md`](examples/README.md#kp-model-packs-v2-a--pluggable-verifiers).
+
 ## Sharing a package through KPM
 
 **KPM** ([`0xLT/kpm`](https://github.com/0xLT/kpm)) is an open package manager for *knowledge* — think npm,

@@ -219,6 +219,26 @@ def test_context_has_goals_and_connections_when_present(tmp_path):
     assert "onnection" in ctx and "tradeoff" in ctx
 
 
+def test_context_preamble_is_verifier_aware_for_paperless_pack():
+    """An execution pack has no citation spine; CONTEXT.md (the agent payload) must NOT tell the
+    loading agent the spine was 'verified to exist by arXiv id / DOI' — that boilerplate misframes a
+    zero-citation pack as citation-grounded. It should name the real basis (execution) and still
+    forbid inventing citations. A citation pack must keep the arXiv/DOI sentence (no regression)."""
+    from kp_build.digest import build_context
+    exec_pkg = Package(topic="t", scope="s", papers=[],
+                       claims=[Claim(id="c1", statement="a", paper="", supporting_passage="",
+                                     execution={"tool": "lint", "gate_code": "x", "artifact": "a/b"})])
+    ctx = build_context(exec_pkg, built="2026-01-01")
+    assert "verified to exist by arXiv id / DOI" not in ctx   # no citation boilerplate on a paperless pack
+    assert "do not invent citations" in ctx                    # guardrail retained
+    assert "execution" in ctx.lower()                          # names the real basis
+
+    v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
+    cit_pkg = Package(topic="t", scope="s", papers=[Paper(cite_key="p1", title="T", verified=v)],
+                      claims=[Claim(id="c1", statement="a", paper="p1", supporting_passage="x")])
+    assert "verified to exist by arXiv id / DOI" in build_context(cit_pkg, built="2026-01-01")
+
+
 # ── verifier.py: the pluggable seam — CitationVerifier == legacy (RED until implemented) ──────
 
 def test_citation_verifier_equals_legacy_and_satisfies_protocol():

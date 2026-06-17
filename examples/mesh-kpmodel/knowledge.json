@@ -1,0 +1,13 @@
+{
+  "name": "@kp/material-composition-and-finishing-chemistry-for-all-weather",
+  "version": "0.1.0",
+  "description": "This package scopes the material-science decision space for an all-weather lacrosse mesh against the eight KPIs that govern its on-field performance and legality: strength (yarn/knot/mesh breaking force and tenacity), water-absorption (equilibrium and 24 h uptake), wet-stretch / dimensional-stabilit",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}
