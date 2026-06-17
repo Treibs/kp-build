@@ -18,7 +18,8 @@ import sys
 from pathlib import Path
 
 from .schema import (Package, Paper, Claim, OpenProblem, Debate, Position, Benchmark, Verification,
-                     CLAIM_TYPES, CONFIDENCE, PROBLEM_STATUS)
+                     GoalMetric, Relation, goal_metric_from_dict,
+                     CLAIM_TYPES, CONFIDENCE, PROBLEM_STATUS, DIRECTIONS, ORACLE_KINDS, RELATION_TYPES)
 from .citations import verify_all
 from .assemble import assemble
 from .validate import validate
@@ -185,12 +186,53 @@ def _load(path: str) -> Package:
     if not isinstance(cov, dict):
         errs.append(f"'coverage' must be an object, got {type(cov).__name__}"); cov = {}
 
+    # ── V2-a KP-model spine (all optional — academic packs omit these and stay valid) ──
+    goals = d.get("goals") or {}
+    if not isinstance(goals, dict):
+        errs.append(f"'goals' must be an object, got {type(goals).__name__}"); goals = {}
+
+    goal_metrics = []
+    for i, gm in _section(d, "goal_metrics", errs):
+        if not gm.get("name"):
+            errs.append(f"goal_metrics[{i}]: missing name")
+        if gm.get("direction") and gm["direction"] not in DIRECTIONS:
+            errs.append(f"goal_metrics[{i}]: direction {gm['direction']!r} not in {DIRECTIONS}")
+        if gm.get("oracle_kind") and gm["oracle_kind"] not in ORACLE_KINDS:
+            errs.append(f"goal_metrics[{i}]: oracle_kind {gm['oracle_kind']!r} not in {ORACLE_KINDS}")
+        goal_metrics.append(goal_metric_from_dict(gm))
+    metric_names = {gm.name for gm in goal_metrics if gm.name}
+
+    all_nodes = node_ids | keys          # any node (claim/problem/debate/benchmark id or cite_key)
+    relations = []
+    for i, r in _section(d, "relations", errs):
+        _uid(r.get("id"), "relations", i)
+        for fld in ("id", "source", "target"):
+            if not r.get(fld):
+                errs.append(f"relations[{i}]: missing {fld}")
+        for end in ("source", "target"):
+            ev = r.get(end)
+            if ev and ev not in all_nodes:
+                errs.append(f"relations[{i}] ({r.get('id', '?')}): {end} {ev!r} resolves to no node")
+        if r.get("type") and r["type"] not in RELATION_TYPES:
+            errs.append(f"relations[{i}]: type {r['type']!r} not in {RELATION_TYPES}")
+        kpis = _strlist(r.get("kpis"), f"relations[{i}].kpis", errs)
+        if len(kpis) < 2:
+            errs.append(f"relations[{i}] ({r.get('id', '?')}): a connection must span ≥2 KPIs, got {len(kpis)}")
+        if metric_names:        # if KPIs are formally declared, edges must reference them
+            for k in kpis:
+                if k not in metric_names:
+                    errs.append(f"relations[{i}]: kpi {k!r} is not a declared goal_metric")
+        relations.append(Relation(
+            id=str(r.get("id", "")), source=str(r.get("source", "")), target=str(r.get("target", "")),
+            type=r.get("type") or "related", description=str(r.get("description", "")),
+            confidence=r.get("confidence") or "medium", kpis=kpis, verification=Verification()))
+
     if errs:
         raise ResearchInputError("invalid research input:\n  - " + "\n  - ".join(errs))
 
     return Package(topic=d["topic"], scope=str(d.get("scope", "")), papers=papers, claims=claims,
                    open_problems=problems, debates=debates, benchmarks=benchmarks,
-                   coverage=cov)
+                   coverage=cov, goals=goals, goal_metrics=goal_metrics, relations=relations)
 
 
 def _cmd_build(args) -> int:

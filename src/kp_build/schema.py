@@ -23,6 +23,10 @@ SCHEMA_VERSION = "wikillm/1"
 CLAIM_TYPES = ("result", "method", "finding", "definition")
 CONFIDENCE = ("high", "medium", "low")
 PROBLEM_STATUS = ("open", "partially-addressed")
+DIRECTIONS = ("lower", "higher")                       # GoalMetric: which way is better
+ORACLE_KINDS = ("execution", "grounding", "none")      # GoalMetric: how a KPI is measured by falsify
+RELATION_TYPES = ("tradeoff", "explains", "contradicts", "refines", "enables",
+                  "addresses", "supports", "derives-from")
 
 _SLUG = re.compile(r"[^a-z0-9]+")
 
@@ -39,21 +43,29 @@ def slugify(text: str, *, max_words: int = 8) -> str:
 
 @dataclass
 class Verification:
-    """Result of checking a paper against a real citation index.
+    """Result of checking a node against SOME oracle — verifier-agnostic (V2-a §4.0).
 
-    ``exists`` is the SHIP gate: True only for a STRONG verification — an explicit identifier
-    (arXiv id / DOI) that resolves AND whose canonical title strictly matches the claimed title.
-    A title-only search hit is ``status='unconfirmed'`` with ``exists=False`` (it can NOT anchor a
-    shipped claim) — this is what stops the tool laundering a fabricated title against an unrelated
-    real work. ``status`` distinguishes the failure modes so they are never conflated:
-      verified | unconfirmed | id-title-mismatch | not-found | error | unverified
+    ``exists`` is the UNIVERSAL ship gate across every ``kind``: True only for a STRONG verdict.
+    For citation (``kind='existence'``, the default) that means an explicit identifier (arXiv id /
+    DOI) that resolves AND whose canonical title strictly matches — a title-only hit is
+    ``status='unconfirmed'``/``exists=False`` so a fabricated title can't launder against an
+    unrelated real work. Other kinds carry their own evidence in ``evidence`` and source tag in
+    ``via`` (e.g. ``hyperframes-cli@0.6.91``, ``astm-d570``).
+
+    ``kind``    : existence | execution | grounding | unverifiable-aesthetic | ungrounded-unreachable
+    ``status``  : verified | unconfirmed | id-title-mismatch | not-found | error | unverified
+                  | output-mismatch        (execution: ran clean but produced the wrong output)
+    ``canonical_title`` / ``match_score`` are citation-specific (empty/0.0 for other kinds).
+    Legacy packages have no ``kind`` in frontmatter → it reads back as ``existence`` (the migration).
     """
 
     exists: bool = False
     status: str = "unverified"
-    via: str = "unverified"           # "arxiv" | "crossref" | "unverified"
-    canonical_title: str = ""
-    match_score: float = 0.0
+    kind: str = "existence"           # verifier kind (default keeps academic packs unchanged)
+    via: str = "unverified"           # source tag: "arxiv" | "crossref" | "hyperframes-cli@…" | "astm-…" | "unverified"
+    canonical_title: str = ""         # citation-only
+    match_score: float = 0.0          # citation-only
+    evidence: str = ""                # non-citation evidence (gate codes / quoted passage / …)
     checked: str = ""                 # YYYY-MM-DD
 
 
@@ -136,6 +148,56 @@ class Benchmark:
 
 
 @dataclass
+class GoalMetric:
+    """A measurable KPI the package is scoped around (V2-a §4.1) — the goal/KPI-anchored scope.
+
+    ``oracle_kind`` tells falsify how the KPI is graded: ``execution`` = a mechanical run measures it
+    directly; ``grounding``/``none`` = no run-oracle, so the does-it-help signal degrades to
+    cited-property recall (a grounding delta, NOT independent field performance — see the design review).
+    """
+
+    name: str
+    description: str = ""
+    baseline: str = ""
+    target: str = ""
+    direction: str = "higher"         # lower | higher (which way is better)
+    unit: str = ""
+    acceptance_threshold: str = ""
+    measurement_method: str = ""
+    oracle_kind: str = "none"         # execution | grounding | none
+
+
+def goal_metric_from_dict(d: dict) -> "GoalMetric":
+    return GoalMetric(
+        name=d.get("name", ""), description=d.get("description", ""),
+        baseline=str(d.get("baseline", "")), target=str(d.get("target", "")),
+        direction=d.get("direction") or "higher", unit=d.get("unit", ""),
+        acceptance_threshold=str(d.get("acceptance_threshold", "")),
+        measurement_method=d.get("measurement_method", ""),
+        oracle_kind=d.get("oracle_kind") or "none")
+
+
+@dataclass
+class Relation:
+    """A first-class, KPI-anchored, verifiable edge BETWEEN nodes (V2-a §4.2).
+
+    The doctrine's value is the connections, not the star: a ``Relation`` is a directed tradeoff/causal
+    edge that must span **≥2 KPIs** (the spine those KPIs explain) and carry its OWN verification verdict
+    (execution-confirmed for a mechanical edge, doc-grounded for a doctrinal one). ``source``/``target``
+    are node ids (claim id or cite_key).
+    """
+
+    id: str
+    source: str
+    target: str
+    type: str = "related"             # see RELATION_TYPES
+    description: str = ""
+    confidence: str = "medium"
+    kpis: List[str] = field(default_factory=list)            # ≥2 KPI names this edge connects
+    verification: Verification = field(default_factory=Verification)
+
+
+@dataclass
 class Package:
     """The whole knowledge package."""
 
@@ -149,6 +211,10 @@ class Package:
     #: Coverage honesty (SPEC promise): what the survey searched, so the gap is explicit.
     #: e.g. {"sub_questions":[...], "queries":[...], "seed_papers":[...], "expansion_hops":1}
     coverage: dict = field(default_factory=dict)
+    #: V2-a KP-model spine (optional — academic packs leave these empty and stay valid):
+    goals: dict = field(default_factory=dict)                       # {goal_id: description}
+    goal_metrics: List[GoalMetric] = field(default_factory=list)    # the KPIs scope is measured against
+    relations: List[Relation] = field(default_factory=list)         # first-class KPI-anchored edges
 
 
 # ── markdown (de)serialization ──────────────────────────────────────────────────
@@ -183,7 +249,8 @@ def paper_from_md(text: str) -> Paper:
         year=fm.get("year"), venue=fm.get("venue", ""), arxiv_id=fm.get("arxiv_id", ""),
         arxiv_version=fm.get("arxiv_version", ""), doi=fm.get("doi", ""), url=fm.get("url", ""),
         verified=Verification(**{k: v.get(k) for k in
-                                 ("exists", "status", "via", "canonical_title", "match_score", "checked")
+                                 ("exists", "status", "kind", "via", "canonical_title",
+                                  "match_score", "evidence", "checked")
                                  if k in v}),
         key_contributions=list(fm.get("key_contributions") or []),
     )
@@ -262,3 +329,22 @@ def debate_from_md(text: str) -> Debate:
                           summary=p.get("summary", "")) for p in (fm.get("positions") or [])]
     return Debate(id=fm["id"], question=fm.get("question", ""), positions=positions,
                   resolved=bool(fm.get("resolved", False)))
+
+
+def relation_to_md(r: "Relation") -> str:
+    d = asdict(r)
+    body = (f"{r.description}\n\n[[{r.source}]] —{r.type}→ [[{r.target}]]"
+            f"  ·  KPIs: {', '.join(r.kpis)}")
+    return _fm(d, body)
+
+
+def relation_from_md(text: str) -> "Relation":
+    fm, _ = _split(text)
+    v = fm.get("verification") or {}
+    return Relation(
+        id=fm.get("id", ""), source=fm.get("source", ""), target=fm.get("target", ""),
+        type=fm.get("type") or "related", description=fm.get("description", ""),
+        confidence=fm.get("confidence") or "medium", kpis=list(fm.get("kpis") or []),
+        verification=Verification(**{k: v.get(k) for k in
+                                     ("exists", "status", "kind", "via", "canonical_title",
+                                      "match_score", "evidence", "checked") if k in v}))

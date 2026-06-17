@@ -132,10 +132,25 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
                    sorted((c for c in pkg.claims if c.paper in verified),
                           key=lambda c: order.get(c.claim_type, 9))]
 
+    # V2-a KP-model spine — Goals & KPIs (top, defines purpose) and Key connections (the KPI tradeoffs)
+    goal_items = [f"- **{_data(str(gid))}** — {_data(str(desc))}" for gid, desc in (pkg.goals or {}).items()]
+    for gm in pkg.goal_metrics:
+        arrow = "↓ lower is better" if gm.direction == "lower" else "↑ higher is better"
+        tgt = f" — target {_data(gm.target)}" if gm.target else ""
+        base = f" (baseline {_data(gm.baseline)})" if gm.baseline else ""
+        goal_items.append(f"- **{_data(gm.name)}** [{arrow}]{tgt}{base} · oracle: {gm.oracle_kind}")
+
+    kept_nodes = (set(verified) | {c.id for c in pkg.claims if c.paper in verified}
+                  | {op.id for op in probs} | {b.id for b in benches})
+    conn_items = [f"- **[{r.source}] —{r.type}→ [{r.target}]** ({', '.join(r.kpis)}) — {_data(r.description)}"
+                  for r in pkg.relations if r.source in kept_nodes and r.target in kept_nodes]
+
     sections = [
+        ("## Goals & KPIs (what this package is for)", goal_items, ""),
         ("## Verified papers (the citation spine)", paper_items, "papers/"),
         ("## Open problems (where new work goes)", prob_items, "open-problems/"),
         ("## Open debates / contested points", deb_items, "debates/"),
+        ("## Key connections (KPI-anchored tradeoffs)", conn_items, "relations/"),
         ("## Reported results (SOTA snapshot)", bench_items, "benchmarks/"),
         ("## Key claims", claim_items, "claims/"),
     ]
