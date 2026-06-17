@@ -224,3 +224,33 @@ def verify_grounding_claims(pkg, *, corpus: dict, today: str = "") -> dict:
             supporting_passage=d.get("supporting_passage", ""), source=d.get("source", ""), paper=""))
         verified += bool(c.verified.exists)
     return {"grounding_total": total, "grounding_verified": verified}
+
+
+def load_grounding_corpus(pkg, base_dir, *, get=None) -> dict:
+    """Assemble the offline grounding corpus ``{source: text}`` for a pack's grounding claims.
+
+    Primary path: a committed, pack-local ``corpus/<source>.txt`` (read OFFLINE, keyed by the directive's
+    ``source``), so a built pack re-grounds deterministically from a clean clone. Fallback: a ``source``
+    with no committed file but naming a ``pkg`` paper that has a DOI is fetched via
+    :func:`ground.fetch_doc_corpus` (the live DOI path) when ``get`` is provided. A ``source`` with neither
+    is omitted, so :func:`verify_grounding_claims` honestly stamps it ``ungrounded-unreachable``."""
+    from pathlib import Path as _Path
+    from .ground import fetch_doc_corpus
+    cdir = (_Path(base_dir).resolve() / "corpus") if base_dir else None
+    sources = {(getattr(c, "grounding", None) or {}).get("source", "")
+               for c in getattr(pkg, "claims", [])}
+    sources.discard("")
+    corpus: dict = {}
+    need_fetch = []
+    for s in sorted(sources):
+        f = (cdir / f"{s}.txt") if cdir else None
+        if f is not None and f.is_file() and f.resolve().is_relative_to(cdir):   # belt: stay inside corpus/
+            corpus[s] = f.read_text(encoding="utf-8")
+        else:
+            need_fetch.append(s)
+    if need_fetch and get is not None:
+        by_key = {p.cite_key: p for p in getattr(pkg, "papers", [])}
+        papers = [by_key[s] for s in need_fetch if s in by_key and by_key[s].doi]
+        if papers:
+            corpus.update(fetch_doc_corpus(papers, get=get))
+    return corpus

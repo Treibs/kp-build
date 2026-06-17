@@ -272,6 +272,101 @@ def test_verify_grounding_claims_leaves_citation_claims_untouched():
     assert pkg.claims[0].verified.exists is False and pkg.claims[0].verified.status == "unverified"
 
 
+# ── V2-b STEP 4: load_grounding_corpus — pack-local corpus/<source>.txt (offline) + DOI fallback ─
+
+def test_load_grounding_corpus_reads_committed_file_offline(tmp_path):
+    """The primary path: a committed corpus/<source>.txt is read OFFLINE, keyed by the directive's
+    source. No `get` needed — a built pack re-grounds deterministically from a clean clone."""
+    from kp_build.verifier import load_grounding_corpus
+    (tmp_path / "corpus").mkdir()
+    (tmp_path / "corpus" / "RFC9110.txt").write_text("The GET method requests transfer.", encoding="utf-8")
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="g", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "RFC9110", "supporting_passage": "The GET method requests transfer."})])
+    corpus = load_grounding_corpus(pkg, tmp_path)        # no get -> offline only
+    assert corpus == {"RFC9110": "The GET method requests transfer."}
+
+def test_load_grounding_corpus_doi_fallback_when_no_committed_file(tmp_path):
+    """Fallback: a source with no committed file but naming a DOI paper is fetched via fetch_doc_corpus
+    (the live DOI path), exercised here with a fake transport. Keyed by cite_key == source."""
+    from kp_build.verifier import load_grounding_corpus
+    import json as _j
+    fake = _j.dumps({"message": {"title": ["A Paper"],
+                                 "abstract": "We present a method that improves the widget by twelve percent."}})
+    pkg = Package(topic="t", scope="s",
+                  papers=[Paper(cite_key="smith2026", title="A Paper", doi="10.1/x")],
+                  claims=[Claim(id="g", statement="s", paper="", supporting_passage="x",
+                                grounding={"source": "smith2026",
+                                           "supporting_passage": "improves the widget by twelve percent."})])
+    corpus = load_grounding_corpus(pkg, tmp_path, get=lambda url: fake)
+    assert "smith2026" in corpus and "twelve percent" in corpus["smith2026"]
+
+def test_load_grounding_corpus_omits_unheld_source(tmp_path):
+    """A source with neither a committed file nor a DOI paper is omitted -> verifier later stamps it
+    ungrounded-unreachable (never invented)."""
+    from kp_build.verifier import load_grounding_corpus
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="g", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "NOWHERE", "supporting_passage": "a full sentence not held anywhere here."})])
+    assert load_grounding_corpus(pkg, tmp_path, get=lambda url: "") == {}
+
+
+# ── V2-b STEP 5: _cmd_build wiring — --ground-verify gate + the silent-drop hard-error guard ──
+
+_GSENT = "The GET method requests transfer of a current representation of the target resource."
+
+def _gbuild(tmp_path, passages, corpus_text=_GSENT, **over):
+    """Write a grounding-spine research.json + a committed corpus/SRC.txt next to it, return build args."""
+    (tmp_path / "corpus").mkdir(exist_ok=True)
+    (tmp_path / "corpus" / "SRC.txt").write_text(corpus_text, encoding="utf-8")
+    rj = {"topic": "t", "scope": "s",
+          "claims": [{"id": cid, "statement": f"stmt {cid}", "supporting_passage": "disp",
+                      "grounding": {"source": "SRC", "supporting_passage": p}} for cid, p in passages]}
+    (tmp_path / "r.json").write_text(json.dumps(rj))
+    args = SimpleNamespace(input=str(tmp_path / "r.json"), out=str(tmp_path / "out"), built="2026-01-01",
+                           no_verify=False, throttle=0.0, reuse_verification=False, ground=False,
+                           ground_fulltext=False, execute=False, ground_verify=False,
+                           name="", version="0.1.0", license="CC-BY-4.0")
+    for k, v in over.items():
+        setattr(args, k, v)
+    return args
+
+def _claims_shipped(tmp_path):
+    import json as _j
+    return _j.loads((tmp_path / "out" / "wikillm.json").read_text())["stats"]["claims"]
+
+def test_build_hard_errors_on_grounding_claims_without_ground_verify(tmp_path, capsys):
+    """The silent-drop guard (critic #2): a grounding-directive claim built WITHOUT --ground-verify (and
+    not --no-verify) must HARD-ERROR, never fall through the ship gate and silently vanish."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)])) == 2
+    assert "ground-verify" in capsys.readouterr().err
+
+def test_build_grounds_and_ships_with_ground_verify(tmp_path):
+    """Happy path: --ground-verify grounds the verbatim passage against the committed corpus -> ships."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)], ground_verify=True)) == 0
+    assert (tmp_path / "out" / "claims" / "g1.md").exists()
+    assert _claims_shipped(tmp_path) == 1
+
+def test_build_ground_verify_drops_ungrounded_keeps_grounded(tmp_path):
+    """The hard negative: a fabricated (non-verbatim) clause stamps ungrounded and is VETOED; the
+    verbatim one ships. This is the demonstrand the new fixtures will stage."""
+    from kp_build.cli import _cmd_build
+    fab = "The TRACE method permanently deletes all server logs without any authentication."  # not in corpus
+    assert _cmd_build(_gbuild(tmp_path, [("ok", _GSENT), ("bad", fab)], ground_verify=True)) == 0
+    assert (tmp_path / "out" / "claims" / "ok.md").exists()
+    assert not (tmp_path / "out" / "claims" / "bad.md").exists()
+    assert _claims_shipped(tmp_path) == 1
+
+def test_build_no_verify_stamps_grounding_claims_so_pack_isnt_empty(tmp_path):
+    """--no-verify is the offline escape hatch: grounding claims are stamped (unchecked) and ship, so a
+    grounding-spine pack doesn't silently ship empty."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)], no_verify=True)) == 0
+    assert _claims_shipped(tmp_path) == 1
+
+
 def test_assemble_persists_relations_and_goal_metrics(tmp_path):
     from kp_build.schema import GoalMetric, Relation
     v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
