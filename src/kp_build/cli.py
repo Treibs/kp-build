@@ -18,7 +18,8 @@ import sys
 from pathlib import Path
 
 from .schema import (Package, Paper, Claim, OpenProblem, Debate, Position, Benchmark, Verification,
-                     CLAIM_TYPES, CONFIDENCE, PROBLEM_STATUS)
+                     GoalMetric, Relation, goal_metric_from_dict,
+                     CLAIM_TYPES, CONFIDENCE, PROBLEM_STATUS, DIRECTIONS, ORACLE_KINDS, RELATION_TYPES)
 from .citations import verify_all
 from .assemble import assemble
 from .validate import validate
@@ -88,6 +89,11 @@ def _load(path: str) -> Package:
     def _uid(nid, kind, i):
         if not nid:
             return
+        # M1: every node id is used verbatim as a filename (claims/<id>.md, relations/<id>.md, ...) —
+        # path-validate it like cite_key, or a crafted id writes OUTSIDE --out.
+        if nid in (".", "..") or not re.fullmatch(r"[A-Za-z0-9_.-]+", nid):
+            errs.append(f"{kind}[{i}]: id {nid!r} has unsafe characters (used as a filename; "
+                        f"allowed: letters, digits, '_', '.', '-')")
         if nid in node_ids:
             errs.append(f"{kind}[{i}]: duplicate node id {nid!r}")
         node_ids.add(nid)
@@ -124,10 +130,30 @@ def _load(path: str) -> Package:
     claims = []
     for i, c in _section(d, "claims", errs):
         _uid(c.get("id"), "claims", i)
-        for fld in ("id", "statement", "paper"):
+        for fld in ("id", "statement"):
             if not c.get(fld):
                 errs.append(f"claims[{i}]: missing {fld}")
-        _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
+        exec_d = c.get("execution") or {}
+        if exec_d and not exec_d.get("aesthetic"):   # V2-a execution directive (instead of a citation paper)
+            if exec_d.get("tool") not in ("lint", "inspect", "validate"):
+                errs.append(f"claims[{i}].execution: tool must be lint|inspect|validate")
+            if not exec_d.get("gate_code"):
+                errs.append(f"claims[{i}].execution: needs a gate_code (or aesthetic:true)")
+            art = exec_d.get("artifact", "")
+            if not art:
+                errs.append(f"claims[{i}].execution: needs an artifact")
+            elif art.startswith(("/", "\\")) or "://" in art or ".." in re.split(r"[\\/]", art):
+                # M5: the artifact is handed to a subprocess that reads files — must be a relative path
+                # inside the pack; reject absolute paths, '..' traversal, and URL schemes.
+                errs.append(f"claims[{i}].execution.artifact {art!r} must be a relative path inside the "
+                            f"pack (no absolute path, '..', or URL)")
+        if not c.get("paper") and not exec_d:
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper' or an 'execution' directive")
+        if c.get("paper") and exec_d:                # M2: paper XOR execution — never both
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): has both a 'paper' and an 'execution' directive "
+                        f"(one verified unit per node — a mechanical gate must not be overridable by a citation)")
+        if c.get("paper"):
+            _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
         if c.get("claim_type") and c["claim_type"] not in CLAIM_TYPES:
             errs.append(f"claims[{i}]: claim_type {c['claim_type']!r} not in {CLAIM_TYPES}")
         if c.get("confidence") and c["confidence"] not in CONFIDENCE:
@@ -139,7 +165,9 @@ def _load(path: str) -> Package:
                             paper=str(c.get("paper", "")), supporting_passage=str(c.get("supporting_passage", "")),
                             claim_type=c.get("claim_type") or "finding", confidence=c.get("confidence") or "medium",
                             corroborated_by=corr,
-                            survived_refuter=c.get("survived_refuter") is not False))  # absent/null -> True
+                            survived_refuter=c.get("survived_refuter") is not False,  # absent/null -> True
+                            execution={k: exec_d[k] for k in ("tool", "gate_code", "artifact", "aesthetic")
+                                       if k in exec_d}))
 
     problems = []
     for i, o in _section(d, "open_problems", errs):
@@ -185,12 +213,53 @@ def _load(path: str) -> Package:
     if not isinstance(cov, dict):
         errs.append(f"'coverage' must be an object, got {type(cov).__name__}"); cov = {}
 
+    # ── V2-a KP-model spine (all optional — academic packs omit these and stay valid) ──
+    goals = d.get("goals") or {}
+    if not isinstance(goals, dict):
+        errs.append(f"'goals' must be an object, got {type(goals).__name__}"); goals = {}
+
+    goal_metrics = []
+    for i, gm in _section(d, "goal_metrics", errs):
+        if not gm.get("name"):
+            errs.append(f"goal_metrics[{i}]: missing name")
+        if gm.get("direction") and gm["direction"] not in DIRECTIONS:
+            errs.append(f"goal_metrics[{i}]: direction {gm['direction']!r} not in {DIRECTIONS}")
+        if gm.get("oracle_kind") and gm["oracle_kind"] not in ORACLE_KINDS:
+            errs.append(f"goal_metrics[{i}]: oracle_kind {gm['oracle_kind']!r} not in {ORACLE_KINDS}")
+        goal_metrics.append(goal_metric_from_dict(gm))
+    metric_names = {gm.name for gm in goal_metrics if gm.name}
+
+    all_nodes = node_ids | keys          # any node (claim/problem/debate/benchmark id or cite_key)
+    relations = []
+    for i, r in _section(d, "relations", errs):
+        _uid(r.get("id"), "relations", i)
+        for fld in ("id", "source", "target"):
+            if not r.get(fld):
+                errs.append(f"relations[{i}]: missing {fld}")
+        for end in ("source", "target"):
+            ev = r.get(end)
+            if ev and ev not in all_nodes:
+                errs.append(f"relations[{i}] ({r.get('id', '?')}): {end} {ev!r} resolves to no node")
+        if r.get("type") and r["type"] not in RELATION_TYPES:
+            errs.append(f"relations[{i}]: type {r['type']!r} not in {RELATION_TYPES}")
+        kpis = _strlist(r.get("kpis"), f"relations[{i}].kpis", errs)
+        if len(kpis) < 2:
+            errs.append(f"relations[{i}] ({r.get('id', '?')}): a connection must span ≥2 KPIs, got {len(kpis)}")
+        if metric_names:        # if KPIs are formally declared, edges must reference them
+            for k in kpis:
+                if k not in metric_names:
+                    errs.append(f"relations[{i}]: kpi {k!r} is not a declared goal_metric")
+        relations.append(Relation(
+            id=str(r.get("id", "")), source=str(r.get("source", "")), target=str(r.get("target", "")),
+            type=r.get("type") or "related", description=str(r.get("description", "")),
+            confidence=r.get("confidence") or "medium", kpis=kpis, verification=Verification()))
+
     if errs:
         raise ResearchInputError("invalid research input:\n  - " + "\n  - ".join(errs))
 
     return Package(topic=d["topic"], scope=str(d.get("scope", "")), papers=papers, claims=claims,
                    open_problems=problems, debates=debates, benchmarks=benchmarks,
-                   coverage=cov)
+                   coverage=cov, goals=goals, goal_metrics=goal_metrics, relations=relations)
 
 
 def _cmd_build(args) -> int:
@@ -207,6 +276,12 @@ def _cmd_build(args) -> int:
     if args.no_verify:
         for p in pkg.papers:
             p.verified = Verification(exists=True, status="verified", via="(unchecked)", checked=today)
+        # M3/M4b: do NOT trust an inbound claim verdict. Reset citation claims (they ship via their stamped
+        # paper); stamp execution/grounding (no-paper) claims as (unchecked) so a claim-spine pack under
+        # --no-verify isn't silently EMPTY (and an inbound exists:true can't ship unchecked).
+        for c in pkg.claims:
+            c.verified = (Verification(exists=True, status="verified", kind="execution",
+                                       via="(unchecked)", checked=today) if not c.paper else Verification())
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
                    "rejected": [], "unconfirmed": [], "errored": []}
     else:
@@ -253,9 +328,29 @@ def _cmd_build(args) -> int:
         print(f"  grounded {g['grounded']} · unconfirmed {g['unconfirmed']} · ungrounded {g['ungrounded']}",
               file=sys.stderr)
 
+    # M4/M5: running execution gates shells out to the hyperframes CLI on local files — require an explicit
+    # --execute opt-in, and never under --no-verify (which stamps execution claims (unchecked) above).
+    n_exec = sum(1 for c in pkg.claims if c.execution)
+    if n_exec and args.execute and not args.no_verify:
+        from .verifier import verify_execution_claims, hyperframes_runner
+        base = Path(args.input).resolve().parent
+        print(f"executing {n_exec} claim gate(s) via hyperframes (artifacts resolved under {base}) ...",
+              file=sys.stderr)
+        es = verify_execution_claims(pkg, runner=hyperframes_runner, today=today, base_dir=base)
+        print(f"  execution: {es['execution_verified']}/{es['execution_total']} gate(s) verified", file=sys.stderr)
+    elif n_exec and not args.no_verify:
+        print(f"warn: {n_exec} execution claim(s) present but NOT gated — pass --execute to run them (executes "
+              f"the hyperframes CLI on local files). They will be DROPPED as unverified.", file=sys.stderr)
+
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)
     res = validate(out)
+    # M3: a claim-spine package must not silently ship EMPTY (e.g. execution claims dropped for lack of --execute).
+    if pkg.claims and json.loads((out / "wikillm.json").read_text())["stats"]["claims"] == 0:
+        print("error: every claim was dropped — a claim-spine package would ship EMPTY. "
+              "Did the verifier run? (execution claims need --execute; citations need the network).",
+              file=sys.stderr)
+        return 2
     print("kp-build complete")
     print(f"  topic            : {pkg.topic}")
     print(f"  citations        : {summary['verified']}/{summary['total']} verified")
@@ -414,6 +509,7 @@ def main(argv=None) -> int:
     b.add_argument("--reuse-verification", action="store_true", help="keep prior verdicts in <out> and re-check only the errored/unverified papers (cheap retry)")
     b.add_argument("--ground", action="store_true", help="confirm each claim's passage appears in its paper (abstract-level, free)")
     b.add_argument("--ground-fulltext", action="store_true", help="ground against ar5iv FULLTEXT (slower; enables the 'ungrounded' verdict)")
+    b.add_argument("--execute", action="store_true", help="run execution-claim gates via the hyperframes CLI (executes local files / npx; OFF by default — opt-in trust)")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
     b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import re
 
-from .schema import Package
+from .schema import Package, claim_ships
 
 
 def _toks(s: str) -> int:
@@ -49,7 +49,8 @@ def _claim_line(c, verified) -> str:
         note = f" (corroborated by {len(corr)})"
     if grounded == "grounded":
         note += " ✓grounded"                                # passage machine-confirmed in the source
-    line = f"- _{c.claim_type}_ — {_data(c.statement)} *([{c.paper}], {conf}{note})*"
+    src = f"[{c.paper}]" if c.paper else f"[{c.verified.via or c.verified.kind}]"   # exec claim: cite its verdict
+    line = f"- _{c.claim_type}_ — {_data(c.statement)} *({src}, {conf}{note})*"
     if not flagged and c.confidence == "high" and c.supporting_passage:        # FMT-1: carry evidence
         line += f"\n    > {_data(c.supporting_passage)[:240]}"                  # (not for a flagged claim)
     return line
@@ -129,13 +130,31 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
 
     order = {"result": 0, "finding": 1, "method": 2, "definition": 3}
     claim_items = [_claim_line(c, verified) for c in
-                   sorted((c for c in pkg.claims if c.paper in verified),
+                   sorted((c for c in pkg.claims if claim_ships(c, verified)),
                           key=lambda c: order.get(c.claim_type, 9))]
 
+    # V2-a KP-model spine — Goals & KPIs (top, defines purpose) and Key connections (the KPI tradeoffs)
+    goal_items = [f"- **{_data(str(gid))}** — {_data(str(desc))}" for gid, desc in (pkg.goals or {}).items()]
+    for gm in pkg.goal_metrics:
+        arrow = "↓ lower is better" if gm.direction == "lower" else "↑ higher is better"
+        tgt = f" — target {_data(gm.target)}" if gm.target else ""
+        base = f" (baseline {_data(gm.baseline)})" if gm.baseline else ""
+        goal_items.append(f"- **{_data(gm.name)}** [{arrow}]{tgt}{base} · oracle: {_data(gm.oracle_kind)}")
+
+    kept_nodes = (set(verified) | {c.id for c in pkg.claims if claim_ships(c, verified)}
+                  | {op.id for op in probs} | {b.id for b in benches}
+                  | {d.id for d in pkg.debates if any(k in verified for pos in d.positions for k in pos.papers)})
+    # M7: source/target/type/kpis are attacker-controlled — sanitize EVERY field that lands in CONTEXT.md
+    conn_items = [f"- **[{_data(r.source)}] —{_data(r.type)}→ [{_data(r.target)}]** "
+                  f"({', '.join(_data(k) for k in r.kpis)}) — {_data(r.description)}"
+                  for r in pkg.relations if r.source in kept_nodes and r.target in kept_nodes]
+
     sections = [
+        ("## Goals & KPIs (what this package is for)", goal_items, ""),
         ("## Verified papers (the citation spine)", paper_items, "papers/"),
         ("## Open problems (where new work goes)", prob_items, "open-problems/"),
         ("## Open debates / contested points", deb_items, "debates/"),
+        ("## Key connections (KPI-anchored tradeoffs)", conn_items, "relations/"),
         ("## Reported results (SOTA snapshot)", bench_items, "benchmarks/"),
         ("## Key claims", claim_items, "claims/"),
     ]

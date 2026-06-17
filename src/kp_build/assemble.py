@@ -8,12 +8,13 @@ or unverified reference. Everything dropped is counted and reported (never silen
 from __future__ import annotations
 
 import json
-from dataclasses import replace
+from dataclasses import replace, asdict
 from pathlib import Path
 
 from .schema import (
     Package, SCHEMA_VERSION, slugify,
     paper_to_md, claim_to_md, problem_to_md, debate_to_md, benchmark_to_md, paper_ref_str,
+    relation_to_md, claim_ships,
 )
 from .digest import build_context
 
@@ -42,12 +43,12 @@ def build_knowledge_json(pkg: Package, *, name: str | None, version: str, licens
 def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: dict | None = None,
              name: str | None = None, version: str = "0.1.0", license: str = "CC-BY-4.0") -> Path:
     out = Path(out_dir)
-    for sub in ("papers", "claims", "open-problems", "debates", "benchmarks"):
+    for sub in ("papers", "claims", "open-problems", "debates", "benchmarks", "relations"):
         (out / sub).mkdir(parents=True, exist_ok=True)
 
     verified = {p.cite_key for p in pkg.papers if p.verified.exists}
     refs = {p.cite_key: paper_ref_str(p) for p in pkg.papers if p.verified.exists}
-    drops = {"claims": 0, "open_problems": 0, "debates": 0, "benchmarks": 0, "positions": 0}
+    drops = {"claims": 0, "open_problems": 0, "debates": 0, "benchmarks": 0, "positions": 0, "relations": 0}
 
     for p in pkg.papers:
         (out / "papers" / f"{p.cite_key}.md").write_text(paper_to_md(p), encoding="utf-8")
@@ -55,7 +56,9 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     # prune unverified refs into COPIES — never mutate the caller's input dataclasses (ASSM-1)
     claims = []
     for c in pkg.claims:
-        if c.paper in verified:
+        # M2: a claim's OWN verdict is authoritative (a mechanical disproof outranks a citation) — the ONE
+        # ship rule lives in schema.claim_ships, shared with digest so they can't drift.
+        if claim_ships(c, verified):
             c2 = replace(c, corroborated_by=[k for k in c.corroborated_by if k in verified])
             (out / "claims" / f"{c2.id}.md").write_text(
                 claim_to_md(c2, paper_ref=refs.get(c2.paper, "")), encoding="utf-8")
@@ -94,11 +97,24 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
         else:
             drops["benchmarks"] += 1
 
+    # V2-a: first-class KPI-anchored edges — ship only those whose BOTH endpoints survived (resolve-or-drop)
+    shipped = (verified | {c.id for c in claims} | {op.id for op in problems}
+               | {d.id for d in debates} | {b.id for b in benchmarks})
+    relations = []
+    for r in pkg.relations:
+        if r.source in shipped and r.target in shipped:
+            (out / "relations" / f"{r.id}.md").write_text(relation_to_md(r), encoding="utf-8")
+            relations.append(r)
+        else:
+            drops["relations"] += 1
+
     # machine-readable graph: nodes + explicit edges
-    edges = ([{"from": c.id, "to": c.paper, "rel": "anchored-by"} for c in claims]
+    edges = ([{"from": c.id, "to": c.paper, "rel": "anchored-by"} for c in claims if c.paper]
              + [{"from": op.id, "to": k, "rel": "flagged-by"} for op in problems for k in op.flagged_by]
              + [{"from": b.id, "to": b.paper, "rel": "reported-in"} for b in benchmarks]
-             + [{"from": c.id, "to": k, "rel": "corroborated-by"} for c in claims for k in c.corroborated_by])
+             + [{"from": c.id, "to": k, "rel": "corroborated-by"} for c in claims for k in c.corroborated_by]
+             + [{"from": r.source, "to": r.target, "rel": r.type, "kpis": r.kpis,
+                 "verification": ("verified" if r.verification.exists else "unrun")} for r in relations])
     index = {
         "schema": SCHEMA_VERSION,
         "papers": [{"cite_key": p.cite_key, "title": p.title, "year": p.year, "arxiv_id": p.arxiv_id,
@@ -109,6 +125,8 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
         "debates": [{"id": d.id, "positions": [pos.stance for pos in d.positions]} for d in debates],
         "benchmarks": [{"id": b.id, "name": b.name, "value": b.value, "metric": b.metric,
                         "method": b.method, "paper": b.paper} for b in benchmarks],
+        "relations": [{"id": r.id, "source": r.source, "target": r.target, "type": r.type,
+                       "kpis": r.kpis, "verification": ("verified" if r.verification.exists else "unrun")} for r in relations],
         "edges": edges,
     }
     (out / "index.json").write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
@@ -119,7 +137,9 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
         "schema": SCHEMA_VERSION, "topic": pkg.topic, "scope": pkg.scope, "built": built,
         "stats": {"papers_verified": len(verified), "papers_total": len(pkg.papers),
                   "claims": len(claims), "open_problems": len(problems), "debates": len(debates),
-                  "benchmarks": len(benchmarks), "dropped": drops},
+                  "benchmarks": len(benchmarks), "relations": len(relations), "dropped": drops},
+        "goals": pkg.goals,
+        "goal_metrics": [asdict(gm) for gm in pkg.goal_metrics],
         "source_span": {"oldest": min(years) if years else None, "newest": max(years) if years else None,
                         "latest_checked": max(checked) if checked else built},
         "coverage": pkg.coverage or {"note": "not recorded — coverage completeness is unverified"},
