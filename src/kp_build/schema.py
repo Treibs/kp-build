@@ -303,6 +303,18 @@ def claim_from_md(text: str) -> Claim:
         execution=dict(fm.get("execution") or {}))
 
 
+def claim_ships(c: "Claim", verified_keys) -> bool:
+    """The SINGLE ship rule for a claim (V2-a) — shared by assemble + digest so they can't drift.
+    A claim's OWN verdict is authoritative: a verifier that ran and FAILED vetoes; else it ships iff its
+    Paper is in the verified citation spine. (``verified_keys`` may be a set or a dict keyed by cite_key.)"""
+    v = c.verified
+    if v.exists:
+        return True
+    if v.status not in ("unverified", ""):
+        return False
+    return c.paper in verified_keys
+
+
 def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:
     refs = refs or {}
     d = asdict(op)

@@ -146,18 +146,23 @@ class ExecutionVerifier:
                             evidence=f"{tool}:{gate} {'fired' if fired else 'cleared'}", checked=self._today)
 
 
-def hyperframes_runner(artifact, tool):
+def hyperframes_runner(artifact, tool, *, _run=None):
     """The default ExecutionVerifier runner — shells to the hyperframes CLI and extracts the gate codes.
-    Returns ``{"codes": [...]}``, or ``None`` if no parseable result; raises on timeout/crash (→ ``error``)."""
+    Returns ``{"codes": [...]}``, or ``None`` if no parseable result; raises on timeout/crash (→ ``error``).
+    ``_run`` (a ``subprocess.run``-shaped callable) is injectable so the parse/extraction is unit-testable."""
     import subprocess
     import json as _json
-    p = subprocess.run(["npx", "--yes", "hyperframes@0.6.91", tool, "--json", str(artifact)],
-                       capture_output=True, text=True, timeout=180)
-    out = p.stdout.strip()
+    run = _run or subprocess.run
+    p = run(["npx", "--yes", "hyperframes@0.6.91", tool, "--json", str(artifact)],
+            capture_output=True, text=True, timeout=180)
+    out = (p.stdout or "").strip()
     i = out.find("{")
     if i < 0:
         return None
-    d = _json.loads(out[i:])
+    try:
+        d = _json.loads(out[i:])
+    except Exception:                               # malformed slice -> no result, never a crash
+        return None
     if tool == "lint":
         return {"codes": [f.get("code") for f in d.get("findings", [])]}
     if tool == "inspect":

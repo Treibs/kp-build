@@ -489,6 +489,55 @@ def test_context_sanitizes_relation_and_goal_fields():
     assert "```" not in ctx                               # every rendered field sanitized
 
 
+def test_hyperframes_runner_extracts_codes_per_tool():
+    """should-fix: the PRODUCTION default runner was untested. Inject the run fn and pin parse/extraction."""
+    from kp_build.verifier import hyperframes_runner
+    from types import SimpleNamespace
+    def run(out):
+        return lambda *a, **k: SimpleNamespace(stdout=out)
+    assert hyperframes_runner("x", "lint", _run=run('{"findings":[{"code":"nd"},{"code":"rep"}]}')) == {"codes": ["nd", "rep"]}
+    assert hyperframes_runner("x", "inspect", _run=run('{"issues":[{"code":"overflow"}]}')) == {"codes": ["overflow"]}
+    assert hyperframes_runner("x", "validate", _run=run('{"contrastFailures":3}')) == {"codes": ["contrastFailures"]}
+    assert hyperframes_runner("x", "validate", _run=run('{"contrastFailures":0}')) == {"codes": []}
+
+
+def test_hyperframes_runner_none_on_no_json_bad_json_or_unknown_tool():
+    from kp_build.verifier import hyperframes_runner
+    from types import SimpleNamespace
+    run = lambda out: (lambda *a, **k: SimpleNamespace(stdout=out))
+    assert hyperframes_runner("x", "lint", _run=run("error: no brace here")) is None     # no JSON
+    assert hyperframes_runner("x", "lint", _run=run("{not valid json")) is None           # malformed -> None, no crash
+    assert hyperframes_runner("x", "render", _run=run('{"findings":[]}')) is None          # unknown tool
+
+
+def test_validate_rejects_no_paper_no_verdict_claim(tmp_path: Path):
+    """should-fix: validate's reject branch (a shipped claim with neither a paper nor a verdict) was untested."""
+    from kp_build.validate import validate
+    from kp_build.schema import claim_to_md
+    for sub in ("papers", "claims", "open-problems", "debates", "benchmarks", "relations"):
+        (tmp_path / sub).mkdir()
+    (tmp_path / "claims" / "bad.md").write_text(
+        claim_to_md(Claim(id="bad", statement="s", paper="", supporting_passage="p")))
+    res = validate(tmp_path)
+    assert any("neither a cited paper nor a verifier verdict" in e for e in res.errors)
+
+
+def test_fetch_doc_corpus_survives_network_error_and_bad_json():
+    """should-fix: the network-error + bad-JSON continue-branches were untested."""
+    from kp_build.ground import fetch_doc_corpus
+    def err(url): raise RuntimeError("network down")
+    assert fetch_doc_corpus([Paper(cite_key="p1", title="t", doi="10.x/y")], get=err) == {}
+    assert fetch_doc_corpus([Paper(cite_key="p1", title="t", doi="10.x/y")], get=lambda u: "not json") == {}
+
+
+def test_doc_grounding_verifier_unconfirmed_on_too_short_passage():
+    """nice-to-have: the load-bearing `unconfirmed`(None) honesty branch was untested."""
+    from kp_build.verifier import DocGroundingVerifier
+    v = DocGroundingVerifier({"p1": "a much longer source text that does not contain that exact phrase here."}).verify(
+        Claim(id="c", statement="s", paper="p1", supporting_passage="too short"))
+    assert v.status == "unconfirmed" and v.exists is False and v.kind == "grounding"
+
+
 def test_execution_verifier_non_list_codes_is_not_silently_verified():
     """should-fix: a malformed runner result {'codes':'nd'} must NOT fail-OPEN to verified via substring."""
     from kp_build.verifier import ExecutionVerifier

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import re
 
-from .schema import Package
+from .schema import Package, claim_ships
 
 
 def _toks(s: str) -> int:
@@ -130,7 +130,7 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
 
     order = {"result": 0, "finding": 1, "method": 2, "definition": 3}
     claim_items = [_claim_line(c, verified) for c in
-                   sorted((c for c in pkg.claims if c.paper in verified or c.verified.exists),
+                   sorted((c for c in pkg.claims if claim_ships(c, verified)),
                           key=lambda c: order.get(c.claim_type, 9))]
 
     # V2-a KP-model spine — Goals & KPIs (top, defines purpose) and Key connections (the KPI tradeoffs)
@@ -141,8 +141,9 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
         base = f" (baseline {_data(gm.baseline)})" if gm.baseline else ""
         goal_items.append(f"- **{_data(gm.name)}** [{arrow}]{tgt}{base} · oracle: {_data(gm.oracle_kind)}")
 
-    kept_nodes = (set(verified) | {c.id for c in pkg.claims if c.paper in verified or c.verified.exists}
-                  | {op.id for op in probs} | {b.id for b in benches})
+    kept_nodes = (set(verified) | {c.id for c in pkg.claims if claim_ships(c, verified)}
+                  | {op.id for op in probs} | {b.id for b in benches}
+                  | {d.id for d in pkg.debates if any(k in verified for pos in d.positions for k in pos.papers)})
     # M7: source/target/type/kpis are attacker-controlled — sanitize EVERY field that lands in CONTEXT.md
     conn_items = [f"- **[{_data(r.source)}] —{_data(r.type)}→ [{_data(r.target)}]** "
                   f"({', '.join(_data(k) for k in r.kpis)}) — {_data(r.description)}"
