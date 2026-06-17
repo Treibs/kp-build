@@ -16,6 +16,7 @@ import time
 from typing import Callable, Protocol, runtime_checkable
 
 from .schema import Paper, Verification
+from .ground import passage_in_text
 from . import citations
 
 
@@ -51,3 +52,41 @@ class CitationVerifier:
             item, get=self._get, today=self._today,
             sleep=self._sleep, max_retries=self._max_retries,
         ).verified
+
+
+class DocGroundingVerifier:
+    """Grounds a quoted passage against a PINNED, offline corpus (V2-a §4.4).
+
+    No network at verify time — the corpus (``{source_key: full_text}``; abstracts, datasheet/standard
+    text, paper bodies) is injected at construction, so a built pack re-grounds deterministically and
+    offline. The tri-state :func:`ground.passage_in_text` maps to a Verification:
+
+      present (True)  -> ``verified``
+      absent  (False) -> ``ungrounded``
+      unsure  (None)  -> ``unconfirmed``        (passage too short / corpus text too large to fuzzy-scan)
+
+    A source MISSING from the corpus -> ``ungrounded-unreachable``: a COVERAGE DEBT (an oracle exists in
+    principle, we just don't hold the text), NEVER laundered into ``verified`` (the review's two-stamp scheme).
+    Works on any item exposing a passage + source: a Claim (``supporting_passage`` / ``paper``) or a
+    Relation (``description`` / ``source``).
+    """
+
+    kind = "grounding"
+
+    def __init__(self, corpus: dict, *, today: str = "", contiguity: float | None = None) -> None:
+        self._corpus = corpus
+        self._today = today
+        self._contiguity = contiguity
+
+    def verify(self, item) -> Verification:
+        passage = getattr(item, "supporting_passage", "") or getattr(item, "description", "")
+        source = getattr(item, "paper", "") or getattr(item, "source", "")
+        text = self._corpus.get(source)
+        if text is None:                          # oracle exists in principle, text not held -> coverage debt
+            return Verification(kind="grounding", exists=False, status="ungrounded-unreachable",
+                                via="doc-corpus", evidence="source not in pinned corpus", checked=self._today)
+        present = passage_in_text(passage, text,
+                                  **({} if self._contiguity is None else {"contiguity": self._contiguity}))
+        status = {True: "verified", False: "ungrounded", None: "unconfirmed"}[present]
+        return Verification(kind="grounding", exists=(present is True), status=status, via="doc-corpus",
+                            evidence=(passage[:160] if present is True else ""), checked=self._today)

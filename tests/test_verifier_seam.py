@@ -232,3 +232,42 @@ def test_citation_verifier_equals_legacy_and_satisfies_protocol():
     assert v == legacy                       # verifier-equals-legacy (the characterization)
     assert v.kind == "existence"
     assert isinstance(CitationVerifier(), Verifier)      # the protocol is satisfied
+
+
+# ── verifier.py: DocGroundingVerifier — offline passage grounding (RED until implemented) ─────
+
+def test_doc_grounding_verifier_grounds_passage_present_in_corpus():
+    """A claim whose passage really appears in the pinned source text grounds verified (kind='grounding'),
+    with NO network — the corpus is injected at construction (the §4.4 offline path)."""
+    from kp_build.verifier import DocGroundingVerifier
+    text = ("Polyamide 6 absorbs substantial water, with average saturation around 8.83 percent "
+            "in an 80 C bath, which plasticizes the polymer and lowers its modulus.")
+    claim = Claim(id="c8", statement="nylon absorbs water", paper="sambale2021",
+                  supporting_passage="average saturation around 8.83 percent in an 80 C bath")
+    v = DocGroundingVerifier({"sambale2021": text}).verify(claim)
+    assert v.kind == "grounding" and v.exists is True and v.status == "verified"
+    assert v.evidence.startswith("average saturation")
+
+
+def test_doc_grounding_verifier_flags_absent_passage_as_ungrounded():
+    from kp_build.verifier import DocGroundingVerifier
+    claim = Claim(id="c", statement="s", paper="p",
+                  supporting_passage="zylophone quasar nimbus fjord glyph wexford plinth bramble")
+    v = DocGroundingVerifier({"p": "polyamide six absorbs water and plasticizes when wet here."}).verify(claim)
+    assert v.exists is False and v.status == "ungrounded"
+
+
+def test_doc_grounding_verifier_unreachable_when_source_absent_from_corpus():
+    """Source not in the pinned corpus = a COVERAGE DEBT (ungrounded-unreachable), NOT a permanent
+    ceiling and NOT laundered into verified (the review's two-stamp scheme)."""
+    from kp_build.verifier import DocGroundingVerifier
+    claim = Claim(id="c", statement="s", paper="missing_paper",
+                  supporting_passage="some passage long enough to actually check against a source text")
+    v = DocGroundingVerifier({}).verify(claim)
+    assert v.exists is False and v.status == "ungrounded-unreachable"
+
+
+def test_doc_grounding_verifier_offline_and_satisfies_protocol():
+    from kp_build.verifier import DocGroundingVerifier, Verifier
+    assert isinstance(DocGroundingVerifier({}), Verifier)
+    assert DocGroundingVerifier({}).kind == "grounding"
