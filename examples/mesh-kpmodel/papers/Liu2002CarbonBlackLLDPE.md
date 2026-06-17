@@ -19,7 +19,7 @@ verified:
     weathering conditions
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies that carbon black improves UV stability of polyolefin films, with stabilization
   governed by carbon-black type, particle size, concentration, and degree of dispersion

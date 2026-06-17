@@ -20,7 +20,7 @@ verified:
     Monofilaments
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies UV-aging mechanical retention of pure HDPE vs HDPE/UHMWPE blend monofilament
   (600 h)

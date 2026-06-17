@@ -19,7 +19,7 @@ verified:
     and moisture content
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Classic quantitative study showing nylon-6,6 creep is a strong function of moisture
   content (and humidity), enabling prediction of creep at constant stress/temperature/moisture

@@ -19,7 +19,7 @@ verified:
     and modeling'
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies that water diffusion into PA6 plasticizes the polymer, increasing chain
   mobility and producing a large decrease in both Young's modulus and yield stress

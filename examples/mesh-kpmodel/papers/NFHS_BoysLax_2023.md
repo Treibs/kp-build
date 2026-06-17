@@ -19,7 +19,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Defines the maximum pocket/net hole-or-gap size: no holes or gaps larger than 1.68
   inches in diameter (an American golf ball)'

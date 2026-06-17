@@ -19,7 +19,7 @@ verified:
     Tape and Braided Material
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Defines breaking strength and elongation test for braided/webbing materials using
   a split-drum clamp, applicable to braided mesh cord and sidewall string

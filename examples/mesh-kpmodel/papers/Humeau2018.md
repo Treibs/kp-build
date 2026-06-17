@@ -20,7 +20,7 @@ verified:
     of polyamide 6 (nylon) fibres and yarns
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Directly studies nylon 6 fibre yarns: moisture reduces the Tg of the amorphous
   structure (Tg ~55 C dry at 0%RH), small effect on short-term tensile behaviour but

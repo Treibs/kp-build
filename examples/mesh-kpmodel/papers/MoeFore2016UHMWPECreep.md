@@ -19,7 +19,7 @@ verified:
     Materials With UHMWPE Fibers
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Measures on-loading structural strain of 8.8-27.8% that is largely permanent in
   Raschel-knitted UHMWPE netting

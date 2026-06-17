@@ -19,7 +19,7 @@ verified:
     Fibers for Applications Based on Their Different Preparation Techniques
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Authoritative review of UHMWPE fiber properties: high strength-to-weight ratio,
   toughness, chemical/abrasion resistance'

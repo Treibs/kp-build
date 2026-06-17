@@ -2,7 +2,7 @@
   "schema": "wikillm/1",
   "topic": "Material composition and finishing chemistry for all-weather lacrosse mesh: polymer family selection, moisture plasticization, protective coatings, construction, and the test standards and rules that define mesh KPIs",
   "scope": "This package scopes the material-science decision space for an all-weather lacrosse mesh against the eight KPIs that govern its on-field performance and legality: strength (yarn/knot/mesh breaking force and tenacity), water-absorption (equilibrium and 24 h uptake), wet-stretch / dimensional-stability (moisture- and load-driven elongation, creep, permanent set, swelling), weight (areal/linear density and density-driven wet weight gain), UV-durability (strength and toughness retention under sunlight/xenon-arc aging), abrasion (wear resistance of fiber/coating under repeated contact), pocket-legality (governing-body crosse and pocket-depth/hole-size limits that the material must hold wet and under load), and stiffness/hold (modulus and pocket consistency governing ball hold and release). It synthesizes fiber-family chemistry (nylon 6, nylon 6/6, PET polyester, HDPE, UHMWPE/HPPE, polypropylene) and how amide vs ester vs polyolefin backbones set baseline tenacity, water uptake, density, and UV resistance; the moisture-plasticization mechanism that drops nylon's Tg, modulus, and dimensional stability (causing wet elongation / \"bagging out\") while PET/polyolefins stay dimensionally stable when wet; finishing/coating chemistry (paraffin wax, polyurethane/TPU, silicone/PDMS, carbon black, HALS) that trades water-resistance and UV-durability against stiffness, weight, and hold; construction effects (knotted vs knotless, mono- vs multifilament, heat-set, diamond-mesh solidity); and the ASTM/ISO test standards and NCAA/NFHS/World Lacrosse rules that operationalize these KPIs.",
-  "built": "2026-06-16",
+  "built": "2026-06-17",
   "stats": {
     "papers_verified": 33,
     "papers_total": 41,
@@ -116,7 +116,7 @@
   "source_span": {
     "oldest": 1958,
     "newest": 2026,
-    "latest_checked": "2026-06-16"
+    "latest_checked": "2026-06-17"
   },
   "coverage": {
     "sub_questions": [

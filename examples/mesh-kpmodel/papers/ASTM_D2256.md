@@ -19,7 +19,7 @@ verified:
     Method
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Defines single-strand tensile test for monofilament, multifilament, and spun yarns
   (strand-level method underlying mesh-yarn strength claims)

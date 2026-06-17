@@ -19,7 +19,7 @@ verified:
     Fiber Barrier Net in a Marine Environment
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies breaking-strength loss of a UHMWPE fiber net under UV, salt spray, and
   hygrothermal marine aging

@@ -17,7 +17,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Directly addresses lacrosse mesh material/coating trade-offs: argues a hydrophobic
   polypropylene yarn (INNEGRA S, density 0.84 g/cm3) is intrinsically water-resistant

@@ -19,7 +19,7 @@ verified:
     and monofilament fishing net materials
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Shows natural sunlight UV reduces breaking strength and elongation of PA6 net materials
   (mono- and multifilament)

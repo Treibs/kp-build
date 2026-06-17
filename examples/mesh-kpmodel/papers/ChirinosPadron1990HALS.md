@@ -18,7 +18,7 @@ verified:
     IN POLYMER PHOTOSTABILIZATION
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Authoritative review of HALS mechanism: nitroxyl-radical formation and regenerative
   scavenging cycle (Denisov cycle) that does not rely on UV absorption'

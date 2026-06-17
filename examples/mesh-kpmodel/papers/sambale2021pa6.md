@@ -19,7 +19,7 @@ verified:
     Behaviour of Polyamide 6 in Water
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies polyamide 6 (nylon 6) equilibrium water uptake across conditions (up
   to ~8.83% in 80C water bath)

@@ -20,7 +20,7 @@ verified:
     Thermoanalytical Evaluation
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies PET (polyester) tensile-strength retention under accelerated UV aging
   (81.5% retained at 1000 h)

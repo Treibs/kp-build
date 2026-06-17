@@ -19,7 +19,7 @@ verified:
     effect of water vapor on nylon
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Foundational dynamic-mechanical study establishing that absorbed water vapor acts
   as a plasticizer on nylon 66, increasing chain-segment mobility in the amorphous

@@ -19,7 +19,7 @@ verified:
     Non-Metallic Materials
   match_score: 0.467
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Defines xenon-arc light+water apparatus operating procedure to reproduce sunlight
   + rain/dew weathering on non-metallic materials including plastics, coatings, textiles,

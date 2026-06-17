@@ -17,7 +17,7 @@ verified:
   canonical_title: Fatigue property of high-performance polyethylene netting twine
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Compares high-performance polyethylene (HPPE/UHMWPE) against other netting twines
   under tensile and knot fatigue

@@ -19,7 +19,7 @@ verified:
     A Perspective on Polymeric and Composite Developments'
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Cross-polymer review of netting materials (PA/nylon, PET/polyester, HDPE, UHMWPE)
   for marine/agricultural service

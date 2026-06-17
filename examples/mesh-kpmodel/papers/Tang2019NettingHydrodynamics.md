@@ -18,7 +18,7 @@ verified:
     various twine materials, knot types, and weave patterns at small attack angles
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies that knots account for ~21% of total drag in nylon netting
 - Shows a knotless panel has ~79% of the drag of a knotted one

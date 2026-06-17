@@ -18,7 +18,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Defines the pocket-depth legality test: ball top surface must not sit below the
   bottom edge of the sidewalls when held horizontal'

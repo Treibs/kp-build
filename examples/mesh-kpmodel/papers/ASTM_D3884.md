@@ -19,7 +19,7 @@ verified:
     Double-Head Method)
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Defines abrasion-resistance test of textile fabrics using a rotary-platform double-head
   (RPDH/Taber) abrader

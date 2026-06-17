@@ -18,7 +18,7 @@ verified:
     Fabric
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Formulates a paraffin-wax/stearic-acid/triethanolamine emulsion water repellent
   and optimizes cure (~160 C, 5 min) to reach a maximum water repellency rating of

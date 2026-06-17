@@ -19,7 +19,7 @@ verified:
     Emerging paradigm for functional textiles, smart, and biomedical applications'
   match_score: 0.917
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Comprehensive review establishing why PU is the dominant textile coating: good
   substrate bonding, tensile/tear strength, abrasion and impact resistance, elongation,

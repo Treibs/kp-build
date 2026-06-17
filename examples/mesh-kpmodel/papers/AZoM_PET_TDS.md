@@ -17,7 +17,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Reports PET equilibrium water absorption <0.7% and 24-hour water absorption 0.1%,
   with PET described as dimensionally stable with very low water absorption

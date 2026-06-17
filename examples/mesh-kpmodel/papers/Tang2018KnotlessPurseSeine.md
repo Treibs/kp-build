@@ -18,7 +18,7 @@ verified:
     netting panels as determined in a flume tank
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Quantifies knot contribution to netting drag at 15-25% of total
 - Shows a knotless panel has ~83% of the drag of a knotted panel

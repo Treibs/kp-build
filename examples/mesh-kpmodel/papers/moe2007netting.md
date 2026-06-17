@@ -18,7 +18,7 @@ verified:
     cages
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Directly tests tensile/breaking properties of competing netting polymers (nylon/polyamide,
   polyester/PES, polyethylene) as used in real net cages

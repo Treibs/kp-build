@@ -19,7 +19,7 @@ verified:
     Moisture and Heat in a Xenon Arc-Type Apparatus
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Defines accelerated UV/moisture/heat degradation test measuring tensile-strength
   retention of synthetic netting/geotextiles in a xenon-arc apparatus

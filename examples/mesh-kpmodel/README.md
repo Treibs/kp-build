@@ -19,4 +19,4 @@ kpm add github:<owner>/<repo>#v0.1.0
 kpm compose            # composes into a vault; load CONTEXT.md into your agent
 ```
 
-Confidence is corpus-relative (conditional on the cited sources). Built 2026-06-16.
+Confidence is corpus-relative (conditional on the cited sources). Built 2026-06-17.

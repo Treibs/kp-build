@@ -856,7 +856,7 @@
         "strength",
         "water_absorption"
       ],
-      "verified": false
+      "verification": "unrun"
     },
     {
       "id": "mr2",
@@ -867,7 +867,7 @@
         "water_absorption",
         "wet_stretch"
       ],
-      "verified": false
+      "verification": "unrun"
     },
     {
       "id": "mr4",
@@ -878,7 +878,7 @@
         "strength",
         "uv_durability"
       ],
-      "verified": false
+      "verification": "unrun"
     },
     {
       "id": "mr7",
@@ -889,7 +889,7 @@
         "strength",
         "hold_release"
       ],
-      "verified": false
+      "verification": "unrun"
     }
   ],
   "edges": [
@@ -1521,7 +1521,7 @@
         "strength",
         "water_absorption"
       ],
-      "verified": false
+      "verification": "unrun"
     },
     {
       "from": "c8",
@@ -1531,7 +1531,7 @@
         "water_absorption",
         "wet_stretch"
       ],
-      "verified": false
+      "verification": "unrun"
     },
     {
       "from": "c34",
@@ -1541,7 +1541,7 @@
         "strength",
         "uv_durability"
       ],
-      "verified": false
+      "verification": "unrun"
     },
     {
       "from": "c36",
@@ -1551,7 +1551,7 @@
         "strength",
         "hold_release"
       ],
-      "verified": false
+      "verification": "unrun"
     }
   ]
 }

@@ -19,7 +19,7 @@ verified:
     properties of industrial nylon 66 conveyor belt fabrics
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Characterizes how UV exposure degrades the physical, thermal, and morphological
   properties of industrial nylon 66 fabric (the polyamide family used in lacrosse

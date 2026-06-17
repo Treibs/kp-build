@@ -17,7 +17,7 @@ verified:
   canonical_title: Test Method for Water Absorption of Plastics
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Defines the relative rate of water absorption of plastics by immersion (24 h at
   23 +/- 1 C, weighing to 0.001 g)

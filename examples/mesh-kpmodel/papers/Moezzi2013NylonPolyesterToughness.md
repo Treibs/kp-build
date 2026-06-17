@@ -18,7 +18,7 @@ verified:
     woven fabrics
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - 'Quantifies UV-driven toughness loss in nylon 66/polyester woven fabric: breaking
   toughness in the nylon (weft) direction dropped ~55% after only 7 hours of UV exposure'

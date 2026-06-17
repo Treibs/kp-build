@@ -19,7 +19,7 @@ verified:
     superhydrophobic coatings of SiO2-PVA@PDMS on cotton textile
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Demonstrates a silicone (PDMS) plus crosslinked SiO2-PVA superhydrophobic coating
   on cotton textile achieving water contact angle >150 deg and sliding angle <5 deg

@@ -17,7 +17,7 @@ verified:
   canonical_title: 'Hygromechanical Behavior of Polyamide 6.6: Experiments and Modeling'
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Measures the Tg of PA6.6 dropping from 58 C (dry) to -24 C (water-saturated), an
   over-80 K reduction attributed to water-induced plasticization

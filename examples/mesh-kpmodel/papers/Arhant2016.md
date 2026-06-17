@@ -17,7 +17,7 @@ verified:
   canonical_title: Modelling the non Fickian water absorption in polyamide 6
   match_score: 1.0
   evidence: ''
-  checked: '2026-06-16'
+  checked: '2026-06-17'
 key_contributions:
 - Shows PA6 water absorption is non-Fickian (case II) because water diffusivity changes
   as the polymer passes from glassy to rubbery state during wet ageing
