@@ -157,10 +157,15 @@ def hyperframes_runner(artifact, tool):
     return None
 
 
-def verify_execution_claims(pkg, *, runner, today: str = "") -> dict:
+def verify_execution_claims(pkg, *, runner, today: str = "", base_dir=None) -> dict:
     """Build step: run the ExecutionVerifier (injected ``runner``) on every claim carrying an ``execution``
-    directive, setting its per-claim ``verified``. Citation/academic claims are untouched. Returns a summary."""
+    directive, setting its per-claim ``verified``. Citation/academic claims are untouched. Returns a summary.
+
+    M5: relative artifacts are resolved under ``base_dir`` (the pack root) and an artifact that escapes the
+    base is refused (``error``), so a crafted directive can't make the runner read a file outside the pack."""
     from types import SimpleNamespace
+    from pathlib import Path as _Path
+    base = _Path(base_dir).resolve() if base_dir else None
     ev = ExecutionVerifier(runner, today=today)
     total = verified = 0
     for c in getattr(pkg, "claims", []):
@@ -168,8 +173,16 @@ def verify_execution_claims(pkg, *, runner, today: str = "") -> dict:
         if not d:
             continue
         total += 1
+        artifact = d.get("artifact")
+        if base is not None and artifact and not d.get("aesthetic"):
+            resolved = (base / artifact).resolve()
+            if not resolved.is_relative_to(base):           # belt: never escape the pack base
+                c.verified = Verification(kind="execution", exists=False, status="error", via="execution",
+                                          evidence="artifact escapes pack base", checked=today)
+                continue
+            artifact = str(resolved)
         c.verified = ev.verify(SimpleNamespace(
-            artifact=d.get("artifact"), tool=d.get("tool", ""),
+            artifact=artifact, tool=d.get("tool", ""),
             gate_code=d.get("gate_code", ""), aesthetic=d.get("aesthetic", False)))
         verified += bool(c.verified.exists)
     return {"execution_total": total, "execution_verified": verified}

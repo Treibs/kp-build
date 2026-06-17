@@ -489,6 +489,24 @@ def test_context_sanitizes_relation_and_goal_fields():
     assert "```" not in ctx                               # every rendered field sanitized
 
 
+def test_load_rejects_unsafe_execution_artifact(tmp_path):
+    """M5: the execution artifact is fed to a subprocess that reads files — reject absolute paths,
+    '..' traversal, and URL schemes (arbitrary local-file read / SSRF)."""
+    from kp_build.cli import _load, ResearchInputError
+    for bad in ["/etc/passwd", "../../../etc/passwd", "http://evil/x", "a/../b"]:
+        rj = {"topic": "t", "claims": [{"id": "e1", "statement": "s", "supporting_passage": "p",
+              "execution": {"tool": "lint", "gate_code": "nd", "artifact": bad}}]}
+        with pytest.raises(ResearchInputError, match="artifact"):
+            _load(_write(tmp_path, rj))
+
+
+def test_load_accepts_relative_execution_artifact(tmp_path):
+    from kp_build.cli import _load
+    rj = {"topic": "t", "claims": [{"id": "e1", "statement": "s", "supporting_passage": "p",
+          "execution": {"tool": "lint", "gate_code": "nd", "artifact": "fixtures/det-1/fixed"}}]}
+    assert _load(_write(tmp_path, rj)).claims[0].execution["artifact"] == "fixtures/det-1/fixed"
+
+
 def test_validate_accepts_no_paper_execution_claim(tmp_path: Path):
     """A shipped execution claim has paper='' — validate must accept it (it carries its own verdict),
     not flag 'cites unknown paper'."""

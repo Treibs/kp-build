@@ -139,8 +139,14 @@ def _load(path: str) -> Package:
                 errs.append(f"claims[{i}].execution: tool must be lint|inspect|validate")
             if not exec_d.get("gate_code"):
                 errs.append(f"claims[{i}].execution: needs a gate_code (or aesthetic:true)")
-            if not exec_d.get("artifact"):
+            art = exec_d.get("artifact", "")
+            if not art:
                 errs.append(f"claims[{i}].execution: needs an artifact")
+            elif art.startswith(("/", "\\")) or "://" in art or ".." in re.split(r"[\\/]", art):
+                # M5: the artifact is handed to a subprocess that reads files — must be a relative path
+                # inside the pack; reject absolute paths, '..' traversal, and URL schemes.
+                errs.append(f"claims[{i}].execution.artifact {art!r} must be a relative path inside the "
+                            f"pack (no absolute path, '..', or URL)")
         if not c.get("paper") and not exec_d:
             errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper' or an 'execution' directive")
         if c.get("paper") and exec_d:                # M2: paper XOR execution — never both
@@ -270,6 +276,12 @@ def _cmd_build(args) -> int:
     if args.no_verify:
         for p in pkg.papers:
             p.verified = Verification(exists=True, status="verified", via="(unchecked)", checked=today)
+        # M3/M4b: do NOT trust an inbound claim verdict. Reset citation claims (they ship via their stamped
+        # paper); stamp execution/grounding (no-paper) claims as (unchecked) so a claim-spine pack under
+        # --no-verify isn't silently EMPTY (and an inbound exists:true can't ship unchecked).
+        for c in pkg.claims:
+            c.verified = (Verification(exists=True, status="verified", kind="execution",
+                                       via="(unchecked)", checked=today) if not c.paper else Verification())
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
                    "rejected": [], "unconfirmed": [], "errored": []}
     else:
@@ -316,16 +328,29 @@ def _cmd_build(args) -> int:
         print(f"  grounded {g['grounded']} · unconfirmed {g['unconfirmed']} · ungrounded {g['ungrounded']}",
               file=sys.stderr)
 
-    if any(c.execution for c in pkg.claims):            # V2-a: gate execution claims via the real hyperframes CLI
+    # M4/M5: running execution gates shells out to the hyperframes CLI on local files — require an explicit
+    # --execute opt-in, and never under --no-verify (which stamps execution claims (unchecked) above).
+    n_exec = sum(1 for c in pkg.claims if c.execution)
+    if n_exec and args.execute and not args.no_verify:
         from .verifier import verify_execution_claims, hyperframes_runner
-        n = sum(1 for c in pkg.claims if c.execution)
-        print(f"executing {n} claim gate(s) via hyperframes ...", file=sys.stderr)
-        es = verify_execution_claims(pkg, runner=hyperframes_runner, today=today)
+        base = Path(args.input).resolve().parent
+        print(f"executing {n_exec} claim gate(s) via hyperframes (artifacts resolved under {base}) ...",
+              file=sys.stderr)
+        es = verify_execution_claims(pkg, runner=hyperframes_runner, today=today, base_dir=base)
         print(f"  execution: {es['execution_verified']}/{es['execution_total']} gate(s) verified", file=sys.stderr)
+    elif n_exec and not args.no_verify:
+        print(f"warn: {n_exec} execution claim(s) present but NOT gated — pass --execute to run them (executes "
+              f"the hyperframes CLI on local files). They will be DROPPED as unverified.", file=sys.stderr)
 
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)
     res = validate(out)
+    # M3: a claim-spine package must not silently ship EMPTY (e.g. execution claims dropped for lack of --execute).
+    if pkg.claims and json.loads((out / "wikillm.json").read_text())["stats"]["claims"] == 0:
+        print("error: every claim was dropped — a claim-spine package would ship EMPTY. "
+              "Did the verifier run? (execution claims need --execute; citations need the network).",
+              file=sys.stderr)
+        return 2
     print("kp-build complete")
     print(f"  topic            : {pkg.topic}")
     print(f"  citations        : {summary['verified']}/{summary['total']} verified")
@@ -484,6 +509,7 @@ def main(argv=None) -> int:
     b.add_argument("--reuse-verification", action="store_true", help="keep prior verdicts in <out> and re-check only the errored/unverified papers (cheap retry)")
     b.add_argument("--ground", action="store_true", help="confirm each claim's passage appears in its paper (abstract-level, free)")
     b.add_argument("--ground-fulltext", action="store_true", help="ground against ar5iv FULLTEXT (slower; enables the 'ungrounded' verdict)")
+    b.add_argument("--execute", action="store_true", help="run execution-claim gates via the hyperframes CLI (executes local files / npx; OFF by default — opt-in trust)")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
     b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")
