@@ -310,6 +310,36 @@ def test_load_grounding_corpus_omits_unheld_source(tmp_path):
               grounding={"source": "NOWHERE", "supporting_passage": "a full sentence not held anywhere here."})])
     assert load_grounding_corpus(pkg, tmp_path, get=lambda url: "") == {}
 
+def test_load_grounding_corpus_rejects_symlink_escape(tmp_path):
+    """Security belt (review SF#3): a corpus/<source>.txt that is a SYMLINK escaping corpus/ must be
+    refused by the is_relative_to check — the last guard if _load's source validation is ever bypassed."""
+    import os
+    secret = tmp_path / "secret.txt"; secret.write_text("TOP SECRET — outside the pack", encoding="utf-8")
+    (tmp_path / "corpus").mkdir()
+    os.symlink(secret, tmp_path / "corpus" / "evil.txt")        # corpus/evil.txt -> ../secret.txt (escapes)
+    from kp_build.verifier import load_grounding_corpus
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="g", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "evil", "supporting_passage": "any full sentence to attempt grounding here."})])
+    assert "evil" not in load_grounding_corpus(pkg, tmp_path)   # symlink escaping corpus/ is omitted
+
+def test_grounding_tristate_verdicts_all_drop_at_ship_gate():
+    """End-to-end contract (review SF#3): only a verbatim-present passage ships; ungrounded-unreachable
+    (source not held) and unconfirmed (passage too short) both drop via claim_ships, never laundered."""
+    from kp_build.verifier import verify_grounding_claims
+    from kp_build.schema import claim_ships
+    sentence = "The GET method requests transfer of a current representation of the target resource."
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="ok", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "SRC", "supporting_passage": sentence}),
+        Claim(id="unreach", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "NOPE", "supporting_passage": sentence}),
+        Claim(id="unconf", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "SRC", "supporting_passage": "GET only"})])     # < 24 chars -> unconfirmed
+    verify_grounding_claims(pkg, corpus={"SRC": sentence}, today="2026-01-01")
+    ships = {c.id: claim_ships(c, set()) for c in pkg.claims}
+    assert ships == {"ok": True, "unreach": False, "unconf": False}
+
 
 # ── V2-b STEP 5: _cmd_build wiring — --ground-verify gate + the silent-drop hard-error guard ──
 
@@ -365,6 +395,29 @@ def test_build_no_verify_stamps_grounding_claims_so_pack_isnt_empty(tmp_path):
     from kp_build.cli import _cmd_build
     assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)], no_verify=True)) == 0
     assert _claims_shipped(tmp_path) == 1
+
+def test_no_verify_does_not_overclaim_grounding_as_verified(tmp_path):
+    """M1 (review): --no-verify ships grounding claims so the pack isn't empty, but MUST NOT stamp or
+    print 'verified' / 'confirmed verbatim' on a clause nothing checked — least of all the fabricated one.
+    The artifacts must read as UNCHECKED, the project's anti-overclaim brand."""
+    from kp_build.cli import _cmd_build
+    fab = "The TRACE method permanently deletes all server logs without any authentication."
+    assert _cmd_build(_gbuild(tmp_path, [("ok", _GSENT), ("bad", fab)], no_verify=True)) == 0
+    bad = (tmp_path / "out" / "claims" / "bad.md").read_text().lower()
+    assert "grounding verified" not in bad            # no 'verified' tail on an unchecked (here fabricated) clause
+    assert "status: verified" not in bad
+    assert "status: unverified" in bad
+    ctx = (tmp_path / "out" / "CONTEXT.md").read_text().lower()
+    assert "confirmed verbatim" not in ctx            # the basis must not claim confirmation under --no-verify
+    assert "not checked this build" in ctx
+
+def test_ground_verify_still_says_confirmed_verbatim(tmp_path):
+    """No regression: a REAL --ground-verify build keeps the 'confirmed verbatim' basis + 'grounding
+    verified' tail (the shipped fixtures depend on this for their byte-identical CONTEXT)."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("ok", _GSENT)], ground_verify=True)) == 0
+    assert "confirmed verbatim" in (tmp_path / "out" / "CONTEXT.md").read_text().lower()
+    assert "grounding verified" in (tmp_path / "out" / "claims" / "ok.md").read_text().lower()
 
 
 def test_assemble_persists_relations_and_goal_metrics(tmp_path):

@@ -147,7 +147,7 @@ def _load(path: str) -> Package:
                 # inside the pack; reject absolute paths, '..' traversal, and URL schemes.
                 errs.append(f"claims[{i}].execution.artifact {art!r} must be a relative path inside the "
                             f"pack (no absolute path, '..', or URL)")
-        grnd = c.get("grounding") or {}              # V2-b grounding directive (instead of a citation paper)
+        grnd = c.get("grounding") or {}              # V2-a grounding directive (instead of a citation paper)
         if grnd:
             src = grnd.get("source", "")
             if not src:
@@ -297,9 +297,9 @@ def _cmd_build(args) -> int:
         for c in pkg.claims:
             if c.paper:
                 c.verified = Verification()
-            else:                                   # stamp by the claim's actual verifier kind (honest label)
-                kind = "grounding" if c.grounding else "execution"
-                c.verified = Verification(exists=True, status="verified", kind=kind,
+            else:                                   # ship under --no-verify, but NEVER say 'verified': it
+                kind = "grounding" if c.grounding else "execution"   # wasn't checked (M1 — honest stamp)
+                c.verified = Verification(exists=True, status="unverified", kind=kind,
                                           via="(unchecked)", checked=today)
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
                    "rejected": [], "unconfirmed": [], "errored": []}
@@ -361,7 +361,7 @@ def _cmd_build(args) -> int:
         print(f"warn: {n_exec} execution claim(s) present but NOT gated — pass --execute to run them (executes "
               f"the hyperframes CLI on local files). They will be DROPPED as unverified.", file=sys.stderr)
 
-    # V2-b: ground each grounding-claim passage against its pinned corpus. Unlike execution's warn-and-drop,
+    # V2-a (grounding): ground each grounding-claim passage against its pinned corpus. Unlike execution's warn-and-drop,
     # a grounding-spine claim that isn't gated would ship NEITHER via a paper NOR via a verdict and silently
     # VANISH at the ship gate (and M3 misses it in a mixed pack) — so refuse to build rather than drop it.
     if args.ground_verify and args.no_verify:
@@ -370,9 +370,11 @@ def _cmd_build(args) -> int:
     n_ground = sum(1 for c in pkg.claims if c.grounding)
     if n_ground and args.ground_verify and not args.no_verify:
         from .verifier import verify_grounding_claims, load_grounding_corpus
-        from .ground import _http_get
         base = Path(args.input).resolve().parent
-        corpus = load_grounding_corpus(pkg, base, get=_http_get)
+        # OFFLINE-ONLY from the CLI (no `get`): --ground-verify reads committed corpus/<source>.txt so the
+        # build stays deterministic and never touches the network. A source with no committed file is left
+        # ungrounded-unreachable. (The DOI-abstract fallback remains a library option on load_grounding_corpus.)
+        corpus = load_grounding_corpus(pkg, base)
         print(f"grounding {n_ground} claim passage(s) against the pinned corpus "
               f"({len(corpus)} source(s) held) ...", file=sys.stderr)
         gs = verify_grounding_claims(pkg, corpus=corpus, today=today)
@@ -553,7 +555,7 @@ def main(argv=None) -> int:
     b.add_argument("--ground", action="store_true", help="confirm each claim's passage appears in its paper (abstract-level, free)")
     b.add_argument("--ground-fulltext", action="store_true", help="ground against ar5iv FULLTEXT (slower; enables the 'ungrounded' verdict)")
     b.add_argument("--execute", action="store_true", help="run execution-claim gates via the hyperframes CLI (executes local files / npx; OFF by default — opt-in trust)")
-    b.add_argument("--ground-verify", action="store_true", help="hard ship-gate: check each grounding-claim passage against its pinned corpus (corpus/<source>.txt, offline + deterministic; DOI sources fall back to a Crossref-abstract fetch). Distinct from the advisory --ground.")
+    b.add_argument("--ground-verify", action="store_true", help="hard ship-gate: check each grounding-claim passage against committed corpus/<source>.txt (offline + deterministic; a source with no committed file is ungrounded-unreachable). Distinct from the advisory --ground.")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
     b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")

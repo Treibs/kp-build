@@ -71,7 +71,7 @@ class DocGroundingVerifier:
     ``corpus[source]``, where ``source`` is the claim's ``paper`` (cite_key) or its grounding directive's
     ``source`` key.
 
-    WIRED INTO BUILD (V2-b): :func:`verify_grounding_claims` runs this on every claim carrying a ``grounding``
+    WIRED INTO BUILD (V2-a, the seam's third verifier): :func:`verify_grounding_claims` runs this on every claim carrying a ``grounding``
     directive under ``kp-build build --ground-verify``, and :func:`load_grounding_corpus` assembles the pinned
     corpus from committed ``corpus/<source>.txt`` files (offline) with a Crossref-abstract fallback for DOI
     sources. See ``examples/http-semantics-grounding`` and ``examples/vwt-grounding``. Still out of scope:
