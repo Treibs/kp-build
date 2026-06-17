@@ -380,3 +380,35 @@ kp-build falsify examples/sleep-insomnia-evidence \
   --base examples/sleep-insomnia-evidence.base-answer.txt \
   --kp   examples/sleep-insomnia-evidence.kp-answer.txt
 ```
+
+---
+
+## KP-model packs (V2-a — pluggable verifiers)
+
+The seven packages above are all **citation** packs (the original verifier). These two demonstrate the **V2-a
+pluggable verifier seam** — the same engine, but a claim's "is this real?" check can be **citation**,
+**doc-grounding**, or **execution**, and a package is scoped by **goals + KPIs** with first-class **KPI-anchored
+connections** in `CONTEXT.md`. They bracket the verifier spectrum: one material-science (citation), one
+procedural (execution).
+
+| package | verifier | what it proves | honest tail |
+|---|---|---|---|
+| [`mesh-kpmodel/`](mesh-kpmodel/) | **citation** | lacrosse-mesh material composition — **33/34 DOI-bearing sources verified (97%)** (5 are ASTM standards) + 8 KPIs + 4 tradeoff connections | **citation-existence only** (not doc-grounded); 7 standards/rulebooks/TDS have no engine oracle (`ungrounded-unreachable`); ASTM G155 is a real rejection |
+| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **14/14 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the 5 motion/aesthetic fundamentals are **verifier-blind** (dropped as `unverifiable` — they need a judge panel, not a gate) |
+
+**Reproduce the execution pack** (runs the real hyperframes CLI on the committed fixtures — opt-in, since it
+executes local files):
+
+```bash
+kp-build build -i examples/hf-kpmodel.research.json -o /tmp/hf-kpmodel --execute
+#   → executing 14 claim gate(s) via hyperframes … 14/14 verified · validation OK
+```
+
+The fixtures live in `examples/hf-kpmodel-fixtures/` (relative paths, resolved under the pack — no absolute
+paths or `..` are accepted). Without `--execute` the gates are skipped (and a claim-spine pack hard-errors
+rather than ship empty). The mesh pack is citation-only and re-builds with the network:
+`kp-build build -i examples/mesh-kpmodel.research.json -o /tmp/mesh-kpmodel`.
+
+**Honestly out of scope** (see the engine's `verifier.py`): `DocGroundingVerifier` (offline passage grounding)
+is a tested *library* block, not yet wired into `build`; and aesthetic quality (the "more beautiful video"
+claim) is **not** what these prove — execution verifies *mechanical fundamentals*, not taste.

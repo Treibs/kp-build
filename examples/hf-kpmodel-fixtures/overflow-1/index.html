@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      body { margin: 0; background: #0e1116; }
+      #main { position: relative; overflow: visible; }
+      .clip {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+      }
+      /* Same painted box, but the text now wraps inside it via max-width and
+         a video-legible font-size, so the text rect stays within the box. */
+      .bubble {
+        width: 520px;
+        background: #1b2330;
+        border: 3px solid #3b82f6;
+        border-radius: 18px;
+        padding: 32px;
+        overflow: visible;
+      }
+      .headline {
+        font-size: 56px;
+        font-weight: 700;
+        color: #e8eef9;
+        max-width: 456px; /* wraps within box: 520 - 2*32 padding */
+        line-height: 1.1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="clip" id="s1" data-start="0" data-duration="5" data-track-index="0">
+        <div class="bubble">
+          <div class="headline">Quarterly roadmap planning summary</div>
+        </div>
+      </div>
+      <script>
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        tl.from(".headline", { opacity: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+        window.__timelines["main"] = tl;
+      </script>
+    </div>
+  </body>
+</html>

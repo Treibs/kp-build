@@ -1,0 +1,195 @@
+{
+  "schema": "wikillm/1",
+  "papers": [],
+  "claims": [
+    {
+      "id": "determinism-1",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "determinism-2",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "determinism-3",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "overflow-1",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "overflow-2",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "overflow-3",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "overflow-4",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "contrast-1",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "contrast-2",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "contrast-3",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "structure-1",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "structure-2",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "structure-3",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "structure-4",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [],
+  "debates": [],
+  "benchmarks": [],
+  "relations": [
+    {
+      "id": "hfr1",
+      "source": "determinism-1",
+      "target": "overflow-1",
+      "type": "enables",
+      "kpis": [
+        "determinism",
+        "render_integrity"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "id": "hfr2",
+      "source": "structure-1",
+      "target": "overflow-1",
+      "type": "enables",
+      "kpis": [
+        "structural_validity",
+        "render_integrity"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "id": "hfr3",
+      "source": "overflow-1",
+      "target": "contrast-1",
+      "type": "refines",
+      "kpis": [
+        "overflow_free",
+        "legibility"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "id": "hfr4",
+      "source": "structure-4",
+      "target": "overflow-1",
+      "type": "enables",
+      "kpis": [
+        "structural_validity",
+        "overflow_free"
+      ],
+      "verification": "unrun"
+    }
+  ],
+  "edges": [
+    {
+      "from": "determinism-1",
+      "to": "overflow-1",
+      "rel": "enables",
+      "kpis": [
+        "determinism",
+        "render_integrity"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "from": "structure-1",
+      "to": "overflow-1",
+      "rel": "enables",
+      "kpis": [
+        "structural_validity",
+        "render_integrity"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "from": "overflow-1",
+      "to": "contrast-1",
+      "rel": "refines",
+      "kpis": [
+        "overflow_free",
+        "legibility"
+      ],
+      "verification": "unrun"
+    },
+    {
+      "from": "structure-4",
+      "to": "overflow-1",
+      "rel": "enables",
+      "kpis": [
+        "structural_validity",
+        "overflow_free"
+      ],
+      "verification": "unrun"
+    }
+  ]
+}

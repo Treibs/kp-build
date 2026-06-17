@@ -1,0 +1,13 @@
+{
+  "name": "@kp/hyperframes-composition-fundamentals",
+  "version": "0.1.0",
+  "description": "The execution-verifiable fundamentals of authoring a hyperframes composition that renders clean, legible, deterministic, and structurally valid.",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}
