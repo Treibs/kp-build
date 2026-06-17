@@ -1,0 +1,83 @@
+{
+  "topic": "HTTP method semantics (RFC 9110): safety, idempotency, and the core method definitions",
+  "scope": "A doc-grounding knowledge pack. Each claim's verbatim passage is checked against the pinned normative text of RFC 9110 (HTTP Semantics) §9.2-9.3, held offline in corpus/RFC9110.txt, by the DocGroundingVerifier (`kp-build build --ground-verify`). A claim ships only if its quoted sentence is present in the source; a fabricated/unverbatim clause is stamped `ungrounded` and dropped. This proves provenance (the clause is really in the spec), NOT soundness (not that the surrounding interpretation is correct).",
+  "claims": [
+    {
+      "id": "get-semantics",
+      "statement": "The GET method requests transfer of a current selected representation for the target resource.",
+      "supporting_passage": "The GET method requests transfer of a current selected representation for the target resource.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "RFC9110",
+        "supporting_passage": "The GET method requests transfer of a current selected representation for the target resource."
+      }
+    },
+    {
+      "id": "head-semantics",
+      "statement": "The HEAD method is identical to GET except that the server MUST NOT send content in the response.",
+      "supporting_passage": "The HEAD method is identical to GET except that the server MUST NOT send content in the response.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "RFC9110",
+        "supporting_passage": "The HEAD method is identical to GET except that the server MUST NOT send content in the response."
+      }
+    },
+    {
+      "id": "post-semantics",
+      "statement": "The POST method requests that the target resource process the representation enclosed in the request according to the resource's own specific semantics.",
+      "supporting_passage": "The POST method requests that the target resource process the representation enclosed in the request according to the resource's own specific semantics.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "RFC9110",
+        "supporting_passage": "The POST method requests that the target resource process the representation enclosed in the request according to the resource's own specific semantics."
+      }
+    },
+    {
+      "id": "safe-methods",
+      "statement": "Of the request methods defined by this specification, the GET, HEAD, OPTIONS, and TRACE methods are defined to be safe.",
+      "supporting_passage": "Of the request methods defined by this specification, the GET, HEAD, OPTIONS, and TRACE methods are defined to be safe.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "RFC9110",
+        "supporting_passage": "Of the request methods defined by this specification, the GET, HEAD, OPTIONS, and TRACE methods are defined to be safe."
+      }
+    },
+    {
+      "id": "idempotent-methods",
+      "statement": "Of the request methods defined by this specification, PUT, DELETE, and safe request methods are idempotent.",
+      "supporting_passage": "Of the request methods defined by this specification, PUT, DELETE, and safe request methods are idempotent.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "RFC9110",
+        "supporting_passage": "Of the request methods defined by this specification, PUT, DELETE, and safe request methods are idempotent."
+      }
+    },
+    {
+      "id": "proxy-retry",
+      "statement": "A proxy MUST NOT automatically retry non-idempotent requests.",
+      "supporting_passage": "A proxy MUST NOT automatically retry non-idempotent requests.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "RFC9110",
+        "supporting_passage": "A proxy MUST NOT automatically retry non-idempotent requests."
+      }
+    },
+    {
+      "id": "patch-fabricated",
+      "statement": "(DELIBERATE HELD-OUT NEGATIVE) The PATCH method requests a partial modification of the target resource and is defined to be both safe and idempotent.",
+      "supporting_passage": "The PATCH method requests a partial modification of the target resource and is defined to be both safe and idempotent.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "RFC9110",
+        "supporting_passage": "The PATCH method requests a partial modification of the target resource and is defined to be both safe and idempotent."
+      }
+    }
+  ]
+}

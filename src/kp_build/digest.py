@@ -86,9 +86,14 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
     if pkg.papers:
         basis = ("Every paper in the spine was verified to exist by arXiv id / DOI; do not invent "
                  "citations beyond this list.")
+    elif any(getattr(c, "execution", None) for c in pkg.claims):
+        basis = ("This package has no citation spine — its claims ship on execution gates, not citations; "
+                 "do not invent citations.")
+    elif any(getattr(c, "grounding", None) for c in pkg.claims):
+        basis = ("This package has no citation spine — its claims ship on doc-grounding (each quoted "
+                 "passage was confirmed verbatim in a pinned source), not citations; do not invent citations.")
     else:
-        kind = "execution gates" if any(getattr(c, "execution", None) for c in pkg.claims) else "verifier checks"
-        basis = (f"This package has no citation spine — its claims ship on {kind}, not citations; "
+        basis = ("This package has no citation spine — its claims ship on verifier checks, not citations; "
                  "do not invent citations.")
 
     head = [

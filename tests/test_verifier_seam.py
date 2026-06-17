@@ -419,6 +419,14 @@ def test_context_preamble_is_verifier_aware_for_paperless_pack():
     assert "do not invent citations" in ctx                    # guardrail retained
     assert "execution" in ctx.lower()                          # names the real basis
 
+    grnd_pkg = Package(topic="t", scope="s", papers=[],
+                       claims=[Claim(id="g", statement="a", paper="", supporting_passage="",
+                                     grounding={"source": "RFC9110", "supporting_passage": "q"})])
+    gctx = build_context(grnd_pkg, built="2026-01-01")
+    assert "verified to exist by arXiv id / DOI" not in gctx
+    assert "do not invent citations" in gctx
+    assert "grounding" in gctx.lower()                         # names doc-grounding, not the vague fallback
+
     v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
     cit_pkg = Package(topic="t", scope="s", papers=[Paper(cite_key="p1", title="T", verified=v)],
                       claims=[Claim(id="c1", statement="a", paper="p1", supporting_passage="x")])
