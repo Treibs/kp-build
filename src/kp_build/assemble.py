@@ -56,7 +56,7 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     # prune unverified refs into COPIES — never mutate the caller's input dataclasses (ASSM-1)
     claims = []
     for c in pkg.claims:
-        if c.paper in verified:
+        if c.paper in verified or c.verified.exists:        # citation spine OR own verifier verdict (V2-a)
             c2 = replace(c, corroborated_by=[k for k in c.corroborated_by if k in verified])
             (out / "claims" / f"{c2.id}.md").write_text(
                 claim_to_md(c2, paper_ref=refs.get(c2.paper, "")), encoding="utf-8")
@@ -107,7 +107,7 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
             drops["relations"] += 1
 
     # machine-readable graph: nodes + explicit edges
-    edges = ([{"from": c.id, "to": c.paper, "rel": "anchored-by"} for c in claims]
+    edges = ([{"from": c.id, "to": c.paper, "rel": "anchored-by"} for c in claims if c.paper]
              + [{"from": op.id, "to": k, "rel": "flagged-by"} for op in problems for k in op.flagged_by]
              + [{"from": b.id, "to": b.paper, "rel": "reported-in"} for b in benchmarks]
              + [{"from": c.id, "to": k, "rel": "corroborated-by"} for c in claims for k in c.corroborated_by]

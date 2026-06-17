@@ -104,6 +104,10 @@ class Claim:
     #: unchecked (default) | grounded (found) | unconfirmed (not in abstract; maybe body) | ungrounded
     #: (checked fulltext, not there — capped/flagged)
     grounded: str = "unchecked"
+    #: V2-a per-claim verifier verdict — for execution/grounding claims that carry their OWN verdict
+    #: instead of inheriting from an anchoring Paper. Default (exists=False) = academic claim, which ships
+    #: via its Paper unchanged. A claim ships iff (its Paper is verified) OR (this verdict exists).
+    verified: Verification = field(default_factory=Verification)
 
 
 @dataclass
@@ -269,12 +273,18 @@ def claim_to_md(c: Claim, *, paper_ref: str = "") -> str:
     d = asdict(c)
     if paper_ref:
         d["paper_ref"] = paper_ref           # denormalized id so the chunk resolves standalone (FMT-8)
-    tail = f"\n\n— [[papers/{c.paper}]]" + (f" ({paper_ref})" if paper_ref else "")
+    if c.paper:                              # citation/academic claim: link to its Paper
+        tail = f"\n\n— [[papers/{c.paper}]]" + (f" ({paper_ref})" if paper_ref else "")
+    elif c.verified.exists:                  # execution/grounding claim: cite its own verdict
+        tail = f"\n\n— *{c.verified.kind} verified* via {c.verified.via}: {c.verified.evidence}"
+    else:
+        tail = ""
     return _fm(d, f"{c.statement}\n\n> {c.supporting_passage}{tail}")
 
 
 def claim_from_md(text: str) -> Claim:
     fm, _ = _split(text)
+    v = fm.get("verified") or {}
     # use dataclass defaults for absent keys — never override with None (F3, symmetric round-trip)
     return Claim(
         id=fm.get("id", ""), statement=fm.get("statement", ""), paper=fm.get("paper", ""),
@@ -282,7 +292,10 @@ def claim_from_md(text: str) -> Claim:
         claim_type=fm.get("claim_type") or "finding", confidence=fm.get("confidence") or "medium",
         corroborated_by=list(fm.get("corroborated_by") or []),
         survived_refuter=bool(fm.get("survived_refuter", True)),
-        grounded=fm.get("grounded") or "unchecked")
+        grounded=fm.get("grounded") or "unchecked",
+        verified=Verification(**{k: v.get(k) for k in
+                                 ("exists", "status", "kind", "via", "canonical_title",
+                                  "match_score", "evidence", "checked") if k in v}))
 
 
 def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:

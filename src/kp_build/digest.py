@@ -49,7 +49,8 @@ def _claim_line(c, verified) -> str:
         note = f" (corroborated by {len(corr)})"
     if grounded == "grounded":
         note += " ✓grounded"                                # passage machine-confirmed in the source
-    line = f"- _{c.claim_type}_ — {_data(c.statement)} *([{c.paper}], {conf}{note})*"
+    src = f"[{c.paper}]" if c.paper else f"[{c.verified.via or c.verified.kind}]"   # exec claim: cite its verdict
+    line = f"- _{c.claim_type}_ — {_data(c.statement)} *({src}, {conf}{note})*"
     if not flagged and c.confidence == "high" and c.supporting_passage:        # FMT-1: carry evidence
         line += f"\n    > {_data(c.supporting_passage)[:240]}"                  # (not for a flagged claim)
     return line
@@ -129,7 +130,7 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
 
     order = {"result": 0, "finding": 1, "method": 2, "definition": 3}
     claim_items = [_claim_line(c, verified) for c in
-                   sorted((c for c in pkg.claims if c.paper in verified),
+                   sorted((c for c in pkg.claims if c.paper in verified or c.verified.exists),
                           key=lambda c: order.get(c.claim_type, 9))]
 
     # V2-a KP-model spine — Goals & KPIs (top, defines purpose) and Key connections (the KPI tradeoffs)
@@ -140,7 +141,7 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
         base = f" (baseline {_data(gm.baseline)})" if gm.baseline else ""
         goal_items.append(f"- **{_data(gm.name)}** [{arrow}]{tgt}{base} · oracle: {gm.oracle_kind}")
 
-    kept_nodes = (set(verified) | {c.id for c in pkg.claims if c.paper in verified}
+    kept_nodes = (set(verified) | {c.id for c in pkg.claims if c.paper in verified or c.verified.exists}
                   | {op.id for op in probs} | {b.id for b in benches})
     conn_items = [f"- **[{r.source}] —{r.type}→ [{r.target}]** ({', '.join(r.kpis)}) — {_data(r.description)}"
                   for r in pkg.relations if r.source in kept_nodes and r.target in kept_nodes]

@@ -36,8 +36,9 @@ def test_assemble_ship_gate_handles_academic_claims_without_per_claim_verdict(tm
     out = assemble(pkg, tmp_path, built="2026-01-01")
     assert (out / "claims" / "c1.md").exists()          # verified-anchored claim ships
     assert not (out / "claims" / "c2.md").exists()       # unverified-anchored claim dropped
-    # the load-bearing invariant: a Claim has no per-claim verdict field
-    assert not hasattr(pkg.claims[0], "verified")
+    # the load-bearing invariant (behavioral): an academic claim ships purely via its PAPER —
+    # its per-claim verdict stays at the default (exists=False) and is NOT relied on.
+    assert pkg.claims[0].verified.exists is False
 
 
 # ── §4.0: the widened, verifier-agnostic contract (RED until implemented) ────────────────────
@@ -355,3 +356,34 @@ def test_execution_verifier_offline_and_satisfies_protocol():
     from kp_build.verifier import ExecutionVerifier, Verifier
     assert isinstance(ExecutionVerifier(lambda a, t: {"codes": []}), Verifier)
     assert ExecutionVerifier(lambda a, t: {}).kind == "execution"
+
+
+# ── ship-gate generalization: a claim ships via its PAPER *or* its own verdict (RED until done) ──
+
+def test_ship_gate_ships_execution_claim_via_per_claim_verdict(tmp_path: Path):
+    """An execution claim has NO citation paper — it ships on its own verifier verdict (exists=True),
+    and a rejected one (output-mismatch) is dropped. Academic, paper-anchored claims are unaffected."""
+    pkg = Package(
+        topic="hf", scope="composition fundamentals",
+        claims=[
+            Claim(id="hf1", statement="never call Math.random()", paper="", supporting_passage="...",
+                  verified=Verification(kind="execution", exists=True, status="verified",
+                                        via="hyperframes-cli@0.6.91", evidence="lint:non_deterministic_code cleared")),
+            Claim(id="hf2", statement="a violating fundamental", paper="", supporting_passage="...",
+                  verified=Verification(kind="execution", exists=False, status="output-mismatch",
+                                        via="hyperframes-cli@0.6.91", evidence="lint:non_deterministic_code fired")),
+        ],
+    )
+    out = assemble(pkg, tmp_path, built="2026-01-01")
+    assert (out / "claims" / "hf1.md").exists()          # self-verified execution claim ships
+    assert not (out / "claims" / "hf2.md").exists()       # output-mismatch claim dropped
+
+
+def test_claim_round_trips_with_per_claim_execution_verdict():
+    from kp_build.schema import claim_to_md, claim_from_md
+    c = Claim(id="hf1", statement="never call Math.random()", paper="", supporting_passage="seed your PRNG",
+              verified=Verification(kind="execution", exists=True, status="verified",
+                                    via="hyperframes-cli@0.6.91", evidence="lint:non_deterministic_code cleared"))
+    back = claim_from_md(claim_to_md(c))
+    assert back == c
+    assert back.verified.kind == "execution" and back.verified.exists is True
