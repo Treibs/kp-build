@@ -387,3 +387,62 @@ def test_claim_round_trips_with_per_claim_execution_verdict():
     back = claim_from_md(claim_to_md(c))
     assert back == c
     assert back.verified.kind == "execution" and back.verified.exists is True
+
+
+# ── wire ExecutionVerifier into build: execution directive + verify_execution_claims (RED) ───────
+
+def test_load_parses_execution_directive_and_relaxes_paper_requirement(tmp_path):
+    from kp_build.cli import _load
+    rj = {"topic": "hf", "scope": "s", "claims": [
+        {"id": "e1", "statement": "no Math.random", "supporting_passage": "seed your prng",
+         "execution": {"tool": "lint", "gate_code": "non_deterministic_code", "artifact": "fixed/"}}]}
+    pkg = _load(_write(tmp_path, rj))
+    assert pkg.claims[0].execution["tool"] == "lint"
+    assert pkg.claims[0].execution["gate_code"] == "non_deterministic_code"
+    assert pkg.claims[0].paper == ""                  # an execution claim needs no citation paper
+
+
+def test_load_rejects_claim_with_neither_paper_nor_execution(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    rj = {"topic": "t", "claims": [{"id": "x", "statement": "s", "supporting_passage": "p"}]}
+    with pytest.raises(ResearchInputError, match="'paper' or an 'execution'"):
+        _load(_write(tmp_path, rj))
+
+
+def test_claim_round_trips_with_execution_directive():
+    from kp_build.schema import claim_to_md, claim_from_md
+    c = Claim(id="e1", statement="s", paper="", supporting_passage="p",
+              execution={"tool": "lint", "gate_code": "nd", "artifact": "a"})
+    assert claim_from_md(claim_to_md(c)).execution == {"tool": "lint", "gate_code": "nd", "artifact": "a"}
+
+
+def test_verify_execution_claims_sets_verdicts_and_ships(tmp_path: Path):
+    """The build step: run the ExecutionVerifier (injected runner) on execution claims → set per-claim
+    verdict → assemble ships the passing one and drops the output-mismatch one."""
+    from kp_build.verifier import verify_execution_claims
+    pkg = Package(topic="hf", scope="s", claims=[
+        Claim(id="e1", statement="ok", paper="", supporting_passage="x",
+              execution={"tool": "lint", "gate_code": "nd", "artifact": "a"}),
+        Claim(id="e2", statement="bad", paper="", supporting_passage="y",
+              execution={"tool": "lint", "gate_code": "nd", "artifact": "b"}),
+    ])
+    fake = lambda artifact, tool: {"codes": [] if artifact == "a" else ["nd"]}   # a clean, b fires the gate
+    summary = verify_execution_claims(pkg, runner=fake, today="2026-01-01")
+    assert summary == {"execution_total": 2, "execution_verified": 1}
+    assert pkg.claims[0].verified.status == "verified" and pkg.claims[0].verified.exists is True
+    assert pkg.claims[1].verified.status == "output-mismatch" and pkg.claims[1].verified.exists is False
+    out = assemble(pkg, tmp_path, built="2026-01-01")
+    assert (out / "claims" / "e1.md").exists() and not (out / "claims" / "e2.md").exists()
+
+
+def test_validate_accepts_no_paper_execution_claim(tmp_path: Path):
+    """A shipped execution claim has paper='' — validate must accept it (it carries its own verdict),
+    not flag 'cites unknown paper'."""
+    from kp_build.validate import validate
+    pkg = Package(topic="hf", scope="s", claims=[
+        Claim(id="e1", statement="ok", paper="", supporting_passage="x",
+              verified=Verification(kind="execution", exists=True, status="verified",
+                                    via="hyperframes-cli@0.6.91", evidence="lint:nd cleared"))])
+    res = validate(assemble(pkg, tmp_path, built="2026-01-01"))
+    assert not any("unknown paper" in e for e in res.errors)
+    assert res.ok

@@ -108,6 +108,9 @@ class Claim:
     #: instead of inheriting from an anchoring Paper. Default (exists=False) = academic claim, which ships
     #: via its Paper unchanged. A claim ships iff (its Paper is verified) OR (this verdict exists).
     verified: Verification = field(default_factory=Verification)
+    #: V2-a execution directive (optional) — {tool, gate_code, artifact, aesthetic?}. When present, the build
+    #: runs the ExecutionVerifier on it and sets ``verified``. Empty for citation/academic claims.
+    execution: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -295,7 +298,8 @@ def claim_from_md(text: str) -> Claim:
         grounded=fm.get("grounded") or "unchecked",
         verified=Verification(**{k: v.get(k) for k in
                                  ("exists", "status", "kind", "via", "canonical_title",
-                                  "match_score", "evidence", "checked") if k in v}))
+                                  "match_score", "evidence", "checked") if k in v}),
+        execution=dict(fm.get("execution") or {}))
 
 
 def problem_to_md(op: OpenProblem, *, refs: dict | None = None) -> str:

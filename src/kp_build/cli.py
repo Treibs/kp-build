@@ -125,10 +125,21 @@ def _load(path: str) -> Package:
     claims = []
     for i, c in _section(d, "claims", errs):
         _uid(c.get("id"), "claims", i)
-        for fld in ("id", "statement", "paper"):
+        for fld in ("id", "statement"):
             if not c.get(fld):
                 errs.append(f"claims[{i}]: missing {fld}")
-        _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
+        exec_d = c.get("execution") or {}
+        if exec_d and not exec_d.get("aesthetic"):   # V2-a execution directive (instead of a citation paper)
+            if exec_d.get("tool") not in ("lint", "inspect", "validate"):
+                errs.append(f"claims[{i}].execution: tool must be lint|inspect|validate")
+            if not exec_d.get("gate_code"):
+                errs.append(f"claims[{i}].execution: needs a gate_code (or aesthetic:true)")
+            if not exec_d.get("artifact"):
+                errs.append(f"claims[{i}].execution: needs an artifact")
+        if not c.get("paper") and not exec_d:
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper' or an 'execution' directive")
+        if c.get("paper"):
+            _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
         if c.get("claim_type") and c["claim_type"] not in CLAIM_TYPES:
             errs.append(f"claims[{i}]: claim_type {c['claim_type']!r} not in {CLAIM_TYPES}")
         if c.get("confidence") and c["confidence"] not in CONFIDENCE:
@@ -140,7 +151,9 @@ def _load(path: str) -> Package:
                             paper=str(c.get("paper", "")), supporting_passage=str(c.get("supporting_passage", "")),
                             claim_type=c.get("claim_type") or "finding", confidence=c.get("confidence") or "medium",
                             corroborated_by=corr,
-                            survived_refuter=c.get("survived_refuter") is not False))  # absent/null -> True
+                            survived_refuter=c.get("survived_refuter") is not False,  # absent/null -> True
+                            execution={k: exec_d[k] for k in ("tool", "gate_code", "artifact", "aesthetic")
+                                       if k in exec_d}))
 
     problems = []
     for i, o in _section(d, "open_problems", errs):
@@ -294,6 +307,13 @@ def _cmd_build(args) -> int:
         g = ground_claims(pkg.papers, pkg.claims, fulltext=args.ground_fulltext, throttle=args.throttle)
         print(f"  grounded {g['grounded']} · unconfirmed {g['unconfirmed']} · ungrounded {g['ungrounded']}",
               file=sys.stderr)
+
+    if any(c.execution for c in pkg.claims):            # V2-a: gate execution claims via the real hyperframes CLI
+        from .verifier import verify_execution_claims, hyperframes_runner
+        n = sum(1 for c in pkg.claims if c.execution)
+        print(f"executing {n} claim gate(s) via hyperframes ...", file=sys.stderr)
+        es = verify_execution_claims(pkg, runner=hyperframes_runner, today=today)
+        print(f"  execution: {es['execution_verified']}/{es['execution_total']} gate(s) verified", file=sys.stderr)
 
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)

@@ -134,3 +134,42 @@ class ExecutionVerifier:
         return Verification(kind="execution", exists=(not fired),
                             status=("output-mismatch" if fired else "verified"), via=tool,
                             evidence=f"{tool}:{gate} {'fired' if fired else 'cleared'}", checked=self._today)
+
+
+def hyperframes_runner(artifact, tool):
+    """The default ExecutionVerifier runner — shells to the hyperframes CLI and extracts the gate codes.
+    Returns ``{"codes": [...]}``, or ``None`` if no parseable result; raises on timeout/crash (→ ``error``)."""
+    import subprocess
+    import json as _json
+    p = subprocess.run(["npx", "--yes", "hyperframes@0.6.91", tool, "--json", str(artifact)],
+                       capture_output=True, text=True, timeout=180)
+    out = p.stdout.strip()
+    i = out.find("{")
+    if i < 0:
+        return None
+    d = _json.loads(out[i:])
+    if tool == "lint":
+        return {"codes": [f.get("code") for f in d.get("findings", [])]}
+    if tool == "inspect":
+        return {"codes": [x.get("code") for x in d.get("issues", [])]}
+    if tool == "validate":
+        return {"codes": (["contrastFailures"] if d.get("contrastFailures", 0) else [])}
+    return None
+
+
+def verify_execution_claims(pkg, *, runner, today: str = "") -> dict:
+    """Build step: run the ExecutionVerifier (injected ``runner``) on every claim carrying an ``execution``
+    directive, setting its per-claim ``verified``. Citation/academic claims are untouched. Returns a summary."""
+    from types import SimpleNamespace
+    ev = ExecutionVerifier(runner, today=today)
+    total = verified = 0
+    for c in getattr(pkg, "claims", []):
+        d = getattr(c, "execution", None) or {}
+        if not d:
+            continue
+        total += 1
+        c.verified = ev.verify(SimpleNamespace(
+            artifact=d.get("artifact"), tool=d.get("tool", ""),
+            gate_code=d.get("gate_code", ""), aesthetic=d.get("aesthetic", False)))
+        verified += bool(c.verified.exists)
+    return {"execution_total": total, "execution_verified": verified}

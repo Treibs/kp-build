@@ -42,7 +42,10 @@ def validate(pkg_dir: str | Path) -> ValidationResult:
 
     for f in glob.glob(str(d / "claims" / "*.md")):
         c = claim_from_md(Path(f).read_text())
-        check(c.paper, f"claim {c.id}")
+        if c.paper:                                  # citation claim: must cite a VERIFIED paper
+            check(c.paper, f"claim {c.id}")
+        elif not c.verified.exists:                  # no paper AND no own verdict -> should not have shipped
+            errs.append(f"claim {c.id} has neither a cited paper nor a verifier verdict")
         for k in c.corroborated_by:                  # corroborators count as cited (ASSM-CONSIST-1)
             check(k, f"claim {c.id} corroborated_by")
     for f in glob.glob(str(d / "open-problems" / "*.md")):
