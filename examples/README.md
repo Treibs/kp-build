@@ -393,8 +393,8 @@ procedural (execution).
 
 | package | verifier | what it proves | honest tail |
 |---|---|---|---|
-| [`mesh-kpmodel/`](mesh-kpmodel/) | **citation** | lacrosse-mesh material composition — **33/34 DOI-bearing sources verified (97%)** (5 are ASTM standards) + 8 KPIs + 4 tradeoff connections | **citation-existence only** (not doc-grounded); 7 standards/rulebooks/TDS have no engine oracle (`ungrounded-unreachable`); ASTM G155 is a real rejection |
-| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **14/14 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the 5 motion/aesthetic fundamentals are **verifier-blind** (dropped as `unverifiable` — they need a judge panel, not a gate) |
+| [`mesh-kpmodel/`](mesh-kpmodel/) | **citation** | lacrosse-mesh material composition — **33/34 DOI-bearing sources verified (97%)** + 8 KPIs + 4 tradeoff connections | **citation-existence only** (not doc-grounded); the 7 non-DOI sources (ISO standards, rulebooks, a TDS) have no engine oracle (`ungrounded-unreachable`); the lone DOI rejection is **ASTM G155** (`id-title-mismatch` — a real Crossref miss) |
+| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **14/14 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the pack encodes only gate-checkable fundamentals (so it builds `dropped.claims: 0`); motion/aesthetic qualities are **verifier-blind** and were **left out by the author** — not encoded as claims — because they need a judge panel (v2-b), not a gate |
 
 **Reproduce the execution pack** (runs the real hyperframes CLI on the committed fixtures — opt-in, since it
 executes local files):
