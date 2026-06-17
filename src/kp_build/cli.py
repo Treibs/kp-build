@@ -147,11 +147,24 @@ def _load(path: str) -> Package:
                 # inside the pack; reject absolute paths, '..' traversal, and URL schemes.
                 errs.append(f"claims[{i}].execution.artifact {art!r} must be a relative path inside the "
                             f"pack (no absolute path, '..', or URL)")
-        if not c.get("paper") and not exec_d:
-            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper' or an 'execution' directive")
-        if c.get("paper") and exec_d:                # M2: paper XOR execution — never both
-            errs.append(f"claims[{i}] ({c.get('id', '?')}): has both a 'paper' and an 'execution' directive "
-                        f"(one verified unit per node — a mechanical gate must not be overridable by a citation)")
+        grnd = c.get("grounding") or {}              # V2-b grounding directive (instead of a citation paper)
+        if grnd:
+            src = grnd.get("source", "")
+            if not src:
+                errs.append(f"claims[{i}].grounding: needs a 'source' (the pinned source the passage is quoted from)")
+            elif not re.fullmatch(r"[A-Za-z0-9_.-]+", src):
+                # the source keys the corpus file (corpus/<source>.txt) — same filename-safety rule as cite_key (M5)
+                errs.append(f"claims[{i}].grounding.source {src!r} has unsafe characters "
+                            f"(used as a corpus filename; allowed: letters, digits, '_', '.', '-')")
+            if not grnd.get("supporting_passage"):
+                errs.append(f"claims[{i}].grounding: needs a 'supporting_passage' (the verbatim quote to ground)")
+        oracles = [bool(c.get("paper")), bool(exec_d), bool(grnd)]   # paper XOR execution XOR grounding
+        if not any(oracles):
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper', an 'execution', or a 'grounding' directive")
+        elif sum(oracles) > 1:                       # M2: exactly one verification basis per node
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): has more than one verification basis "
+                        f"(a claim is verified by exactly one of paper / execution / grounding — a mechanical "
+                        f"or grounding gate must not be overridable by a citation)")
         if c.get("paper"):
             _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
         if c.get("claim_type") and c["claim_type"] not in CLAIM_TYPES:
@@ -167,7 +180,9 @@ def _load(path: str) -> Package:
                             corroborated_by=corr,
                             survived_refuter=c.get("survived_refuter") is not False,  # absent/null -> True
                             execution={k: exec_d[k] for k in ("tool", "gate_code", "artifact", "aesthetic")
-                                       if k in exec_d}))
+                                       if k in exec_d},
+                            grounding={k: grnd[k] for k in ("source", "supporting_passage")
+                                       if k in grnd}))
 
     problems = []
     for i, o in _section(d, "open_problems", errs):

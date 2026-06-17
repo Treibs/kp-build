@@ -112,6 +112,10 @@ class Claim:
     #: V2-a execution directive (optional) — {tool, gate_code, artifact, aesthetic?}. When present, the build
     #: runs the ExecutionVerifier on it and sets ``verified``. Empty for citation/academic claims.
     execution: dict = field(default_factory=dict)
+    #: V2-b grounding directive (optional) — {source, supporting_passage}. When present and the build runs
+    #: with ``--ground-verify``, the DocGroundingVerifier checks the passage against the pinned source's
+    #: corpus and sets ``verified``. Empty for citation/academic/execution claims.
+    grounding: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -300,7 +304,8 @@ def claim_from_md(text: str) -> Claim:
         verified=Verification(**{k: v.get(k) for k in
                                  ("exists", "status", "kind", "via", "canonical_title",
                                   "match_score", "evidence", "checked") if k in v}),
-        execution=dict(fm.get("execution") or {}))
+        execution=dict(fm.get("execution") or {}),
+        grounding=dict(fm.get("grounding") or {}))
 
 
 def claim_ships(c: "Claim", verified_keys) -> bool:

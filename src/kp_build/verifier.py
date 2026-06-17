@@ -201,3 +201,26 @@ def verify_execution_claims(pkg, *, runner, today: str = "", base_dir=None) -> d
             gate_code=d.get("gate_code", ""), aesthetic=d.get("aesthetic", False)))
         verified += bool(c.verified.exists)
     return {"execution_total": total, "execution_verified": verified}
+
+
+def verify_grounding_claims(pkg, *, corpus: dict, today: str = "") -> dict:
+    """Build step: run the DocGroundingVerifier against the injected, pinned ``corpus`` on every claim
+    carrying a ``grounding`` directive, setting its per-claim ``verified``. Citation/academic/execution
+    claims are untouched. Returns a summary.
+
+    No network: the corpus is loaded offline by the caller and keyed by the directive's ``source`` (a
+    no-paper grounding claim has no cite_key). The directive's OWN ``supporting_passage`` is grounded
+    (the verbatim quote to check), not the claim's display passage. A source missing from the corpus
+    yields ``ungrounded-unreachable`` (coverage debt) — never laundered into ``verified``."""
+    from types import SimpleNamespace
+    gv = DocGroundingVerifier(corpus, today=today)
+    total = verified = 0
+    for c in getattr(pkg, "claims", []):
+        d = getattr(c, "grounding", None) or {}
+        if not d:
+            continue
+        total += 1
+        c.verified = gv.verify(SimpleNamespace(
+            supporting_passage=d.get("supporting_passage", ""), source=d.get("source", ""), paper=""))
+        verified += bool(c.verified.exists)
+    return {"grounding_total": total, "grounding_verified": verified}
