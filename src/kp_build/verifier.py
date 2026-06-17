@@ -90,3 +90,47 @@ class DocGroundingVerifier:
         status = {True: "verified", False: "ungrounded", None: "unconfirmed"}[present]
         return Verification(kind="grounding", exists=(present is True), status=status, via="doc-corpus",
                             evidence=(passage[:160] if present is True else ""), checked=self._today)
+
+
+class ExecutionVerifier:
+    """Runs a mechanical tool against an artifact and gates the claim on the result (V2-a §7).
+
+    The RUNNER is injected (like ``get`` / ``corpus``), so this is PURE LOGIC — deterministic and
+    offline-testable with a fake runner; no sandbox here (lint/inspect ship v2-a, render is v2-b).
+    Runner contract: ``runner(artifact, tool) -> {"codes": [gate codes present]}`` on a successful run,
+    or ``None`` if the artifact/tool could not produce a result; it RAISES on a real run failure
+    (timeout/crash). Statuses:
+
+      verified        — ran clean AND the asserted gate is ABSENT (the mechanical fundamental holds)
+      output-mismatch — ran clean but the gate FIRED (the artifact violates what it claims)
+      not-found       — the runner produced no result (artifact/tool missing)
+      error           — the run RAISED (timeout/crash) — UNKNOWN, never trusted
+
+    A claim with no mechanical oracle (``aesthetic`` true, or no ``gate_code``) returns ``unverifiable``
+    — it never guesses ``pass`` for taste; aesthetic quality routes to the v2-b judge panel.
+    """
+
+    kind = "execution"
+
+    def __init__(self, runner, *, today: str = "") -> None:
+        self._runner = runner
+        self._today = today
+
+    def verify(self, item) -> Verification:
+        gate = getattr(item, "gate_code", "")
+        if getattr(item, "aesthetic", False) or not gate:
+            return Verification(kind="execution", exists=False, status="unverifiable", via="execution",
+                                evidence="no mechanical oracle (aesthetic / no gate)", checked=self._today)
+        tool = getattr(item, "tool", "") or "execution"
+        try:
+            result = self._runner(getattr(item, "artifact", None), getattr(item, "tool", ""))
+        except Exception as e:                      # timeout / crash -> UNKNOWN, never trusted
+            return Verification(kind="execution", exists=False, status="error", via=tool,
+                                evidence=f"run failed: {type(e).__name__}", checked=self._today)
+        if result is None:
+            return Verification(kind="execution", exists=False, status="not-found", via=tool,
+                                evidence="artifact/tool not found", checked=self._today)
+        fired = gate in (result.get("codes", []) if isinstance(result, dict) else [])
+        return Verification(kind="execution", exists=(not fired),
+                            status=("output-mismatch" if fired else "verified"), via=tool,
+                            evidence=f"{tool}:{gate} {'fired' if fired else 'cleared'}", checked=self._today)

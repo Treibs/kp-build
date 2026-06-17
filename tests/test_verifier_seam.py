@@ -304,3 +304,54 @@ def test_doc_grounding_verifier_grounds_against_fetched_corpus_end_to_end():
     claim = Claim(id="c8", statement="s", paper="p1",
                   supporting_passage="average saturation around 8.83 percent in an 80 C bath")
     assert DocGroundingVerifier(corpus).verify(claim).status == "verified"
+
+
+# ── verifier.py: ExecutionVerifier — runs a gate via an injected runner (RED until implemented) ──
+
+from types import SimpleNamespace
+
+def _directive(artifact="fixed/", tool="lint", gate_code="non_deterministic_code", aesthetic=False):
+    return SimpleNamespace(artifact=artifact, tool=tool, gate_code=gate_code, aesthetic=aesthetic)
+
+
+def test_execution_verifier_verified_when_gate_clears():
+    """Ran clean and the asserted gate is ABSENT -> the mechanical fundamental holds."""
+    from kp_build.verifier import ExecutionVerifier
+    v = ExecutionVerifier(lambda artifact, tool: {"codes": []}).verify(_directive())
+    assert v.kind == "execution" and v.exists is True and v.status == "verified"
+
+
+def test_execution_verifier_clean_run_wrong_output_is_output_mismatch():
+    """Ran clean but the gate FIRED -> the artifact violates what it claims (the new status)."""
+    from kp_build.verifier import ExecutionVerifier
+    v = ExecutionVerifier(lambda a, t: {"codes": ["non_deterministic_code"]}).verify(_directive())
+    assert v.exists is False and v.status == "output-mismatch"
+
+
+def test_execution_verifier_not_found_when_runner_returns_none():
+    from kp_build.verifier import ExecutionVerifier
+    v = ExecutionVerifier(lambda a, t: None).verify(_directive())
+    assert v.exists is False and v.status == "not-found"
+
+
+def test_execution_verifier_error_on_runner_failure_is_never_trusted():
+    from kp_build.verifier import ExecutionVerifier
+    def boom(a, t): raise TimeoutError("sandbox timeout")
+    v = ExecutionVerifier(boom).verify(_directive())
+    assert v.exists is False and v.status == "error"
+
+
+def test_execution_verifier_refuses_aesthetic_claims_as_unverifiable():
+    """A claim with no mechanical oracle returns unverifiable — it NEVER guesses pass for taste."""
+    from kp_build.verifier import ExecutionVerifier
+    ran = []
+    def runner(a, t): ran.append(1); return {"codes": []}
+    v = ExecutionVerifier(runner).verify(_directive(aesthetic=True, gate_code=""))
+    assert v.exists is False and v.status == "unverifiable"
+    assert ran == []                              # never even runs the tool for a taste claim
+
+
+def test_execution_verifier_offline_and_satisfies_protocol():
+    from kp_build.verifier import ExecutionVerifier, Verifier
+    assert isinstance(ExecutionVerifier(lambda a, t: {"codes": []}), Verifier)
+    assert ExecutionVerifier(lambda a, t: {}).kind == "execution"
