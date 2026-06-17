@@ -56,7 +56,16 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     # prune unverified refs into COPIES — never mutate the caller's input dataclasses (ASSM-1)
     claims = []
     for c in pkg.claims:
-        if c.paper in verified or c.verified.exists:        # citation spine OR own verifier verdict (V2-a)
+        # M2: a claim's OWN verdict is authoritative. If a verifier ran and FAILED (status != default),
+        # the claim is vetoed even with a verified citation — a mechanical disproof outranks a paper.
+        v = c.verified
+        if v.exists:
+            ships = True
+        elif v.status not in ("unverified", ""):
+            ships = False                                   # a gate ran and disproved it -> drop
+        else:
+            ships = c.paper in verified                     # no own verdict -> the citation spine decides
+        if ships:
             c2 = replace(c, corroborated_by=[k for k in c.corroborated_by if k in verified])
             (out / "claims" / f"{c2.id}.md").write_text(
                 claim_to_md(c2, paper_ref=refs.get(c2.paper, "")), encoding="utf-8")

@@ -435,6 +435,60 @@ def test_verify_execution_claims_sets_verdicts_and_ships(tmp_path: Path):
     assert (out / "claims" / "e1.md").exists() and not (out / "claims" / "e2.md").exists()
 
 
+# ── code-review must-fixes (RED until fixed) ─────────────────────────────────────────────────
+
+def test_load_rejects_path_unsafe_node_ids(tmp_path):
+    """M1: every node id (not just cite_key) is used as a filename — a '/'/'..'/absolute id is an
+    arbitrary-file-write. _load must reject them like it does cite_keys."""
+    from kp_build.cli import _load, ResearchInputError
+    for bad in ["../../../tmp/PWNED", "a/b", "/abs", ".."]:
+        rj = {"topic": "t", "papers": [{"cite_key": "p1", "title": "T"}],
+              "claims": [{"id": bad, "statement": "s", "paper": "p1", "supporting_passage": "x"}]}
+        with pytest.raises(ResearchInputError, match="unsafe|invalid"):
+            _load(_write(tmp_path, rj))
+
+
+def test_paper_claim_with_firing_execution_gate_is_dropped(tmp_path: Path):
+    """M2: a mechanical disproof must VETO a citation anchor. A claim with a verified paper AND a
+    firing execution gate (output-mismatch) must NOT ship."""
+    v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
+    pkg = Package(topic="t", scope="s",
+                  papers=[Paper(cite_key="p1", title="T", verified=v)],
+                  claims=[Claim(id="c1", statement="disproven", paper="p1", supporting_passage="x",
+                                execution={"tool": "lint", "gate_code": "nd", "artifact": "a.html"},
+                                verified=Verification(kind="execution", exists=False, status="output-mismatch",
+                                                      via="hf", evidence="lint:nd fired"))])
+    out = assemble(pkg, tmp_path, built="2026-01-01")
+    assert not (out / "claims" / "c1.md").exists()        # the firing gate vetoes the citation
+
+
+def test_load_rejects_claim_with_both_paper_and_execution(tmp_path):
+    """M2 (belt): one verified unit per node — paper XOR execution, never both."""
+    from kp_build.cli import _load, ResearchInputError
+    rj = {"topic": "t", "papers": [{"cite_key": "p1", "title": "T"}],
+          "claims": [{"id": "c1", "statement": "s", "paper": "p1", "supporting_passage": "x",
+                      "execution": {"tool": "lint", "gate_code": "nd", "artifact": "a.html"}}]}
+    with pytest.raises(ResearchInputError, match="both .*paper.* and .*execution|paper.* or .*execution"):
+        _load(_write(tmp_path, rj))
+
+
+def test_context_sanitizes_relation_and_goal_fields():
+    """M7: the new V2-a relation/goal fields are attacker-controlled and must be _data-sanitized
+    before landing in the agent-loaded CONTEXT.md (no prompt-injection bypass)."""
+    from kp_build.schema import GoalMetric, Relation
+    from kp_build.digest import build_context
+    v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
+    pkg = Package(topic="t", scope="s",
+                  papers=[Paper(cite_key="p1", title="T", verified=v)],
+                  claims=[Claim(id="c1", statement="a", paper="p1", supporting_passage="x"),
+                          Claim(id="c2", statement="b", paper="p1", supporting_passage="y")],
+                  goal_metrics=[GoalMetric(name="m", direction="higher", oracle_kind="exec```pwn")],
+                  relations=[Relation(id="r1", source="c1", target="c2", type="trade```evil",
+                                      kpis=["k```bad"], description="d")])
+    ctx = build_context(pkg, built="2026-01-01")
+    assert "```" not in ctx                               # every rendered field sanitized
+
+
 def test_validate_accepts_no_paper_execution_claim(tmp_path: Path):
     """A shipped execution claim has paper='' — validate must accept it (it carries its own verdict),
     not flag 'cites unknown paper'."""

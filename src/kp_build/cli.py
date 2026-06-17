@@ -89,6 +89,11 @@ def _load(path: str) -> Package:
     def _uid(nid, kind, i):
         if not nid:
             return
+        # M1: every node id is used verbatim as a filename (claims/<id>.md, relations/<id>.md, ...) —
+        # path-validate it like cite_key, or a crafted id writes OUTSIDE --out.
+        if nid in (".", "..") or not re.fullmatch(r"[A-Za-z0-9_.-]+", nid):
+            errs.append(f"{kind}[{i}]: id {nid!r} has unsafe characters (used as a filename; "
+                        f"allowed: letters, digits, '_', '.', '-')")
         if nid in node_ids:
             errs.append(f"{kind}[{i}]: duplicate node id {nid!r}")
         node_ids.add(nid)
@@ -138,6 +143,9 @@ def _load(path: str) -> Package:
                 errs.append(f"claims[{i}].execution: needs an artifact")
         if not c.get("paper") and not exec_d:
             errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper' or an 'execution' directive")
+        if c.get("paper") and exec_d:                # M2: paper XOR execution — never both
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): has both a 'paper' and an 'execution' directive "
+                        f"(one verified unit per node — a mechanical gate must not be overridable by a citation)")
         if c.get("paper"):
             _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
         if c.get("claim_type") and c["claim_type"] not in CLAIM_TYPES:

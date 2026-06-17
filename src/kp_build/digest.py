@@ -139,11 +139,13 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
         arrow = "↓ lower is better" if gm.direction == "lower" else "↑ higher is better"
         tgt = f" — target {_data(gm.target)}" if gm.target else ""
         base = f" (baseline {_data(gm.baseline)})" if gm.baseline else ""
-        goal_items.append(f"- **{_data(gm.name)}** [{arrow}]{tgt}{base} · oracle: {gm.oracle_kind}")
+        goal_items.append(f"- **{_data(gm.name)}** [{arrow}]{tgt}{base} · oracle: {_data(gm.oracle_kind)}")
 
     kept_nodes = (set(verified) | {c.id for c in pkg.claims if c.paper in verified or c.verified.exists}
                   | {op.id for op in probs} | {b.id for b in benches})
-    conn_items = [f"- **[{r.source}] —{r.type}→ [{r.target}]** ({', '.join(r.kpis)}) — {_data(r.description)}"
+    # M7: source/target/type/kpis are attacker-controlled — sanitize EVERY field that lands in CONTEXT.md
+    conn_items = [f"- **[{_data(r.source)}] —{_data(r.type)}→ [{_data(r.target)}]** "
+                  f"({', '.join(_data(k) for k in r.kpis)}) — {_data(r.description)}"
                   for r in pkg.relations if r.source in kept_nodes and r.target in kept_nodes]
 
     sections = [
