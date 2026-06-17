@@ -18,14 +18,49 @@ from __future__ import annotations
 
 import difflib
 import html
+import json
 import re
 import time
+import urllib.parse
 from collections import Counter
 from typing import Callable
 
 from .citations import _http_get, _safe, _resolve, _arxiv_abstract, strip_arxiv_prefix
 
 _WORD = re.compile(r"[a-z0-9]+")
+_TAG = re.compile(r"<[^>]+>")
+
+
+def _strip_tags(s: str) -> str:
+    """JATS/HTML abstract → plain text: drop tags, unescape entities, collapse whitespace."""
+    return re.sub(r"\s+", " ", html.unescape(_TAG.sub(" ", s))).strip()
+
+
+def fetch_doc_corpus(papers, *, get: Callable[[str], str] = _http_get) -> dict:
+    """Build an offline grounding corpus ``{cite_key: text}`` from Crossref abstracts for DOI papers
+    (the minimal §4.4 fetch — abstracts + title, NO full text). Papers with no DOI or no abstract are
+    omitted, so :class:`DocGroundingVerifier` honestly stamps their claims ``ungrounded-unreachable``
+    rather than guessing. Network is the injected ``get`` (offline-testable with a fake)."""
+    corpus: dict = {}
+    for p in papers:
+        if not p.doi:
+            continue
+        url = f"https://api.crossref.org/works/{urllib.parse.quote(p.doi.strip(), safe='')}"
+        raw, err = _safe(url, get)
+        if err or not raw:
+            continue
+        try:
+            msg = json.loads(raw).get("message", {})
+        except Exception:
+            continue
+        abstract = msg.get("abstract") or ""
+        if not abstract:                       # title alone can't ground a passage — skip honestly
+            continue
+        title = (msg.get("title") or [""])[0]
+        text = _strip_tags(f"{title}. {abstract}")
+        if text:
+            corpus[p.cite_key] = text
+    return corpus
 _AR5IV = "https://ar5iv.org/abs/"
 _MIN_CHARS = 24          # below this a passage is too short to ground reliably (would match by coincidence)
 _MIN_WORDS = 5

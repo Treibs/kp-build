@@ -271,3 +271,36 @@ def test_doc_grounding_verifier_offline_and_satisfies_protocol():
     from kp_build.verifier import DocGroundingVerifier, Verifier
     assert isinstance(DocGroundingVerifier({}), Verifier)
     assert DocGroundingVerifier({}).kind == "grounding"
+
+
+# ── ground.fetch_doc_corpus — minimal Crossref-abstract corpus builder (RED until implemented) ──
+
+def test_fetch_doc_corpus_extracts_and_cleans_crossref_abstract():
+    from kp_build.ground import fetch_doc_corpus
+    crossref = json.dumps({"message": {"title": ["Sorption of Water in Polyamide 6"],
+        "abstract": "<jats:p>Polyamide 6 absorbs substantial water, with saturation around "
+                    "8.83 percent in an 80 C bath.</jats:p>"}})
+    corpus = fetch_doc_corpus([Paper(cite_key="p1", title="t", doi="10.3390/polym13091480")],
+                              get=lambda url: crossref)
+    assert "p1" in corpus
+    assert "8.83 percent" in corpus["p1"] and "<jats" not in corpus["p1"]   # JATS tags stripped
+
+
+def test_fetch_doc_corpus_skips_no_doi_and_no_abstract():
+    from kp_build.ground import fetch_doc_corpus
+    assert fetch_doc_corpus([Paper(cite_key="p1", title="t", doi="")], get=lambda u: "x") == {}
+    title_only = json.dumps({"message": {"title": ["No abstract here"]}})
+    assert "p2" not in fetch_doc_corpus([Paper(cite_key="p2", title="t", doi="10.x/y")],
+                                        get=lambda u: title_only)
+
+
+def test_doc_grounding_verifier_grounds_against_fetched_corpus_end_to_end():
+    """The two halves compose: fetch a corpus, then ground a claim's passage against it."""
+    from kp_build.ground import fetch_doc_corpus
+    from kp_build.verifier import DocGroundingVerifier
+    crossref = json.dumps({"message": {"title": ["T"],
+        "abstract": "<jats:p>average saturation around 8.83 percent in an 80 C bath</jats:p>"}})
+    corpus = fetch_doc_corpus([Paper(cite_key="p1", title="t", doi="10.x/y")], get=lambda u: crossref)
+    claim = Claim(id="c8", statement="s", paper="p1",
+                  supporting_passage="average saturation around 8.83 percent in an 80 C bath")
+    assert DocGroundingVerifier(corpus).verify(claim).status == "verified"
