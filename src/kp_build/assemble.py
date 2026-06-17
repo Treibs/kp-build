@@ -121,7 +121,7 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
              + [{"from": b.id, "to": b.paper, "rel": "reported-in"} for b in benchmarks]
              + [{"from": c.id, "to": k, "rel": "corroborated-by"} for c in claims for k in c.corroborated_by]
              + [{"from": r.source, "to": r.target, "rel": r.type, "kpis": r.kpis,
-                 "verified": r.verification.exists} for r in relations])
+                 "verification": ("verified" if r.verification.exists else "unrun")} for r in relations])
     index = {
         "schema": SCHEMA_VERSION,
         "papers": [{"cite_key": p.cite_key, "title": p.title, "year": p.year, "arxiv_id": p.arxiv_id,
@@ -133,7 +133,7 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
         "benchmarks": [{"id": b.id, "name": b.name, "value": b.value, "metric": b.metric,
                         "method": b.method, "paper": b.paper} for b in benchmarks],
         "relations": [{"id": r.id, "source": r.source, "target": r.target, "type": r.type,
-                       "kpis": r.kpis, "verified": r.verification.exists} for r in relations],
+                       "kpis": r.kpis, "verification": ("verified" if r.verification.exists else "unrun")} for r in relations],
         "edges": edges,
     }
     (out / "index.json").write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")

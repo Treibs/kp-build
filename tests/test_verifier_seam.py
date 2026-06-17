@@ -489,6 +489,29 @@ def test_context_sanitizes_relation_and_goal_fields():
     assert "```" not in ctx                               # every rendered field sanitized
 
 
+def test_execution_verifier_non_list_codes_is_not_silently_verified():
+    """should-fix: a malformed runner result {'codes':'nd'} must NOT fail-OPEN to verified via substring."""
+    from kp_build.verifier import ExecutionVerifier
+    v = ExecutionVerifier(lambda a, t: {"codes": "non_deterministic_code"}).verify(_directive())
+    assert v.status == "error" and v.exists is False     # non-list codes -> untrusted, never verified
+
+
+def test_index_labels_unverified_relations_honestly(tmp_path: Path):
+    """should-fix: relations ship UNVERIFIED (no relation-grounding step); the index must not print a
+    misleading 'verified': false — it labels them 'unrun'."""
+    import json as _json
+    from kp_build.schema import Relation
+    v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
+    pkg = Package(topic="t", scope="s", papers=[Paper(cite_key="p1", title="T", verified=v)],
+                  claims=[Claim(id="c1", statement="a", paper="p1", supporting_passage="x"),
+                          Claim(id="c2", statement="b", paper="p1", supporting_passage="y")],
+                  relations=[Relation(id="r1", source="c1", target="c2", type="tradeoff", kpis=["a", "b"])])
+    out = assemble(pkg, tmp_path, built="2026-01-01")
+    idx = _json.loads((out / "index.json").read_text())
+    assert idx["relations"][0]["verification"] == "unrun"
+    assert "verified" not in idx["relations"][0]          # no misleading boolean
+
+
 def test_load_rejects_unsafe_execution_artifact(tmp_path):
     """M5: the execution artifact is fed to a subprocess that reads files — reject absolute paths,
     '..' traversal, and URL schemes (arbitrary local-file read / SSRF)."""

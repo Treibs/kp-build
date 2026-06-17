@@ -67,8 +67,14 @@ class DocGroundingVerifier:
 
     A source MISSING from the corpus -> ``ungrounded-unreachable``: a COVERAGE DEBT (an oracle exists in
     principle, we just don't hold the text), NEVER laundered into ``verified`` (the review's two-stamp scheme).
-    Works on any item exposing a passage + source: a Claim (``supporting_passage`` / ``paper``) or a
-    Relation (``description`` / ``source``).
+    Operates on a **Claim** — grounding its ``supporting_passage`` against ``corpus[claim.paper]`` (the corpus
+    is keyed by ``cite_key``).
+
+    NOTE (review M6 — honest deferral): this is a tested LIBRARY building block for offline re-grounding; it is
+    **not yet wired into ``kp-build build``** (no research.json directive declares a grounding-claim, and the
+    mesh pack is citation-verified via the existing path). So ``kind='grounding'`` is *declared, not yet
+    build-enforced*. Grounding a **Relation** is NOT supported here (the corpus is cite_key-keyed, not node-id)
+    — both await a future increment.
     """
 
     kind = "grounding"
@@ -130,7 +136,11 @@ class ExecutionVerifier:
         if result is None:
             return Verification(kind="execution", exists=False, status="not-found", via=tool,
                                 evidence="artifact/tool not found", checked=self._today)
-        fired = gate in (result.get("codes", []) if isinstance(result, dict) else [])
+        raw = result.get("codes") if isinstance(result, dict) else None
+        if not isinstance(raw, list):                   # malformed runner output -> untrusted, never fail-OPEN
+            return Verification(kind="execution", exists=False, status="error", via=tool,
+                                evidence="runner returned non-list 'codes'", checked=self._today)
+        fired = gate in raw
         return Verification(kind="execution", exists=(not fired),
                             status=("output-mismatch" if fired else "verified"), via=tool,
                             evidence=f"{tool}:{gate} {'fired' if fired else 'cleared'}", checked=self._today)
