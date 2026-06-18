@@ -529,6 +529,37 @@ def test_judge_verifier_never_trusts_a_failed_judge():
     v = JudgeVerifier(boom, rounds=4).verify(SimpleNamespace(task="t", answer="pack", baseline="base"))
     assert v.exists is False and v.status == "judged-tie"       # 0-0, no votes -> tie, not better
 
+def test_judge_verifier_rounds_forced_even_protects_alternation():
+    """REVIEW should-fix #1: rounds is normalized to even (>=2). An ODD requested count must NOT let a
+    position-biased judge win — this is the single line the whole anti-tautology guarantee rests on."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    assert JudgeVerifier(lambda *a: {}, rounds=3)._rounds == 2
+    assert JudgeVerifier(lambda *a: {}, rounds=5)._rounds == 4
+    assert JudgeVerifier(lambda *a: {}, rounds=1)._rounds == 2
+    # a purely position-biased judge driven at an odd requested count still nets to a tie
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a"}, rounds=5).verify(
+        SimpleNamespace(task="t", answer="pack", baseline="base"))
+    assert v.status == "judged-tie" and v.exists is False
+
+@pytest.mark.parametrize("bad", [None, {}, {"winner": "banana"}, "a", ["a"], {"winner": "A"}])
+def test_judge_verifier_malformed_judge_output_is_no_vote(bad):
+    """REVIEW should-fix #2: a judge that returns junk (not just one that raises) contributes NO vote.
+    The bare-string 'a' is the most likely real LLM-wrapper bug; none may ever produce a win."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: bad, rounds=4).verify(SimpleNamespace(task="t", answer="x", baseline="y"))
+    assert v.exists is False and v.status == "judged-tie"
+
+def test_judge_verifier_empty_answer_is_unverifiable_not_a_win():
+    """REVIEW should-fix #3: a relative judge needs BOTH sides — an empty answer must never be able to
+    'win' against a baseline (close the latent fail-open), it is unverifiable like an empty baseline."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a" if a == "" else "b"}, rounds=4).verify(
+        SimpleNamespace(task="t", answer="", baseline="base"))
+    assert v.exists is False and v.status == "unverifiable"
+
 
 # ── verifier.py: the pluggable seam — CitationVerifier == legacy (RED until implemented) ──────
 

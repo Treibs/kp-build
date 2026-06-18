@@ -177,9 +177,11 @@ class JudgeVerifier:
         answer = getattr(item, "answer", "") or ""
         baseline = getattr(item, "baseline", "") or ""
         task = getattr(item, "task", "") or ""
-        if not baseline:                                  # relative-only — no absolute taste gate
-            return Verification(kind="judgment", exists=False, status="unverifiable", via="judge-panel",
-                                evidence="no baseline to judge against (relative-only)", checked=self._today)
+        if not baseline or not answer:                    # relative needs BOTH sides — no absolute taste
+            return Verification(kind="judgment", exists=False, status="unverifiable", via="judge-panel",  # gate,
+                                evidence="judgment is relative — needs a non-empty answer AND baseline",   # and an
+                                checked=self._today)                                                       # empty
+            # ^ an empty answer can never "win" against a baseline (review should-fix #3 — close the fail-open)
         answer_wins = baseline_wins = ties = 0
         for i in range(self._rounds):
             ans_is_a = (i % 2 == 0)                       # alternate slots to cancel position bias

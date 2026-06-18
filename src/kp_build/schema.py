@@ -57,6 +57,7 @@ class Verification:
                   blind panel — answer-vs-baseline, never an absolute taste score)
     ``status``  : verified | unconfirmed | id-title-mismatch | not-found | error | unverified
                   | output-mismatch        (execution: ran clean but produced the wrong output)
+                  | unverifiable           (no mechanical/relative oracle — execution aesthetic, judgment no-baseline)
                   | judged-better | judged-worse | judged-tie   (judgment: relative panel verdict)
     ``canonical_title`` / ``match_score`` are citation-specific (empty/0.0 for other kinds).
     Legacy packages have no ``kind`` in frontmatter → it reads back as ``existence`` (the migration).
