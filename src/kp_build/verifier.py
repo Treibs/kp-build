@@ -144,9 +144,13 @@ class ExecutionVerifier:
         # the asserted gate fired, OR the tool itself could not run (inspect_error sentinel) — either way
         # the mechanical fundamental is NOT confirmed, so the claim must not verify (no crashed-tool pass).
         fired = gate in raw or "inspect_error" in raw
+        if "inspect_error" in raw and gate != "inspect_error":
+            evidence = f"{tool} could not run (inspect_error) — gate {gate} not evaluated"  # honest cause
+        else:
+            evidence = f"{tool}:{gate} {'fired' if fired else 'cleared'}"
         return Verification(kind="execution", exists=(not fired),
                             status=("output-mismatch" if fired else "verified"), via=tool,
-                            evidence=f"{tool}:{gate} {'fired' if fired else 'cleared'}", checked=self._today)
+                            evidence=evidence, checked=self._today)
 
 
 class JudgeVerifier:
@@ -218,7 +222,8 @@ def hyperframes_runner(artifact, tool, *, _run=None):
     run = _run or subprocess.run
     p = run(["npx", "--yes", "hyperframes@0.6.91", tool, "--json", str(artifact)],
             capture_output=True, text=True, timeout=180)
-    out = (p.stdout or "").strip()
+    stdout, stderr = (p.stdout or ""), (getattr(p, "stderr", "") or "")
+    out = stdout.strip()
     i = out.find("{")
     if i < 0:
         return None
@@ -229,8 +234,12 @@ def hyperframes_runner(artifact, tool, *, _run=None):
     if tool == "lint":
         return {"codes": [f.get("code") for f in d.get("findings", [])]}
     if tool == "inspect":
-        if d.get("ok") is False or d.get("error"):      # inspect COULD NOT run (e.g. root data-duration
-            return {"codes": ["inspect_error"]}         # missing -> no totalDuration): a failure, not clean
+        # inspect COULD NOT honestly analyze: it crashed (ok:false/error — e.g. root data-duration missing,
+        # so no totalDuration), OR a StaticGuard contract violation (printed to stderr while stdout still
+        # reads ok:true). Either way -> the 'inspect_error' sentinel (a failure), never read as clean.
+        invalid = "Invalid HyperFrame contract" in stdout or "Invalid HyperFrame contract" in stderr
+        if not d.get("ok", True) or d.get("error") or invalid:
+            return {"codes": ["inspect_error"]}
         return {"codes": [x.get("code") for x in d.get("issues", [])]}
     if tool == "validate":
         return {"codes": (["contrastFailures"] if d.get("contrastFailures", 0) else [])}

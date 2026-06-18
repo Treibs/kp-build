@@ -855,6 +855,19 @@ def test_execution_verifier_inspect_error_sentinel_fails_any_claim():
     v = ExecutionVerifier(lambda art, tool: {"codes": ["inspect_error"]}).verify(
         SimpleNamespace(tool="inspect", gate_code="text_box_overflow", artifact="x"))
     assert v.exists is False and v.status == "output-mismatch"
+    # REVIEW should-fix: the evidence must say inspect could not run, NOT that text_box_overflow 'fired'
+    assert "could not run" in v.evidence and "text_box_overflow fired" not in v.evidence
+
+def test_hyperframes_runner_staticguard_invalid_contract_is_inspect_error():
+    """REVIEW should-fix: a contract-INVALID composition prints '[StaticGuard] Invalid HyperFrame
+    contract' to stderr but {ok:true, issues:[]} on stdout — the runner must NOT read that as clean."""
+    from kp_build.verifier import hyperframes_runner
+    from types import SimpleNamespace
+    run = lambda out, err="": (lambda *a, **k: SimpleNamespace(stdout=out, stderr=err))
+    bad = run('{"ok":true,"issues":[]}', err="[StaticGuard] Invalid HyperFrame contract: missing data-width")
+    assert hyperframes_runner("x", "inspect", _run=bad) == {"codes": ["inspect_error"]}
+    # a valid clean inspect (no StaticGuard) is still clean
+    assert hyperframes_runner("x", "inspect", _run=run('{"ok":true,"issues":[]}', err="")) == {"codes": []}
 
 
 def test_hyperframes_runner_none_on_no_json_bad_json_or_unknown_tool():
