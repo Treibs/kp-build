@@ -1,0 +1,13 @@
+{
+  "name": "@kp/hyperframes-creative-direction-judged-craft",
+  "version": "0.1.0",
+  "description": "Creative-direction principles for a HyperFrames video \u2014 pacing/rhythm, energy arc, scene restraint, and easing character \u2014 where quality is a matter of judged craft, NOT a mechanical lint/inspect/validate gate. Each principle ships only if a blind, position-bias-cancelled judge panel preferred its d",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

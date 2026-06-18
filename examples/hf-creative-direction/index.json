@@ -1,0 +1,32 @@
+{
+  "schema": "wikillm/1",
+  "papers": [],
+  "claims": [
+    {
+      "id": "rhythm-varied-beats-uniform",
+      "paper": "",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "energy-arc-beats-flat",
+      "paper": "",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": []
+    },
+    {
+      "id": "restraint-beats-cramming",
+      "paper": "",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [],
+  "debates": [],
+  "benchmarks": [],
+  "relations": [],
+  "edges": []
+}

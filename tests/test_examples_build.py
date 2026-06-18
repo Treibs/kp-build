@@ -50,3 +50,19 @@ def test_vwt_grounding_gate_fires_offline(tmp_path):
     assert cli.main(["build", "-i", inp, "-o", str(out), "--ground-verify", "--built", "2026-01-01"]) == 0
     assert json.loads((out / "wikillm.json").read_text())["stats"]["claims"] == 3
     assert not (out / "claims" / "inflated-numbers-fabricated.md").exists()
+
+
+def test_creative_direction_judgment_gate_ships_winners_and_drops_loser_offline(tmp_path):
+    """Judgment fixture: the build REPLAYS each claim's recorded blind panel through the JudgeVerifier
+    (offline, by default — no flag). The 3 judged-better craft principles ship; the 'bounce on every
+    entrance' trap, which the recorded panel judged worse (0-6), is dropped. The replay is deterministic
+    (byte-identical rebuild); note the build does NO provenance check on the recorded rounds."""
+    inp = "examples/hf-creative-direction.research.json"
+    a, b = tmp_path / "a", tmp_path / "b"
+    assert cli.main(["build", "-i", inp, "-o", str(a), "--built", "2026-01-01"]) == 0
+    assert json.loads((a / "wikillm.json").read_text())["stats"]["claims"] == 3
+    for shipped in ("rhythm-varied-beats-uniform", "energy-arc-beats-flat", "restraint-beats-cramming"):
+        assert (a / "claims" / f"{shipped}.md").exists()
+    assert not (a / "claims" / "bounce-everything-is-livelier.md").exists()    # judged-worse → vetoed
+    assert cli.main(["build", "-i", inp, "-o", str(b), "--built", "2026-01-01"]) == 0
+    assert (a / "CONTEXT.md").read_text() == (b / "CONTEXT.md").read_text()    # deterministic replay

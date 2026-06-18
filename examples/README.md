@@ -385,18 +385,19 @@ kp-build falsify examples/sleep-insomnia-evidence \
 
 ## KP-model packs (V2-a — pluggable verifiers)
 
-The seven packages above are all **citation** packs (the original verifier). These four demonstrate the **V2-a
+The seven packages above are all **citation** packs (the original verifier). These five demonstrate the **V2-a
 pluggable verifier seam** — the same engine, but a claim's "is this real?" check can be **citation**,
-**doc-grounding**, or **execution**. The seam is now **3-of-3 build-enforced**: every verifier runs inside
-`build` and gates the ship decision. The first two also carry the KP-model spine (**goals + KPIs** with
-first-class **KPI-anchored connections** in `CONTEXT.md`); the last two are focused doc-grounding demonstrands.
+**doc-grounding**, **execution**, or **judgment**. The seam is now **4-of-4 build-enforced**: every verifier runs
+inside `build` and gates the ship decision. The first two also carry the KP-model spine (**goals + KPIs** with
+first-class **KPI-anchored connections** in `CONTEXT.md`); the rest are focused single-verifier demonstrands.
 
 | package | verifier | what it proves | honest tail |
 |---|---|---|---|
 | [`mesh-kpmodel/`](mesh-kpmodel/) | **citation** | lacrosse-mesh material composition — **33/41 sources verified (33/34 = 97% of DOI-bearing)** + 8 KPIs + 4 tradeoff connections | **citation-existence only** (not doc-grounded); the 7 non-DOI sources (ISO standards, rulebooks, a TDS, a patent) have no engine oracle — the `ungrounded-unreachable` verdict class, stored as `not-found` in the pack; the lone DOI rejection is **ASTM G155** (`id-title-mismatch` — a real Crossref miss) |
-| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **14/14 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the pack encodes only gate-checkable fundamentals (so it builds `dropped.claims: 0`); motion/aesthetic qualities are **verifier-blind** and were **left out by the author** — not encoded as claims — because they need a judge panel (v2-b), not a gate |
+| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **14/14 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the pack encodes only gate-checkable fundamentals (so it builds `dropped.claims: 0`); motion/aesthetic qualities are **verifier-blind** here — they belong to the **judgment** pack below, not a mechanical gate |
 | [`http-semantics-grounding/`](http-semantics-grounding/) | **doc-grounding** | RFC 9110 HTTP method semantics — **6/7 passages verified verbatim** against the pinned spec text (`--ground-verify`, offline + deterministic) | the held-out 7th is a **fabricated** "PATCH is safe and idempotent" clause (PATCH isn't in RFC 9110's method list) — stamped `ungrounded`, `dropped.claims: 1`; grounding proves **provenance** (the clause is verbatim in the source), **not soundness** |
 | [`vwt-grounding/`](vwt-grounding/) | **doc-grounding** | a frontier paper's abstract (arXiv:2606.18246, published 2026-06-16 — past a typical cutoff, so model-weak) — **3/4 passages verified verbatim** | the held-out 4th **inflates the numbers** (40%/35% vs the real 22%/15%) and flips the direction (widening vs narrowing) — `ungrounded`, dropped. A *true paraphrase* would drop too: this is a provenance gate, not a truth gate |
+| [`hf-creative-direction/`](hf-creative-direction/) | **judgment** | HyperFrames creative direction (the aesthetic layer no gate can check) — **3/4 craft principles ship on a blind, position-bias-cancelled judge panel** (each beat a *fair* baseline, offline + deterministic replay) | the held-out 4th — "bounce on **every** entrance is livelier" — is the **trap**: the recorded panel judged it **worse** (0–6 vs a restrained-easing baseline), so it's **dropped** (`dropped.claims: 1`). These are **relative preference judgments, not facts**; the seam guarantees **deterministic replay + position-bias cancellation**, *not* tamper-resistance — the build does no provenance check on `rounds` (see honest limits below) |
 
 **Reproduce the execution pack** (runs the real hyperframes CLI on the committed fixtures — opt-in, since it
 executes local files):
@@ -431,10 +432,36 @@ kp-build build -i examples/vwt-grounding.research.json -o /tmp/vwt --ground-veri
 soft display signal on citation claims. A grounding-spine pack built **without** `--ground-verify`
 hard-errors rather than silently drop its claims.
 
-**Honestly in scope now, and honestly out:** all three verifiers — citation, execution, doc-grounding — are
-build-enforced (this is what the grounding packs above add). Two honest limits remain. (1) Doc-grounding
-proves **provenance** (the quoted clause is verbatim in a pinned source), **not soundness** — and it drops a
-faithful *paraphrase* exactly as it drops a fabrication, by design. (2) The mesh pack still declares
-`oracle: grounding` on its KPIs but ships no grounding *claims*, so those KPIs are *declarative targets*, not
-grounding-verified; and **aesthetic quality** (the "more beautiful video" claim) is still **not** what any of
-these prove — that needs the v2-b judge panel, not a gate.
+**Reproduce the judgment pack** (fully offline + deterministic — each claim carries a *recorded* blind panel;
+the build replays it through the `JudgeVerifier`, no flag and no network):
+
+```bash
+kp-build build -i examples/hf-creative-direction.research.json -o /tmp/hfcd --built 2026-01-01
+#   → judging 4 recorded panel(s): 3/4 judged-better (ship)   (the 'bounce on every entrance' trap drops)
+```
+
+Each claim's `judgment` directive holds `{task, answer, baseline, rounds}`, where `rounds` is the recorded
+per-comparison slot winner (`a`/`b`/`tie`) from a blind panel run **once** by the orchestrator (the `/kp-build`
+skill). The build **replays** those recorded winners through the `JudgeVerifier` — it does *not* re-run any
+judge — so the pack rebuilds byte-identically. The verifier **alternates** which option sits in slot a vs b
+across the panel, and the panel must be an **even number of comparisons (≥2)** so the answer occupies each slot
+equally. That alternation does two real things: it **cancels position bias** in a genuine judge (a judge that
+systematically favours slot a nets out), and a **lazy uniform fake** (`['a','a',…]`) nets to a tie. It is **not**
+tamper-resistance: the build performs **no provenance check** on `rounds`, so a determined author who writes an
+*alternating* panel can still manufacture a verdict. The integrity therefore rests on the recorded panel being
+honestly produced (a real blind panel, as here) — exactly as a citation pack rests on the cite handles being
+real. The verdict ships only if the answer beat the baseline across the alternation.
+
+**Honestly in scope now, and honestly out:** all four verifiers — citation, execution, doc-grounding,
+judgment — are build-enforced. Three honest limits remain. (1) Doc-grounding proves **provenance** (the quoted
+clause is verbatim in a pinned source), **not soundness** — and it drops a faithful *paraphrase* exactly as it
+drops a fabrication, by design. (2) The judgment verifier measures **relative** preference (did a blind panel
+prefer this direction over a *fair* baseline?), **not absolute quality** or fact — its claims are explicitly
+labelled "preference judgments, not facts," and a pack is only as honest as its baselines are non-strawman
+(the `hf-creative-direction` baselines were each audited for exactly that, and one principle's first baseline
+was rejected as a strawman and re-fought). (3) The judgment build **replays** a recorded panel and does **no
+provenance check** on it: the alternation cancels position bias and catches a lazy uniform fake, but it does
+**not** prevent a determined author from hand-writing an alternating panel — so a judgment pack is trustworthy
+only insofar as its recorded panel was honestly produced (just as a citation pack trusts that its handles are
+real, not invented). The mesh pack also still declares `oracle: grounding` on its KPIs but ships no grounding
+*claims*, so those KPIs are *declarative targets*, not grounding-verified.
