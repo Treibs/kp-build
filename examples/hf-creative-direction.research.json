@@ -1,0 +1,54 @@
+{
+  "topic": "HyperFrames creative direction — judged craft",
+  "scope": "Creative-direction principles for a HyperFrames video — pacing/rhythm, energy arc, scene restraint, and easing character — where quality is a matter of judged craft, NOT a mechanical lint/inspect/validate gate. Each principle ships only if a blind, position-bias-cancelled judge panel preferred its direction over a naive baseline. These are relative preference judgments, not facts.",
+  "claims": [
+    {
+      "id": "rhythm-varied-beats-uniform",
+      "statement": "For a multi-scene launch video, a varied beat rhythm — quick establishing hits resolving into a held hero beat (fast-fast-SLOW-hold) — reads as more confident and intentional than giving every scene the same duration.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "judgment": {
+        "task": "You are directing the pacing of a 6-scene product-launch video (about 20 seconds total). In a few sentences, specify how the scene durations relate to each other and the reasoning. Pick the stronger direction.",
+        "answer": "Open with two quick ~2s establishing hits to build momentum, then hold the hero/product reveal for ~5s so it lands, and let the remaining scenes settle into a steady ~3s. The contrast between the quick cuts and the held beat makes the reveal feel deliberate and earned — the pause reads as confidence.",
+        "baseline": "Give all six scenes the same ~3.3s duration so the video feels even and consistent. Uniform timing keeps a predictable rhythm and makes the edit simple to assemble.",
+        "rounds": ["a", "b", "a", "b", "a", "b"]
+      }
+    },
+    {
+      "id": "energy-arc-beats-flat",
+      "statement": "Sequencing scenes along a rising energy arc that peaks just before the payoff makes the climax land harder than holding a constant energy level throughout.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "judgment": {
+        "task": "You are directing the energy curve across an explainer video's scenes (intro, problem, solution, proof, call-to-action). Describe how energy/intensity should move from scene to scene, and why. Pick the stronger direction.",
+        "answer": "Start calm and let intensity build scene by scene — a restrained intro, a tense problem beat, then ramp motion and contrast into the solution and proof, peaking right before the call-to-action, then a clean settle. The rise gives the payoff somewhere to land; a climax only reads as a climax if the scenes before it were quieter.",
+        "baseline": "Hold a consistent, upbeat medium energy across every scene so the video stays engaging throughout and never drags. Keeping the same level avoids dead spots and keeps attention even from start to finish.",
+        "rounds": ["a", "b", "a", "b", "a", "b"]
+      }
+    },
+    {
+      "id": "restraint-beats-cramming",
+      "statement": "An opening scene that holds a single message with room to breathe reads as more premium and confident than one that front-loads the headline plus several supporting points in the same beat.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "judgment": {
+        "task": "You are deciding what goes in the opening scene of a brand video. Describe what the scene should contain and why. Pick the stronger direction.",
+        "answer": "One line — the core promise — with a single supporting element and generous negative space. Let it breathe for a beat before anything else enters. A spare opening reads as premium and gives the viewer one thing to absorb, which makes the message stick.",
+        "baseline": "Front-load the value proposition: open with the headline, a one-line subhead, and two or three short supporting points, so the viewer immediately understands what this is and why it matters without waiting for later scenes to fill in the picture.",
+        "rounds": ["a", "b", "b", "b", "a", "b"]
+      }
+    },
+    {
+      "id": "bounce-everything-is-livelier",
+      "statement": "Applying a pronounced bouncy/elastic ease to every entrance animation makes a video feel more lively and polished.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "judgment": {
+        "task": "You are choosing the entrance-animation easing for a corporate explainer video. Describe the easing approach across the scenes and why. Pick the stronger direction.",
+        "answer": "Animate every element in with a pronounced bouncy/elastic ease so the whole video feels lively, playful, and energetic. Consistent bounce everywhere gives it a fun, characterful signature that keeps the motion exciting throughout.",
+        "baseline": "Use mostly clean, decisive eases (power/expo curves) so entrances feel crisp and professional, and reserve a single subtle bounce for one accent moment. Varying the eases and holding bounce in reserve keeps the motion from feeling gimmicky and lets the one playful beat actually stand out.",
+        "rounds": ["b", "a", "b", "a", "b", "a"]
+      }
+    }
+  ]
+}
