@@ -24,6 +24,7 @@ execution:
   tool: lint
   gate_code: non_deterministic_code
   artifact: hf-kpmodel-fixtures/determinism-1
+grounding: {}
 ---
 
 Never call Math.random() in a composition script; use a seeded PRNG (e.g. mulberry32) so pseudo-random values are reproduced identically on every frame-exact capture pass.

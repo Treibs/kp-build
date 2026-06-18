@@ -25,6 +25,7 @@ execution:
   tool: inspect
   gate_code: canvas_overflow
   artifact: hf-kpmodel-fixtures/overflow-4
+grounding: {}
 ---
 
 Content must stay inside the composition canvas; the .scene-content container must fill the scene (width/height 100% + padding + box-sizing) so content does not bleed off-frame, rather than being pinned past the canvas edge.

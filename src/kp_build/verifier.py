@@ -141,10 +141,76 @@ class ExecutionVerifier:
         if not isinstance(raw, list):                   # malformed runner output -> untrusted, never fail-OPEN
             return Verification(kind="execution", exists=False, status="error", via=tool,
                                 evidence="runner returned non-list 'codes'", checked=self._today)
-        fired = gate in raw
+        # the asserted gate fired, OR the tool itself could not run (inspect_error sentinel) — either way
+        # the mechanical fundamental is NOT confirmed, so the claim must not verify (no crashed-tool pass).
+        fired = gate in raw or "inspect_error" in raw
+        if "inspect_error" in raw and gate != "inspect_error":
+            evidence = f"{tool} could not run (inspect_error) — gate {gate} not evaluated"  # honest cause
+        else:
+            evidence = f"{tool}:{gate} {'fired' if fired else 'cleared'}"
         return Verification(kind="execution", exists=(not fired),
                             status=("output-mismatch" if fired else "verified"), via=tool,
-                            evidence=f"{tool}:{gate} {'fired' if fired else 'cleared'}", checked=self._today)
+                            evidence=evidence, checked=self._today)
+
+
+class JudgeVerifier:
+    """The v2-b aesthetic/quality verifier — judges an answer RELATIVE to a baseline, blind (V2-b §judge).
+
+    Quality and taste are not mechanically checkable, so this is deliberately NOT an absolute score: the
+    design review's keystone is that a taste verdict is non-reproducible and tautological unless it is
+    *relative* (does a pack-loaded answer beat the unaided one?). So ``verify`` needs a ``baseline`` and a
+    panel of blind comparisons. The JUDGE is injected (like ``get`` / ``runner`` / ``corpus``) so this is
+    pure logic, offline-testable with a fake. Judge contract:
+    ``judge(task, a, b) -> {"winner": "a" | "b" | "tie", "reason"?: str}`` — it sees two ANONYMOUS options.
+
+    Anti-tautology guarantee: across ``rounds`` the verifier ALTERNATES which option (answer vs baseline)
+    occupies slot a/b, so a purely position-biased judge nets to a tie. Statuses:
+
+      judged-better — the panel preferred the answer over the baseline (exists=True; ships as helpful)
+      judged-worse  — the panel preferred the baseline
+      judged-tie    — split / all position-bias / no usable votes (never fail-open to 'better')
+      unverifiable  — no baseline supplied (relative-only; never a guessed absolute pass)
+    """
+
+    kind = "judgment"
+
+    def __init__(self, judge, *, rounds: int = 4, today: str = "") -> None:
+        self._judge = judge
+        self._rounds = max(2, rounds - (rounds % 2))      # keep it even so a/b alternation is balanced
+        self._today = today
+
+    def verify(self, item) -> Verification:
+        answer = getattr(item, "answer", "") or ""
+        baseline = getattr(item, "baseline", "") or ""
+        task = getattr(item, "task", "") or ""
+        if not baseline or not answer:                    # relative needs BOTH sides — no absolute taste
+            return Verification(kind="judgment", exists=False, status="unverifiable", via="judge-panel",  # gate,
+                                evidence="judgment is relative — needs a non-empty answer AND baseline",   # and an
+                                checked=self._today)                                                       # empty
+            # ^ an empty answer can never "win" against a baseline (review should-fix #3 — close the fail-open)
+        answer_wins = baseline_wins = ties = 0
+        for i in range(self._rounds):
+            ans_is_a = (i % 2 == 0)                       # alternate slots to cancel position bias
+            a, b = (answer, baseline) if ans_is_a else (baseline, answer)
+            try:
+                w = (self._judge(task, a, b) or {}).get("winner", "tie")
+            except Exception:
+                w = "error"
+            if w in ("a", "b"):
+                (answer_wins, baseline_wins) = ((answer_wins + (w == "a"), baseline_wins + (w == "b"))
+                                                if ans_is_a else
+                                                (answer_wins + (w == "b"), baseline_wins + (w == "a")))
+            else:
+                ties += 1                                 # tie / error / junk -> no vote, never trusted
+        if answer_wins > baseline_wins:
+            status, exists = "judged-better", True
+        elif baseline_wins > answer_wins:
+            status, exists = "judged-worse", False
+        else:
+            status, exists = "judged-tie", False
+        return Verification(kind="judgment", exists=exists, status=status, via="judge-panel",
+                            evidence=f"panel {answer_wins}-{baseline_wins}-{ties} (answer-baseline-tie) "
+                                     f"over {self._rounds} rounds", checked=self._today)
 
 
 def hyperframes_runner(artifact, tool, *, _run=None):
@@ -156,7 +222,8 @@ def hyperframes_runner(artifact, tool, *, _run=None):
     run = _run or subprocess.run
     p = run(["npx", "--yes", "hyperframes@0.6.91", tool, "--json", str(artifact)],
             capture_output=True, text=True, timeout=180)
-    out = (p.stdout or "").strip()
+    stdout, stderr = (p.stdout or ""), (getattr(p, "stderr", "") or "")
+    out = stdout.strip()
     i = out.find("{")
     if i < 0:
         return None
@@ -167,6 +234,12 @@ def hyperframes_runner(artifact, tool, *, _run=None):
     if tool == "lint":
         return {"codes": [f.get("code") for f in d.get("findings", [])]}
     if tool == "inspect":
+        # inspect COULD NOT honestly analyze: it crashed (ok:false/error — e.g. root data-duration missing,
+        # so no totalDuration), OR a StaticGuard contract violation (printed to stderr while stdout still
+        # reads ok:true). Either way -> the 'inspect_error' sentinel (a failure), never read as clean.
+        invalid = "Invalid HyperFrame contract" in stdout or "Invalid HyperFrame contract" in stderr
+        if not d.get("ok", True) or d.get("error") or invalid:
+            return {"codes": ["inspect_error"]}
         return {"codes": [x.get("code") for x in d.get("issues", [])]}
     if tool == "validate":
         return {"codes": (["contrastFailures"] if d.get("contrastFailures", 0) else [])}

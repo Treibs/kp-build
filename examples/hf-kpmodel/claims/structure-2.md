@@ -23,6 +23,7 @@ execution:
   tool: lint
   gate_code: root_composition_missing_data_start
   artifact: hf-kpmodel-fixtures/structure-2
+grounding: {}
 ---
 
 The root composition element must declare data-start (data-start="0"); without it the runtime cannot begin playback.

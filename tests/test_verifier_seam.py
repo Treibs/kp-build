@@ -486,6 +486,81 @@ def test_context_preamble_is_verifier_aware_for_paperless_pack():
     assert "verified to exist by arXiv id / DOI" in build_context(cit_pkg, built="2026-01-01")
 
 
+# ── v2-b: JudgeVerifier — the RELATIVE, order-unbiased aesthetic/quality judge (the 4th verifier) ──
+
+def test_judge_verifier_prefers_better_answer_and_satisfies_protocol():
+    """JudgeVerifier (kind='judgment') judges an answer AGAINST a baseline via an injected blind judge.
+    A judge that prefers the answer's content -> judged-better -> exists=True (it 'ships' as helpful)."""
+    from kp_build.verifier import JudgeVerifier, Verifier
+    from types import SimpleNamespace
+    judge = lambda task, a, b: {"winner": "a" if "PACK" in a else "b"}   # prefers the 'PACK' content
+    v = JudgeVerifier(judge, rounds=4).verify(SimpleNamespace(task="t", answer="PACK answer", baseline="base"))
+    assert v.kind == "judgment" and v.exists is True and v.status == "judged-better"
+    assert isinstance(JudgeVerifier(judge), Verifier)            # satisfies the Verifier protocol
+
+def test_judge_verifier_baseline_wins():
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    judge = lambda task, a, b: {"winner": "a" if "BASE" in a else "b"}
+    v = JudgeVerifier(judge, rounds=4).verify(SimpleNamespace(task="t", answer="pack", baseline="BASE ans"))
+    assert v.exists is False and v.status == "judged-worse"
+
+def test_judge_verifier_position_bias_nets_to_tie():
+    """A purely position-biased judge (always picks slot 'a') must NET TO A TIE, because the verifier
+    alternates which answer occupies slot a/b across rounds. This is the anti-tautology guarantee."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a"}, rounds=4).verify(
+        SimpleNamespace(task="t", answer="pack", baseline="base"))
+    assert v.status == "judged-tie" and v.exists is False
+
+def test_judge_verifier_requires_a_baseline_relative_only():
+    """No absolute taste gate: with no baseline the verdict is 'unverifiable', never a guessed pass."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a"}).verify(SimpleNamespace(task="t", answer="x", baseline=""))
+    assert v.exists is False and v.status == "unverifiable"
+
+def test_judge_verifier_never_trusts_a_failed_judge():
+    """A judge that raises (or returns junk) contributes NO vote — never fail-open to 'better'."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    def boom(task, a, b): raise RuntimeError("judge down")
+    v = JudgeVerifier(boom, rounds=4).verify(SimpleNamespace(task="t", answer="pack", baseline="base"))
+    assert v.exists is False and v.status == "judged-tie"       # 0-0, no votes -> tie, not better
+
+def test_judge_verifier_rounds_forced_even_protects_alternation():
+    """REVIEW should-fix #1: rounds is normalized to even (>=2). An ODD requested count must NOT let a
+    position-biased judge win — this is the single line the whole anti-tautology guarantee rests on."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    assert JudgeVerifier(lambda *a: {}, rounds=3)._rounds == 2
+    assert JudgeVerifier(lambda *a: {}, rounds=5)._rounds == 4
+    assert JudgeVerifier(lambda *a: {}, rounds=1)._rounds == 2
+    # a purely position-biased judge driven at an odd requested count still nets to a tie
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a"}, rounds=5).verify(
+        SimpleNamespace(task="t", answer="pack", baseline="base"))
+    assert v.status == "judged-tie" and v.exists is False
+
+@pytest.mark.parametrize("bad", [None, {}, {"winner": "banana"}, "a", ["a"], {"winner": "A"}])
+def test_judge_verifier_malformed_judge_output_is_no_vote(bad):
+    """REVIEW should-fix #2: a judge that returns junk (not just one that raises) contributes NO vote.
+    The bare-string 'a' is the most likely real LLM-wrapper bug; none may ever produce a win."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: bad, rounds=4).verify(SimpleNamespace(task="t", answer="x", baseline="y"))
+    assert v.exists is False and v.status == "judged-tie"
+
+def test_judge_verifier_empty_answer_is_unverifiable_not_a_win():
+    """REVIEW should-fix #3: a relative judge needs BOTH sides — an empty answer must never be able to
+    'win' against a baseline (close the latent fail-open), it is unverifiable like an empty baseline."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a" if a == "" else "b"}, rounds=4).verify(
+        SimpleNamespace(task="t", answer="", baseline="base"))
+    assert v.exists is False and v.status == "unverifiable"
+
+
 # ── verifier.py: the pluggable seam — CitationVerifier == legacy (RED until implemented) ──────
 
 def test_citation_verifier_equals_legacy_and_satisfies_protocol():
@@ -766,6 +841,33 @@ def test_hyperframes_runner_extracts_codes_per_tool():
     assert hyperframes_runner("x", "inspect", _run=run('{"issues":[{"code":"overflow"}]}')) == {"codes": ["overflow"]}
     assert hyperframes_runner("x", "validate", _run=run('{"contrastFailures":3}')) == {"codes": ["contrastFailures"]}
     assert hyperframes_runner("x", "validate", _run=run('{"contrastFailures":0}')) == {"codes": []}
+    # a CRASHED inspect (ok:false / error set — e.g. root composition missing data-duration) must surface
+    # an 'inspect_error' sentinel, NOT read as clean (issues:[] -> codes:[] would false-verify any claim)
+    assert hyperframes_runner("x", "inspect", _run=run('{"ok":false,"error":"reading totalDuration","issues":[]}')) == {"codes": ["inspect_error"]}
+    assert hyperframes_runner("x", "inspect", _run=run('{"ok":true,"issues":[]}')) == {"codes": []}
+
+
+def test_execution_verifier_inspect_error_sentinel_fails_any_claim():
+    """The crashed-inspect false-positive (found patching the root-data-duration gap): if inspect could
+    not run, NO inspect-gated claim may verify — even one whose specific gate_code is absent."""
+    from kp_build.verifier import ExecutionVerifier
+    from types import SimpleNamespace
+    v = ExecutionVerifier(lambda art, tool: {"codes": ["inspect_error"]}).verify(
+        SimpleNamespace(tool="inspect", gate_code="text_box_overflow", artifact="x"))
+    assert v.exists is False and v.status == "output-mismatch"
+    # REVIEW should-fix: the evidence must say inspect could not run, NOT that text_box_overflow 'fired'
+    assert "could not run" in v.evidence and "text_box_overflow fired" not in v.evidence
+
+def test_hyperframes_runner_staticguard_invalid_contract_is_inspect_error():
+    """REVIEW should-fix: a contract-INVALID composition prints '[StaticGuard] Invalid HyperFrame
+    contract' to stderr but {ok:true, issues:[]} on stdout — the runner must NOT read that as clean."""
+    from kp_build.verifier import hyperframes_runner
+    from types import SimpleNamespace
+    run = lambda out, err="": (lambda *a, **k: SimpleNamespace(stdout=out, stderr=err))
+    bad = run('{"ok":true,"issues":[]}', err="[StaticGuard] Invalid HyperFrame contract: missing data-width")
+    assert hyperframes_runner("x", "inspect", _run=bad) == {"codes": ["inspect_error"]}
+    # a valid clean inspect (no StaticGuard) is still clean
+    assert hyperframes_runner("x", "inspect", _run=run('{"ok":true,"issues":[]}', err="")) == {"codes": []}
 
 
 def test_hyperframes_runner_none_on_no_json_bad_json_or_unknown_tool():
