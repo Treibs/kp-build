@@ -1,0 +1,32 @@
+{
+  "schema": "wikillm/1",
+  "papers": [],
+  "claims": [
+    {
+      "id": "x-shape",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "flops-kv-reduction",
+      "paper": "",
+      "type": "result",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "residual-streams",
+      "paper": "",
+      "type": "finding",
+      "confidence": "medium",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [],
+  "debates": [],
+  "benchmarks": [],
+  "relations": [],
+  "edges": []
+}

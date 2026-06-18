@@ -53,7 +53,7 @@ class Verification:
     ``via`` (e.g. ``hyperframes-cli@0.6.91``, ``astm-d570``).
 
     ``kind``    : existence | execution | grounding | unverifiable-aesthetic | ungrounded-unreachable
-                  (grounding = declared; the DocGroundingVerifier is a library block, not yet build-enforced)
+                  (grounding is build-enforced via ``build --ground-verify``; aesthetic awaits the v2-b judge)
     ``status``  : verified | unconfirmed | id-title-mismatch | not-found | error | unverified
                   | output-mismatch        (execution: ran clean but produced the wrong output)
     ``canonical_title`` / ``match_score`` are citation-specific (empty/0.0 for other kinds).
@@ -112,6 +112,10 @@ class Claim:
     #: V2-a execution directive (optional) — {tool, gate_code, artifact, aesthetic?}. When present, the build
     #: runs the ExecutionVerifier on it and sets ``verified``. Empty for citation/academic claims.
     execution: dict = field(default_factory=dict)
+    #: V2-a grounding directive (optional) — {source, supporting_passage}. When present and the build runs
+    #: with ``--ground-verify``, the DocGroundingVerifier checks the passage against the pinned source's
+    #: corpus and sets ``verified``. Empty for citation/academic/execution claims.
+    grounding: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -279,6 +283,8 @@ def claim_to_md(c: Claim, *, paper_ref: str = "") -> str:
         d["paper_ref"] = paper_ref           # denormalized id so the chunk resolves standalone (FMT-8)
     if c.paper:                              # citation/academic claim: link to its Paper
         tail = f"\n\n— [[papers/{c.paper}]]" + (f" ({paper_ref})" if paper_ref else "")
+    elif c.verified.exists and c.verified.via == "(unchecked)":   # shipped under --no-verify, NOT checked
+        tail = f"\n\n— *{c.verified.kind} directive — NOT checked this build (--no-verify); drafter-asserted*"
     elif c.verified.exists:                  # execution/grounding claim: cite its own verdict
         tail = f"\n\n— *{c.verified.kind} verified* via {c.verified.via}: {c.verified.evidence}"
     else:
@@ -300,7 +306,8 @@ def claim_from_md(text: str) -> Claim:
         verified=Verification(**{k: v.get(k) for k in
                                  ("exists", "status", "kind", "via", "canonical_title",
                                   "match_score", "evidence", "checked") if k in v}),
-        execution=dict(fm.get("execution") or {}))
+        execution=dict(fm.get("execution") or {}),
+        grounding=dict(fm.get("grounding") or {}))
 
 
 def claim_ships(c: "Claim", verified_keys) -> bool:

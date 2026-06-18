@@ -147,11 +147,24 @@ def _load(path: str) -> Package:
                 # inside the pack; reject absolute paths, '..' traversal, and URL schemes.
                 errs.append(f"claims[{i}].execution.artifact {art!r} must be a relative path inside the "
                             f"pack (no absolute path, '..', or URL)")
-        if not c.get("paper") and not exec_d:
-            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper' or an 'execution' directive")
-        if c.get("paper") and exec_d:                # M2: paper XOR execution — never both
-            errs.append(f"claims[{i}] ({c.get('id', '?')}): has both a 'paper' and an 'execution' directive "
-                        f"(one verified unit per node — a mechanical gate must not be overridable by a citation)")
+        grnd = c.get("grounding") or {}              # V2-a grounding directive (instead of a citation paper)
+        if grnd:
+            src = grnd.get("source", "")
+            if not src:
+                errs.append(f"claims[{i}].grounding: needs a 'source' (the pinned source the passage is quoted from)")
+            elif src in (".", "..") or not re.fullmatch(r"[A-Za-z0-9_.-]+", src):
+                # the source keys the corpus file (corpus/<source>.txt) — same filename-safety rule as cite_key (M5)
+                errs.append(f"claims[{i}].grounding.source {src!r} has unsafe characters "
+                            f"(used as a corpus filename; allowed: letters, digits, '_', '.', '-')")
+            if not grnd.get("supporting_passage"):
+                errs.append(f"claims[{i}].grounding: needs a 'supporting_passage' (the verbatim quote to ground)")
+        oracles = [bool(c.get("paper")), bool(exec_d), bool(grnd)]   # paper XOR execution XOR grounding
+        if not any(oracles):
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper', an 'execution', or a 'grounding' directive")
+        elif sum(oracles) > 1:                       # M2: exactly one verification basis per node
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): has more than one verification basis "
+                        f"(a claim is verified by exactly one of paper / execution / grounding — a mechanical "
+                        f"or grounding gate must not be overridable by a citation)")
         if c.get("paper"):
             _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
         if c.get("claim_type") and c["claim_type"] not in CLAIM_TYPES:
@@ -167,7 +180,9 @@ def _load(path: str) -> Package:
                             corroborated_by=corr,
                             survived_refuter=c.get("survived_refuter") is not False,  # absent/null -> True
                             execution={k: exec_d[k] for k in ("tool", "gate_code", "artifact", "aesthetic")
-                                       if k in exec_d}))
+                                       if k in exec_d},
+                            grounding={k: grnd[k] for k in ("source", "supporting_passage")
+                                       if k in grnd}))
 
     problems = []
     for i, o in _section(d, "open_problems", errs):
@@ -280,8 +295,12 @@ def _cmd_build(args) -> int:
         # paper); stamp execution/grounding (no-paper) claims as (unchecked) so a claim-spine pack under
         # --no-verify isn't silently EMPTY (and an inbound exists:true can't ship unchecked).
         for c in pkg.claims:
-            c.verified = (Verification(exists=True, status="verified", kind="execution",
-                                       via="(unchecked)", checked=today) if not c.paper else Verification())
+            if c.paper:
+                c.verified = Verification()
+            else:                                   # ship under --no-verify, but NEVER say 'verified': it
+                kind = "grounding" if c.grounding else "execution"   # wasn't checked (M1 — honest stamp)
+                c.verified = Verification(exists=True, status="unverified", kind=kind,
+                                          via="(unchecked)", checked=today)
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
                    "rejected": [], "unconfirmed": [], "errored": []}
     else:
@@ -341,6 +360,32 @@ def _cmd_build(args) -> int:
     elif n_exec and not args.no_verify:
         print(f"warn: {n_exec} execution claim(s) present but NOT gated — pass --execute to run them (executes "
               f"the hyperframes CLI on local files). They will be DROPPED as unverified.", file=sys.stderr)
+
+    # V2-a (grounding): ground each grounding-claim passage against its pinned corpus. Unlike execution's warn-and-drop,
+    # a grounding-spine claim that isn't gated would ship NEITHER via a paper NOR via a verdict and silently
+    # VANISH at the ship gate (and M3 misses it in a mixed pack) — so refuse to build rather than drop it.
+    if args.ground_verify and args.no_verify:
+        print("warn: --ground-verify skipped because --no-verify was set (grounding claims stamped unchecked)",
+              file=sys.stderr)
+    n_ground = sum(1 for c in pkg.claims if c.grounding)
+    if n_ground and args.ground_verify and not args.no_verify:
+        from .verifier import verify_grounding_claims, load_grounding_corpus
+        base = Path(args.input).resolve().parent
+        # OFFLINE-ONLY from the CLI (no `get`): --ground-verify reads committed corpus/<source>.txt so the
+        # build stays deterministic and never touches the network. A source with no committed file is left
+        # ungrounded-unreachable. (The DOI-abstract fallback remains a library option on load_grounding_corpus.)
+        corpus = load_grounding_corpus(pkg, base)
+        print(f"grounding {n_ground} claim passage(s) against the pinned corpus "
+              f"({len(corpus)} source(s) held) ...", file=sys.stderr)
+        gs = verify_grounding_claims(pkg, corpus=corpus, today=today)
+        print(f"  grounding: {gs['grounding_verified']}/{gs['grounding_total']} passage(s) verified",
+              file=sys.stderr)
+    elif n_ground and not args.no_verify:
+        print(f"error: {n_ground} grounding claim(s) present but NOT gated — pass --ground-verify to check "
+              f"them against the pinned corpus (corpus/<source>.txt; offline + deterministic). Refusing to "
+              f"build, because an ungated grounding claim ships via neither a paper nor a verdict and would "
+              f"silently DROP.", file=sys.stderr)
+        return 2
 
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)
@@ -510,6 +555,7 @@ def main(argv=None) -> int:
     b.add_argument("--ground", action="store_true", help="confirm each claim's passage appears in its paper (abstract-level, free)")
     b.add_argument("--ground-fulltext", action="store_true", help="ground against ar5iv FULLTEXT (slower; enables the 'ungrounded' verdict)")
     b.add_argument("--execute", action="store_true", help="run execution-claim gates via the hyperframes CLI (executes local files / npx; OFF by default — opt-in trust)")
+    b.add_argument("--ground-verify", action="store_true", help="hard ship-gate: check each grounding-claim passage against committed corpus/<source>.txt (offline + deterministic; a source with no committed file is ungrounded-unreachable). Distinct from the advisory --ground.")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")
     b.add_argument("--license", default="CC-BY-4.0", help="package license (default CC-BY-4.0)")

@@ -67,14 +67,15 @@ class DocGroundingVerifier:
 
     A source MISSING from the corpus -> ``ungrounded-unreachable``: a COVERAGE DEBT (an oracle exists in
     principle, we just don't hold the text), NEVER laundered into ``verified`` (the review's two-stamp scheme).
-    Operates on a **Claim** — grounding its ``supporting_passage`` against ``corpus[claim.paper]`` (the corpus
-    is keyed by ``cite_key``).
+    Operates on a **Claim** (or a directive namespace) — grounding its ``supporting_passage`` against
+    ``corpus[source]``, where ``source`` is the claim's ``paper`` (cite_key) or its grounding directive's
+    ``source`` key.
 
-    NOTE (review M6 — honest deferral): this is a tested LIBRARY building block for offline re-grounding; it is
-    **not yet wired into ``kp-build build``** (no research.json directive declares a grounding-claim, and the
-    mesh pack is citation-verified via the existing path). So ``kind='grounding'`` is *declared, not yet
-    build-enforced*. Grounding a **Relation** is NOT supported here (the corpus is cite_key-keyed, not node-id)
-    — both await a future increment.
+    WIRED INTO BUILD (V2-a, the seam's third verifier): :func:`verify_grounding_claims` runs this on every claim carrying a ``grounding``
+    directive under ``kp-build build --ground-verify``, and :func:`load_grounding_corpus` assembles the pinned
+    corpus from committed ``corpus/<source>.txt`` files (offline) with a Crossref-abstract fallback for DOI
+    sources. See ``examples/http-semantics-grounding`` and ``examples/vwt-grounding``. Still out of scope:
+    grounding a **Relation** (the corpus is source-keyed, not node-id-keyed) — a future increment.
     """
 
     kind = "grounding"
@@ -201,3 +202,56 @@ def verify_execution_claims(pkg, *, runner, today: str = "", base_dir=None) -> d
             gate_code=d.get("gate_code", ""), aesthetic=d.get("aesthetic", False)))
         verified += bool(c.verified.exists)
     return {"execution_total": total, "execution_verified": verified}
+
+
+def verify_grounding_claims(pkg, *, corpus: dict, today: str = "") -> dict:
+    """Build step: run the DocGroundingVerifier against the injected, pinned ``corpus`` on every claim
+    carrying a ``grounding`` directive, setting its per-claim ``verified``. Citation/academic/execution
+    claims are untouched. Returns a summary.
+
+    No network: the corpus is loaded offline by the caller and keyed by the directive's ``source`` (a
+    no-paper grounding claim has no cite_key). The directive's OWN ``supporting_passage`` is grounded
+    (the verbatim quote to check), not the claim's display passage. A source missing from the corpus
+    yields ``ungrounded-unreachable`` (coverage debt) — never laundered into ``verified``."""
+    from types import SimpleNamespace
+    gv = DocGroundingVerifier(corpus, today=today)
+    total = verified = 0
+    for c in getattr(pkg, "claims", []):
+        d = getattr(c, "grounding", None) or {}
+        if not d:
+            continue
+        total += 1
+        c.verified = gv.verify(SimpleNamespace(
+            supporting_passage=d.get("supporting_passage", ""), source=d.get("source", ""), paper=""))
+        verified += bool(c.verified.exists)
+    return {"grounding_total": total, "grounding_verified": verified}
+
+
+def load_grounding_corpus(pkg, base_dir, *, get=None) -> dict:
+    """Assemble the offline grounding corpus ``{source: text}`` for a pack's grounding claims.
+
+    Primary path: a committed, pack-local ``corpus/<source>.txt`` (read OFFLINE, keyed by the directive's
+    ``source``), so a built pack re-grounds deterministically from a clean clone. Fallback: a ``source``
+    with no committed file but naming a ``pkg`` paper that has a DOI is fetched via
+    :func:`ground.fetch_doc_corpus` (the live DOI path) when ``get`` is provided. A ``source`` with neither
+    is omitted, so :func:`verify_grounding_claims` honestly stamps it ``ungrounded-unreachable``."""
+    from pathlib import Path as _Path
+    from .ground import fetch_doc_corpus
+    cdir = (_Path(base_dir).resolve() / "corpus") if base_dir else None
+    sources = {(getattr(c, "grounding", None) or {}).get("source", "")
+               for c in getattr(pkg, "claims", [])}
+    sources.discard("")
+    corpus: dict = {}
+    need_fetch = []
+    for s in sorted(sources):
+        f = (cdir / f"{s}.txt") if cdir else None
+        if f is not None and f.is_file() and f.resolve().is_relative_to(cdir):   # belt: stay inside corpus/
+            corpus[s] = f.read_text(encoding="utf-8")
+        else:
+            need_fetch.append(s)
+    if need_fetch and get is not None:
+        by_key = {p.cite_key: p for p in getattr(pkg, "papers", [])}
+        papers = [by_key[s] for s in need_fetch if s in by_key and by_key[s].doi]
+        if papers:
+            corpus.update(fetch_doc_corpus(papers, get=get))
+    return corpus

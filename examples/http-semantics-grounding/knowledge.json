@@ -1,0 +1,13 @@
+{
+  "name": "@kp/http-method-semantics-rfc-9110-safety-idempotency-and",
+  "version": "0.1.0",
+  "description": "A doc-grounding knowledge pack. Each claim's verbatim passage is checked against the pinned normative text of RFC 9110 (HTTP Semantics) \u00a79.2-9.3, held offline in corpus/RFC9110.txt, by the DocGroundingVerifier (`kp-build build --ground-verify`). A claim ships only if its quoted sentence is present i",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

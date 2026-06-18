@@ -81,14 +81,29 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
     verified = {p.cite_key: p for p in pkg.papers if p.verified.exists}
 
     # The verification basis stated to the loading agent must match how the pack was actually checked.
-    # A citation pack has a paper spine; an execution/grounding pack has none, and saying its spine was
-    # "verified to exist by arXiv id / DOI" would misframe a zero-citation pack as citation-grounded.
-    if pkg.papers:
+    # A citation pack has a paper spine; an execution/grounding pack has none. And under --no-verify nothing
+    # was checked (verdicts carry via="(unchecked)") — claiming "verified"/"confirmed verbatim" then is the
+    # overclaim the project's brand forbids (review M1). So each branch states only what actually ran.
+    exec_claims = [c for c in pkg.claims if getattr(c, "execution", None)]
+    grnd_claims = [c for c in pkg.claims if getattr(c, "grounding", None)]
+    if verified:                                          # at least one REAL verified paper (not just pkg.papers)
         basis = ("Every paper in the spine was verified to exist by arXiv id / DOI; do not invent "
                  "citations beyond this list.")
+    elif exec_claims:
+        gated = any(c.verified.exists and c.verified.via not in ("", "(unchecked)") for c in exec_claims)
+        basis = ("This package has no citation spine — its claims ship on execution gates, not citations; "
+                 "do not invent citations." if gated else
+                 "This package has no citation spine; its claims carry execution directives but were NOT "
+                 "gated this build (--no-verify) — they are drafter-asserted, not verified; do not invent citations.")
+    elif grnd_claims:
+        ground_checked = any(c.verified.exists and c.verified.via == "doc-corpus" for c in grnd_claims)
+        basis = ("This package has no citation spine — its claims ship on doc-grounding (each quoted "
+                 "passage was confirmed verbatim in a pinned source), not citations; do not invent citations."
+                 if ground_checked else
+                 "This package has no citation spine; its claims carry doc-grounding directives but were NOT "
+                 "checked this build (--no-verify) — passages are drafter-asserted, not confirmed; do not invent citations.")
     else:
-        kind = "execution gates" if any(getattr(c, "execution", None) for c in pkg.claims) else "verifier checks"
-        basis = (f"This package has no citation spine — its claims ship on {kind}, not citations; "
+        basis = ("This package has no citation spine — its claims ship on verifier checks, not citations; "
                  "do not invent citations.")
 
     head = [

@@ -173,11 +173,14 @@ The seven packages above all use the **citation** verifier. The engine now has a
 a claim's "is this real?" check can be **citation** (does the paper resolve?), **doc-grounding** (does the
 quoted passage appear in a pinned source?), or **execution** (does running the artifact through a tool gate
 clear?) — and a package can carry **goals + KPIs** and first-class **KPI-anchored connections**, not just a
-flat claim list. Two example packs demonstrate it across the spectrum:
-[`examples/mesh-kpmodel/`](examples/mesh-kpmodel/) (material-science, citation) and
-[`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution**-verified). Honest scope: execution
-verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding is wired as a library, not yet a
-build step. See [`examples/README.md`](examples/README.md#kp-model-packs-v2-a--pluggable-verifiers).
+flat claim list. All three verifiers are **build-enforced**, one example pack each:
+[`examples/mesh-kpmodel/`](examples/mesh-kpmodel/) (material-science, **citation**),
+[`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution** — `--execute`), and
+[`examples/http-semantics-grounding/`](examples/http-semantics-grounding/) +
+[`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline). Honest
+scope: execution verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding proves *provenance*
+(the clause is verbatim in a pinned source), not *soundness*. See
+[`examples/README.md`](examples/README.md#kp-model-packs-v2-a--pluggable-verifiers).
 
 ## Sharing a package through KPM
 

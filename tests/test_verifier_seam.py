@@ -9,8 +9,23 @@ from pathlib import Path
 
 from kp_build.schema import (
     Package, Paper, Claim, Verification, paper_to_md, paper_from_md,
+    claim_to_md, claim_from_md,
 )
 from kp_build.assemble import assemble
+
+
+# ── V2-b: doc-grounding wired into build — STEP 1: the grounding directive round-trips ───────
+
+def test_claim_grounding_directive_round_trips():
+    """A `grounding` directive ({source, supporting_passage}) must survive claim_to_md ->
+    claim_from_md unchanged — symmetric round-trip, exactly like the `execution` directive. The write
+    side is free (asdict); the read side (claim_from_md) hand-lists keys and must include `grounding`."""
+    c = Claim(id="g1", statement="HTTP defines GET.", paper="", supporting_passage="the GET method.",
+              grounding={"source": "RFC9110", "supporting_passage": "The GET method requests transfer."})
+    c2 = claim_from_md(claim_to_md(c))
+    assert c2.grounding == {"source": "RFC9110", "supporting_passage": "The GET method requests transfer."}
+    # academic/execution claims keep an empty grounding directive (no regression)
+    assert claim_from_md(claim_to_md(Claim(id="a", statement="s", paper="p1", supporting_passage="x"))).grounding == {}
 
 
 # ── characterization: lock current academic behavior (GREEN before AND after §4.0) ──────────
@@ -181,6 +196,230 @@ def test_load_rejects_relation_with_dangling_endpoint(tmp_path):
         _load(_write(tmp_path, rj))
 
 
+# ── V2-b STEP 2: cli._load parses a grounding directive, enforces 3-way XOR + source path-safety ──
+
+_GCLAIM = {"id": "g1", "statement": "GET requests transfer of a representation.", "supporting_passage": "GET",
+           "grounding": {"source": "RFC9110",
+                         "supporting_passage": "The GET method requests transfer of a current representation."}}
+
+def test_load_accepts_grounding_directive_on_no_paper_claim(tmp_path):
+    from kp_build.cli import _load
+    pkg = _load(_write(tmp_path, dict(_BASE, claims=[_GCLAIM])))
+    assert pkg.claims[0].grounding["source"] == "RFC9110"
+    assert pkg.claims[0].grounding["supporting_passage"].startswith("The GET method")
+
+def test_load_rejects_grounding_plus_paper(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    bad = dict(_GCLAIM, paper="p1")
+    with pytest.raises(ResearchInputError, match="more than one verification basis"):
+        _load(_write(tmp_path, dict(_BASE, claims=[bad])))
+
+def test_load_rejects_grounding_plus_execution(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    bad = dict(_GCLAIM, execution={"tool": "lint", "gate_code": "x", "artifact": "a/b"})
+    with pytest.raises(ResearchInputError, match="more than one verification basis"):
+        _load(_write(tmp_path, dict(_BASE, claims=[bad])))
+
+def test_load_rejects_grounding_source_path_escape(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    bad = {"id": "g1", "statement": "s", "supporting_passage": "x",
+           "grounding": {"source": "../../etc/passwd", "supporting_passage": "q"}}
+    with pytest.raises(ResearchInputError, match="unsafe characters"):
+        _load(_write(tmp_path, dict(_BASE, claims=[bad])))
+
+def test_load_rejects_grounding_missing_passage(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    bad = {"id": "g1", "statement": "s", "supporting_passage": "x", "grounding": {"source": "RFC9110"}}
+    with pytest.raises(ResearchInputError, match="supporting_passage"):
+        _load(_write(tmp_path, dict(_BASE, claims=[bad])))
+
+
+# ── V2-b STEP 3: verify_grounding_claims sets per-claim verdicts from the pinned corpus ───────
+
+def test_verify_grounding_claims_sets_verdicts_by_corpus_presence():
+    """Mirrors verify_execution_claims: for each claim with a grounding directive, ground its passage
+    against corpus[source] and set c.verified. Tri-state -> verified / ungrounded / unconfirmed, and a
+    source missing from the corpus -> ungrounded-unreachable (a coverage debt, never laundered to verified)."""
+    from kp_build.verifier import verify_grounding_claims
+    sentence = "The GET method requests transfer of a current representation of the target resource."
+    corpus = {"RFC9110": sentence}
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="ok", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "RFC9110", "supporting_passage": sentence}),
+        Claim(id="para", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "RFC9110",
+                         "supporting_passage": "GET asks the server to send back whatever currently exists there."}),
+        Claim(id="frag", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "RFC9110", "supporting_passage": "GET method"}),
+        Claim(id="missing", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "RFC9999", "supporting_passage": "Some full-length sentence not in any held corpus."}),
+    ])
+    summ = verify_grounding_claims(pkg, corpus=corpus, today="2026-01-01")
+    by = {c.id: c.verified for c in pkg.claims}
+    assert by["ok"].exists is True and by["ok"].status == "verified" and by["ok"].kind == "grounding"
+    assert by["para"].exists is False and by["para"].status == "ungrounded"
+    assert by["frag"].exists is False and by["frag"].status == "unconfirmed"
+    assert by["missing"].exists is False and by["missing"].status == "ungrounded-unreachable"
+    assert summ == {"grounding_total": 4, "grounding_verified": 1}
+
+def test_verify_grounding_claims_leaves_citation_claims_untouched():
+    """A claim with no grounding directive must be untouched (default Verification, not graded)."""
+    from kp_build.verifier import verify_grounding_claims
+    pkg = Package(topic="t", scope="s", papers=[Paper(cite_key="p1", title="T")],
+                  claims=[Claim(id="c1", statement="s", paper="p1", supporting_passage="x")])
+    summ = verify_grounding_claims(pkg, corpus={}, today="2026-01-01")
+    assert summ == {"grounding_total": 0, "grounding_verified": 0}
+    assert pkg.claims[0].verified.exists is False and pkg.claims[0].verified.status == "unverified"
+
+
+# ── V2-b STEP 4: load_grounding_corpus — pack-local corpus/<source>.txt (offline) + DOI fallback ─
+
+def test_load_grounding_corpus_reads_committed_file_offline(tmp_path):
+    """The primary path: a committed corpus/<source>.txt is read OFFLINE, keyed by the directive's
+    source. No `get` needed — a built pack re-grounds deterministically from a clean clone."""
+    from kp_build.verifier import load_grounding_corpus
+    (tmp_path / "corpus").mkdir()
+    (tmp_path / "corpus" / "RFC9110.txt").write_text("The GET method requests transfer.", encoding="utf-8")
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="g", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "RFC9110", "supporting_passage": "The GET method requests transfer."})])
+    corpus = load_grounding_corpus(pkg, tmp_path)        # no get -> offline only
+    assert corpus == {"RFC9110": "The GET method requests transfer."}
+
+def test_load_grounding_corpus_doi_fallback_when_no_committed_file(tmp_path):
+    """Fallback: a source with no committed file but naming a DOI paper is fetched via fetch_doc_corpus
+    (the live DOI path), exercised here with a fake transport. Keyed by cite_key == source."""
+    from kp_build.verifier import load_grounding_corpus
+    import json as _j
+    fake = _j.dumps({"message": {"title": ["A Paper"],
+                                 "abstract": "We present a method that improves the widget by twelve percent."}})
+    pkg = Package(topic="t", scope="s",
+                  papers=[Paper(cite_key="smith2026", title="A Paper", doi="10.1/x")],
+                  claims=[Claim(id="g", statement="s", paper="", supporting_passage="x",
+                                grounding={"source": "smith2026",
+                                           "supporting_passage": "improves the widget by twelve percent."})])
+    corpus = load_grounding_corpus(pkg, tmp_path, get=lambda url: fake)
+    assert "smith2026" in corpus and "twelve percent" in corpus["smith2026"]
+
+def test_load_grounding_corpus_omits_unheld_source(tmp_path):
+    """A source with neither a committed file nor a DOI paper is omitted -> verifier later stamps it
+    ungrounded-unreachable (never invented)."""
+    from kp_build.verifier import load_grounding_corpus
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="g", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "NOWHERE", "supporting_passage": "a full sentence not held anywhere here."})])
+    assert load_grounding_corpus(pkg, tmp_path, get=lambda url: "") == {}
+
+def test_load_grounding_corpus_rejects_symlink_escape(tmp_path):
+    """Security belt (review SF#3): a corpus/<source>.txt that is a SYMLINK escaping corpus/ must be
+    refused by the is_relative_to check — the last guard if _load's source validation is ever bypassed."""
+    import os
+    secret = tmp_path / "secret.txt"; secret.write_text("TOP SECRET — outside the pack", encoding="utf-8")
+    (tmp_path / "corpus").mkdir()
+    os.symlink(secret, tmp_path / "corpus" / "evil.txt")        # corpus/evil.txt -> ../secret.txt (escapes)
+    from kp_build.verifier import load_grounding_corpus
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="g", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "evil", "supporting_passage": "any full sentence to attempt grounding here."})])
+    assert "evil" not in load_grounding_corpus(pkg, tmp_path)   # symlink escaping corpus/ is omitted
+
+def test_grounding_tristate_verdicts_all_drop_at_ship_gate():
+    """End-to-end contract (review SF#3): only a verbatim-present passage ships; ungrounded-unreachable
+    (source not held) and unconfirmed (passage too short) both drop via claim_ships, never laundered."""
+    from kp_build.verifier import verify_grounding_claims
+    from kp_build.schema import claim_ships
+    sentence = "The GET method requests transfer of a current representation of the target resource."
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="ok", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "SRC", "supporting_passage": sentence}),
+        Claim(id="unreach", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "NOPE", "supporting_passage": sentence}),
+        Claim(id="unconf", statement="s", paper="", supporting_passage="x",
+              grounding={"source": "SRC", "supporting_passage": "GET only"})])     # < 24 chars -> unconfirmed
+    verify_grounding_claims(pkg, corpus={"SRC": sentence}, today="2026-01-01")
+    ships = {c.id: claim_ships(c, set()) for c in pkg.claims}
+    assert ships == {"ok": True, "unreach": False, "unconf": False}
+
+
+# ── V2-b STEP 5: _cmd_build wiring — --ground-verify gate + the silent-drop hard-error guard ──
+
+_GSENT = "The GET method requests transfer of a current representation of the target resource."
+
+def _gbuild(tmp_path, passages, corpus_text=_GSENT, **over):
+    """Write a grounding-spine research.json + a committed corpus/SRC.txt next to it, return build args."""
+    (tmp_path / "corpus").mkdir(exist_ok=True)
+    (tmp_path / "corpus" / "SRC.txt").write_text(corpus_text, encoding="utf-8")
+    rj = {"topic": "t", "scope": "s",
+          "claims": [{"id": cid, "statement": f"stmt {cid}", "supporting_passage": "disp",
+                      "grounding": {"source": "SRC", "supporting_passage": p}} for cid, p in passages]}
+    (tmp_path / "r.json").write_text(json.dumps(rj))
+    args = SimpleNamespace(input=str(tmp_path / "r.json"), out=str(tmp_path / "out"), built="2026-01-01",
+                           no_verify=False, throttle=0.0, reuse_verification=False, ground=False,
+                           ground_fulltext=False, execute=False, ground_verify=False,
+                           name="", version="0.1.0", license="CC-BY-4.0")
+    for k, v in over.items():
+        setattr(args, k, v)
+    return args
+
+def _claims_shipped(tmp_path):
+    import json as _j
+    return _j.loads((tmp_path / "out" / "wikillm.json").read_text())["stats"]["claims"]
+
+def test_build_hard_errors_on_grounding_claims_without_ground_verify(tmp_path, capsys):
+    """The silent-drop guard (critic #2): a grounding-directive claim built WITHOUT --ground-verify (and
+    not --no-verify) must HARD-ERROR, never fall through the ship gate and silently vanish."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)])) == 2
+    assert "ground-verify" in capsys.readouterr().err
+
+def test_build_grounds_and_ships_with_ground_verify(tmp_path):
+    """Happy path: --ground-verify grounds the verbatim passage against the committed corpus -> ships."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)], ground_verify=True)) == 0
+    assert (tmp_path / "out" / "claims" / "g1.md").exists()
+    assert _claims_shipped(tmp_path) == 1
+
+def test_build_ground_verify_drops_ungrounded_keeps_grounded(tmp_path):
+    """The hard negative: a fabricated (non-verbatim) clause stamps ungrounded and is VETOED; the
+    verbatim one ships. This is the demonstrand the new fixtures will stage."""
+    from kp_build.cli import _cmd_build
+    fab = "The TRACE method permanently deletes all server logs without any authentication."  # not in corpus
+    assert _cmd_build(_gbuild(tmp_path, [("ok", _GSENT), ("bad", fab)], ground_verify=True)) == 0
+    assert (tmp_path / "out" / "claims" / "ok.md").exists()
+    assert not (tmp_path / "out" / "claims" / "bad.md").exists()
+    assert _claims_shipped(tmp_path) == 1
+
+def test_build_no_verify_stamps_grounding_claims_so_pack_isnt_empty(tmp_path):
+    """--no-verify is the offline escape hatch: grounding claims are stamped (unchecked) and ship, so a
+    grounding-spine pack doesn't silently ship empty."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)], no_verify=True)) == 0
+    assert _claims_shipped(tmp_path) == 1
+
+def test_no_verify_does_not_overclaim_grounding_as_verified(tmp_path):
+    """M1 (review): --no-verify ships grounding claims so the pack isn't empty, but MUST NOT stamp or
+    print 'verified' / 'confirmed verbatim' on a clause nothing checked — least of all the fabricated one.
+    The artifacts must read as UNCHECKED, the project's anti-overclaim brand."""
+    from kp_build.cli import _cmd_build
+    fab = "The TRACE method permanently deletes all server logs without any authentication."
+    assert _cmd_build(_gbuild(tmp_path, [("ok", _GSENT), ("bad", fab)], no_verify=True)) == 0
+    bad = (tmp_path / "out" / "claims" / "bad.md").read_text().lower()
+    assert "grounding verified" not in bad            # no 'verified' tail on an unchecked (here fabricated) clause
+    assert "status: verified" not in bad
+    assert "status: unverified" in bad
+    ctx = (tmp_path / "out" / "CONTEXT.md").read_text().lower()
+    assert "confirmed verbatim" not in ctx            # the basis must not claim confirmation under --no-verify
+    assert "not checked this build" in ctx
+
+def test_ground_verify_still_says_confirmed_verbatim(tmp_path):
+    """No regression: a REAL --ground-verify build keeps the 'confirmed verbatim' basis + 'grounding
+    verified' tail (the shipped fixtures depend on this for their byte-identical CONTEXT)."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_gbuild(tmp_path, [("ok", _GSENT)], ground_verify=True)) == 0
+    assert "confirmed verbatim" in (tmp_path / "out" / "CONTEXT.md").read_text().lower()
+    assert "grounding verified" in (tmp_path / "out" / "claims" / "ok.md").read_text().lower()
+
+
 def test_assemble_persists_relations_and_goal_metrics(tmp_path):
     from kp_build.schema import GoalMetric, Relation
     v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
@@ -232,6 +471,14 @@ def test_context_preamble_is_verifier_aware_for_paperless_pack():
     assert "verified to exist by arXiv id / DOI" not in ctx   # no citation boilerplate on a paperless pack
     assert "do not invent citations" in ctx                    # guardrail retained
     assert "execution" in ctx.lower()                          # names the real basis
+
+    grnd_pkg = Package(topic="t", scope="s", papers=[],
+                       claims=[Claim(id="g", statement="a", paper="", supporting_passage="",
+                                     grounding={"source": "RFC9110", "supporting_passage": "q"})])
+    gctx = build_context(grnd_pkg, built="2026-01-01")
+    assert "verified to exist by arXiv id / DOI" not in gctx
+    assert "do not invent citations" in gctx
+    assert "grounding" in gctx.lower()                         # names doc-grounding, not the vague fallback
 
     v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
     cit_pkg = Package(topic="t", scope="s", papers=[Paper(cite_key="p1", title="T", verified=v)],
@@ -425,7 +672,7 @@ def test_load_parses_execution_directive_and_relaxes_paper_requirement(tmp_path)
 def test_load_rejects_claim_with_neither_paper_nor_execution(tmp_path):
     from kp_build.cli import _load, ResearchInputError
     rj = {"topic": "t", "claims": [{"id": "x", "statement": "s", "supporting_passage": "p"}]}
-    with pytest.raises(ResearchInputError, match="'paper' or an 'execution'"):
+    with pytest.raises(ResearchInputError, match="needs a 'paper', an 'execution', or a 'grounding'"):
         _load(_write(tmp_path, rj))
 
 
@@ -483,12 +730,12 @@ def test_paper_claim_with_firing_execution_gate_is_dropped(tmp_path: Path):
 
 
 def test_load_rejects_claim_with_both_paper_and_execution(tmp_path):
-    """M2 (belt): one verified unit per node — paper XOR execution, never both."""
+    """M2 (belt): one verified unit per node — paper XOR execution XOR grounding, never more than one."""
     from kp_build.cli import _load, ResearchInputError
     rj = {"topic": "t", "papers": [{"cite_key": "p1", "title": "T"}],
           "claims": [{"id": "c1", "statement": "s", "paper": "p1", "supporting_passage": "x",
                       "execution": {"tool": "lint", "gate_code": "nd", "artifact": "a.html"}}]}
-    with pytest.raises(ResearchInputError, match="both .*paper.* and .*execution|paper.* or .*execution"):
+    with pytest.raises(ResearchInputError, match="more than one verification basis"):
         _load(_write(tmp_path, rj))
 
 

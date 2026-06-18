@@ -1,0 +1,36 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Variable-width transformer scaling (arXiv:2606.18246): nonuniform layer-width allocation",
+  "scope": "A doc-grounding knowledge pack on a frontier result published 2026-06-16 \u2014 past a typical model's training cutoff, so its specifics (the architecture's shape and its FLOP/KV-cache numbers) are exactly what an unaided model fabricates. Each claim's verbatim passage is checked against the paper's pinned abstract (corpus/VariableWidthTransformers.txt) by the DocGroundingVerifier (`kp-build build --ground-verify`). A claim ships only if its quoted sentence is present; an invented variant (wrong numbers, wrong direction) is stamped `ungrounded` and dropped. Provenance, not soundness: grounding proves the clause is verbatim in the abstract, not that the result replicates.",
+  "built": "2026-06-17",
+  "stats": {
+    "papers_verified": 0,
+    "papers_total": 0,
+    "claims": 3,
+    "open_problems": 0,
+    "debates": 0,
+    "benchmarks": 0,
+    "relations": 0,
+    "dropped": {
+      "claims": 1,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0,
+      "relations": 0
+    }
+  },
+  "goals": {},
+  "goal_metrics": [],
+  "source_span": {
+    "oldest": null,
+    "newest": null,
+    "latest_checked": "2026-06-17"
+  },
+  "coverage": {
+    "note": "not recorded \u2014 coverage completeness is unverified"
+  },
+  "falsification": {
+    "run": false
+  }
+}

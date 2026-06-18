@@ -1,0 +1,13 @@
+{
+  "name": "@kp/variable-width-transformer-scaling-arxiv-2606-18246-nonuniform",
+  "version": "0.1.0",
+  "description": "A doc-grounding knowledge pack on a frontier result published 2026-06-16 \u2014 past a typical model's training cutoff, so its specifics (the architecture's shape and its FLOP/KV-cache numbers) are exactly what an unaided model fabricates. Each claim's verbatim passage is checked against the paper's pinn",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

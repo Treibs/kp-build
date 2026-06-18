@@ -1,0 +1,53 @@
+{
+  "schema": "wikillm/1",
+  "papers": [],
+  "claims": [
+    {
+      "id": "get-semantics",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "head-semantics",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "post-semantics",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "safe-methods",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "idempotent-methods",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "proxy-retry",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    }
+  ],
+  "open_problems": [],
+  "debates": [],
+  "benchmarks": [],
+  "relations": [],
+  "edges": []
+}

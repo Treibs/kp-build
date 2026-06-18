@@ -1,0 +1,50 @@
+{
+  "topic": "Variable-width transformer scaling (arXiv:2606.18246): nonuniform layer-width allocation",
+  "scope": "A doc-grounding knowledge pack on a frontier result published 2026-06-16 — past a typical model's training cutoff, so its specifics (the architecture's shape and its FLOP/KV-cache numbers) are exactly what an unaided model fabricates. Each claim's verbatim passage is checked against the paper's pinned abstract (corpus/VariableWidthTransformers.txt) by the DocGroundingVerifier (`kp-build build --ground-verify`). A claim ships only if its quoted sentence is present; an invented variant (wrong numbers, wrong direction) is stamped `ungrounded` and dropped. Provenance, not soundness: grounding proves the clause is verbatim in the abstract, not that the result replicates.",
+  "claims": [
+    {
+      "id": "x-shape",
+      "statement": "The proposed design maintains wider early and late layers while narrowing the middle layers, using a parameter-free residual resizing mechanism.",
+      "supporting_passage": "This design maintains wider early and late layers while narrowing the middle layers, utilizing a parameter-free residual resizing mechanism.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "VariableWidthTransformers",
+        "supporting_passage": "This design maintains wider early and late layers while narrowing the middle layers, utilizing a parameter-free residual resizing mechanism."
+      }
+    },
+    {
+      "id": "flops-kv-reduction",
+      "statement": "By reducing average layer width, the architecture requires fewer overall FLOPs (a 22% reduction under fitted loss-matched scaling curves) and smaller KV cache memory and I/O cost (a 15% reduction).",
+      "supporting_passage": "By reducing the average layer width, this architecture also requires fewer overall FLOPs (22% reduction under fitted loss-matched scaling curves) and smaller KV cache memory and I/O cost (15% reduction).",
+      "claim_type": "result",
+      "confidence": "high",
+      "grounding": {
+        "source": "VariableWidthTransformers",
+        "supporting_passage": "By reducing the average layer width, this architecture also requires fewer overall FLOPs (22% reduction under fitted loss-matched scaling curves) and smaller KV cache memory and I/O cost (15% reduction)."
+      }
+    },
+    {
+      "id": "residual-streams",
+      "statement": "Analysis shows the bottleneck structure results in qualitatively different representations in the residual streams.",
+      "supporting_passage": "In analysis, we show that this bottleneck structure results in qualitatively different representations in residual streams.",
+      "claim_type": "finding",
+      "confidence": "medium",
+      "grounding": {
+        "source": "VariableWidthTransformers",
+        "supporting_passage": "In analysis, we show that this bottleneck structure results in qualitatively different representations in residual streams."
+      }
+    },
+    {
+      "id": "inflated-numbers-fabricated",
+      "statement": "(DELIBERATE HELD-OUT NEGATIVE) The architecture achieves a 40% reduction in overall FLOPs and a 35% reduction in KV cache memory by widening the middle layers.",
+      "supporting_passage": "The architecture achieves a 40% reduction in overall FLOPs and a 35% reduction in KV cache memory by widening the middle layers.",
+      "claim_type": "result",
+      "confidence": "high",
+      "grounding": {
+        "source": "VariableWidthTransformers",
+        "supporting_passage": "The architecture achieves a 40% reduction in overall FLOPs and a 35% reduction in KV cache memory by widening the middle layers."
+      }
+    }
+  ]
+}
