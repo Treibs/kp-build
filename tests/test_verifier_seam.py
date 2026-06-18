@@ -486,6 +486,50 @@ def test_context_preamble_is_verifier_aware_for_paperless_pack():
     assert "verified to exist by arXiv id / DOI" in build_context(cit_pkg, built="2026-01-01")
 
 
+# ── v2-b: JudgeVerifier — the RELATIVE, order-unbiased aesthetic/quality judge (the 4th verifier) ──
+
+def test_judge_verifier_prefers_better_answer_and_satisfies_protocol():
+    """JudgeVerifier (kind='judgment') judges an answer AGAINST a baseline via an injected blind judge.
+    A judge that prefers the answer's content -> judged-better -> exists=True (it 'ships' as helpful)."""
+    from kp_build.verifier import JudgeVerifier, Verifier
+    from types import SimpleNamespace
+    judge = lambda task, a, b: {"winner": "a" if "PACK" in a else "b"}   # prefers the 'PACK' content
+    v = JudgeVerifier(judge, rounds=4).verify(SimpleNamespace(task="t", answer="PACK answer", baseline="base"))
+    assert v.kind == "judgment" and v.exists is True and v.status == "judged-better"
+    assert isinstance(JudgeVerifier(judge), Verifier)            # satisfies the Verifier protocol
+
+def test_judge_verifier_baseline_wins():
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    judge = lambda task, a, b: {"winner": "a" if "BASE" in a else "b"}
+    v = JudgeVerifier(judge, rounds=4).verify(SimpleNamespace(task="t", answer="pack", baseline="BASE ans"))
+    assert v.exists is False and v.status == "judged-worse"
+
+def test_judge_verifier_position_bias_nets_to_tie():
+    """A purely position-biased judge (always picks slot 'a') must NET TO A TIE, because the verifier
+    alternates which answer occupies slot a/b across rounds. This is the anti-tautology guarantee."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a"}, rounds=4).verify(
+        SimpleNamespace(task="t", answer="pack", baseline="base"))
+    assert v.status == "judged-tie" and v.exists is False
+
+def test_judge_verifier_requires_a_baseline_relative_only():
+    """No absolute taste gate: with no baseline the verdict is 'unverifiable', never a guessed pass."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    v = JudgeVerifier(lambda task, a, b: {"winner": "a"}).verify(SimpleNamespace(task="t", answer="x", baseline=""))
+    assert v.exists is False and v.status == "unverifiable"
+
+def test_judge_verifier_never_trusts_a_failed_judge():
+    """A judge that raises (or returns junk) contributes NO vote — never fail-open to 'better'."""
+    from kp_build.verifier import JudgeVerifier
+    from types import SimpleNamespace
+    def boom(task, a, b): raise RuntimeError("judge down")
+    v = JudgeVerifier(boom, rounds=4).verify(SimpleNamespace(task="t", answer="pack", baseline="base"))
+    assert v.exists is False and v.status == "judged-tie"       # 0-0, no votes -> tie, not better
+
+
 # ── verifier.py: the pluggable seam — CitationVerifier == legacy (RED until implemented) ──────
 
 def test_citation_verifier_equals_legacy_and_satisfies_protocol():

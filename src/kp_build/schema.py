@@ -52,10 +52,12 @@ class Verification:
     unrelated real work. Other kinds carry their own evidence in ``evidence`` and source tag in
     ``via`` (e.g. ``hyperframes-cli@0.6.91``, ``astm-d570``).
 
-    ``kind``    : existence | execution | grounding | unverifiable-aesthetic | ungrounded-unreachable
-                  (grounding is build-enforced via ``build --ground-verify``; aesthetic awaits the v2-b judge)
+    ``kind``    : existence | execution | grounding | judgment | unverifiable-aesthetic | ungrounded-unreachable
+                  (grounding via ``build --ground-verify``; judgment = the v2-b JudgeVerifier, a RELATIVE
+                  blind panel — answer-vs-baseline, never an absolute taste score)
     ``status``  : verified | unconfirmed | id-title-mismatch | not-found | error | unverified
                   | output-mismatch        (execution: ran clean but produced the wrong output)
+                  | judged-better | judged-worse | judged-tie   (judgment: relative panel verdict)
     ``canonical_title`` / ``match_score`` are citation-specific (empty/0.0 for other kinds).
     Legacy packages have no ``kind`` in frontmatter → it reads back as ``existence`` (the migration).
     """
