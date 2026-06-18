@@ -25,6 +25,7 @@ grounding:
   source: RFC9110
   supporting_passage: The HEAD method is identical to GET except that the server MUST
     NOT send content in the response.
+judgment: {}
 ---
 
 The HEAD method is identical to GET except that the server MUST NOT send content in the response.

@@ -348,9 +348,18 @@ def verify_judgment_claims(pkg, *, today: str = "") -> dict:
             continue
         total += 1
         rounds = list(d.get("rounds") or [])
+        if len(rounds) < 2 or len(rounds) % 2 != 0:
+            # defense-in-depth: a malformed (odd / length-1) panel must ABSTAIN, never be tallied — feeding
+            # a short iterator into JudgeVerifier's force-even round count would pad a free 'tie' (or truncate
+            # a balancing vote) and could launder a fake into judged-better. cli._load already rejects these,
+            # but a directly-constructed claim must not slip past either.
+            c.verified = Verification(kind="judgment", exists=False, status="unverifiable", via="judge-panel",
+                                      evidence="recorded panel is not an even-length (>=2) comparison set",
+                                      checked=today)
+            continue
         seq = iter(rounds)
         replay = lambda task, a, b, _seq=seq: {"winner": next(_seq, "tie")}   # deterministic recorded panel
-        c.verified = JudgeVerifier(replay, rounds=len(rounds) or 2, today=today).verify(
+        c.verified = JudgeVerifier(replay, rounds=len(rounds), today=today).verify(
             SimpleNamespace(task=d.get("task", ""), answer=d.get("answer", ""), baseline=d.get("baseline", "")))
         verified += bool(c.verified.exists)
     return {"judgment_total": total, "judgment_verified": verified}

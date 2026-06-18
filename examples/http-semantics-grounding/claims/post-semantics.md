@@ -27,6 +27,7 @@ grounding:
   supporting_passage: The POST method requests that the target resource process the
     representation enclosed in the request according to the resource's own specific
     semantics.
+judgment: {}
 ---
 
 The POST method requests that the target resource process the representation enclosed in the request according to the resource's own specific semantics.

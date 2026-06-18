@@ -25,6 +25,7 @@ grounding:
   source: VariableWidthTransformers
   supporting_passage: This design maintains wider early and late layers while narrowing
     the middle layers, utilizing a parameter-free residual resizing mechanism.
+judgment: {}
 ---
 
 The proposed design maintains wider early and late layers while narrowing the middle layers, using a parameter-free residual resizing mechanism.

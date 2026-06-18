@@ -26,6 +26,7 @@ execution:
   gate_code: inspect_error
   artifact: hf-kpmodel-fixtures/structure-6
 grounding: {}
+judgment: {}
 ---
 
 The ROOT composition <div> must carry data-duration (the total video length, in seconds). Without it the runtime has no totalDuration, so `inspect` fails to build the timeline and the render is unreliable — and crucially `lint` does NOT flag its absence, so this only surfaces as an inspect failure.

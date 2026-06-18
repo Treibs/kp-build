@@ -91,20 +91,21 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
         basis = ("Every paper in the spine was verified to exist by arXiv id / DOI; do not invent "
                  "citations beyond this list.")
     elif exec_claims:
-        gated = any(c.verified.exists and c.verified.via not in ("", "(unchecked)") for c in exec_claims)
+        # key on whether the STEP RAN (via tag), not whether a claim WON (exists) — a fired gate ran too
+        gated = any(c.verified.via not in ("", "unverified", "(unchecked)") for c in exec_claims)
         basis = ("This package has no citation spine — its claims ship on execution gates, not citations; "
                  "do not invent citations." if gated else
                  "This package has no citation spine; its claims carry execution directives but were NOT "
                  "gated this build (--no-verify) — they are drafter-asserted, not verified; do not invent citations.")
     elif grnd_claims:
-        ground_checked = any(c.verified.exists and c.verified.via == "doc-corpus" for c in grnd_claims)
+        ground_checked = any(c.verified.via == "doc-corpus" for c in grnd_claims)   # step ran (any verdict)
         basis = ("This package has no citation spine — its claims ship on doc-grounding (each quoted "
                  "passage was confirmed verbatim in a pinned source), not citations; do not invent citations."
                  if ground_checked else
                  "This package has no citation spine; its claims carry doc-grounding directives but were NOT "
                  "checked this build (--no-verify) — passages are drafter-asserted, not confirmed; do not invent citations.")
     elif judg_claims:
-        judged = any(c.verified.exists and c.verified.via == "judge-panel" for c in judg_claims)
+        judged = any(c.verified.via == "judge-panel" for c in judg_claims)   # step ran (better/worse/tie alike)
         basis = ("This package has no citation spine — its claims ship on RELATIVE blind-panel verdicts "
                  "(each was judged better than a baseline, position-bias-cancelled), not citations; these are "
                  "preference judgments, not facts. Do not invent citations." if judged else

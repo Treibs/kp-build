@@ -67,6 +67,25 @@ def test_verify_judgment_claims_leaves_other_claims_untouched():
     assert verify_judgment_claims(pkg, today="x") == {"judgment_total": 0, "judgment_verified": 0}
     assert pkg.claims[0].verified.status == "unverified"
 
+def test_verify_judgment_claims_abstains_on_malformed_rounds():
+    """REVIEW must-fix (defense-in-depth): even bypassing _load, a length-1 or odd-length recorded panel
+    must NEVER ship — it abstains (unverifiable), not judged-better. The replay must not pad a missing
+    slot with a free 'tie' (the ['a'] fake) nor truncate a balancing vote (the odd-length tie laundering)."""
+    from kp_build.verifier import verify_judgment_claims
+    for bad in (["a"], ["a", "tie", "b"], [], ["a", "a", "a"]):
+        pkg = Package(topic="t", scope="s", papers=[], claims=[
+            Claim(id="x", statement="s", paper="", supporting_passage="x",
+                  judgment={"task": "t", "answer": "A", "baseline": "B", "rounds": bad})])
+        verify_judgment_claims(pkg)
+        v = pkg.claims[0].verified
+        assert v.exists is False and v.status == "unverifiable", f"{bad} should abstain, got {v.status}"
+    # a genuine EVEN panel still ships
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="x", statement="s", paper="", supporting_passage="x",
+              judgment={"task": "t", "answer": "A", "baseline": "B", "rounds": ["a", "b"]})])
+    verify_judgment_claims(pkg)
+    assert pkg.claims[0].verified.status == "judged-better"
+
 
 # ── characterization: lock current academic behavior (GREEN before AND after §4.0) ──────────
 
@@ -303,6 +322,17 @@ def test_load_rejects_judgment_bad_rounds(tmp_path):
            "judgment": {"task": "t", "answer": "A", "baseline": "B", "rounds": ["a", "x"]}}
     with pytest.raises(ResearchInputError, match="rounds"):
         _load(_write(tmp_path, dict(_BASE, claims=[bad])))
+
+def test_load_rejects_judgment_odd_or_underlength_rounds(tmp_path):
+    """REVIEW must-fix: position-bias cancellation REQUIRES an even-length (>=2) panel — the answer must
+    occupy slot a and slot b equally. Reject ['a'] (the cheapest fake, which padded to a phantom win) and
+    any odd length (which truncated a balancing vote, laundering a tie into judged-better)."""
+    from kp_build.cli import _load, ResearchInputError
+    for bad_rounds in (["a"], ["a", "b", "a"], ["a", "tie", "b"]):
+        bad = {"id": "j", "statement": "s", "supporting_passage": "x",
+               "judgment": {"task": "t", "answer": "A", "baseline": "B", "rounds": bad_rounds}}
+        with pytest.raises(ResearchInputError, match="EVEN number"):
+            _load(_write(tmp_path, dict(_BASE, claims=[bad])))
 
 
 # ── V2-b STEP 3: verify_grounding_claims sets per-claim verdicts from the pinned corpus ───────

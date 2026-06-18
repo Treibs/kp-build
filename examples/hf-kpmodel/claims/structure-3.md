@@ -23,6 +23,7 @@ execution:
   gate_code: deprecated_data_end
   artifact: hf-kpmodel-fixtures/structure-3
 grounding: {}
+judgment: {}
 ---
 
 Clip timing must be expressed with data-duration, not the deprecated data-end attribute.

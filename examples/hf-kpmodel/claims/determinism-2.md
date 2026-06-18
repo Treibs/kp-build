@@ -25,6 +25,7 @@ execution:
   gate_code: non_deterministic_code
   artifact: hf-kpmodel-fixtures/determinism-2
 grounding: {}
+judgment: {}
 ---
 
 Never use Date.now(), new Date(), performance.now(), or any wall-clock / time-based logic in a composition script; pin content and per-frame behaviour to the GSAP timeline position so the render is identical across runs.

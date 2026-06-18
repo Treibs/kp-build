@@ -169,6 +169,11 @@ def _load(path: str) -> Package:
                             f"(a non-empty list of 'a'/'b'/'tie')")
             elif any(r not in ("a", "b", "tie") for r in rounds):
                 errs.append(f"claims[{i}].judgment.rounds: each entry must be 'a', 'b', or 'tie'")
+            elif len(rounds) < 2 or len(rounds) % 2 != 0:
+                # the anti-position-bias guarantee REQUIRES an EVEN panel (>=2) so the answer sits in slot a
+                # and slot b equally; an odd / length-1 panel lets a one-sided vote launder into a verdict.
+                errs.append(f"claims[{i}].judgment.rounds must be an EVEN number of comparisons (>=2) — the "
+                            f"answer must occupy slot a and slot b equally for position-bias cancellation")
         oracles = [bool(c.get("paper")), bool(exec_d), bool(grnd), bool(judg)]   # paper XOR exec XOR ground XOR judge
         if not any(oracles):
             errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper', an 'execution', a 'grounding', "

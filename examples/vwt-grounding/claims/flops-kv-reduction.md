@@ -29,6 +29,7 @@ grounding:
   supporting_passage: By reducing the average layer width, this architecture also
     requires fewer overall FLOPs (22% reduction under fitted loss-matched scaling
     curves) and smaller KV cache memory and I/O cost (15% reduction).
+judgment: {}
 ---
 
 By reducing average layer width, the architecture requires fewer overall FLOPs (a 22% reduction under fitted loss-matched scaling curves) and smaller KV cache memory and I/O cost (a 15% reduction).

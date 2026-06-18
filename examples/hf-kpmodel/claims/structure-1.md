@@ -24,6 +24,7 @@ execution:
   gate_code: gsap_timeline_not_registered
   artifact: hf-kpmodel-fixtures/structure-1
 grounding: {}
+judgment: {}
 ---
 
 Every GSAP timeline in a composition must be registered on window.__timelines keyed by the composition's data-composition-id; an unregistered timeline never plays.

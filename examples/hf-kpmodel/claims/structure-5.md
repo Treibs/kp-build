@@ -27,6 +27,7 @@ execution:
   gate_code: overlapping_clips_same_track
   artifact: hf-kpmodel-fixtures/structure-5
 grounding: {}
+judgment: {}
 ---
 
 Give each element that is on screen at the same time as another a DISTINCT data-track-index; two clips on the same track must never overlap in time. Same-track overlap violates the render contract (StaticGuard rejects it) and makes `inspect` fail to build the timeline, so content silently breaks.
