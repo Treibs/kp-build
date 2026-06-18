@@ -141,7 +141,9 @@ class ExecutionVerifier:
         if not isinstance(raw, list):                   # malformed runner output -> untrusted, never fail-OPEN
             return Verification(kind="execution", exists=False, status="error", via=tool,
                                 evidence="runner returned non-list 'codes'", checked=self._today)
-        fired = gate in raw
+        # the asserted gate fired, OR the tool itself could not run (inspect_error sentinel) — either way
+        # the mechanical fundamental is NOT confirmed, so the claim must not verify (no crashed-tool pass).
+        fired = gate in raw or "inspect_error" in raw
         return Verification(kind="execution", exists=(not fired),
                             status=("output-mismatch" if fired else "verified"), via=tool,
                             evidence=f"{tool}:{gate} {'fired' if fired else 'cleared'}", checked=self._today)
@@ -227,6 +229,8 @@ def hyperframes_runner(artifact, tool, *, _run=None):
     if tool == "lint":
         return {"codes": [f.get("code") for f in d.get("findings", [])]}
     if tool == "inspect":
+        if d.get("ok") is False or d.get("error"):      # inspect COULD NOT run (e.g. root data-duration
+            return {"codes": ["inspect_error"]}         # missing -> no totalDuration): a failure, not clean
         return {"codes": [x.get("code") for x in d.get("issues", [])]}
     if tool == "validate":
         return {"codes": (["contrastFailures"] if d.get("contrastFailures", 0) else [])}

@@ -841,6 +841,20 @@ def test_hyperframes_runner_extracts_codes_per_tool():
     assert hyperframes_runner("x", "inspect", _run=run('{"issues":[{"code":"overflow"}]}')) == {"codes": ["overflow"]}
     assert hyperframes_runner("x", "validate", _run=run('{"contrastFailures":3}')) == {"codes": ["contrastFailures"]}
     assert hyperframes_runner("x", "validate", _run=run('{"contrastFailures":0}')) == {"codes": []}
+    # a CRASHED inspect (ok:false / error set — e.g. root composition missing data-duration) must surface
+    # an 'inspect_error' sentinel, NOT read as clean (issues:[] -> codes:[] would false-verify any claim)
+    assert hyperframes_runner("x", "inspect", _run=run('{"ok":false,"error":"reading totalDuration","issues":[]}')) == {"codes": ["inspect_error"]}
+    assert hyperframes_runner("x", "inspect", _run=run('{"ok":true,"issues":[]}')) == {"codes": []}
+
+
+def test_execution_verifier_inspect_error_sentinel_fails_any_claim():
+    """The crashed-inspect false-positive (found patching the root-data-duration gap): if inspect could
+    not run, NO inspect-gated claim may verify — even one whose specific gate_code is absent."""
+    from kp_build.verifier import ExecutionVerifier
+    from types import SimpleNamespace
+    v = ExecutionVerifier(lambda art, tool: {"codes": ["inspect_error"]}).verify(
+        SimpleNamespace(tool="inspect", gate_code="text_box_overflow", artifact="x"))
+    assert v.exists is False and v.status == "output-mismatch"
 
 
 def test_hyperframes_runner_none_on_no_json_bad_json_or_unknown_tool():

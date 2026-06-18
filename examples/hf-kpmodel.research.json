@@ -216,6 +216,18 @@
         "gate_code": "overlapping_clips_same_track",
         "artifact": "hf-kpmodel-fixtures/structure-5"
       }
+    },
+    {
+      "id": "structure-6",
+      "statement": "The ROOT composition <div> must carry data-duration (the total video length, in seconds). Without it the runtime has no totalDuration, so `inspect` fails to build the timeline and the render is unreliable — and crucially `lint` does NOT flag its absence, so this only surfaces as an inspect failure.",
+      "supporting_passage": "<div data-composition-id=\"main\" data-start=\"0\" data-duration=\"5\" data-width=\"1920\" data-height=\"1080\">",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "inspect",
+        "gate_code": "inspect_error",
+        "artifact": "hf-kpmodel-fixtures/structure-6"
+      }
     }
   ],
   "relations": [
