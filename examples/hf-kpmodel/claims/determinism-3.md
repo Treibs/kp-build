@@ -26,6 +26,7 @@ execution:
   gate_code: gsap_infinite_repeat
   artifact: hf-kpmodel-fixtures/determinism-3
 grounding: {}
+judgment: {}
 ---
 
 Never use repeat: -1 on any GSAP timeline or tween; compute a finite repeat count from the composition duration (e.g. repeat: Math.floor(duration / cycleDuration) - 1) because infinite-repeat timelines break the frame-seeking capture engine.

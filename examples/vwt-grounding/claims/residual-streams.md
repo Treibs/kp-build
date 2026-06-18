@@ -25,6 +25,7 @@ grounding:
   source: VariableWidthTransformers
   supporting_passage: In analysis, we show that this bottleneck structure results
     in qualitatively different representations in residual streams.
+judgment: {}
 ---
 
 Analysis shows the bottleneck structure results in qualitatively different representations in the residual streams.

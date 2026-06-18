@@ -26,6 +26,7 @@ execution:
   gate_code: timed_element_missing_clip_class
   artifact: hf-kpmodel-fixtures/structure-4
 grounding: {}
+judgment: {}
 ---
 
 A timed element (one carrying data-start/data-duration/data-track-index) must have class="clip" so the runtime controls its visibility to its scheduled time range instead of showing it for the whole composition.

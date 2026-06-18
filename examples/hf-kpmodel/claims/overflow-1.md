@@ -28,6 +28,7 @@ execution:
   gate_code: text_box_overflow
   artifact: hf-kpmodel-fixtures/overflow-1
 grounding: {}
+judgment: {}
 ---
 
 Text must not extend beyond its nearest visual container box; constrain dynamic copy with padding/max-width (or fitTextFontSize) so it wraps inside the box rather than spilling out a fixed-size container.

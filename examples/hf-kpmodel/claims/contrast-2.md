@@ -28,6 +28,7 @@ execution:
   gate_code: contrastFailures
   artifact: hf-kpmodel-fixtures/contrast-2
 grounding: {}
+judgment: {}
 ---
 
 Large/headline text (24px+ or 19px+ bold) gets the relaxed 3:1 threshold but must still clear it; a grey-on-grey display headline below 3:1 (e.g. #555 on #3a3a3a) fails and must be brightened into the foreground family until it passes 3:1.

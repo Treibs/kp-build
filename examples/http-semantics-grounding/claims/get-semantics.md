@@ -25,6 +25,7 @@ grounding:
   source: RFC9110
   supporting_passage: The GET method requests transfer of a current selected representation
     for the target resource.
+judgment: {}
 ---
 
 The GET method requests transfer of a current selected representation for the target resource.

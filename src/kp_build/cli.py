@@ -158,13 +158,30 @@ def _load(path: str) -> Package:
                             f"(used as a corpus filename; allowed: letters, digits, '_', '.', '-')")
             if not grnd.get("supporting_passage"):
                 errs.append(f"claims[{i}].grounding: needs a 'supporting_passage' (the verbatim quote to ground)")
-        oracles = [bool(c.get("paper")), bool(exec_d), bool(grnd)]   # paper XOR execution XOR grounding
+        judg = c.get("judgment") or {}               # V2-b judgment directive (a recorded blind-panel)
+        if judg:
+            for fld in ("task", "answer", "baseline"):
+                if not judg.get(fld):
+                    errs.append(f"claims[{i}].judgment: needs a non-empty '{fld}'")
+            rounds = judg.get("rounds")
+            if not isinstance(rounds, list) or not rounds:
+                errs.append(f"claims[{i}].judgment: needs 'rounds' — the recorded blind-panel slot winners "
+                            f"(a non-empty list of 'a'/'b'/'tie')")
+            elif any(r not in ("a", "b", "tie") for r in rounds):
+                errs.append(f"claims[{i}].judgment.rounds: each entry must be 'a', 'b', or 'tie'")
+            elif len(rounds) < 2 or len(rounds) % 2 != 0:
+                # the anti-position-bias guarantee REQUIRES an EVEN panel (>=2) so the answer sits in slot a
+                # and slot b equally; an odd / length-1 panel lets a one-sided vote launder into a verdict.
+                errs.append(f"claims[{i}].judgment.rounds must be an EVEN number of comparisons (>=2) — the "
+                            f"answer must occupy slot a and slot b equally for position-bias cancellation")
+        oracles = [bool(c.get("paper")), bool(exec_d), bool(grnd), bool(judg)]   # paper XOR exec XOR ground XOR judge
         if not any(oracles):
-            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper', an 'execution', or a 'grounding' directive")
+            errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper', an 'execution', a 'grounding', "
+                        f"or a 'judgment' directive")
         elif sum(oracles) > 1:                       # M2: exactly one verification basis per node
             errs.append(f"claims[{i}] ({c.get('id', '?')}): has more than one verification basis "
-                        f"(a claim is verified by exactly one of paper / execution / grounding — a mechanical "
-                        f"or grounding gate must not be overridable by a citation)")
+                        f"(a claim is verified by exactly one of paper / execution / grounding / judgment — a "
+                        f"mechanical, grounding, or panel verdict must not be overridable by a citation)")
         if c.get("paper"):
             _ref(c.get("paper"), f"claims[{i}] ({c.get('id', '?')})")
         if c.get("claim_type") and c["claim_type"] not in CLAIM_TYPES:
@@ -182,7 +199,9 @@ def _load(path: str) -> Package:
                             execution={k: exec_d[k] for k in ("tool", "gate_code", "artifact", "aesthetic")
                                        if k in exec_d},
                             grounding={k: grnd[k] for k in ("source", "supporting_passage")
-                                       if k in grnd}))
+                                       if k in grnd},
+                            judgment={k: judg[k] for k in ("task", "answer", "baseline", "rounds")
+                                      if k in judg}))
 
     problems = []
     for i, o in _section(d, "open_problems", errs):
@@ -298,7 +317,8 @@ def _cmd_build(args) -> int:
             if c.paper:
                 c.verified = Verification()
             else:                                   # ship under --no-verify, but NEVER say 'verified': it
-                kind = "grounding" if c.grounding else "execution"   # wasn't checked (M1 — honest stamp)
+                kind = ("grounding" if c.grounding else "judgment" if c.judgment   # wasn't checked (M1 —
+                        else "execution")                                          # honest, kind-aware stamp)
                 c.verified = Verification(exists=True, status="unverified", kind=kind,
                                           via="(unchecked)", checked=today)
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
@@ -386,6 +406,16 @@ def _cmd_build(args) -> int:
               f"build, because an ungated grounding claim ships via neither a paper nor a verdict and would "
               f"silently DROP.", file=sys.stderr)
         return 2
+
+    # V2-b: replay each judgment claim's RECORDED blind-panel through the JudgeVerifier. No flag and no
+    # I/O — it's a deterministic re-tally of committed votes (so the build stays byte-identical), and the
+    # JudgeVerifier's A/B alternation re-derives the verdict honestly (a faked uniform panel nets to a tie).
+    n_judge = sum(1 for c in pkg.claims if c.judgment)
+    if n_judge and not args.no_verify:
+        from .verifier import verify_judgment_claims
+        js = verify_judgment_claims(pkg, today=today)
+        print(f"judging {n_judge} recorded panel(s): {js['judgment_verified']}/{js['judgment_total']} "
+              f"judged-better (ship)", file=sys.stderr)
 
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)

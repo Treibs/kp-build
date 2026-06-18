@@ -21,6 +21,7 @@ execution: {}
 grounding:
   source: RFC9110
   supporting_passage: A proxy MUST NOT automatically retry non-idempotent requests.
+judgment: {}
 ---
 
 A proxy MUST NOT automatically retry non-idempotent requests.

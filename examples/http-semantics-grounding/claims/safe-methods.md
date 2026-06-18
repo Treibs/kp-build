@@ -25,6 +25,7 @@ grounding:
   source: RFC9110
   supporting_passage: Of the request methods defined by this specification, the GET,
     HEAD, OPTIONS, and TRACE methods are defined to be safe.
+judgment: {}
 ---
 
 Of the request methods defined by this specification, the GET, HEAD, OPTIONS, and TRACE methods are defined to be safe.

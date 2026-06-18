@@ -26,6 +26,7 @@ execution:
   gate_code: contrastFailures
   artifact: hf-kpmodel-fixtures/contrast-3
 grounding: {}
+judgment: {}
 ---
 
 Text must remain readable when decorative layers are removed: the text color itself (not a low-opacity decorative glow behind it) must carry the WCAG AA contrast against the real background, because validate samples the background pixels behind each text element.

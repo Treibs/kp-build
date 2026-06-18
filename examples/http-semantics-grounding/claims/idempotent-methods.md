@@ -25,6 +25,7 @@ grounding:
   source: RFC9110
   supporting_passage: Of the request methods defined by this specification, PUT, DELETE,
     and safe request methods are idempotent.
+judgment: {}
 ---
 
 Of the request methods defined by this specification, PUT, DELETE, and safe request methods are idempotent.
