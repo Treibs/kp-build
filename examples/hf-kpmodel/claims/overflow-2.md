@@ -27,6 +27,7 @@ execution:
   tool: inspect
   gate_code: clipped_text
   artifact: hf-kpmodel-fixtures/overflow-2
+grounding: {}
 ---
 
 A fixed-size text box must not clip its own copy; size the box to the content (or wrap the text) so the rendered content fits within the element rather than being cut off by overflow:hidden.

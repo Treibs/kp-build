@@ -5,7 +5,7 @@
 **Scope:** The execution-verifiable fundamentals of authoring a hyperframes composition that renders clean, legible, deterministic, and structurally valid.
 
 - 0/0 citations verified (arXiv/Crossref); source years n/a
-- 14 claims · 0 open problems · 0 debates · 0 benchmarks
+- 15 claims · 0 open problems · 0 debates · 0 benchmarks
 - dropped (unverified-anchored): {'claims': 0, 'open_problems': 0, 'debates': 0, 'benchmarks': 0, 'positions': 0, 'relations': 0}
 
 **Load `CONTEXT.md` into your agent** to inherit this field without re-running the research. `index.json` is the machine-readable graph (nodes + edges); the subdirectories hold the notes.

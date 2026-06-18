@@ -60,3 +60,5 @@
     > Use `data-layer` (use `data-track-index`) or `data-end` (use `data-duration`)
 - _method_ — A timed element (one carrying data-start/data-duration/data-track-index) must have class="clip" so the runtime controls its visibility to its scheduled time range instead of showing it for the whole composition. *([lint], high)*
     > <div data-composition-id="root" data-width="1920" data-height="1080"> <h1 id="hero" class="clip" data-start="0" data-duration="3"></h1>
+- _method_ — Give each element that is on screen at the same time as another a DISTINCT data-track-index; two clips on the same track must never overlap in time. Same-track overlap violates the render contract (StaticGuard rejects it) and makes `inspect` fail to build the timeline, so content silently breaks. *([lint], high)*
+    > <div class="clip" id="bg" data-start="0" data-duration="5" data-track-index="0"></div> <div class="clip" id="card" data-start="0.5" data-duration="4" data-track-index="1">

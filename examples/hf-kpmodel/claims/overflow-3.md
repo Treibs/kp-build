@@ -26,6 +26,7 @@ execution:
   tool: inspect
   gate_code: container_overflow
   artifact: hf-kpmodel-fixtures/overflow-3
+grounding: {}
 ---
 
 Avoid absolute-positioned content containers and oversized children inside a clipping layout box; content taller/wider than the remaining space overflows the container, so size/position children to fit within the box.

@@ -27,6 +27,7 @@ execution:
   tool: validate
   gate_code: contrastFailures
   artifact: hf-kpmodel-fixtures/contrast-1
+grounding: {}
 ---
 
 Normal-size body text must meet WCAG AA contrast of at least 4.5:1 against the background pixels actually sampled behind it; sub-threshold body color (e.g. #777 on #0a0f17) must be brightened until it clears 4.5:1.
