@@ -28,6 +28,46 @@ def test_claim_grounding_directive_round_trips():
     assert claim_from_md(claim_to_md(Claim(id="a", statement="s", paper="p1", supporting_passage="x"))).grounding == {}
 
 
+def test_claim_judgment_directive_round_trips():
+    """A `judgment` directive ({task, answer, baseline, rounds}) round-trips — the recorded blind-panel
+    the build replays through JudgeVerifier. rounds is the per-comparison slot winners ('a'/'b'/'tie')."""
+    c = Claim(id="j1", statement="approach A beats B", paper="", supporting_passage="x",
+              judgment={"task": "make a clean title card", "answer": "A", "baseline": "B",
+                        "rounds": ["a", "b", "a", "b"]})
+    c2 = claim_from_md(claim_to_md(c))
+    assert c2.judgment == {"task": "make a clean title card", "answer": "A", "baseline": "B",
+                           "rounds": ["a", "b", "a", "b"]}
+    assert claim_from_md(claim_to_md(Claim(id="a", statement="s", paper="p1", supporting_passage="x"))).judgment == {}
+
+
+def test_verify_judgment_claims_replays_recorded_panel_and_defeats_fakes():
+    """The build replays the recorded slot-vote panel through JudgeVerifier (deterministic). A genuine
+    answer-favoring panel ships (judged-better); a FAKED uniform panel nets to a tie via the A/B
+    alternation (an author can't hand-write 'answer wins'); a baseline-favoring panel is judged-worse."""
+    from kp_build.verifier import verify_judgment_claims
+    pkg = Package(topic="t", scope="s", papers=[], claims=[
+        Claim(id="win", statement="A>B", paper="", supporting_passage="x",
+              judgment={"task": "t", "answer": "A", "baseline": "B", "rounds": ["a", "b", "a", "b"]}),
+        Claim(id="fake", statement="A>B", paper="", supporting_passage="x",
+              judgment={"task": "t", "answer": "A", "baseline": "B", "rounds": ["a", "a", "a", "a"]}),
+        Claim(id="lose", statement="A<B", paper="", supporting_passage="x",
+              judgment={"task": "t", "answer": "A", "baseline": "B", "rounds": ["b", "a", "b", "a"]}),
+    ])
+    summ = verify_judgment_claims(pkg, today="2026-01-01")
+    by = {c.id: c.verified for c in pkg.claims}
+    assert by["win"].exists is True and by["win"].status == "judged-better" and by["win"].kind == "judgment"
+    assert by["fake"].exists is False and by["fake"].status == "judged-tie"      # alternation defeats the fake
+    assert by["lose"].exists is False and by["lose"].status == "judged-worse"
+    assert summ == {"judgment_total": 3, "judgment_verified": 1}
+
+def test_verify_judgment_claims_leaves_other_claims_untouched():
+    from kp_build.verifier import verify_judgment_claims
+    pkg = Package(topic="t", scope="s", papers=[Paper(cite_key="p1", title="T")],
+                  claims=[Claim(id="c1", statement="s", paper="p1", supporting_passage="x")])
+    assert verify_judgment_claims(pkg, today="x") == {"judgment_total": 0, "judgment_verified": 0}
+    assert pkg.claims[0].verified.status == "unverified"
+
+
 # ── characterization: lock current academic behavior (GREEN before AND after §4.0) ──────────
 
 def test_assemble_ship_gate_handles_academic_claims_without_per_claim_verdict(tmp_path: Path):
@@ -234,6 +274,37 @@ def test_load_rejects_grounding_missing_passage(tmp_path):
         _load(_write(tmp_path, dict(_BASE, claims=[bad])))
 
 
+# ── v2-b judgment wiring: cli._load parses the judgment directive + 4-way XOR + validation ────
+
+_JCLAIM = {"id": "j1", "statement": "approach A>B", "supporting_passage": "x",
+           "judgment": {"task": "make a clean card", "answer": "A", "baseline": "B",
+                        "rounds": ["a", "b", "a", "b"]}}
+
+def test_load_accepts_judgment_directive_on_no_paper_claim(tmp_path):
+    from kp_build.cli import _load
+    pkg = _load(_write(tmp_path, dict(_BASE, claims=[_JCLAIM])))
+    assert pkg.claims[0].judgment["rounds"] == ["a", "b", "a", "b"]
+    assert pkg.claims[0].judgment["answer"] == "A"
+
+def test_load_rejects_judgment_plus_paper(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    with pytest.raises(ResearchInputError, match="more than one verification basis"):
+        _load(_write(tmp_path, dict(_BASE, claims=[dict(_JCLAIM, paper="p1")])))
+
+def test_load_rejects_judgment_missing_fields(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    bad = {"id": "j1", "statement": "s", "supporting_passage": "x", "judgment": {"task": "t", "answer": "A"}}
+    with pytest.raises(ResearchInputError, match="judgment"):
+        _load(_write(tmp_path, dict(_BASE, claims=[bad])))
+
+def test_load_rejects_judgment_bad_rounds(tmp_path):
+    from kp_build.cli import _load, ResearchInputError
+    bad = {"id": "j1", "statement": "s", "supporting_passage": "x",
+           "judgment": {"task": "t", "answer": "A", "baseline": "B", "rounds": ["a", "x"]}}
+    with pytest.raises(ResearchInputError, match="rounds"):
+        _load(_write(tmp_path, dict(_BASE, claims=[bad])))
+
+
 # ── V2-b STEP 3: verify_grounding_claims sets per-claim verdicts from the pinned corpus ───────
 
 def test_verify_grounding_claims_sets_verdicts_by_corpus_presence():
@@ -371,6 +442,43 @@ def test_build_hard_errors_on_grounding_claims_without_ground_verify(tmp_path, c
     from kp_build.cli import _cmd_build
     assert _cmd_build(_gbuild(tmp_path, [("g1", _GSENT)])) == 2
     assert "ground-verify" in capsys.readouterr().err
+
+
+def _jbuild(tmp_path, claims, **over):
+    """Write a judgment-spine research.json, return build args (the judgment step runs by default — it's
+    a deterministic replay of the recorded panel, no flag/IO)."""
+    (tmp_path / "r.json").write_text(json.dumps({"topic": "t", "scope": "s", "claims": claims}))
+    args = SimpleNamespace(input=str(tmp_path / "r.json"), out=str(tmp_path / "out"), built="2026-01-01",
+                           no_verify=False, throttle=0.0, reuse_verification=False, ground=False,
+                           ground_fulltext=False, execute=False, ground_verify=False,
+                           name="", version="0.1.0", license="CC-BY-4.0")
+    for k, v in over.items():
+        setattr(args, k, v)
+    return args
+
+def _jclaim(cid, rounds):
+    return {"id": cid, "statement": cid, "supporting_passage": "d",
+            "judgment": {"task": "t", "answer": "A", "baseline": "B", "rounds": rounds}}
+
+def test_build_judgment_pack_ships_only_genuine_winners(tmp_path):
+    """End-to-end (no flag — deterministic replay): a genuine answer-winning recorded panel ships; a
+    FAKED uniform panel (-> tie via the JudgeVerifier alternation) and a baseline-winning panel DROP."""
+    from kp_build.cli import _cmd_build
+    args = _jbuild(tmp_path, [_jclaim("win", ["a", "b", "a", "b"]),
+                              _jclaim("fake", ["a", "a", "a", "a"]),
+                              _jclaim("lose", ["b", "a", "b", "a"])])
+    assert _cmd_build(args) == 0
+    assert (tmp_path / "out" / "claims" / "win.md").exists()
+    assert not (tmp_path / "out" / "claims" / "fake.md").exists()    # author can't fake a 'judged-better'
+    assert not (tmp_path / "out" / "claims" / "lose.md").exists()
+    assert _claims_shipped(tmp_path) == 1
+
+def test_build_judgment_context_is_judgment_aware(tmp_path):
+    """A judgment pack's CONTEXT must frame its claims as RELATIVE preference verdicts, not facts."""
+    from kp_build.cli import _cmd_build
+    assert _cmd_build(_jbuild(tmp_path, [_jclaim("win", ["a", "b", "a", "b"])])) == 0
+    ctx = (tmp_path / "out" / "CONTEXT.md").read_text().lower()
+    assert ("blind-panel" in ctx or "preference judgments" in ctx) and "do not invent citations" in ctx
 
 def test_build_grounds_and_ships_with_ground_verify(tmp_path):
     """Happy path: --ground-verify grounds the verbatim passage against the committed corpus -> ships."""
@@ -747,7 +855,7 @@ def test_load_parses_execution_directive_and_relaxes_paper_requirement(tmp_path)
 def test_load_rejects_claim_with_neither_paper_nor_execution(tmp_path):
     from kp_build.cli import _load, ResearchInputError
     rj = {"topic": "t", "claims": [{"id": "x", "statement": "s", "supporting_passage": "p"}]}
-    with pytest.raises(ResearchInputError, match="needs a 'paper', an 'execution', or a 'grounding'"):
+    with pytest.raises(ResearchInputError, match="needs a 'paper', an 'execution', a 'grounding', or a 'judgment'"):
         _load(_write(tmp_path, rj))
 
 

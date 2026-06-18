@@ -328,3 +328,29 @@ def load_grounding_corpus(pkg, base_dir, *, get=None) -> dict:
         if papers:
             corpus.update(fetch_doc_corpus(papers, get=get))
     return corpus
+
+
+def verify_judgment_claims(pkg, *, today: str = "") -> dict:
+    """Build step: for every claim carrying a ``judgment`` directive, REPLAY its recorded blind-panel
+    through the JudgeVerifier and set the per-claim ``verified``. Other claims are untouched.
+
+    DETERMINISTIC by design — the LLM panel ran once (in research) and its per-comparison slot winners
+    ('a'/'b'/'tie') are recorded in ``directive['rounds']``; here a replay-judge just returns them in
+    order, so a rebuild is byte-identical (a live judge would not be). Crucially this runs them through
+    the SAME JudgeVerifier as everything else — its A/B alternation means a hand-faked uniform panel nets
+    to a tie, so an author can't write 'answer wins' without a panel that genuinely favours it in both
+    slot positions."""
+    from types import SimpleNamespace
+    total = verified = 0
+    for c in getattr(pkg, "claims", []):
+        d = getattr(c, "judgment", None) or {}
+        if not d:
+            continue
+        total += 1
+        rounds = list(d.get("rounds") or [])
+        seq = iter(rounds)
+        replay = lambda task, a, b, _seq=seq: {"winner": next(_seq, "tie")}   # deterministic recorded panel
+        c.verified = JudgeVerifier(replay, rounds=len(rounds) or 2, today=today).verify(
+            SimpleNamespace(task=d.get("task", ""), answer=d.get("answer", ""), baseline=d.get("baseline", "")))
+        verified += bool(c.verified.exists)
+    return {"judgment_total": total, "judgment_verified": verified}

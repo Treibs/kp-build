@@ -119,6 +119,11 @@ class Claim:
     #: with ``--ground-verify``, the DocGroundingVerifier checks the passage against the pinned source's
     #: corpus and sets ``verified``. Empty for citation/academic/execution claims.
     grounding: dict = field(default_factory=dict)
+    #: V2-b judgment directive (optional) — {task, answer, baseline, rounds}. ``rounds`` is a RECORDED
+    #: blind-panel: the per-comparison slot winners ('a'/'b'/'tie') from a JudgeVerifier-style panel run in
+    #: research. The build REPLAYS it through the JudgeVerifier (deterministic, so rebuilds stay byte-
+    #: identical) and sets ``verified`` — and the A/B alternation means a faked uniform panel nets to a tie.
+    judgment: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -310,7 +315,8 @@ def claim_from_md(text: str) -> Claim:
                                  ("exists", "status", "kind", "via", "canonical_title",
                                   "match_score", "evidence", "checked") if k in v}),
         execution=dict(fm.get("execution") or {}),
-        grounding=dict(fm.get("grounding") or {}))
+        grounding=dict(fm.get("grounding") or {}),
+        judgment=dict(fm.get("judgment") or {}))
 
 
 def claim_ships(c: "Claim", verified_keys) -> bool:
