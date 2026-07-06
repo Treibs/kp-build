@@ -41,7 +41,7 @@
       "path": "docs/experiments/sui-compile-pass/"
     },
     "experiment_2": {
-      "metrics": "compile-pass (primary) + zero-warning clean-compile (secondary), pre-registered before answers at commit 443981c",
+      "metrics": "compile-pass (primary) + zero-warning clean-compile (secondary), pre-registered before answers at commit b9653b6",
       "base": {
         "compile_pass": "4/5",
         "clean_compile": "2/5"

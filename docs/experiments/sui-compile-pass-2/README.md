@@ -1,6 +1,6 @@
 # sui-move falsification — experiment 2 (pre-registered, harder tasks, dual metric)
 
-**Pre-registration:** [`tasks.md`](tasks.md), committed at `443981c` **before any
+**Pre-registration:** [`tasks.md`](tasks.md), committed at `b9653b6` **before any
 answer was collected**. Experiment 1 (`../sui-compile-pass/`) had hit a ceiling
 (base 5/5 vs kp 5/5 compile-pass); this run used 5 harder held-out tasks and two
 pre-registered metrics with an explicit ship rule.

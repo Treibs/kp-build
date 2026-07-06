@@ -40,7 +40,7 @@ Both experiments recorded honestly:
 | compile-pass | base 5/5 = kp 5/5 (ceiling — did not clear the ship rule) | base 4/5 = kp 4/5 (tie; both arms failed the Receiving\<T\> task identically, Sui E02009) |
 | clean-compile (zero warnings) | post-hoc observation only: base ~6 warnings vs kp ~2 | **pre-registered: kp 3/5 > base 2/5 → ships under rule branch 2** |
 
-Protocols: `docs/experiments/sui-compile-pass/` and `docs/experiments/sui-compile-pass-2/` (pre-registration committed before answers at `443981c`). Scope the shipping claim exactly: the pack improves modern-idiom cleanliness on the pinned toolchain; it does NOT raise raw compile-pass rate for claude-sonnet-4-6 at this difficulty. Known gap recorded: `transfer::receive`/`Receiving<T>` (no beat covers it; both arms failed it).
+Protocols: `docs/experiments/sui-compile-pass/` and `docs/experiments/sui-compile-pass-2/` (pre-registration committed before answers at `b9653b6`). Scope the shipping claim exactly: the pack improves modern-idiom cleanliness on the pinned toolchain; it does NOT raise raw compile-pass rate for claude-sonnet-4-6 at this difficulty. Known gap recorded: `transfer::receive`/`Receiving<T>` (no beat covers it; both arms failed it).
 
 ## What this pack does NOT do
 
