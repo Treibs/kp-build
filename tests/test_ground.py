@@ -69,6 +69,31 @@ def test_passage_empty_inputs_are_none():
     assert passage_in_text("", "anything") is None and passage_in_text("a long enough passage here", "") is None
 
 
+def test_passage_fuzzy_tampered_number_at_end_is_none():
+    # a long quote with ONE tampered number near the end still clears 60% contiguity (the tamper sits
+    # outside the longest block) — previously True; the digit guard must abstain -> None, not False
+    assert passage_in_text("the method improves decoding throughput across all evaluated model sizes in 2019",
+                           "the method improves decoding throughput across all evaluated model sizes in 2016 experiments") is None
+
+
+def test_passage_exact_substring_with_numbers_still_true():
+    # the digit guard is fuzzy-path-only: an exact normalized substring containing numbers stays True
+    assert passage_in_text("the model reaches 87.5 percent accuracy on imagenet",
+                           "in our tests the model reaches 87.5 percent accuracy on imagenet overall") is True
+
+
+def test_passage_fuzzy_all_numbers_present_still_true():
+    # a trailing-word fuzzy diff whose numbers ALL appear in the text still grounds
+    assert passage_in_text("we observe a 2.8x speedup in decoding on the benchmark suite",
+                           "we observe a 2.8x speedup in decoding on the evaluation suite overall") is True
+
+
+def test_passage_fuzzy_no_numbers_unchanged_true():
+    # a number-free passage never triggers the digit guard — fuzzy acceptance behaves exactly as before
+    assert passage_in_text("the approach generalizes across model families without extra tuning steps",
+                           "the approach generalizes across model families without any manual effort") is True
+
+
 # ── fetch ────────────────────────────────────────────────────────────────────────
 
 def test_arxiv_abstract_parses_summary():

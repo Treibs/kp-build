@@ -1,7 +1,7 @@
 """V2-a: the pluggable verifier seam — §4.0 widen the Verification contract from citation-shaped
 to verifier-agnostic, WITHOUT changing academic-pack behavior.
 
-TDD regression net (design review S1/S4, Blocker 2):
+TDD regression net:
 - characterization tests lock the CURRENT academic ship-gate behavior (green on the pre-refactor code);
 - the widened-contract tests are RED until §4.0 lands, then green — the academic ones must stay green.
 """
@@ -68,7 +68,7 @@ def test_verify_judgment_claims_leaves_other_claims_untouched():
     assert pkg.claims[0].verified.status == "unverified"
 
 def test_verify_judgment_claims_abstains_on_malformed_rounds():
-    """REVIEW must-fix (defense-in-depth): even bypassing _load, a length-1 or odd-length recorded panel
+    """Defense-in-depth: even bypassing _load, a length-1 or odd-length recorded panel
     must NEVER ship — it abstains (unverifiable), not judged-better. The replay must not pad a missing
     slot with a free 'tie' (the ['a'] fake) nor truncate a balancing vote (the odd-length tie laundering)."""
     from kp_build.verifier import verify_judgment_claims
@@ -324,7 +324,7 @@ def test_load_rejects_judgment_bad_rounds(tmp_path):
         _load(_write(tmp_path, dict(_BASE, claims=[bad])))
 
 def test_load_rejects_judgment_odd_or_underlength_rounds(tmp_path):
-    """REVIEW must-fix: position-bias cancellation REQUIRES an even-length (>=2) panel — the answer must
+    """Position-bias cancellation REQUIRES an even-length (>=2) panel — the answer must
     occupy slot a and slot b equally. Reject ['a'] (the cheapest fake, which padded to a phantom win) and
     any odd length (which truncated a balancing vote, laundering a tie into judged-better)."""
     from kp_build.cli import _load, ResearchInputError
@@ -412,7 +412,7 @@ def test_load_grounding_corpus_omits_unheld_source(tmp_path):
     assert load_grounding_corpus(pkg, tmp_path, get=lambda url: "") == {}
 
 def test_load_grounding_corpus_rejects_symlink_escape(tmp_path):
-    """Security belt (review SF#3): a corpus/<source>.txt that is a SYMLINK escaping corpus/ must be
+    """Security belt: a corpus/<source>.txt that is a SYMLINK escaping corpus/ must be
     refused by the is_relative_to check — the last guard if _load's source validation is ever bypassed."""
     import os
     secret = tmp_path / "secret.txt"; secret.write_text("TOP SECRET — outside the pack", encoding="utf-8")
@@ -425,7 +425,7 @@ def test_load_grounding_corpus_rejects_symlink_escape(tmp_path):
     assert "evil" not in load_grounding_corpus(pkg, tmp_path)   # symlink escaping corpus/ is omitted
 
 def test_grounding_tristate_verdicts_all_drop_at_ship_gate():
-    """End-to-end contract (review SF#3): only a verbatim-present passage ships; ungrounded-unreachable
+    """End-to-end contract: only a verbatim-present passage ships; ungrounded-unreachable
     (source not held) and unconfirmed (passage too short) both drop via claim_ships, never laundered."""
     from kp_build.verifier import verify_grounding_claims
     from kp_build.schema import claim_ships
@@ -535,7 +535,7 @@ def test_build_no_verify_stamps_grounding_claims_so_pack_isnt_empty(tmp_path):
     assert _claims_shipped(tmp_path) == 1
 
 def test_no_verify_does_not_overclaim_grounding_as_verified(tmp_path):
-    """M1 (review): --no-verify ships grounding claims so the pack isn't empty, but MUST NOT stamp or
+    """--no-verify ships grounding claims so the pack isn't empty, but MUST NOT stamp or
     print 'verified' / 'confirmed verbatim' on a clause nothing checked — least of all the fabricated one.
     The artifacts must read as UNCHECKED, the project's anti-overclaim brand."""
     from kp_build.cli import _cmd_build
@@ -668,7 +668,7 @@ def test_judge_verifier_never_trusts_a_failed_judge():
     assert v.exists is False and v.status == "judged-tie"       # 0-0, no votes -> tie, not better
 
 def test_judge_verifier_rounds_forced_even_protects_alternation():
-    """REVIEW should-fix #1: rounds is normalized to even (>=2). An ODD requested count must NOT let a
+    """The rounds count is normalized to even (>=2). An ODD requested count must NOT let a
     position-biased judge win — this is the single line the whole anti-tautology guarantee rests on."""
     from kp_build.verifier import JudgeVerifier
     from types import SimpleNamespace
@@ -682,7 +682,7 @@ def test_judge_verifier_rounds_forced_even_protects_alternation():
 
 @pytest.mark.parametrize("bad", [None, {}, {"winner": "banana"}, "a", ["a"], {"winner": "A"}])
 def test_judge_verifier_malformed_judge_output_is_no_vote(bad):
-    """REVIEW should-fix #2: a judge that returns junk (not just one that raises) contributes NO vote.
+    """A judge that returns junk (not just one that raises) contributes NO vote.
     The bare-string 'a' is the most likely real LLM-wrapper bug; none may ever produce a win."""
     from kp_build.verifier import JudgeVerifier
     from types import SimpleNamespace
@@ -690,8 +690,8 @@ def test_judge_verifier_malformed_judge_output_is_no_vote(bad):
     assert v.exists is False and v.status == "judged-tie"
 
 def test_judge_verifier_empty_answer_is_unverifiable_not_a_win():
-    """REVIEW should-fix #3: a relative judge needs BOTH sides — an empty answer must never be able to
-    'win' against a baseline (close the latent fail-open), it is unverifiable like an empty baseline."""
+    """A relative judge needs BOTH sides — an empty answer must never be able to
+    'win' against a baseline (a latent fail-open), it is unverifiable like an empty baseline."""
     from kp_build.verifier import JudgeVerifier
     from types import SimpleNamespace
     v = JudgeVerifier(lambda task, a, b: {"winner": "a" if a == "" else "b"}, rounds=4).verify(
@@ -740,7 +740,7 @@ def test_doc_grounding_verifier_flags_absent_passage_as_ungrounded():
 
 def test_doc_grounding_verifier_unreachable_when_source_absent_from_corpus():
     """Source not in the pinned corpus = a COVERAGE DEBT (ungrounded-unreachable), NOT a permanent
-    ceiling and NOT laundered into verified (the review's two-stamp scheme)."""
+    ceiling and NOT laundered into verified — couldn't-check and checked-and-absent carry distinct stamps."""
     from kp_build.verifier import DocGroundingVerifier
     claim = Claim(id="c", statement="s", paper="missing_paper",
                   supporting_passage="some passage long enough to actually check against a source text")
@@ -915,10 +915,10 @@ def test_verify_execution_claims_sets_verdicts_and_ships(tmp_path: Path):
     assert (out / "claims" / "e1.md").exists() and not (out / "claims" / "e2.md").exists()
 
 
-# ── code-review must-fixes (RED until fixed) ─────────────────────────────────────────────────
+# ── hardening: filename-safe ids, mechanical veto, one verification basis, sanitized context ─
 
 def test_load_rejects_path_unsafe_node_ids(tmp_path):
-    """M1: every node id (not just cite_key) is used as a filename — a '/'/'..'/absolute id is an
+    """Every node id (not just cite_key) is used as a filename — a '/'/'..'/absolute id is an
     arbitrary-file-write. _load must reject them like it does cite_keys."""
     from kp_build.cli import _load, ResearchInputError
     for bad in ["../../../tmp/PWNED", "a/b", "/abs", ".."]:
@@ -929,7 +929,7 @@ def test_load_rejects_path_unsafe_node_ids(tmp_path):
 
 
 def test_paper_claim_with_firing_execution_gate_is_dropped(tmp_path: Path):
-    """M2: a mechanical disproof must VETO a citation anchor. A claim with a verified paper AND a
+    """A mechanical disproof must VETO a citation anchor. A claim with a verified paper AND a
     firing execution gate (output-mismatch) must NOT ship."""
     v = Verification(exists=True, status="verified", via="arxiv", canonical_title="T", checked="2026-01-01")
     pkg = Package(topic="t", scope="s",
@@ -943,7 +943,7 @@ def test_paper_claim_with_firing_execution_gate_is_dropped(tmp_path: Path):
 
 
 def test_load_rejects_claim_with_both_paper_and_execution(tmp_path):
-    """M2 (belt): one verified unit per node — paper XOR execution XOR grounding, never more than one."""
+    """Belt to the disproof-veto: one verified unit per node — paper XOR execution XOR grounding, never more than one."""
     from kp_build.cli import _load, ResearchInputError
     rj = {"topic": "t", "papers": [{"cite_key": "p1", "title": "T"}],
           "claims": [{"id": "c1", "statement": "s", "paper": "p1", "supporting_passage": "x",
@@ -953,7 +953,7 @@ def test_load_rejects_claim_with_both_paper_and_execution(tmp_path):
 
 
 def test_context_sanitizes_relation_and_goal_fields():
-    """M7: the new V2-a relation/goal fields are attacker-controlled and must be _data-sanitized
+    """The V2-a relation/goal fields are attacker-controlled and must be _data-sanitized
     before landing in the agent-loaded CONTEXT.md (no prompt-injection bypass)."""
     from kp_build.schema import GoalMetric, Relation
     from kp_build.digest import build_context
@@ -969,8 +969,18 @@ def test_context_sanitizes_relation_and_goal_fields():
     assert "```" not in ctx                               # every rendered field sanitized
 
 
+@pytest.fixture(autouse=True)
+def _hyperframes_pin_isolated(monkeypatch):
+    """The supply-chain pin is per-PROCESS state — without isolation one test's confirmed check would
+    leak into the next. Default each test to 'pin already confirmed' (parse/extraction tests exercise
+    parsing, not the registry check) and a clean env; the pin tests reset the flag to False themselves."""
+    import kp_build.verifier as _verifier
+    monkeypatch.setattr(_verifier, "_hyperframes_integrity_ok", True)
+    monkeypatch.delenv("KP_BUILD_HYPERFRAMES_BIN", raising=False)
+
+
 def test_hyperframes_runner_extracts_codes_per_tool():
-    """should-fix: the PRODUCTION default runner was untested. Inject the run fn and pin parse/extraction."""
+    """Pin the PRODUCTION default runner's per-tool parse/extraction via an injected run fn."""
     from kp_build.verifier import hyperframes_runner
     from types import SimpleNamespace
     def run(out):
@@ -993,11 +1003,11 @@ def test_execution_verifier_inspect_error_sentinel_fails_any_claim():
     v = ExecutionVerifier(lambda art, tool: {"codes": ["inspect_error"]}).verify(
         SimpleNamespace(tool="inspect", gate_code="text_box_overflow", artifact="x"))
     assert v.exists is False and v.status == "output-mismatch"
-    # REVIEW should-fix: the evidence must say inspect could not run, NOT that text_box_overflow 'fired'
+    # the evidence must say inspect could not run, NOT that text_box_overflow 'fired'
     assert "could not run" in v.evidence and "text_box_overflow fired" not in v.evidence
 
 def test_hyperframes_runner_staticguard_invalid_contract_is_inspect_error():
-    """REVIEW should-fix: a contract-INVALID composition prints '[StaticGuard] Invalid HyperFrame
+    """A contract-INVALID composition prints '[StaticGuard] Invalid HyperFrame
     contract' to stderr but {ok:true, issues:[]} on stdout — the runner must NOT read that as clean."""
     from kp_build.verifier import hyperframes_runner
     from types import SimpleNamespace
@@ -1018,7 +1028,7 @@ def test_hyperframes_runner_none_on_no_json_bad_json_or_unknown_tool():
 
 
 def test_validate_rejects_no_paper_no_verdict_claim(tmp_path: Path):
-    """should-fix: validate's reject branch (a shipped claim with neither a paper nor a verdict) was untested."""
+    """validate must reject a shipped claim that carries neither a cited paper nor a verifier verdict."""
     from kp_build.validate import validate
     from kp_build.schema import claim_to_md
     for sub in ("papers", "claims", "open-problems", "debates", "benchmarks", "relations"):
@@ -1030,7 +1040,7 @@ def test_validate_rejects_no_paper_no_verdict_claim(tmp_path: Path):
 
 
 def test_fetch_doc_corpus_survives_network_error_and_bad_json():
-    """should-fix: the network-error + bad-JSON continue-branches were untested."""
+    """A network error or bad JSON while fetching the corpus yields an empty corpus, never a crash."""
     from kp_build.ground import fetch_doc_corpus
     def err(url): raise RuntimeError("network down")
     assert fetch_doc_corpus([Paper(cite_key="p1", title="t", doi="10.x/y")], get=err) == {}
@@ -1038,7 +1048,7 @@ def test_fetch_doc_corpus_survives_network_error_and_bad_json():
 
 
 def test_doc_grounding_verifier_unconfirmed_on_too_short_passage():
-    """nice-to-have: the load-bearing `unconfirmed`(None) honesty branch was untested."""
+    """A passage too short to check lands in the `unconfirmed`(None) honesty branch — abstain, not a verdict."""
     from kp_build.verifier import DocGroundingVerifier
     v = DocGroundingVerifier({"p1": "a much longer source text that does not contain that exact phrase here."}).verify(
         Claim(id="c", statement="s", paper="p1", supporting_passage="too short"))
@@ -1046,14 +1056,14 @@ def test_doc_grounding_verifier_unconfirmed_on_too_short_passage():
 
 
 def test_execution_verifier_non_list_codes_is_not_silently_verified():
-    """should-fix: a malformed runner result {'codes':'nd'} must NOT fail-OPEN to verified via substring."""
+    """A malformed runner result {'codes':'nd'} must NOT fail-OPEN to verified via substring."""
     from kp_build.verifier import ExecutionVerifier
     v = ExecutionVerifier(lambda a, t: {"codes": "non_deterministic_code"}).verify(_directive())
     assert v.status == "error" and v.exists is False     # non-list codes -> untrusted, never verified
 
 
 def test_index_labels_unverified_relations_honestly(tmp_path: Path):
-    """should-fix: relations ship UNVERIFIED (no relation-grounding step); the index must not print a
+    """Relations ship UNVERIFIED (no relation-grounding step); the index must not print a
     misleading 'verified': false — it labels them 'unrun'."""
     import json as _json
     from kp_build.schema import Relation
@@ -1069,7 +1079,7 @@ def test_index_labels_unverified_relations_honestly(tmp_path: Path):
 
 
 def test_load_rejects_unsafe_execution_artifact(tmp_path):
-    """M5: the execution artifact is fed to a subprocess that reads files — reject absolute paths,
+    """The execution artifact is fed to a subprocess that reads files — reject absolute paths,
     '..' traversal, and URL schemes (arbitrary local-file read / SSRF)."""
     from kp_build.cli import _load, ResearchInputError
     for bad in ["/etc/passwd", "../../../etc/passwd", "http://evil/x", "a/../b"]:
@@ -1097,3 +1107,77 @@ def test_validate_accepts_no_paper_execution_claim(tmp_path: Path):
     res = validate(assemble(pkg, tmp_path, built="2026-01-01"))
     assert not any("unknown paper" in e for e in res.errors)
     assert res.ok
+
+
+# ── supply-chain: the TOFU integrity pin on the npx-fetched hyperframes CLI ──────────────────
+
+def _pin_run(view_out, tool_out='{"findings":[{"code":"nd"}]}'):
+    """A subprocess.run-shaped fake covering BOTH calls the runner makes: `npm view` (the integrity
+    check) answers ``view_out``; the tool invocation answers ``tool_out``. Records every argv."""
+    def run(cmd, **k):
+        run.calls.append(list(cmd))
+        return SimpleNamespace(stdout=(view_out if cmd[:2] == ["npm", "view"] else tool_out), stderr="")
+    run.calls = []
+    return run
+
+
+def test_hyperframes_runner_pin_match_runs_tool_as_before(monkeypatch):
+    """Registry still serves the recorded integrity -> the check passes, npx runs, and parse/extraction
+    is byte-identical to the pre-pin behavior."""
+    import kp_build.verifier as verifier
+    from kp_build.verifier import hyperframes_runner, _HYPERFRAMES_INTEGRITY, _HYPERFRAMES_PKG
+    monkeypatch.setattr(verifier, "_hyperframes_integrity_ok", False)
+    run = _pin_run(_HYPERFRAMES_INTEGRITY + "\n", '{"findings":[{"code":"nd"},{"code":"rep"}]}')
+    assert hyperframes_runner("x", "lint", _run=run) == {"codes": ["nd", "rep"]}
+    assert run.calls[0] == ["npm", "view", _HYPERFRAMES_PKG, "dist.integrity"]
+    assert run.calls[1] == ["npx", "--yes", _HYPERFRAMES_PKG, "lint", "--json", "x"]
+
+
+def test_hyperframes_runner_pin_mismatch_raises_and_claim_lands_error(monkeypatch):
+    """The attack: the registry serves a DIFFERENT artifact under the pinned version (post-pin hijack /
+    re-publish). The runner raises BEFORE any npx fetch, and through ExecutionVerifier the claim lands
+    status='error', exists=False — never verified."""
+    import kp_build.verifier as verifier
+    from kp_build.verifier import hyperframes_runner, ExecutionVerifier
+    monkeypatch.setattr(verifier, "_hyperframes_integrity_ok", False)
+    bad = _pin_run("sha512-EVILEVILEVILEVILEVILEVILEVILEVILEVILEVILEVILEVILEVILEVILEVILEVILEVIL==")
+    with pytest.raises(RuntimeError, match="different artifact"):
+        hyperframes_runner("x", "lint", _run=bad)
+    assert all(c[0] != "npx" for c in bad.calls)          # nothing fetched, nothing executed
+    # a failed check is never cached — the verifier path re-checks and maps the raise to 'error'
+    v = ExecutionVerifier(lambda a, t: hyperframes_runner(a, t, _run=bad)).verify(_directive())
+    assert v.exists is False and v.status == "error"
+
+
+def test_hyperframes_runner_pin_empty_or_garbage_output_raises(monkeypatch):
+    """An empty or unparseable `npm view` answer is treated as a mismatch — the check never fails OPEN."""
+    import kp_build.verifier as verifier
+    from kp_build.verifier import hyperframes_runner
+    for out in ("", "   \n", "npm ERR! code E404"):
+        monkeypatch.setattr(verifier, "_hyperframes_integrity_ok", False)
+        with pytest.raises(RuntimeError, match="different artifact"):
+            hyperframes_runner("x", "lint", _run=_pin_run(out))
+
+
+def test_hyperframes_runner_audited_bin_override_skips_registry_check(monkeypatch):
+    """KP_BUILD_HYPERFRAMES_BIN = the operator's own audited install: run it directly — no npm fetch
+    happens, so there is no registry to distrust and `npm view` is NEVER consulted."""
+    import kp_build.verifier as verifier
+    from kp_build.verifier import hyperframes_runner
+    monkeypatch.setattr(verifier, "_hyperframes_integrity_ok", False)
+    monkeypatch.setenv("KP_BUILD_HYPERFRAMES_BIN", "/opt/audited/hyperframes")
+    run = _pin_run("sha512-WOULD-FAIL-IF-CONSULTED", '{"findings":[{"code":"nd"}]}')
+    assert hyperframes_runner("art.html", "lint", _run=run) == {"codes": ["nd"]}
+    assert run.calls == [["/opt/audited/hyperframes", "lint", "--json", "art.html"]]
+
+
+def test_hyperframes_runner_pin_checked_once_per_process(monkeypatch):
+    """A multi-gate build queries `npm view` ONCE — the confirmed pin is cached at module level."""
+    import kp_build.verifier as verifier
+    from kp_build.verifier import hyperframes_runner, _HYPERFRAMES_INTEGRITY
+    monkeypatch.setattr(verifier, "_hyperframes_integrity_ok", False)
+    run = _pin_run(_HYPERFRAMES_INTEGRITY, '{"findings":[]}')
+    assert hyperframes_runner("x", "lint", _run=run) == {"codes": []}
+    assert hyperframes_runner("x", "lint", _run=run) == {"codes": []}
+    assert sum(1 for c in run.calls if c[:2] == ["npm", "view"]) == 1
+    assert sum(1 for c in run.calls if c[0] == "npx") == 2

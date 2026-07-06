@@ -90,7 +90,7 @@ def test_assemble_prunes_refs_and_reports_drops(tmp_path):
 def test_assemble_denormalizes_id_into_chunks(tmp_path):
     out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
     chunk = (out / "claims" / "c1.md").read_text()
-    assert "arXiv:2401.1" in chunk  # the chunk resolves to a real id standalone (FMT-8)
+    assert "arXiv:2401.1" in chunk  # the chunk resolves to a real id standalone
 
 
 def test_assemble_manifest_coverage_and_source_span(tmp_path):
@@ -138,8 +138,8 @@ def test_digest_passage_and_single_source_cap():
               Claim(id="c2", statement="Confirmed result.", paper="p", supporting_passage="Also seen.",
                     claim_type="result", confidence="high", corroborated_by=["q"])]
     ctx = build_context(Package(topic="T", scope="s", papers=papers, claims=claims), built="2026-06-14")
-    assert "> We measured 2.8x." in ctx                         # FMT-1 passage carried
-    assert "medium (single-source)" in ctx                      # FMT-2 unearned 'high' capped
+    assert "> We measured 2.8x." in ctx                         # supporting passage carried
+    assert "medium (single-source)" in ctx                      # unearned 'high' capped
     assert "(corroborated by 1)" in ctx                         # corroboration surfaced
 
 
@@ -150,7 +150,7 @@ def test_digest_sota_table():
     assert "SOTA snapshot" in ctx and "| Medusa | MT-Bench | speedup | 2.8x | [p] |" in ctx
 
 
-# ── review fixes: container-type robustness (F1/F2/F4/DUPID) ─────────────────────
+# ── container-type robustness: malformed input containers are clean errors, not crashes ──
 
 
 def test_load_rejects_wrong_container_types_cleanly(tmp_path):
@@ -196,11 +196,11 @@ def test_duplicate_node_id_rejected(tmp_path):
 def test_claim_from_md_uses_defaults_not_none():
     from kp_build.schema import claim_from_md
     c = claim_from_md("---\nid: c1\nstatement: s\npaper: p\n---\n")
-    assert c.claim_type == "finding" and c.confidence == "medium"   # not None (F3)
+    assert c.claim_type == "finding" and c.confidence == "medium"   # not None
 
 
 def test_digest_corroboration_filtered_to_verified_standalone():
-    # DIGEST-CORROB: standalone build_context (unpruned) must not count an unverified corroborator
+    # standalone build_context (unpruned) must not count an unverified corroborator
     papers = [Paper(cite_key="p", title="P", arxiv_id="1.1", verified=V()),
               Paper(cite_key="bad", title="Bad", verified=Verification(exists=False, status="not-found"))]
     c = Claim(id="c1", statement="Big.", paper="p", supporting_passage="", claim_type="result",
