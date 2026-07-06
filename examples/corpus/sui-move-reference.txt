@@ -1,0 +1,3415 @@
+# Source: https://github.com/MystenLabs/move-book @ 8ce4dcb9a23bef62d4d7ffe5c36e7002845d4897 — Apache-2.0. Excerpts for offline doc-grounding verification.
+
+## FILE: reference/structs.md
+
+---
+title: 'Structs | Reference'
+description: "Move structs reference: define custom types, positional and named fields, abilities, visibility, and resource semantics."
+---
+
+# Structs and Resources
+
+A _struct_ is a user-defined data structure containing typed fields. Structs can store any
+non-reference, non-tuple type, including other structs.
+
+Structs can be used to define all "asset" values or unrestricted values, where the operations
+performed on those values can be controlled by the struct's [abilities](./abilities). By default,
+structs are linear and ephemeral. By this we mean that they: cannot be copied, cannot be dropped,
+and cannot be stored in storage. This means that all values have to have ownership transferred
+(linear) and the values must be dealt with by the end of the program's execution (ephemeral). We can
+relax this behavior by giving the struct [abilities](./abilities) which allow values to be copied
+or dropped and also to be stored in storage or to define storage schemas.
+
+## Defining Structs
+
+Structs must be defined inside a module, and the struct's fields can either be named or positional:
+
+```move
+module a::m;
+
+public struct Foo { x: u64, y: bool }
+public struct Bar {}
+public struct Baz { foo: Foo, }
+//                          ^ note: it is fine to have a trailing comma
+
+public struct PosFoo(u64, bool)
+public struct PosBar()
+public struct PosBaz(Foo)
+```
+
+Structs cannot be recursive, so the following definitions are invalid:
+
+```move
+public struct Foo { x: Foo }
+//                     ^ ERROR! recursive definition
+
+public struct A { b: B }
+public struct B { a: A }
+//                   ^ ERROR! recursive definition
+
+public struct D(D)
+//              ^ ERROR! recursive definition
+```
+
+### Visibility
+
+As you may have noticed, all structs are declared as `public`. This means that the type of the
+struct can be referred to from any other module. However, the fields of the struct, and the ability
+to create or destroy the struct, are still internal to the module that defines the struct.
+
+In the future, we plan on adding to declare structs as `public(package)` or as internal, much like
+[functions](./functions#visibility).
+
+### Abilities
+
+As mentioned above: by default, a struct declaration is linear and ephemeral. So to allow the value
+to be used in these ways (e.g., copied, dropped, stored in an [object](./abilities/object), or
+used to define a storable [object](./abilities/object)), structs can be granted
+[abilities](./abilities) by annotating them with `has <ability>`:
+
+```move
+module a::m {
+    public struct Foo has copy, drop { x: u64, y: bool }
+}
+```
+
+The ability declaration can occur either before or after the struct's fields. However, only one or
+the other can be used, and not both. If declared after the struct's fields, the ability declaration
+must be terminated with a semicolon:
+
+```move
+module a::m;
+
+public struct PreNamedAbilities has copy, drop { x: u64, y: bool }
+public struct PostNamedAbilities { x: u64, y: bool } has copy, drop;
+public struct PostNamedAbilitiesInvalid { x: u64, y: bool } has copy, drop
+//                                                                        ^ ERROR! missing semicolon
+
+public struct NamedInvalidAbilities has copy { x: u64, y: bool } has drop;
+//                                                               ^ ERROR! duplicate ability declaration
+
+public struct PrePositionalAbilities has copy, drop (u64, bool)
+public struct PostPositionalAbilities (u64, bool) has copy, drop;
+public struct PostPositionalAbilitiesInvalid (u64, bool) has copy, drop
+//                                                                     ^ ERROR! missing semicolon
+public struct InvalidAbilities has copy (u64, bool) has drop;
+//                                                  ^ ERROR! duplicate ability declaration
+```
+
+For more details, see the section on
+[annotating a struct's abilities](./abilities#annotating-structs-and-enums).
+
+### Naming
+
+Structs must start with a capital letter `A` to `Z`. After the first letter, struct names can
+contain underscores `_`, letters `a` to `z`, letters `A` to `Z`, or digits `0` to `9`.
+
+```move
+public struct Foo {}
+public struct BAR {}
+public struct B_a_z_4_2 {}
+public struct P_o_s_Foo()
+```
+
+This naming restriction of starting with `A` to `Z` is in place to give room for future language
+features. It may or may not be removed later.
+
+## Using Structs
+
+### Creating Structs
+
+Values of a struct type can be created (or "packed") by indicating the struct name, followed by
+value for each field.
+
+For a struct with named fields, the order of the fields does not matter, but the field name needs to
+be provided. For a struct with positional fields, the order of the fields must match the order of
+the fields in the struct definition, and it must be created using `()` instead of `{}` to enclose
+the parameters.
+
+```move
+module a::m;
+
+public struct Foo has drop { x: u64, y: bool }
+public struct Baz has drop { foo: Foo }
+public struct Positional(u64, bool) has drop;
+
+fun example() {
+    let foo = Foo { x: 0, y: false };
+    let baz = Baz { foo: foo };
+    // Note: positional struct values are created using parentheses and
+    // based on position instead of name.
+    let pos = Positional(0, false);
+    let pos_invalid = Positional(false, 0);
+    //                           ^ ERROR! Fields are out of order and the types don't match.
+}
+```
+
+For structs with named fields, you can use the following shorthand if you have a local variable with
+the same name as the field:
+
+```move
+let baz = Baz { foo: foo };
+// is equivalent to
+let baz = Baz { foo };
+```
+
+This is sometimes called "field name punning".
+
+### Destroying Structs via Pattern Matching
+
+Struct values can be destroyed by binding or assigning them in patterns using similar syntax to
+constructing them.
+
+```move
+module a::m;
+
+public struct Foo { x: u64, y: bool }
+public struct Bar(Foo)
+public struct Baz {}
+public struct Qux()
+
+fun example_destroy_foo() {
+    let foo = Foo { x: 3, y: false };
+    let Foo { x, y: foo_y } = foo;
+    //        ^ shorthand for `x: x`
+
+    // two new bindings
+    //   x: u64 = 3
+    //   foo_y: bool = false
+}
+
+fun example_destroy_foo_wildcard() {
+    let foo = Foo { x: 3, y: false };
+    let Foo { x, y: _ } = foo;
+
+    // only one new binding since y was bound to a wildcard
+    //   x: u64 = 3
+}
+
+fun example_destroy_foo_assignment() {
+    let x: u64;
+    let y: bool;
+    Foo { x, y } = Foo { x: 3, y: false };
+
+    // mutating existing variables x and y
+    //   x = 3, y = false
+}
+
+fun example_foo_ref() {
+    let foo = Foo { x: 3, y: false };
+    let Foo { x, y } = &foo;
+
+    // two new bindings
+    //   x: &u64
+    //   y: &bool
+}
+
+fun example_foo_ref_mut() {
+    let foo = Foo { x: 3, y: false };
+    let Foo { x, y } = &mut foo;
+
+    // two new bindings
+    //   x: &mut u64
+    //   y: &mut bool
+}
+
+fun example_destroy_bar() {
+    let bar = Bar(Foo { x: 3, y: false });
+    let Bar(Foo { x, y }) = bar;
+    //            ^ nested pattern
+
+    // two new bindings
+    //   x: u64 = 3
+    //   y: bool = false
+}
+
+fun example_destroy_baz() {
+    let baz = Baz {};
+    let Baz {} = baz;
+}
+
+fun example_destroy_qux() {
+    let qux = Qux();
+    let Qux() = qux;
+}
+```
+
+### Accessing Struct Fields
+
+Fields of a struct can be accessed using the dot operator `.`.
+
+For structs with named fields, the fields can be accessed by their name:
+
+```move
+public struct Foo { x: u64, y: bool }
+let foo = Foo { x: 3, y: true };
+let x = foo.x;  // x == 3
+let y = foo.y;  // y == true
+```
+
+For positional structs, fields can be accessed by their position in the struct definition:
+
+```move
+public struct PosFoo(u64, bool)
+let pos_foo = PosFoo(3, true);
+let x = pos_foo.0;  // x == 3
+let y = pos_foo.1;  // y == true
+```
+
+Accessing struct fields without borrowing or copying them is subject to the field's ability
+constraints. For more details see the sections on
+[borrowing structs and fields](#borrowing-structs-and-fields) and
+[reading and writing fields](#reading-and-writing-fields) for more information.
+
+### Borrowing Structs and Fields
+
+The `&` and `&mut` operator can be used to create references to structs or fields. These examples
+include some optional type annotations (e.g., `: &Foo`) to demonstrate the type of operations.
+
+```move
+let foo = Foo { x: 3, y: true };
+let foo_ref: &Foo = &foo;
+let y: bool = foo_ref.y;         // reading a field via a reference to the struct
+let x_ref: &u64 = &foo.x;        // borrowing a field by extending a reference to the struct
+
+let x_ref_mut: &mut u64 = &mut foo.x;
+*x_ref_mut = 42;            // modifying a field via a mutable reference
+```
+
+It is possible to borrow inner fields of nested structs:
+
+```move
+let foo = Foo { x: 3, y: true };
+let bar = Bar(foo);
+
+let x_ref = &bar.0.x;
+```
+
+You can also borrow a field via a reference to a struct:
+
+```move
+let foo = Foo { x: 3, y: true };
+let foo_ref = &foo;
+let x_ref = &foo_ref.x;
+// this has the same effect as let x_ref = &foo.x
+```
+
+### Reading and Writing Fields
+
+If you need to read and copy a field's value, you can then dereference the borrowed field:
+
+```move
+let foo = Foo { x: 3, y: true };
+let bar = Bar(copy foo);
+let x: u64 = *&foo.x;
+let y: bool = *&foo.y;
+let foo2: Foo = *&bar.0;
+```
+
+More canonically, the dot operator can be used to read fields of a struct without any borrowing. As
+is true with
+[dereferencing](./primitive-types/references#reading-and-writing-through-references), the field
+type must have the `copy` [ability](./abilities).
+
+```move
+let foo = Foo { x: 3, y: true };
+let x = foo.x;  // x == 3
+let y = foo.y;  // y == true
+```
+
+Dot operators can be chained to access nested fields:
+
+```move
+let bar = Bar(Foo { x: 3, y: true });
+let x = baz.0.x; // x = 3;
+```
+
+However, this is not permitted for fields that contain non-primitive types, such a vector or another
+struct:
+
+```move
+let foo = Foo { x: 3, y: true };
+let bar = Bar(foo);
+let foo2: Foo = *&bar.0;
+let foo3: Foo = bar.0; // error! must add an explicit copy with *&
+```
+
+We can mutably borrow a field to a struct to assign it a new value:
+
+```move
+let mut foo = Foo { x: 3, y: true };
+*&mut foo.x = 42;     // foo = Foo { x: 42, y: true }
+*&mut foo.y = !foo.y; // foo = Foo { x: 42, y: false }
+let mut bar = Bar(foo);               // bar = Bar(Foo { x: 42, y: false })
+*&mut bar.0.x = 52;                   // bar = Bar(Foo { x: 52, y: false })
+*&mut bar.0 = Foo { x: 62, y: true }; // bar = Bar(Foo { x: 62, y: true })
+```
+
+Similar to dereferencing, we can instead directly use the dot operator to modify a field. And in
+both cases, the field type must have the `drop` [ability](./abilities).
+
+```move
+let mut foo = Foo { x: 3, y: true };
+foo.x = 42;     // foo = Foo { x: 42, y: true }
+foo.y = !foo.y; // foo = Foo { x: 42, y: false }
+let mut bar = Bar(foo);         // bar = Bar(Foo { x: 42, y: false })
+bar.0.x = 52;                   // bar = Bar(Foo { x: 52, y: false })
+bar.0 = Foo { x: 62, y: true }; // bar = Bar(Foo { x: 62, y: true })
+```
+
+The dot syntax for assignment also works via a reference to a struct:
+
+```move
+let mut foo = Foo { x: 3, y: true };
+let foo_ref = &mut foo;
+foo_ref.x = foo_ref.x + 1;
+```
+
+## Privileged Struct Operations
+
+Most struct operations on a struct type `T` can only be performed inside the module that declares
+`T`:
+
+- Struct types can only be created ("packed"), destroyed ("unpacked") inside the module that defines
+  the struct.
+- The fields of a struct are only accessible inside the module that defines the struct.
+
+Following these rules, if you want to modify your struct outside the module, you will need to
+provide public APIs for them. The end of the chapter contains some examples of this.
+
+However as stated [in the visibility section above](#visibility), struct _types_ are always visible
+to another module
+
+```move
+module a::m {
+    public struct Foo has drop { x: u64 }
+
+    public fun new_foo(): Foo {
+        Foo { x: 42 }
+    }
+}
+
+module a::n {
+    use a::m::Foo;
+
+    public struct Wrapper has drop {
+        foo: Foo
+        //   ^ valid the type is public
+
+    }
+
+    fun f1(foo: Foo) {
+        let x = foo.x;
+        //      ^ ERROR! cannot access fields of `Foo` outside of `a::m`
+    }
+
+    fun f2() {
+        let foo_wrapper = Wrapper { foo: a::m::new_foo() };
+        //                               ^ valid the function is public
+    }
+}
+
+```
+
+## Ownership
+
+As mentioned above in [Defining Structs](#defining-structs), structs are by default linear and
+ephemeral. This means they cannot be copied or dropped. This property can be very useful when
+modeling real world assets like money, as you do not want money to be duplicated or get lost in
+circulation.
+
+```move
+module a::m;
+
+public struct Foo { x: u64 }
+
+public fun copying() {
+    let foo = Foo { x: 100 };
+    let foo_copy = copy foo; // ERROR! 'copy'-ing requires the 'copy' ability
+    let foo_ref = &foo;
+    let another_copy = *foo_ref // ERROR! dereference requires the 'copy' ability
+}
+
+public fun destroying_1() {
+    let foo = Foo { x: 100 };
+
+    // error! when the function returns, foo still contains a value.
+    // This destruction requires the 'drop' ability
+}
+
+public fun destroying_2(f: &mut Foo) {
+    *f = Foo { x: 100 } // error!
+                        // destroying the old value via a write requires the 'drop' ability
+}
+```
+
+To fix the example `fun destroying_1`, you would need to manually "unpack" the value:
+
+```move
+module a::m;
+
+public struct Foo { x: u64 }
+
+public fun destroying_1_fixed() {
+    let foo = Foo { x: 100 };
+    let Foo { x: _ } = foo;
+}
+```
+
+Recall that you are only able to deconstruct a struct within the module in which it is defined. This
+can be leveraged to enforce certain invariants in a system, for example, conservation of money.
+
+If on the other hand, your struct does not represent something valuable, you can add the abilities
+`copy` and `drop` to get a struct value that might feel more familiar from other programming
+languages:
+
+```move
+module a::m;
+
+public struct Foo has copy, drop { x: u64 }
+
+public fun run() {
+    let foo = Foo { x: 100 };
+    let foo_copy = foo;
+    //             ^ this code copies foo,
+    //             whereas `let x = move foo` would move foo
+
+    let x = foo.x;            // x = 100
+    let x_copy = foo_copy.x;  // x = 100
+
+    // both foo and foo_copy are implicitly discarded when the function returns
+}
+```
+
+## Storage
+
+Structs can be used to define storage schemas, but the details are different per deployment of Move.
+See the documentation for the [`key` ability](./abilities#key) and
+[Sui objects](./abilities/object) for more details.
+
+
+## FILE: reference/functions.md
+
+---
+title: 'Functions | Reference'
+description: "Move functions reference: declaration, visibility modifiers, entry functions, return values, and calling conventions."
+---
+
+# Functions
+
+Functions are declared inside of modules and define the logic and behavior of the module. Functions
+can be reused, either being called from other functions or as entry points for execution.
+
+## Declaration
+
+Functions are declared with the `fun` keyword followed by the function name, type parameters,
+parameters, a return type, and finally the function body.
+
+```text
+<visibility>? <entry>? <macro>? fun <identifier><[type_parameters: constraint],*>([identifier: type],*): <return_type> <function_body>
+```
+
+For example
+
+```move
+fun foo<T1, T2>(x: u64, y: T1, z: T2): (T2, T1, u64) { (z, y, x) }
+```
+
+### Visibility
+
+Module functions, by default, can only be called within the same module. These internal (sometimes
+called private) functions cannot be called from other modules or as entry points.
+
+```move
+module a::m {
+    fun foo(): u64 { 0 }
+    fun calls_foo(): u64 { foo() } // valid
+}
+
+module b::other {
+    fun calls_m_foo(): u64 {
+        a::m::foo() // ERROR!
+//      ^^^^^^^^^^^ 'foo' is internal to 'a::m'
+    }
+}
+```
+
+To allow access from other modules, the function must be declared `public` or `public(package)`.
+Tangential to visibility, an [`entry`](#entry-modifier) function can be called as an entry point for
+execution.
+
+#### `public` visibility
+
+A `public` function can be called by _any_ function defined in _any_ module. As shown in the
+following example, a `public` function can be called by:
+
+- other functions defined in the same module,
+- functions defined in another module, or
+- as an entry point for execution.
+
+```move
+module a::m {
+    public fun foo(): u64 { 0 }
+    fun calls_foo(): u64 { foo() } // valid
+}
+
+module b::other {
+    fun calls_m_foo(): u64 {
+        a::m::foo() // valid
+    }
+}
+```
+
+Fore more details on the entry point to execution see [the section below](#entry-modifier).
+
+#### `public(package)` visibility
+
+The `public(package)` visibility modifier is a more restricted form of the `public` modifier to give
+more control about where a function can be used. A `public(package)` function can be called by:
+
+- other functions defined in the same module, or
+- other functions defined in the same package (the same address)
+
+```move
+module a::m {
+    public(package) fun foo(): u64 { 0 }
+    fun calls_foo(): u64 { foo() } // valid
+}
+
+module a::n {
+    fun calls_m_foo(): u64 {
+        a::m::foo() // valid, also in `a`
+    }
+}
+
+module b::other {
+    fun calls_m_foo(): u64 {
+        a::m::foo() // ERROR!
+//      ^^^^^^^^^^^ 'foo' can only be called from a module in `a`
+    }
+}
+```
+
+#### DEPRECATED `public(friend)` visibility
+
+Before the addition of `public(package)`, `public(friend)` was used to allow limited public access
+to functions in the same package, but where the list of allowed modules had to be explicitly
+enumerated by the callee's module. see [Friends](./friends) for more details.
+
+### `entry` modifier
+
+In addition to `public` functions, you might have some functions in your modules that you want to
+use as the entry point to execution. The `entry` modifier is designed to allow module functions to
+initiate execution, without having to expose the functionality to other modules.
+
+Essentially, the combination of `public` and `entry` functions define the "main" functions of a
+module, and they specify where Move programs can start executing.
+
+Keep in mind though, an `entry` function _can_ still be called by other Move functions. So while
+they _can_ serve as the start of a Move program, they aren't restricted to that case.
+
+For example:
+
+```move
+module a::m {
+    entry fun foo(): u64 { 0 }
+    fun calls_foo(): u64 { foo() } // valid!
+}
+
+module a::n {
+    fun calls_m_foo(): u64 {
+        a::m::foo() // ERROR!
+//      ^^^^^^^^^^^ 'foo' is internal to 'a::m'
+    }
+}
+```
+
+`entry` functions may have restrictions on their parameters and return types. Although, these
+restrictions are specific to each individual deployment of Move.
+
+[The documentation for `entry` functions on Sui can be found here.](https://docs.sui.io/concepts/sui-move-concepts#entry-functions)
+
+To enable easier testing, `entry` functions can be called from
+[`#[test]` and `#[test_only]`](./unit-testing) contexts.
+
+```move
+module a::m {
+    entry fun foo(): u64 { 0 }
+}
+module a::m_test {
+    #[test]
+    fun my_test(): u64 { a::m::foo() } // valid!
+    #[test_only]
+    fun my_test_helper(): u64 { a::m::foo() } // valid!
+}
+```
+
+### `macro` modifier
+
+Unlike normal functions, `macro` functions do not exist at runtime. Instead, these functions are
+substituted inline at each call site during compilation. These `macro` functions leverage this
+compilation process to provide functionality beyond standard functions, such as accepting
+higher-order _lambda_-style functions as arguments. These lambda arguments, also expanded during
+compilation, allow you to pass parts of the function body to the macro as arguments. For instance,
+consider the following simple loop macro, where the loop body is supplied as a lambda:
+
+```move
+macro fun n_times($n: u64, $body: |u64| -> ()) {
+    let n = $n;
+    let mut i = 0;
+    while (i < n) {
+        $body(i);
+        i = i + 1;
+    }
+}
+
+fun example() {
+    let mut sum = 0;
+    n_times!(10, |x| sum = sum + x );
+}
+```
+
+See the chapter on [macros](./functions/macros) for more information.
+
+### Name
+
+Function names can start with letters `a` to `z`. After the first character, function names can
+contain underscores `_`, letters `a` to `z`, letters `A` to `Z`, or digits `0` to `9`.
+
+```move
+fun fOO() {}
+fun bar_42() {}
+fun bAZ_19() {}
+```
+
+### Type Parameters
+
+After the name, functions can have type parameters
+
+```move
+fun id<T>(x: T): T { x }
+fun example<T1: copy, T2>(x: T1, y: T2): (T1, T1, T2) { (copy x, x, y) }
+```
+
+For more details, see [Move generics](./generics).
+
+### Parameters
+
+Functions parameters are declared with a local variable name followed by a type annotation
+
+```move
+fun add(x: u64, y: u64): u64 { x + y }
+```
+
+We read this as `x` has type `u64`
+
+A function does not have to have any parameters at all.
+
+```move
+fun useless() { }
+```
+
+This is very common for functions that create new or empty data structures
+
+```move
+module a::example;
+
+public struct Counter { count: u64 }
+
+fun new_counter(): Counter {
+    Counter { count: 0 }
+}
+```
+
+### Return type
+
+After the parameters, a function specifies its return type.
+
+```move
+fun zero(): u64 { 0 }
+```
+
+Here `: u64` indicates that the function's return type is `u64`.
+
+Using [tuples](./primitive-types/tuples), a function can return multiple values:
+
+```move
+fun one_two_three(): (u64, u64, u64) { (0, 1, 2) }
+```
+
+If no return type is specified, the function has an implicit return type of unit `()`. These
+functions are equivalent:
+
+```move
+fun just_unit(): () { () }
+fun just_unit() { () }
+fun just_unit() { }
+```
+
+As mentioned in the [tuples section](./primitive-types/tuples), these tuple "values" do not exist as
+runtime values. This means that a function that returns unit `()` does not return any value during
+execution.
+
+### Function body
+
+A function's body is an expression block. The return value of the function is the last value in the
+sequence
+
+```move
+fun example(): u64 {
+    let mut x = 0;
+    x = x + 1;
+    x // returns 'x'
+}
+```
+
+See [the section below for more information on returns](#returning-values)
+
+For more information on expression blocks, see [Move variables](./variables).
+
+### Native Functions
+
+Some functions do not have a body specified, and instead have the body provided by the VM. These
+functions are marked `native`.
+
+Without modifying the VM source code, a programmer cannot add new native functions. Furthermore, it
+is the intent that `native` functions are used for either standard library code or for functionality
+needed for the given Move environment.
+
+Most `native` functions you will likely see are in standard library code, such as `vector`
+
+```move
+module std::vector {
+    native public fun length<Element>(v: &vector<Element>): u64;
+    ...
+}
+```
+
+## Calling
+
+When calling a function, the name can be specified either through an alias or fully qualified
+
+```move
+module a::example {
+    public fun zero(): u64 { 0 }
+}
+
+module b::other {
+    use a::example::{Self, zero};
+    fun call_zero() {
+        // With the `use` above all of these calls are equivalent
+        a::example::zero();
+        example::zero();
+        zero();
+    }
+}
+```
+
+When calling a function, an argument must be given for every parameter.
+
+```move
+module a::example {
+    public fun takes_none(): u64 { 0 }
+    public fun takes_one(x: u64): u64 { x }
+    public fun takes_two(x: u64, y: u64): u64 { x + y }
+    public fun takes_three(x: u64, y: u64, z: u64): u64 { x + y + z }
+}
+
+module b::other {
+    fun call_all() {
+        a::example::takes_none();
+        a::example::takes_one(0);
+        a::example::takes_two(0, 1);
+        a::example::takes_three(0, 1, 2);
+    }
+}
+```
+
+Type arguments can be either specified or inferred. Both calls are equivalent.
+
+```move
+module a::example {
+    public fun id<T>(x: T): T { x }
+}
+
+module b::other {
+    fun call_all() {
+        a::example::id(0);
+        a::example::id<u64>(0);
+    }
+}
+```
+
+For more details, see [Move generics](./generics).
+
+## Returning values
+
+The result of a function, its "return value", is the final value of its function body. For example
+
+```move
+fun add(x: u64, y: u64): u64 {
+    x + y
+}
+```
+
+The return value here is the result of `x + y`.
+
+[As mentioned above](#function-body), the function's body is an [expression block](./variables). The
+expression block can sequence various statements, and the final expression in the block will be
+the value of that block
+
+```move
+fun double_and_add(x: u64, y: u64): u64 {
+    let double_x = x * 2;
+    let double_y = y * 2;
+    double_x + double_y
+}
+```
+
+The return value here is the result of `double_x + double_y`
+
+### `return` expression
+
+A function implicitly returns the value that its body evaluates to. However, functions can also use
+the explicit `return` expression:
+
+```move
+fun f1(): u64 { return 0 }
+fun f2(): u64 { 0 }
+```
+
+These two functions are equivalent. In this slightly more involved example, the function subtracts
+two `u64` values, but returns early with `0` if the second value is too large:
+
+```move
+fun safe_sub(x: u64, y: u64): u64 {
+    if (y > x) return 0;
+    x - y
+}
+```
+
+Note that the body of this function could also have been written as `if (y > x) 0 else x - y`.
+
+However `return` really shines is in exiting deep within other control flow constructs. In this
+example, the function iterates through a vector to find the index of a given value:
+
+```move
+fun index_of<T>(v: &vector<T>, target: &T): Option<u64> {
+    let mut i = 0;
+    let n = v.length();
+    while (i < n) {
+        if (&v[i] == target) return option::some(i);
+        i = i + 1
+    };
+
+    option::none()
+}
+```
+
+Using `return` without an argument is shorthand for `return ()`. That is, the following two
+functions are equivalent:
+
+```move
+fun foo() { return }
+fun foo() { return () }
+```
+
+
+## FILE: reference/abilities.md
+
+---
+title: 'Abilities | Reference'
+description: "Move abilities reference: copy, drop, store, and key — rules for how values can be used, stored, copied, and discarded."
+---
+
+# Abilities
+
+Abilities are a typing feature in Move that control what actions are permissible for values of a
+given type. This system grants fine grained control over the "linear" typing behavior of values, as
+well as if and how values are used in storage (as defined by the specific deployment of Move, e.g.
+the notion of storage for the blockchain). This is implemented by gating access to certain bytecode
+instructions so that for a value to be used with the bytecode instruction, it must have the ability
+required (if one is required at all—not every instruction is gated by an ability).
+
+For Sui, `key` is used to signify an [object](./abilities/object). Objects are the basic unit of
+storage where each object has a unique, 32-byte ID. `store` is then used to both indicate what data
+can be stored inside of an object, and is also used to indicate what types can be transferred
+outside of their defining module.
+
+<!-- TODO future section on detailed walk through maybe. We have some examples at the end but it might be helpful to explain why we have precisely this set of abilities
+
+If you are already somewhat familiar with abilities from writing Move programs, but are still confused as to what is going on, it might be helpful to skip to the [motivating walkthrough](#motivating-walkthrough) section to get an idea of what the system is setup in the way that it is. -->
+
+## The Four Abilities
+
+The four abilities are:
+
+- [`copy`](#copy)
+  - Allows values of types with this ability to be copied.
+- [`drop`](#drop)
+  - Allows values of types with this ability to be popped/dropped.
+- [`store`](#store)
+  - Allows values of types with this ability to exist inside a value in storage.
+  - For Sui, `store` controls what data can be stored inside of an [object](./abilities/object).
+    `store` also controls what types can be transferred outside of their defining module.
+- [`key`](#key)
+  - Allows the type to serve as a "key" for storage. Ostensibly this means the value can be a
+    top-level value in storage; in other words, it does not need to be contained in another value to
+    be in storage.
+  - For Sui, `key` is used to signify an [object](./abilities/object).
+
+### `copy`
+
+The `copy` ability allows values of types with that ability to be copied. It gates the ability to
+copy values out of local variables with the [`copy`](./variables#move-and-copy) operator and to copy
+values via references with
+[dereference `*e`](./primitive-types/references#reading-and-writing-through-references).
+
+If a value has `copy`, all values contained inside of that value have `copy`.
+
+### `drop`
+
+The `drop` ability allows values of types with that ability to be dropped. By dropped, we mean that
+value is not transferred and is effectively destroyed as the Move program executes. As such, this
+ability gates the ability to ignore values in a multitude of locations, including:
+
+- not using the value in a local variable or parameter
+- not using the value in a [sequence via `;`](./variables#expression-blocks)
+- overwriting values in variables in [assignments](./variables#assignments)
+- overwriting values via references when
+  [writing `*e1 = e2`](./primitive-types/references#reading-and-writing-through-references).
+
+If a value has `drop`, all values contained inside of that value have `drop`.
+
+### `store`
+
+The `store` ability allows values of types with this ability to exist inside of a value in storage,
+_but_ not necessarily as a top-level value in storage. This is the only ability that does not
+directly gate an operation. Instead it gates the existence in storage when used in tandem with
+`key`.
+
+If a value has `store`, all values contained inside of that value have `store`.
+
+For Sui, `store` serves double duty. It controls what values can appear inside of an
+[object](/storage/store-ability), and what objects can be
+[transferred](./abilities/object#transfer-rules) outside of their defining module.
+
+### `key`
+
+The `key` ability allows the type to serve as a key for storage operations as defined by the
+deployment of Move. While it is specific per Move instance, it serves to gates all storage
+operations, so in order for a type to be used with storage primitives, the type must have the `key`
+ability.
+
+If a value has `key`, all values contained inside of that value have `store`. This is the only
+ability with this sort of asymmetry.
+
+For Sui, `key` is used to signify an [object](./abilities/object).
+
+## Builtin Types
+
+All primitive, builtin types have `copy`, `drop`, and `store`.
+
+- `bool`, `u8`, `u16`, `u32`, `u64`, `u128`, `u256`, and `address` all have `copy`, `drop`, and
+  `store`.
+- `vector<T>` may have `copy`, `drop`, and `store` depending on the abilities of `T`.
+  - See [Conditional Abilities and Generic Types](#conditional-abilities-and-generic-types) for more
+    details.
+- Immutable references `&` and mutable references `&mut` both have `copy` and `drop`.
+  - This refers to copying and dropping the reference itself, not what they refer to.
+  - References cannot appear in global storage, hence they do not have `store`.
+
+Note that none of the primitive types have `key`, meaning none of them can be used directly with
+storage operations.
+
+## Annotating Structs and Enums
+
+To declare that a `struct` or `enum` has an ability, it is declared with `has <ability>` after the
+datatype name and either before or after the fields/variants. For example:
+
+```move file=packages/reference/sources/abilities.move anchor=annotating_datatypes
+
+```
+
+In this case: `Ignorable*` has the `drop` ability. `Pair*` and `MyVec*` both have `copy`, `drop`,
+and `store`.
+
+All of these abilities have strong guarantees over these gated operations. The operation can be
+performed on the value only if it has that ability; even if the value is deeply nested inside of
+some other collection!
+
+As such: when declaring a struct’s abilities, certain requirements are placed on the fields. All
+fields must satisfy these constraints. These rules are necessary so that structs satisfy the
+reachability rules for the abilities given above. If a struct is declared with the ability...
+
+- `copy`, all fields must have `copy`.
+- `drop`, all fields must have `drop`.
+- `store`, all fields must have `store`.
+- `key`, all fields must have `store`.
+  - `key` is the only ability currently that doesn’t require itself.
+
+An enum can have any of these abilities with the exception of `key`, which enums cannot have because
+they cannot be top-level values (objects) in storage. The same rules apply to fields of enum
+variants as they do for struct fields though. In particular, if an enum is declared with the
+ability...
+
+- `copy`, all fields of all variants must have `copy`.
+- `drop`, all fields of all variants must have `drop`.
+- `store`, all fields of all variants must have `store`.
+- `key`, is not allowed on enums as previously mentioned.
+
+For example:
+
+```move
+// A struct without any abilities
+public struct NoAbilities {}
+
+public struct WantsCopy has copy {
+    f: NoAbilities, // ERROR 'NoAbilities' does not have 'copy'
+}
+
+public enum WantsCopyEnum has copy {
+    Variant1
+    Variant2(NoAbilities), // ERROR 'NoAbilities' does not have 'copy'
+}
+```
+
+and similarly:
+
+```move
+// A struct without any abilities
+public struct NoAbilities {}
+
+public struct MyData has key {
+    f: NoAbilities, // Error 'NoAbilities' does not have 'store'
+}
+
+public struct MyDataEnum has store {
+    Variant1,
+    Variant2(NoAbilities), // Error 'NoAbilities' does not have 'store'
+}
+```
+
+## Conditional Abilities and Generic Types
+
+When abilities are annotated on a generic type, not all instances of that type are guaranteed to
+have that ability. Consider this struct declaration:
+
+<!-- file=packages/reference/sources/abilities.move anchor=conditional_abilities -->
+
+```move
+public struct Cup<T> has copy, drop, store, key { item: T }
+```
+
+It might be very helpful if `Cup` could hold any type, regardless of its abilities. The type system
+can _see_ the type parameter, so it should be able to remove abilities from `Cup` if it _sees_ a
+type parameter that would violate the guarantees for that ability.
+
+This behavior might sound a bit confusing at first, but it might be more understandable if we think
+about collection types. We could consider the builtin type `vector` to have the following type
+declaration:
+
+```move
+vector<T> has copy, drop, store;
+```
+
+We want `vector`s to work with any type. We don't want separate `vector` types for different
+abilities. So what are the rules we would want? Precisely the same that we would want with the field
+rules above. So, it would be safe to copy a `vector` value only if the inner elements can be copied.
+It would be safe to ignore a `vector` value only if the inner elements can be ignored/dropped. And,
+it would be safe to put a `vector` in storage only if the inner elements can be in storage.
+
+To have this extra expressiveness, a type might not have all the abilities it was declared with
+depending on the instantiation of that type; instead, the abilities a type will have depends on both
+its declaration **and** its type arguments. For any type, type parameters are pessimistically
+assumed to be used inside of the struct, so the abilities are only granted if the type parameters
+meet the requirements described above for fields. Taking `Cup` from above as an example:
+
+- `Cup` has the ability `copy` only if `T` has `copy`.
+- It has `drop` only if `T` has `drop`.
+- It has `store` only if `T` has `store`.
+- It has `key` only if `T` has `store`.
+
+Here are examples for this conditional system for each ability:
+
+### Example: conditional `copy`
+
+```move
+public struct NoAbilities {}
+public struct S has copy, drop { f: bool }
+public struct Cup<T> has copy, drop, store { item: T }
+
+fun example(c_x: Cup<u64>, c_s: Cup<S>) {
+    // Valid, 'Cup<u64>' has 'copy' because 'u64' has 'copy'
+    let c_x2 = copy c_x;
+    // Valid, 'Cup<S>' has 'copy' because 'S' has 'copy'
+    let c_s2 = copy c_s;
+}
+
+fun invalid(c_account: Cup<signer>, c_n: Cup<NoAbilities>) {
+    // Invalid, 'Cup<signer>' does not have 'copy'.
+    // Even though 'Cup' was declared with copy, the instance does not have 'copy'
+    // because 'signer' does not have 'copy'
+    let c_account2 = copy c_account;
+    // Invalid, 'Cup<NoAbilities>' does not have 'copy'
+    // because 'NoAbilities' does not have 'copy'
+    let c_n2 = copy c_n;
+}
+```
+
+### Example: conditional `drop`
+
+```move
+public struct NoAbilities {}
+public struct S has copy, drop { f: bool }
+public struct Cup<T> has copy, drop, store { item: T }
+
+fun unused() {
+    Cup<bool> { item: true }; // Valid, 'Cup<bool>' has 'drop'
+    Cup<S> { item: S { f: false }}; // Valid, 'Cup<S>' has 'drop'
+}
+
+fun left_in_local(c_account: Cup<signer>): u64 {
+    let c_b = Cup<bool> { item: true };
+    let c_s = Cup<S> { item: S { f: false }};
+    // Valid return: 'c_account', 'c_b', and 'c_s' have values
+    // but 'Cup<signer>', 'Cup<bool>', and 'Cup<S>' have 'drop'
+    0
+}
+
+fun invalid_unused() {
+    // Invalid, Cannot ignore 'Cup<NoAbilities>' because it does not have 'drop'.
+    // Even though 'Cup' was declared with 'drop', the instance does not have 'drop'
+    // because 'NoAbilities' does not have 'drop'
+    Cup<NoAbilities> { item: NoAbilities {} };
+}
+
+fun invalid_left_in_local(): u64 {
+    let n = Cup<NoAbilities> { item: NoAbilities {} };
+    // Invalid return: 'c_n' has a value
+    // and 'Cup<NoAbilities>' does not have 'drop'
+    0
+}
+```
+
+### Example: conditional `store`
+
+```move
+public struct Cup<T> has copy, drop, store { item: T }
+
+// 'MyInnerData is declared with 'store' so all fields need 'store'
+struct MyInnerData has store {
+    yes: Cup<u64>, // Valid, 'Cup<u64>' has 'store'
+    // no: Cup<signer>, Invalid, 'Cup<signer>' does not have 'store'
+}
+
+// 'MyData' is declared with 'key' so all fields need 'store'
+struct MyData has key {
+    yes: Cup<u64>, // Valid, 'Cup<u64>' has 'store'
+    inner: Cup<MyInnerData>, // Valid, 'Cup<MyInnerData>' has 'store'
+    // no: Cup<signer>, Invalid, 'Cup<signer>' does not have 'store'
+}
+```
+
+### Example: conditional `key`
+
+```move
+public struct NoAbilities {}
+public struct MyData<T> has key { f: T }
+
+fun valid(addr: address) acquires MyData {
+    // Valid, 'MyData<u64>' has 'key'
+    transfer(addr, MyData<u64> { f: 0 });
+}
+
+fun invalid(addr: address) {
+   // Invalid, 'MyData<NoAbilities>' does not have 'key'
+   transfer(addr, MyData<NoAbilities> { f: NoAbilities {} })
+   // Invalid, 'MyData<NoAbilities>' does not have 'key'
+   borrow<NoAbilities>(addr);
+   // Invalid, 'MyData<NoAbilities>' does not have 'key'
+   borrow_mut<NoAbilities>(addr);
+}
+
+// Mock storage operation
+native public fun transfer<T: key>(addr: address, value: T);
+```
+
+
+## FILE: reference/method-syntax.md
+
+---
+title: 'Method Syntax | Reference'
+description: "Move method syntax reference: call functions with dot notation, receiver types, automatic borrowing, and method resolution."
+---
+
+# Methods
+
+As a syntactic convenience, some functions in Move can be called as "methods" on a value. This is done
+by using the `.` operator to call the function, where the value on the left-hand side of the `.` is
+the first argument to the function (sometimes called the receiver). The type of that value
+statically determines which function is called. This is an important difference from some other
+languages, where this syntax might indicate a dynamic call, where the function to be called is
+determined at runtime. In Move, all function calls are statically determined.
+
+In short, this syntax exists to make it easier to call functions without having to create an alias
+with `use`, and without having to explicitly borrow the first argument to the function.
+Additionally, this can make code more readable, as it reduces the amount of boilerplate needed to
+call a function and makes it easier to chain function calls.
+
+## Syntax
+
+The syntax for calling a method is as follows:
+
+```text
+<expression> . <identifier> <[type_arguments],*> ( <arguments> )
+```
+
+For example
+
+```move
+coin.value();
+*nums.borrow_mut(i) = 5;
+```
+
+## Method Resolution
+
+When a method is called, the compiler will statically determine which function is called based on
+the type of the receiver (the argument on the left-hand side of the `.`). The compiler maintains a
+mapping from type and method name to the module and function name that should be called. This
+mapping is created form the `use fun` aliases that are currently in scope, and from the appropriate
+functions in the receiver type's defining module. In all cases, the receiver type is the first
+argument to the function, whether by-value or by-reference.
+
+In this section, when we say a method "resolves" to a function, we mean that the compiler will
+statically replace the method with a normal [function](./functions) call. For example if we have
+`x.foo(e)` with `foo` resolving to `a::m::foo`, the compiler will replace `x.foo(e)` with
+`a::m::foo(x, e)`, potentially [automatically borrowing](#automatic-borrowing) `x`.
+
+### Functions in the Defining Module
+
+In a type’s defining module, the compiler will automatically create a method alias for any function
+declaration for its types when the type is the first argument in the function. For example,
+
+```move
+module a::m;
+
+public struct X() has copy, drop, store;
+public fun foo(x: &X) { ... }
+public fun bar(flag: bool, x: &X) { ... }
+```
+
+The function `foo` can be called as a method on a value of type `X`. However, not the first argument
+(and one is not created for `bool` since `bool` is not defined in that module). For example,
+
+```move
+fun example(x: a::m::X) {
+    x.foo(); // valid
+    // x.bar(true); ERROR!
+}
+```
+
+### `use fun` Aliases
+
+Like a traditional [`use`](uses), a `use fun` statement creates an alias local to its current
+scope. This could be for the current module or the current expression block. However, the alias is
+associated to a type.
+
+The syntax for a `use fun` statement is as follows:
+
+```move
+use fun <function> as <type>.<method alias>;
+```
+
+This creates an alias for the `<function>`, which the `<type>` can receive as `<method alias>`.
+
+For example
+
+```move
+module a::cup;
+
+public struct Cup<T>(T) has copy, drop, store;
+
+public fun cup_borrow<T>(c: &Cup<T>): &T {
+    &c.0
+}
+
+public fun cup_value<T>(c: Cup<T>): T {
+    let Cup(t) = c;
+    t
+}
+
+public fun cup_swap<T: drop>(c: &mut Cup<T>, t: T) {
+    c.0 = t;
+}
+```
+
+We can now create `use fun` aliases to these functions
+
+```move
+module b::example;
+
+use fun a::cup::cup_borrow as Cup.borrow;
+use fun a::cup::cup_value as Cup.value;
+use fun a::cup::cup_swap as Cup.set;
+
+fun example(c: &mut Cup<u64>) {
+    let _ = c.borrow(); // resolves to a::cup::cup_borrow
+    let v = c.value(); // resolves to a::cup::cup_value
+    c.set(v * 2); // resolves to a::cup::cup_swap
+}
+```
+
+Note that the `<function>` in the `use fun` does not have to be a fully resolved path, and an alias
+can be used instead, so the declarations in the above example could equivalently be written as
+
+```move
+use a::cup::{Self, cup_swap};
+
+use fun cup::cup_borrow as Cup.borrow;
+use fun cup::cup_value as Cup.value;
+use fun cup_swap as Cup.set;
+```
+
+While these examples are cute for renaming the functions in the current module, the feature is
+perhaps more useful for declaring methods on types from other modules. For example, if we wanted to
+add a new utility to `Cup`, we could do so with a `use fun` alias and still use method syntax
+
+```move
+module b::example;
+
+fun double(c: &Cup<u64>): Cup<u64> {
+    let v = c.value();
+    Cup::new(v * 2)
+}
+```
+
+Normally, we would be stuck having to call it as `double(&c)` because `b::example` did not define
+`Cup`, but instead we can use a `use fun` alias
+
+```move
+fun double_double(c: Cup<u64>): (Cup<u64>, Cup<u64>) {
+    use fun b::example::double as Cup.dub;
+    (c.dub(), c.dub()) // resolves to b::example::double in both calls
+}
+```
+
+While `use fun` can be made in any scope, the target `<function>` of the `use fun` must have a first
+argument that is the same as the `<type>`.
+
+```move
+public struct X() has copy, drop, store;
+
+fun new(): X { X() }
+fun flag(flag: bool): u8 { if (flag) 1 else 0 }
+
+use fun new as X.new; // ERROR!
+use fun flag as X.flag; // ERROR!
+// Neither `new` nor `flag` has first argument of type `X`
+```
+
+But any first argument of the `<type>` can be used, including references and mutable references
+
+```move
+public struct X() has copy, drop, store;
+
+public fun by_val(_: X) {}
+public fun by_ref(_: &X) {}
+public fun by_mut(_: &mut X) {}
+
+// All 3 valid, in any scope
+use fun by_val as X.v;
+use fun by_ref as X.r;
+use fun by_mut as X.m;
+```
+
+Note for generics, the methods are associated for _all_ instances of the generic type. You cannot
+overload the method to resolve to different functions depending on the instantiation.
+
+```move
+public struct Cup<T>(T) has copy, drop, store;
+
+public fun value<T: copy>(c: &Cup<T>): T {
+    c.0
+}
+
+use fun value as Cup<bool>.flag; // ERROR!
+use fun value as Cup<u64>.num; // ERROR!
+// In both cases, `use fun` aliases cannot be generic, they must work for all instances of the type
+```
+
+### `public use fun` Aliases
+
+Unlike a traditional [`use`](uses), the `use fun` statement can be made `public`, which allows it
+to be used outside of its declared scope. A `use fun` can be made `public` if it is declared in the
+module that defines the receivers type, much like the method aliases that are
+[automatically created](#functions-in-the-defining-module) for functions in the defining module. Or
+conversely, one can think that an implicit `public use fun` is created automatically for every
+function in the defining module that has a first argument of the receiver type (if it is defined in
+that module). Both of these views are equivalent.
+
+```move
+module a::cup;
+
+public struct Cup<T>(T) has copy, drop, store;
+
+public use fun cup_borrow as Cup.borrow;
+public fun cup_borrow<T>(c: &Cup<T>): &T {
+    &c.0
+}
+```
+
+In this example, a public method alias is created for `a::cup::Cup.borrow` and
+`a::cup::Cup.cup_borrow`. Both resolve to `a::cup::cup_borrow`. And both are "public" in the sense
+that they can be used outside of `a::cup`, without an additional `use` or `use fun`.
+
+```move
+module b::example;
+
+fun example<T: drop>(c: a::cup::Cup<u64>) {
+    c.borrow(); // resolves to a::cup::cup_borrow
+    c.cup_borrow(); // resolves to a::cup::cup_borrow
+}
+```
+
+The `public use fun` declarations thus serve as a way of renaming a function if you want to give it
+a cleaner name for use with method syntax. This is especially helpful if you have a module with
+multiple types, and similarly named functions for each type.
+
+```move
+module a::shapes;
+
+public struct Rectangle { base: u64, height: u64 }
+public struct Box { base: u64, height: u64, depth: u64 }
+
+// Rectangle and Box can have methods with the same name
+
+public use fun rectangle_base as Rectangle.base;
+public fun rectangle_base(rectangle: &Rectangle): u64 {
+    rectangle.base
+}
+
+public use fun box_base as Box.base;
+public fun box_base(box: &Box): u64 {
+    box.base
+}
+```
+
+Another use for `public use fun` is adding methods to types from other modules. This can be helpful
+in conjunction with functions spread out across a single package.
+
+```move
+module a::cup {
+    public struct Cup<T>(T) has copy, drop, store;
+
+    public fun new<T>(t: T): Cup<T> { Cup(t) }
+    public fun borrow<T>(c: &Cup<T>): &T {
+        &c.0
+    }
+    // `public use fun` to a function defined in another module
+    public use fun a::utils::split as Cup.split;
+}
+
+module a::utils {
+    use a::m::{Self, Cup};
+
+    public fun split<u64>(c: Cup<u64>): (Cup<u64>, Cup<u64>) {
+        let Cup(t) = c;
+        let half = t / 2;
+        let rem = if (t > 0) t - half else 0;
+        (cup::new(half), cup::new(rem))
+    }
+
+}
+```
+
+And note that this `public use fun` does not create a circular dependency, as the `use fun` is not
+present after the module is compiled--all methods are resolved statically.
+
+### Interactions with `use` Aliases
+
+A small detail to note is that method aliases respect normal `use` aliases.
+
+```move
+module a::cup {
+    public struct Cup<T>(T) has copy, drop, store;
+
+    public fun cup_borrow<T>(c: &Cup<T>): &T {
+        &c.0
+    }
+}
+
+module b::other {
+    use a::cup::{Cup, cup_borrow as borrow};
+
+    fun example(c: &Cup<u64>) {
+        c.borrow(); // resolves to a::cup::cup_borrow
+    }
+}
+```
+
+A helpful way to think about this is that `use` creates an implicit `use fun` alias for the function
+whenever it can. In this case the `use a::cup::cup_borrow as borrow` creates an implicit
+`use fun a::cup::cup_borrow as Cup.borrow` because it would be a valid `use fun` alias. Both views
+are equivalent. This line of reasoning can inform how specific methods will resolve with shadowing.
+See the cases in [Scoping](#scoping) for more details.
+
+### Scoping
+
+If not `public`, a `use fun` alias is local to its scope, much like a normal [`use`](uses). For
+example
+
+```move
+module a::m {
+    public struct X() has copy, drop, store;
+    public fun foo(_: &X) {}
+    public fun bar(_: &X) {}
+}
+
+module b::other {
+    use a::m::X;
+
+    use fun a::m::foo as X.f;
+
+    fun example(x: &X) {
+        x.f(); // resolves to a::m::foo
+        {
+            use a::m::bar as f;
+            x.f(); // resolves to a::m::bar
+        };
+        x.f(); // still resolves to a::m::foo
+        {
+            use fun a::m::bar as X.f;
+            x.f(); // resolves to a::m::bar
+        }
+    }
+```
+
+## Automatic Borrowing
+
+When resolving a method, the compiler will automatically borrow the receiver if the function expects
+a reference. For example
+
+```move
+module a::m;
+
+public struct X() has copy, drop;
+public fun by_val(_: X) {}
+public fun by_ref(_: &X) {}
+public fun by_mut(_: &mut X) {}
+
+fun example(mut x: X) {
+    x.by_ref(); // resolves to a::m::by_ref(&x)
+    x.by_mut(); // resolves to a::m::by_mut(&mut x)
+}
+```
+
+In these examples, `x` was automatically borrowed to `&x` and `&mut x` respectively. This will also
+work through field access
+
+```move
+module a::m;
+
+public struct X() has copy, drop;
+public fun by_val(_: X) {}
+public fun by_ref(_: &X) {}
+public fun by_mut(_: &mut X) {}
+
+public struct Y has drop { x: X }
+
+fun example(mut y: Y) {
+    y.x.by_ref(); // resolves to a::m::by_ref(&y.x)
+    y.x.by_mut(); // resolves to a::m::by_mut(&mut y.x)
+}
+```
+
+Note that in both examples, the local variable had to be labeled as [`mut`](./variables) to allow
+for the `&mut` borrow. Without this, there would be an error saying that `x` (or `y` in the second
+example) is not mutable.
+
+Keep in mind that without a reference, normal rules for variable and field access come into play.
+Meaning a value might be moved or copied if it is not borrowed.
+
+```move
+module a::m;
+
+public struct X() has copy, drop;
+public fun by_val(_: X) {}
+public fun by_ref(_: &X) {}
+public fun by_mut(_: &mut X) {}
+
+public struct Y has drop { x: X }
+public fun drop_y(y: Y) { y }
+
+fun example(y: Y) {
+    y.x.by_val(); // copies `y.x` since `by_val` is by-value and `X` has `copy`
+    y.drop_y(); // moves `y` since `drop_y` is by-value and `Y` does _not_ have `copy`
+}
+```
+
+## Chaining
+
+Method calls can be chained, because any expression can be the receiver of the method.
+
+```move
+module a::shapes {
+    public struct Point has copy, drop, store { x: u64, y: u64 }
+    public struct Line has copy, drop, store { start: Point, end: Point }
+
+    public fun x(p: &Point): u64 { p.x }
+    public fun y(p: &Point): u64 { p.y }
+
+    public fun start(l: &Line): &Point { &l.start }
+    public fun end(l: &Line): &Point { &l.end }
+
+}
+
+module b::example {
+    use a::shapes::Line;
+
+    public fun x_values(l: Line): (u64, u64) {
+        (l.start().x(), l.end().x())
+    }
+
+}
+```
+
+In this example for `l.start().x()`, the compiler first resolves `l.start()` to
+`a::shapes::start(&l)`. Then `.x()` is resolved to `a::shapes::x(a::shapes::start(&l))`. Similarly
+for `l.end().x()`. Keep in mind, this feature is not "special"--the left-hand side of the `.` can be
+any expression, and the compiler will resolve the method call as normal. We simply draw attention to
+this sort of "chaining" because it is a common practice to increase readability.
+
+
+## FILE: reference/uses.md
+
+---
+title: 'Uses and Aliases | Reference'
+description: "Move use and aliases reference: import modules, create aliases, group imports, and resolve naming conflicts."
+---
+
+# Uses and Aliases
+
+The `use` syntax can be used to create aliases to members in other modules. `use` can be used to
+create aliases that last either for the entire module, or for a given expression block scope.
+
+## Syntax
+
+There are several different syntax cases for `use`. Starting with the most simple, we have the
+following for creating aliases to other modules
+
+```move
+use <address>::<module name>;
+use <address>::<module name> as <module alias name>;
+```
+
+For example
+
+```move
+use std::vector;
+use std::option as o;
+```
+
+`use std::vector;` introduces an alias `vector` for `std::vector`. This means that anywhere you
+would want to use the module name `std::vector` (assuming this `use` is in scope), you could use
+`vector` instead. `use std::vector;` is equivalent to `use std::vector as vector;`
+
+Similarly `use std::option as o;` would let you use `o` instead of `std::option`
+
+```move
+use std::vector;
+use std::option as o;
+
+fun new_vec(): vector<o::Option<u8>> {
+    let mut v = vector[];
+    vector::push_back(&mut v, o::some(0));
+    vector::push_back(&mut v, o::none());
+    v
+}
+```
+
+If you want to import a specific module member (such as a function or struct). You can use the
+following syntax.
+
+```move
+use <address>::<module name>::<module member>;
+use <address>::<module name>::<module member> as <member alias>;
+```
+
+For example
+
+```move
+use std::vector::push_back;
+use std::option::some as s;
+```
+
+This would let you use the function `std::vector::push_back` without full qualification. Similarly
+for `std::option::some` with `s`. Instead you could use `push_back` and `s` respectively. Again,
+`use std::vector::push_back;` is equivalent to `use std::vector::push_back as push_back;`
+
+```move
+use std::vector::push_back;
+use std::option::some as s;
+
+fun new_vec(): vector<std::option::Option<u8>> {
+    let mut v = vector[];
+    vector::push_back(&mut v, s(0));
+    vector::push_back(&mut v, std::option::none());
+    v
+}
+```
+
+### Multiple Aliases
+
+If you want to add aliases for multiple module members at once, you can do so with the following
+syntax
+
+```move
+use <address>::<module name>::{<module member>, <module member> as <member alias> ... };
+```
+
+For example
+
+```move
+use std::vector::push_back;
+use std::option::{some as s, none as n};
+
+fun new_vec(): vector<std::option::Option<u8>> {
+    let mut v = vector[];
+    push_back(&mut v, s(0));
+    push_back(&mut v, n());
+    v
+}
+```
+
+### Self aliases
+
+If you need to add an alias to the Module itself in addition to module members, you can do that in a
+single `use` using `Self`. `Self` is a member of sorts that refers to the module.
+
+```move
+use std::option::{Self, some, none};
+```
+
+For clarity, all of the following are equivalent:
+
+```move
+use std::option;
+use std::option as option;
+use std::option::Self;
+use std::option::Self as option;
+use std::option::{Self};
+use std::option::{Self as option};
+```
+
+### Multiple Aliases for the Same Definition
+
+If needed, you can have as many aliases for any item as you like
+
+```move
+use std::vector::push_back;
+use std::option::{Option, some, none};
+
+fun new_vec(): vector<Option<u8>> {
+    let mut v = vector[];
+    push_back(&mut v, some(0));
+    push_back(&mut v, none());
+    v
+}
+```
+
+### Nested imports
+
+In Move, you can also import multiple names with the same `use` declaration. This brings all
+provided names into scope:
+
+```move
+use std::{
+    vector::{Self as vec, push_back},
+    string::{String, Self as str}
+};
+
+fun example(s: &mut String) {
+    let mut v = vec::empty();
+    push_back(&mut v, 0);
+    push_back(&mut v, 10);
+    str::append_utf8(s, v);
+}
+```
+
+## Inside a `module`
+
+Inside of a `module` all `use` declarations are usable regardless of the order of declaration.
+
+```move
+module a::example;
+
+use std::vector;
+
+fun new_vec(): vector<Option<u8>> {
+    let mut v = vector[];
+    vector::push_back(&mut v, 0);
+    vector::push_back(&mut v, 10);
+    v
+}
+
+use std::option::{Option, some, none};
+```
+
+The aliases declared by `use` in the module usable within that module.
+
+Additionally, the aliases introduced cannot conflict with other module members. See
+[Uniqueness](#uniqueness) for more details
+
+## Inside an expression
+
+You can add `use` declarations to the beginning of any expression block
+
+```move
+module a::example;
+
+fun new_vec(): vector<Option<u8>> {
+    use std::vector::push_back;
+    use std::option::{Option, some, none};
+
+    let mut v = vector[];
+    push_back(&mut v, some(0));
+    push_back(&mut v, none());
+    v
+}
+```
+
+As with `let`, the aliases introduced by `use` in an expression block are removed at the end of that
+block.
+
+```move
+module a::example;
+
+fun new_vec(): vector<Option<u8>> {
+    let result = {
+        use std::vector::push_back;
+        use std::option::{Option, some, none};
+
+        let mut v = vector[];
+        push_back(&mut v, some(0));
+        push_back(&mut v, none());
+        v
+    };
+    result
+}
+```
+
+Attempting to use the alias after the block ends will result in an error
+
+```move
+fun new_vec(): vector<Option<u8>> {
+    let mut result = {
+        use std::vector::push_back;
+        use std::option::{Option, some, none};
+
+        let mut v = vector[];
+        push_back(&mut v, some(0));
+        v
+    };
+    push_back(&mut result, std::option::none());
+    // ^^^^^^ ERROR! unbound function 'push_back'
+    result
+}
+```
+
+Any `use` must be the first item in the block. If the `use` comes after any expression or `let`, it
+will result in a parsing error
+
+```move
+{
+    let mut v = vector[];
+    use std::vector; // ERROR!
+}
+```
+
+This allows you to shorten your import blocks in many situations. Note that these imports, as the
+previous ones, are all subject to the naming and uniqueness rules described in the following
+sections.
+
+## Naming rules
+
+Aliases must follow the same rules as other module members. This means that aliases to structs (and
+constants) must start with `A` to `Z`
+
+```move
+module a::data {
+    public struct S {}
+    const FLAG: bool = false;
+    public fun foo() {}
+}
+module a::example {
+    use a::data::{
+        S as s, // ERROR!
+        FLAG as fLAG, // ERROR!
+        foo as FOO,  // valid
+        foo as bar, // valid
+    };
+}
+```
+
+## Uniqueness
+
+Inside a given scope, all aliases introduced by `use` declarations must be unique.
+
+For a module, this means aliases introduced by `use` cannot overlap
+
+```move
+module a::example;
+
+use std::option::{none as foo, some as foo}; // ERROR!
+//                                     ^^^ duplicate 'foo'
+
+use std::option::none as bar;
+
+use std::option::some as bar; // ERROR!
+//                       ^^^ duplicate 'bar'
+```
+
+And, they cannot overlap with any of the module's other members
+
+```move
+module a::data {
+    public struct S {}
+}
+
+module example {
+    use a::data::S;
+
+    public struct S { value: u64 } // ERROR!
+    //            ^ conflicts with alias 'S' above
+}
+```
+
+Inside of an expression block, they cannot overlap with each other, but they can
+[shadow](#shadowing) other aliases or names from an outer scope
+
+## Shadowing
+
+`use` aliases inside of an expression block can shadow names (module members or aliases) from the
+outer scope. As with shadowing of locals, the shadowing ends at the end of the expression block;
+
+```move
+module a::example;
+
+public struct WrappedVector { vec: vector<u64> }
+
+public fun empty(): WrappedVector {
+    WrappedVector { vec: std::vector::empty() }
+}
+
+public fun push_back(v: &mut WrappedVector, value: u64) {
+    std::vector::push_back(&mut v.vec, value);
+}
+
+fun example1(): WrappedVector {
+    use std::vector::push_back;
+    // 'push_back' now refers to std::vector::push_back
+    let mut vec = vector[];
+    push_back(&mut vec, 0);
+    push_back(&mut vec, 1);
+    push_back(&mut vec, 10);
+    WrappedVector { vec }
+}
+
+fun example2(): WrappedVector {
+    let vec = {
+        use std::vector::push_back;
+        // 'push_back' now refers to std::vector::push_back
+
+        let mut v = vector[];
+        push_back(&mut v, 0);
+        push_back(&mut v, 1);
+        v
+    };
+    // 'push_back' now refers to Self::push_back
+    let mut res = WrappedVector { vec };
+    push_back(&mut res, 10);
+    res
+}
+```
+
+## Unused Use or Alias
+
+An unused `use` will result in a warning
+
+```move
+module a::example;
+
+use std::option::{some, none}; // Warning!
+//                      ^^^^ unused alias 'none'
+
+public fun example(): std::option::Option<u8> {
+    some(0)
+}
+```
+
+
+## FILE: reference/functions/macros.md
+
+---
+title: 'Macro Functions | Reference'
+description: "Move macro functions reference: compile-time expansion, lambda parameters, type parameters, and method syntax for macros."
+---
+
+# Macro Functions
+
+Macro functions are a way of defining functions that are expanded during compilation at each call
+site. The arguments of the macro are not evaluated eagerly like a normal function, and instead are
+substituted by expression. In addition, the caller can supply code to the macro via
+[lambdas](#lambdas).
+
+These expression substitution mechanics make `macro` functions similar
+[to macros found in other programming languages](<https://en.wikipedia.org/wiki/Macro_(computer_science)>);
+however, they are more constrained in Move than you might expect from other languages. The
+parameters and return values of `macro` functions are still typed--though this can be partially
+relaxed with the [`_` type](./../generics#_-type). The upside of this restriction however, is that
+`macro` functions can be used anywhere a normal function can be used, which is notably helpful with
+[method syntax](./../method-syntax).
+
+A more extensive
+[syntactic macro](<https://en.wikipedia.org/wiki/Macro_(computer_science)#Syntactic_macros>) system
+may come in the future.
+
+## Syntax
+
+`macro` functions have a similar syntax to normal functions. However, all type parameter names and
+all parameter names must start with a `$`. Note that `_` can still be used by itself, but not as a
+prefix, and `$_` must be used instead.
+
+```text
+<visibility>? macro fun <identifier><[$type_parameters: constraint],*>([$identifier: type],*): <return_type> <function_body>
+```
+
+For example, the following `macro` function takes a vector and a lambda, and applies the lambda to
+each element of the vector to construct a new vector.
+
+```move
+macro fun map<$T, $U>($v: vector<$T>, $f: |$T| -> $U): vector<$U> {
+    let mut v = $v;
+    v.reverse();
+    let mut i = 0;
+    let mut result = vector[];
+    while (!v.is_empty()) {
+        result.push_back($f(v.pop_back()));
+        i = i + 1;
+    };
+    result
+}
+```
+
+The `$` is there to indicate that the parameters (both type and value parameters) do not behave like
+their normal, non-macro counterparts. For type parameters, they can be instantiated with any type
+(even a reference type `&` or `&mut`), and they will satisfy any constraint. Similarly for
+parameters, they will not be evaluated eagerly, and instead the argument expression will be
+substituted at each usage.
+
+## Lambdas
+
+Lambdas are a new type of expression that can only be used with `macro`s. These are used to pass
+code from the caller into the body of the `macro`. While the substitution is done at compile time,
+they are used similarly to [anonymous functions](https://en.wikipedia.org/wiki/Anonymous_function),
+[lambdas](https://en.wikipedia.org/wiki/Lambda_calculus), or
+[closures](<https://en.wikipedia.org/wiki/Closure_(computer_programming)>) in other languages.
+
+As seen in the example above (`$f: |$T| -> $U`), lambda types are defined with the syntax
+
+```text
+|<type>,*| (-> <type>)?
+```
+
+A few examples
+
+```move
+|u64, u64| -> u128 // a lambda that takes two u64s and returns a u128
+|&mut vector<u8>| -> &mut u8 // a lambda that takes a &mut vector<u8> and returns a &mut u8
+```
+
+If the return type is not annotated, it is unit `()` by default.
+
+```move
+// the following are equivalent
+|&mut vector<u8>, u64|
+|&mut vector<u8>, u64| -> ()
+```
+
+Lambda expressions are then defined at the call site of the `macro` with the syntax
+
+```text
+|(<identifier> (: <type>)?),*| <expression>
+|(<identifier> (: <type>)?),*| -> <type> { <expression> }
+```
+
+Note that if the return type is annotated, the body of the lambda must be enclosed in `{}`.
+
+Using the `map` macro defined above
+
+```move
+let v = vector[1, 2, 3];
+let doubled: vector<u64> = map!(v, |x| 2 * x);
+let bytes: vector<vector<u8>> = map!(v, |x| std::bcs::to_bytes(&x));
+```
+
+And with type annotations
+
+```move
+let doubled: vector<u64> = map!(v, |x: u64| 2 * x); // return type annotation optional
+let bytes: vector<vector<u8>> = map!(v, |x: u64| -> vector<u8> { std::bcs::to_bytes(&x) });
+```
+
+### Capturing
+
+Lambda expressions can also refer to variables in the scope where the lambda is defined. This is
+sometimes called "capturing".
+
+```move
+let res = foo();
+let incremented = map!(vector[1, 2, 3], |x| x + res);
+```
+
+Any variable can be captured, including mutable and immutable references.
+
+See the [Examples](#iterating-over-a-vector) section for more complicated usages.
+
+### Limitations
+
+Currently, lambdas can only be used directly in the call of a `macro` function. They cannot be bound
+to a variable. For example, the following is code will produce an error:
+
+```move
+let f = |x| 2 * x;
+//      ^^^^^^^^^ Error! Lambdas must be used directly in 'macro' calls
+let doubled: vector<u64> = map!(vector[1, 2, 3], f);
+```
+
+## Typing
+
+Like normal functions, `macro` functions are typed--the types of the parameters and return value
+must be annotated. However, the body of the function is not type checked until the macro is
+expanded. This means that not all usages of a given macro may be valid. For example
+
+```move
+macro fun add_one<$T>($x: $T): $T {
+    $x + 1
+}
+```
+
+The above macro will not type check if `$T` is not a primitive integer type.
+
+This can be particularly useful in conjunction with [method syntax](./../method-syntax), where the
+function is not resolved until after the macro is expanded.
+
+```move
+macro fun call_foo<$T, $U>($x: $T): &$U {
+    $x.foo()
+}
+```
+
+This macro will only expand successfully if `$T` has a method `foo` that returns a reference `&$U`.
+As described in the [hygiene](#hygiene) section, `foo` will be resolved based on the scope where
+`call_foo` was defined--not where it was expanded.
+
+### Type Parameters
+
+Type parameters can be instantiated with any type, including reference types `&` and `&mut`. They
+can also be instantiated with [tuple types](./../primitive-types/tuples), though the utility of this
+is limited currently since tuples cannot be bound to a variable.
+
+This relaxation forces the constraints of a type parameter to be satisfied at the call site in a way
+that does not normally occur. It is generally recommended however to add all necessary constraints
+to a type parameter. For example
+
+```move
+public struct NoAbilities()
+public struct CopyBox<T: copy> has copy, drop { value: T }
+macro fun make_box<$T>($x: $T): CopyBox<$T> {
+    CopyBox { value: $x }
+}
+```
+
+This macro will expand only if `$T` is instantiated with a type with the `copy` ability.
+
+```move
+make_box!(1); // Valid!
+make_box!(NoAbilities()); // Error! 'NoAbilities' does not have the copy ability
+```
+
+The suggested declaration of `make_box` would be to add the `copy` constraint to the type parameter.
+This then communicates to the caller that the type must have the `copy` ability.
+
+```move
+macro fun make_box<$T: copy>($x: $T): CopyBox<$T> {
+    CopyBox { value: $x }
+}
+```
+
+One might reasonably ask then, why have this relaxation if the recommendation is not to use it? The
+constraints on type parameters simply cannot be enforced in all cases because the bodies are not
+checked until expansion. In the following example, the `copy` constraint on `$T` is not necessary in
+the signature, but is necessary in the body.
+
+```move
+macro fun read_ref<$T>($r: &$T): $T {
+    *$r
+}
+```
+
+If however, you want to have an extremely relaxed type signature, it is instead recommended to use
+the [`_` type](#_-type).
+
+### `_` Type
+
+Normally, the [`_` placeholder type](./../generics#_-type) is used in expressions to allow for
+partial annotations of type arguments. However, with `macro` functions, the `_` type can be used in
+place of type parameters to relax the signature for any type. This should increase the ergonomics of
+declaring "generic" `macro` functions.
+
+For example, we could take any combination of integers and add them together.
+
+```move
+macro fun add($x: _, $y: _, $z: _): u256 {
+    ($x as u256) + ($y as u256) + ($z as u256)
+}
+```
+
+Additionally, the `_` type can be instantiated _multiple_ times with different types. For example
+
+```move
+public struct Box<T> has copy, drop, store { value: T }
+macro fun create_two($f: |_| -> Box<_>): (Box<u8>, Box<u16>) {
+    ($f(0u8), $f(0u16))
+}
+```
+
+If we declared the function with type parameters instead, the types would have to unify to a common
+type, which is not possible in this case.
+
+```move
+macro fun create_two<$T>($f: |$T| -> Box<$T>): (Box<u8>, Box<u16>) {
+    ($f(0u8), $f(0u16))
+    //           ^^^^ Error! expected `u8` but found `u16`
+}
+...
+let (a, b) = create_two!(|value| Box { value });
+```
+
+In this case, `$T` must be instantiated with a single type, but inference finds that `$T` must be
+bound to both `u8` and `u16`.
+
+There is a tradeoff however, as the `_` type conveys less meaning and intention for the caller.
+Consider `map` macro from above re-declared with `_` instead of `$T` and `$U`.
+
+```move
+macro fun map($v: vector<_>, $f: |_| -> _): vector<_> {
+```
+
+There is no longer any indication of behavior of `$f` at the type level. The caller must gain
+understanding from comments or the body of the macro.
+
+## Expansion and Substitution
+
+The body of the `macro` is substituted into the call site at compile time. Each parameter is
+replaced by the _expression_, not the value, of its argument. For lambdas, additional local
+variables can have values bound within the context of the `macro` body.
+
+Taking a very simple example
+
+```move
+macro fun apply($f: |u64| -> u64, $x: u64): u64 {
+    $f($x)
+}
+```
+
+With the call site
+
+```move
+let incremented = apply!(|x| x + 1, 5);
+```
+
+This will roughly be expanded to
+
+```move
+let incremented = {
+    let x = { 5 };
+    { x + 1 }
+};
+```
+
+Again, the value of `x` is not substituted, but the expression `5` is. This might mean that an
+argument is evaluated multiple times, or not at all, depending on the body of the `macro`.
+
+```move
+macro fun dup($f: |u64, u64| -> u64, $x: u64): u64 {
+    $f($x, $x)
+}
+```
+
+```move
+let sum = dup!(|x, y| x + y, foo());
+```
+
+is expanded to
+
+```move
+let sum = {
+    let x = { foo() };
+    let y = { foo() };
+    { x + y }
+};
+```
+
+Note that `foo()` will be called twice. Which would not happen if `dup` were a normal function.
+
+It is often recommended to create predictable evaluation behavior by binding arguments to local
+variables.
+
+```move
+macro fun dup($f: |u64, u64| -> u64, $x: u64): u64 {
+    let a = $x;
+    $f(a, a)
+}
+```
+
+Now that same call site will expand to
+
+```move
+let sum = {
+    let a = { foo() };
+    {
+        let x = { a };
+        let y = { a };
+        { x + y }
+    }
+};
+```
+
+### Hygiene
+
+In the example above, the `dup` macro had a local variable `a` that was used to bind the argument
+`$x`. You might ask, what would happen if the variable was instead named `x`? Would that conflict
+with the `x` in the lambda?
+
+The short answer is, no. `macro` functions are
+[hygienic](https://en.wikipedia.org/wiki/Hygienic_macro), meaning that the expansion of `macro`s and
+lambdas will not accidentally capture variables from another scope.
+
+The compiler does this by associating a unique number with each scope. When the `macro` is expanded,
+the macro body gets its own scope. Additionally, the arguments are re-scoped on each usage.
+
+Modifying the `dup` macro to use `x` instead of `a`
+
+```move
+macro fun dup($f: |u64, u64| -> u64, $x: u64): u64 {
+    let a = $x;
+    $f(a, a)
+}
+```
+
+The expansion of the call site
+
+```move
+// let sum = dup!(|x, y| x + y, foo());
+let sum = {
+    let x#1 = { foo() };
+    {
+        let x#2 = { x#1 };
+        let y#2 = { x#1 };
+        { x#2 + y#2 }
+    }
+};
+```
+
+This is an approximation of the compiler's internal representation, some details are omitted for the
+simplicity of this example.
+
+And each usage of an argument is re-scoped so that the different usages do not conflict.
+
+```move
+macro fun apply_twice($f: |u64| -> u64, $x: u64): u64 {
+    $f($x) + $f($x)
+}
+```
+
+```move
+let result = apply_twice!(|x| x + 1, { let x = 5; x });
+```
+
+Expands to
+
+```move
+let result = {
+    {
+        let x#1 = { let x#2 = { 5 }; x#2 };
+        { x#1 + x#1 }
+    }
+    +
+    {
+        let x#3 = { let x#4 = { 5 }; x#4 };
+        { x#3 + x#3 }
+    }
+};
+```
+
+Similar to variable hygiene, [method resolution](./../method-syntax) is also scoped to the macro
+definition. For example
+
+```move
+public struct S { f: u64, g: u64 }
+
+fun f(s: &S): u64 {
+    s.f
+}
+fun g(s: &S): u64 {
+    s.g
+}
+
+use fun f as foo;
+macro fun call_foo($s: &S): u64 {
+    let s = $s;
+    s.foo()
+}
+```
+
+The method call `foo` will in this case always resolve to the function `f`, even if `call_foo` is
+used in a scope where `foo` is bound to a different function, such as `g`.
+
+```move
+fun example(s: &S): u64 {
+    use fun g as foo;
+    call_foo!(s) // expands to 'f(s)', not 'g(s)'
+}
+```
+
+Due to this though, unused `use fun` declarations might not get warnings in modules with `macro`
+functions.
+
+### Control Flow
+
+Similar to variable hygiene, control flow constructs are also always scoped to where they are
+defined, not to where they are expanded.
+
+```move
+macro fun maybe_div($x: u64, $y: u64): u64 {
+    let x = $x;
+    let y = $y;
+    if (y == 0) return 0;
+    x / y
+}
+```
+
+At the call site, `return` will always return from the `macro` body, not from the caller.
+
+```move
+let result: vector<u64> = vector[maybe_div!(10, 0)];
+```
+
+Will expand to
+
+```move
+let result: vector<u64> = vector['a: {
+    let x = { 10 };
+    let y = { 0 };
+    if (y == 0) return 'a 0;
+    x / y
+}];
+```
+
+Where `return 'a 0` will return to the block `'a: { ... }` and not to the caller's body. See the
+section on [labeled control flow](./../control-flow/labeled-control-flow) for more details.
+
+Similarly, `return` in a lambda will return from the lambda, not from the `macro` body and not from
+the outer function.
+
+```move
+macro fun apply($f: |u64| -> u64, $x: u64): u64 {
+    $f($x)
+}
+```
+
+and
+
+```move
+let result = apply!(|x| { if (x == 0) return 0; x + 1 }, 100);
+```
+
+will expand to
+
+```move
+let result = {
+    let x = { 100 };
+    'a: {
+        if (x == 0) return 'a 0;
+        x + 1
+    }
+};
+```
+
+In addition to returning from the lambda, a label can be used to return to the outer function. In
+the `vector::any` macro, a `return` with a label is used to return from the entire `macro` early
+
+```move
+public macro fun any<$T>($v: &vector<$T>, $f: |&$T| -> bool): bool {
+    let v = $v;
+    'any: {
+        v.do_ref!(|e| if ($f(e)) return 'any true);
+        false
+    }
+}
+```
+
+The `return 'any true` exits from the "loop" early when the condition is met. Otherwise, the macro
+"returns" `false`.
+
+### Method Syntax
+
+When applicable, `macro` functions can be called using [method syntax](./../method-syntax). When
+using method syntax, the evaluation of the arguments will change in that the first argument (the
+"receiver" of the method) will be evaluated outside of the macro expansion. This example is
+contrived, but will concisely demonstrate the behavior.
+
+```move
+public struct S() has copy, drop;
+public fun foo(): S { abort 0 }
+public macro fun maybe_s($s: S, $cond: bool): S {
+    if ($cond) $s
+    else S()
+}
+```
+
+Even though `foo()` will abort, its return type can be used to start a method call.
+
+`$s` will not be evaluated if `$cond` is `false`, and under a normal non-method call, an argument of
+`foo()` would not be evaluated and would not abort. The following example demonstrates `$s` not
+being evaluated with an argument of `foo()`.
+
+```move
+maybe_s!(foo(), false) // does not abort
+```
+
+It becomes more clear as to why it does not abort when looking at the expanded form
+
+```move
+if (false) foo()
+else S()
+```
+
+However, when using method syntax, the first argument is evaluated before the macro is expanded. So
+the same argument of `foo()` for `$s` will now be evaluated and will abort.
+
+```move
+foo().maybe_s!(false) // aborts
+```
+
+We can see this more clearly when looking the expanded form
+
+```move
+let tmp = foo(); // aborts
+if (false) tmp
+else S()
+```
+
+Conceptually, the receiver for a method call is bound to a temporary variable before the macro is
+expanded, which forces the evaluation and thus the abort.
+
+### Parameter Limitations
+
+The parameters of a `macro` function must always be used as expressions. They cannot be used in
+situations where the argument might be re-interpreted. For example, the following is not allowed
+
+```move
+macro fun no($x: _): _ {
+    $x.f
+}
+```
+
+The reason is that if the argument `$x` was not a reference, it would be borrowed first, which would
+could re-interpret the argument. To get around this limitation, you should bind the argument to a
+local variable.
+
+```move
+macro fun yes($x: _): _ {
+    let x = $x;
+    x.f
+}
+```
+
+## Examples
+
+### Lazy arguments: assert_eq
+
+```move
+macro fun assert_eq<$T>($left: $T, $right: $T, $code: u64) {
+    let left = $left;
+    let right = $right;
+    if (left != right) {
+        std::debug::print(&b"assertion failed.\n left: ");
+        std::debug::print(&left);
+        std::debug::print(&b"\n does not equal right: ");
+        std::debug::print(&right);
+        abort $code;
+    }
+}
+```
+
+In this case the argument to `$code` is not evaluated unless the assertion fails.
+
+```move
+assert_eq!(vector[true, false], vector[true, false], 1 / 0); // division by zero is not evaluated
+```
+
+### Any integer square root
+
+This macro calculates the integer square root for any integer type, besides `u256`.
+
+`$T` is the type of the input and `$bitsize` is the number of bits in that type, for example `u8`
+has 8 bits. `$U` should be set to the next larger integer type, for example `u16` for `u8`.
+
+In this `macro`, the type of the integer literals are `1` and `0` are annotated, e.g. `(1: $U)`
+allowing for the type of the literal to differ with each call. Similarly, `as` can be used with the
+type parameters `$T` and `$U`. This macro will then only successfully expand if `$T` and `$U` are
+instantiated with the integer types.
+
+```move
+macro fun num_sqrt<$T, $U>($x: $T, $bitsize: u8): $T {
+    let x = $x;
+    let mut bit = (1: $U) << $bitsize;
+    let mut res = (0: $U);
+    let mut x = x as $U;
+
+    while (bit != 0) {
+        if (x >= res + bit) {
+            x = x - (res + bit);
+            res = (res >> 1) + bit;
+        } else {
+            res = res >> 1;
+        };
+        bit = bit >> 2;
+    };
+
+    res as $T
+}
+```
+
+### Iterating over a vector
+
+The two `macro`s iterate over a vector, immutably and mutably respectively.
+
+```move
+macro fun for_imm<$T>($v: &vector<$T>, $f: |&$T|) {
+    let v = $v;
+    let n = v.length();
+    let mut i = 0;
+    while (i < n) {
+        $f(&v[i]);
+        i = i + 1;
+    }
+}
+
+macro fun for_mut<$T>($v: &mut vector<$T>, $f: |&mut $T|) {
+    let v = $v;
+    let n = v.length();
+    let mut i = 0;
+    while (i < n) {
+        $f(&mut v[i]);
+        i = i + 1;
+    }
+}
+```
+
+A few examples of usage
+
+```move
+fun imm_examples(v: &vector<u64>) {
+    // print all elements
+    for_imm!(v, |x| std::debug::print(x));
+
+    // sum all elements
+    let mut sum = 0;
+    for_imm!(v, |x| sum = sum + x);
+
+    // find the max element
+    let mut max = 0;
+    for_imm!(v, |x| if (x > max) max = x);
+}
+
+fun mut_examples(v: &mut vector<u64>) {
+    // increment each element
+    for_mut!(v, |x| *x = *x + 1);
+
+    // set each element to the previous value, and the first to last value
+    let mut prev = v[v.length() - 1];
+    for_mut!(v, |x| {
+        let tmp = *x;
+        *x = prev;
+        prev = tmp;
+    });
+
+    // set the max element to 0
+    let mut max = &mut 0;
+    for_mut!(v, |x| if (*x > *max) max = x);
+    *max = 0;
+}
+```
+
+### Non-loop lambda usage
+
+Lambdas do not need to be used in loops, and are often useful for conditionally applying code.
+
+```move
+macro fun inspect<$T>($opt: &Option<$T>, $f: |&$T|) {
+    let opt = $opt;
+    if (opt.is_some()) $f(opt.borrow())
+}
+
+macro fun is_some_and<$T>($opt: &Option<$T>, $f: |&$T| -> bool): bool {
+    let opt = $opt;
+    if (opt.is_some()) $f(opt.borrow())
+    else false
+}
+
+macro fun map<$T, $U>($opt: Option<$T>, $f: |$T| -> $U): Option<$U> {
+    let opt = $opt;
+    if (opt.is_some()) {
+        option::some($f(opt.destroy_some()))
+    } else {
+        opt.destroy_none();
+        option::none()
+    }
+}
+```
+
+And some examples of usage
+
+```move
+fun examples(opt: Option<u64>) {
+    // print the value if it exists
+    inspect!(&opt, |x| std::debug::print(x));
+
+    // check if the value is 0
+    let is_zero = is_some_and!(&opt, |x| *x == 0);
+
+    // upcast the u64 to a u256
+    let str_opt = map!(opt, |x| x as u256);
+}
+```
+
+
+## FILE: reference/abort-and-assert.md
+
+---
+title: 'Abort and Assert | Reference'
+description: "Move abort and assert reference: halt execution with error codes, enforce conditions with assert!, and handle transaction failures."
+---
+
+# Abort and Assert
+
+[`return`](./functions) and `abort` are two control flow constructs that end execution, one for the
+current function and one for the entire transaction.
+
+More information on [`return` can be found in the linked section](./functions#return-expression)
+
+## `abort`
+
+`abort` is an expression that takes either takes no arguments, or just one - an **abort code** of
+type `u64`. For example:
+
+```move
+abort
+abort 42
+```
+
+The `abort` expression halts execution the current function and reverts all changes made to state by
+the current transaction (note though that this guarantee must be upheld by the adapter of the
+specific deployment of Move). There is no mechanism for "catching" or otherwise handling an `abort`.
+
+Luckily, in Move transactions are all or nothing, meaning any changes to storage are made all at
+once only if the transaction succeeds. For Sui, this means no objects are modified.
+
+Because of this transactional commitment of changes, after an abort there is no need to worry about
+backing out changes. While this approach is lacking in flexibility, it is incredibly simple and
+predictable.
+
+Similar to [`return`](./functions), `abort` is useful for exiting control flow when some condition
+cannot be met.
+
+In this example, the function will pop two items off of the vector, but will abort early if the
+vector does not have two items
+
+<!-- {{#include ../../packages/reference/sources/abort-and-assert.move}} -->
+
+```move
+fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+    if (v.length() < 2) abort 42;
+    (v.pop_back(), v.pop_back())
+}
+```
+
+This is even more useful deep inside a control-flow construct. For example, this function checks
+that all numbers in the vector are less than the specified `bound`. And aborts otherwise
+
+```move
+fun check_vec(v: &vector<u64>, bound: u64) {
+    let mut i = 0;
+    let n = v.length();
+    while (i < n) {
+        let cur = v[i];
+        if (cur > bound) abort 42;
+        i = i + 1;
+    }
+}
+```
+
+> Combine `macro` with `abort`:
+
+```move
+fun check_vec(v: &vector<u64>, bound: u64) {
+    v.do_ref!(|num| if (*num > bound) abort 42);
+}
+```
+
+### `assert`
+
+`assert` is a builtin, macro operation provided by the Move compiler. It takes two arguments, a
+condition of type `bool` and a code of type `u64`
+
+```move
+assert!(condition: bool, code: u64)
+```
+
+Since the operation is a macro, it must be invoked with the `!`. This is to convey that the
+arguments to `assert` are call-by-expression. In other words, `assert` is not a normal function and
+does not exist at the bytecode level. It is replaced inside the compiler with
+
+```move
+if (condition) () else abort code
+```
+
+`assert` is more commonly used than just `abort` by itself. The `abort` examples above can be
+rewritten using `assert`
+
+```move
+fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+    assert!(v.length() >= 2, 42); // Now uses 'assert'
+    (v.pop_back(), v.pop_back())
+}
+```
+
+and
+
+```move
+fun check_vec(v: &vector<u64>, bound: u64) {
+    let mut i = 0;
+    let n = v.length();
+    while (i < n) {
+        let cur = v[i];
+        assert!(cur <= bound, 42); // Now uses 'assert'
+        i = i + 1;
+    }
+}
+```
+
+> Combine `macro` with `assert`:
+
+```move
+fun check_vec(v: &vector<u64>, bound: u64) {
+    v.do_ref!(|num| assert!(*num <= bound, 42));
+}
+```
+
+Note that because the operation is replaced with this `if-else`, the argument for the `code` is not
+always evaluated. For example:
+
+```move
+assert!(true, 1 / 0)
+```
+
+Will not result in an arithmetic error, it is equivalent to
+
+```move
+if (true) () else abort (1 / 0)
+```
+
+So the arithmetic expression is never evaluated!
+
+### Abort codes in the Move VM
+
+When using `abort`, it is important to understand how the `u64` code will be used by the VM.
+
+Normally, after successful execution, the Move VM, and the adapter for the specific deployment,
+determine the changes made to storage.
+
+If an `abort` is reached, the VM will instead indicate an error. Included in that error will be two
+pieces of information:
+
+- The module that produced the abort (package/address value and module name)
+- The abort code.
+
+For example
+
+```move
+module 0x2::example {
+    public fun aborts() {
+        abort 42
+    }
+}
+
+module 0x3::invoker {
+    public fun always_aborts() {
+        0x2::example::aborts()
+    }
+}
+```
+
+If a transaction, such as the function `always_aborts` above, calls `0x2::example::aborts`, the VM
+would produce an error that indicated the module `0x2::example` and the code `42`.
+
+This can be useful for having multiple aborts being grouped together inside a module.
+
+In this example, the module has two separate error codes used in multiple functions
+
+```move
+module 0::example;
+
+use std::vector;
+
+const EEmptyVector: u64 = 0;
+const EIndexOutOfBounds: u64 = 1;
+
+// move i to j, move j to k, move k to i
+public fun rotate_three<T>(v: &mut vector<T>, i: u64, j: u64, k: u64) {
+    let n = v.length();
+    assert!(n > 0, EEmptyVector);
+    assert!(i < n, EIndexOutOfBounds);
+    assert!(j < n, EIndexOutOfBounds);
+    assert!(k < n, EIndexOutOfBounds);
+
+    v.swap(i, k);
+    v.swap(j, k);
+}
+
+public fun remove_twice<T>(v: &mut vector<T>, i: u64, j: u64): (T, T) {
+    let n = v.length();
+    assert!(n > 0, EEmptyVector);
+    assert!(i < n, EIndexOutOfBounds);
+    assert!(j < n, EIndexOutOfBounds);
+    assert!(i > j, EIndexOutOfBounds);
+
+    (v.remove(i), v.remove(j))
+}
+```
+
+## The type of `abort`
+
+The `abort i` expression can have any type! This is because both constructs break from the normal
+control flow, so they never need to evaluate to the value of that type.
+
+The following are not useful, but they will type check
+
+```move
+let y: address = abort 0;
+```
+
+This behavior can be helpful in situations where you have a branching instruction that produces a
+value on some branches, but not all. For example:
+
+```move
+let b =
+    if (x == 0) false
+    else if (x == 1) true
+    else abort 42;
+//       ^^^^^^^^ `abort 42` has type `bool`
+```
+
+
+## FILE: reference/control-flow/labeled-control-flow.md
+
+---
+title: 'Labeled Control Flow | Reference'
+description: "Move labeled control flow reference: named loops and blocks, break with labels, and return from named blocks."
+---
+
+# Labeled Control Flow
+
+Move supports labeled control flow when writing both loops and blocks of code, allowing you
+to `break` and `continue` loops and `return` from blocks (which can be particularly helpful in the
+presence of macros).
+
+## Loops
+
+Loops allow you to define and transfer control to specific labels in a function. For example, we can
+nest two loops and use `break` and `continue` with those labels to precisely specify control flow.
+You can prefix any `loop` or `while` form with a `'label:` form to allow breaking or continuing
+directly there.
+
+To demonstrate this behavior, consider a function that takes nested vectors of numbers (i.e.,
+`vector<vector<u64>>`) to sum against some threshold, which behaves as follows:
+
+- If the sum of all the numbers are under the threshold, return that sum.
+- If adding a number to the current sum would surpass the threshold, return the current sum.
+
+We can write this by iterating over the vector of vectors as nested loops and labelling the outer
+one. If any addition in the inner loop would push us over the threshold, we can use `break` with the
+outer label to escape both loops at once:
+
+```move
+fun sum_until_threshold(input: &vector<vector<u64>>, threshold: u64): u64 {
+    let mut sum = 0;
+    let mut i = 0;
+    let input_size = input.length();
+
+    'outer: loop {
+        // breaks to outer since it is the closest enclosing loop
+        if (i >= input_size) break sum;
+
+        let vec = &input[i];
+        let size = vec.length();
+        let mut j = 0;
+
+        while (j < size) {
+            let v_entry = vec[j];
+            if (sum + v_entry < threshold) {
+                sum = sum + v_entry;
+            } else {
+                // the next element we saw would break the threshold,
+                // so we return the current sum
+                break 'outer sum
+            };
+            j = j + 1;
+        };
+        i = i + 1;
+    }
+}
+```
+
+These sorts of labels can also be used with a nested loop form, providing precise control in larger
+bodies of code. For example, if we were processing a large table where each entry required iteration
+that might see us continuing the inner or outer loop, we could express that code using labels:
+
+```move
+let x = 'outer: loop {
+    ...
+    'inner: while (cond) {
+        ...
+        if (cond0) { break 'outer value };
+        ...
+        if (cond1) { continue 'inner }
+        else if (cond2) { continue 'outer }
+        ...
+    }
+        ...
+};
+```
+
+> It's a better way to use Macros instead of Loops, similarly, use `return` to control the flow.
+> Just like above function `sum_until_threshold`, can use `macro` to rewrite it:
+```move
+fun sum_until_threshold(input: &vector<vector<u64>>, threshold: u64): u64 {
+    'outer: {
+        (*input).fold!(0, |sum, inner_vec| {
+            inner_vec.fold!(sum, |sum, num| if (sum + num < threshold) sum + num else return 'outer sum)
+        })
+    }
+}
+```
+
+## Labeled Blocks
+
+Labeled blocks allow you to write Move programs that contain intra-function non-local control flow,
+including inside of macro lambdas and returning values:
+
+```move
+fun named_return(n: u64): vector<u8> {
+    let x = 'a: {
+        if (n % 2 == 0) {
+            return 'a b"even"
+        };
+        b"odd"
+    };
+    x
+}
+```
+
+In this simple example, the program checks if the input `n` is even. If it is, the program leaves
+the block labeled `'a:` with the value `b"even"`. If not, the code continues, ending the block
+labeled `'a:` with the value `b"odd"`. At the end, we set `x` to the value and then return it.
+
+This control flow feature works across macro bodies as well. For example, suppose we wanted to write
+a function to find the first even number in a vector, and that we have some macro `for_ref` that
+iterates the vector elements in a loop:
+
+```move
+macro fun for_ref<$T>($vs: &vector<$T>, $f: |&$T|) {
+    let vs = $vs;
+    let mut i = 0;
+    let end = vs.length();
+    while (i < end) {
+        $f(vs.borrow(i));
+        i = i + 1;
+    }
+}
+```
+
+Using `for_ref` and a label, we can write a lambda expression to pass `for_ref` that will escape the
+loop, returning the first even number it finds:
+
+```move
+fun find_first_even(vs: vector<u64>): Option<u64> {
+    'result: {
+        for_ref!(&vs, |n| if (*n % 2 == 0) { return 'result option::some(*n)});
+        option::none()
+    }
+}
+```
+
+This function will iterate `vs` until it finds an even number, and return that (or return
+`option::none()` if no even number exists). This makes named labels a powerful tool for interacting
+with control flow macros such as `for!`, allowing you to customize iteration behavior in those
+contexts.
+
+## Restrictions
+
+To clarify program behavior, you may only use `break` and `continue` with loop labels, while
+`return` will only work with block labels. To this end, the following programs produce errors:
+
+```move
+fun bad_loop() {
+    'name: loop {
+        return 'name 5
+            // ^^^^^ Invalid usage of 'return' with a loop block label
+    }
+}
+
+fun bad_block() {
+    'name: {
+        continue 'name;
+              // ^^^^^ Invalid usage of 'break' with a loop block label
+        break 'name;
+           // ^^^^^ Invalid usage of 'break' with a loop block label
+    }
+}
+```
+
+
+## FILE: book/guides/2024-migration-guide.md
+
+---
+description: "Migrate your Move code to the 2024 edition: updated syntax, new features, method syntax, and step-by-step migration instructions."
+---
+
+# Move 2024 Migration Guide
+
+Move 2024 is the new edition of the Move language that is maintained by Mysten Labs. This guide is
+intended to help you understand the differences between the 2024 edition and the previous version of
+the Move language.
+
+> This guide provides a high-level overview of the changes in the new edition. For a more detailed
+> and exhaustive list of changes, refer to the
+> [Sui Blog](https://blog.sui.io/move-2024-migration-guide).
+
+## Using the New Edition
+
+To use the new edition, you need to specify the edition in the `move` file. The edition is specified
+in the `move` file using the `edition` keyword. Currently, the only available edition is
+`2024.beta`.
+
+```ini
+edition = "2024"
+# alternatively, for new features:
+edition = "2024.beta"
+```
+
+## Migration Tool
+
+The Move CLI has a migration tool that updates the code to the new edition. To use the migration
+tool, run the following command:
+
+```bash
+$ sui move migrate
+```
+
+The migration tool will update the code to use the `let mut` syntax, the new `public` modifier for
+structs, and the `public(package)` function visibility instead of `friend` declarations.
+
+## Mutable Bindings with `let mut`
+
+Move 2024 introduces `let mut` syntax to declare mutable variables. The `let mut` syntax is used to
+declare a mutable variable that can be changed after it is declared.
+
+> `let mut` declaration is now required for mutable variables. Compiler will emit an error if you
+> try to reassign a variable without the `mut` keyword.
+
+```move
+// Move 2020
+let x: u64 = 10;
+x = 20;
+
+// Move 2024
+let mut x: u64 = 10;
+x = 20;
+```
+
+Additionally, the `mut` keyword is used in tuple destructuring and function arguments to declare
+mutable variables.
+
+```move
+// takes by value and mutates
+fun takes_by_value_and_mutates(mut v: Value): Value {
+    v.field = 10;
+    v
+}
+
+// `mut` should be placed before the variable name
+fun destruct() {
+    let (x, y) = point::get_point();
+    let (mut x, y) = point::get_point();
+    let (mut x, mut y) = point::get_point();
+}
+
+// in struct unpack
+fun unpack() {
+    let Point { x, mut y } = point::get_point();
+    let Point { mut x, mut y } = point::get_point();
+}
+```
+
+## Friends are Deprecated
+
+In Move 2024, the `friend` keyword is deprecated. Instead, you can use the `public(package)`
+visibility modifier to make functions visible to other modules in the same package.
+
+```move
+// Move 2020
+friend book::friend_module;
+public(friend) fun protected_function() {}
+
+// Move 2024
+public(package) fun protected_function_2024() {}
+```
+
+## Struct Visibility
+
+In Move 2024, structs get a visibility modifier. Currently, the only available visibility modifier
+is `public`.
+
+```move
+// Move 2020
+struct Book {}
+
+// Move 2024
+public struct Book {}
+```
+
+## Method Syntax
+
+In the new edition, functions which have a struct as the first argument are associated with the
+struct. This means that the function can be called using the dot notation. Methods defined in the
+same module with the type are automatically exported.
+
+> Methods are automatically exported if the type is defined in the same module as the method. It is
+> impossible to export methods for types defined in other modules. However, you can create
+> [custom aliases](#method-aliases) for methods in the module scope.
+
+```move
+public fun count(c: &Counter): u64 { /* ... */ }
+
+fun use_counter() {
+    // move 2020
+    let count = counter::count(&c);
+
+    // move 2024
+    let count = c.count();
+}
+```
+
+## Methods for Built-in Types
+
+In Move 2024, some of the native and standard types received associated methods. For example, the
+`vector` type has a `to_string` method that converts the vector into a UTF8 string.
+
+```move
+fun aliases() {
+    // vector to string and ascii string
+    let str: String = b"Hello, World!".to_string();
+    let ascii: ascii::String = b"Hello, World!".to_ascii_string();
+
+    // address to bytes
+    let bytes = @0xa11ce.to_bytes();
+}
+```
+
+For the full list of built-in aliases, refer to the
+[Standard Library](./../move-basics/standard-library#source-code) and
+[Sui Framework](./../programmability/sui-framework#source-code) source code.
+
+## Borrowing Operator
+
+Some of the built-in types support borrowing operators. The borrowing operator is used to get a
+reference to the element at the specified index. The borrowing operator is defined as `[]`.
+
+```move
+fun play_vec() {
+    let v = vector[1,2,3,4];
+    let first = &v[0];         // calls vector::borrow(v, 0)
+    let first_mut = &mut v[0]; // calls vector::borrow_mut(v, 0)
+    let first_copy = v[0];     // calls *vector::borrow(v, 0)
+}
+```
+
+Types that support the borrowing operator are:
+
+- `vector`
+- `sui::vec_map::VecMap`
+- `sui::table::Table`
+- `sui::bag::Bag`
+- `sui::object_table::ObjectTable`
+- `sui::object_bag::ObjectBag`
+- `sui::linked_table::LinkedTable`
+
+To implement the borrowing operator for a custom type, you need to add a `#[syntax(index)]`
+attribute to the methods.
+
+```move
+#[syntax(index)]
+public fun borrow(c: &List<T>, key: String): &T { /* ... */ }
+
+#[syntax(index)]
+public fun borrow_mut(c: &mut List<T>, key: String): &mut T { /* ... */ }
+```
+
+## Method Aliases
+
+In Move 2024, methods can be associated with types. The alias can be defined for any type locally to
+the module; or publicly, if the type is defined in the same module.
+
+```move
+// my_module.move
+// Local: type is foreign to the module
+use fun my_custom_function as vector.do_magic;
+
+// sui-framework/kiosk/kiosk.move
+// Exported: type is defined in the same module
+public use fun kiosk_owner_cap_for as KioskOwnerCap.kiosk;
+```
+
+<!-- ## Macros
+
+Macros are introduced in Move 2024. And `assert!` is no longer a built-in function - Instead, it's a macro.
+
+```move
+// can be called as for!(0, 10, |i| call(i));
+macro fun for($start: u64, $stop: u64, $body: |u64|) {
+    let mut i = $start;
+    let stop = $stop;
+    while (i < stop) {
+        $body(i);
+        i = i + 1
+    }
+}
+```
+ -->
+
+

@@ -1,0 +1,4445 @@
+# Source: https://github.com/MystenLabs/sui @ d9f4797dbdcc9c5ec019fa190b432ea0e1bc39c1 — Apache-2.0 (repo LICENSE). Excerpts for offline doc-grounding verification.
+
+## FILE: crates/sui-framework/docs/sui/coin.md (lines 1-1127: structs, constants, supply/balance ops, create_currency, mint, burn; deny-list/metadata/deprecated tail omitted)
+
+---
+title: Module `sui::coin`
+---
+
+Defines the <code><a href="../sui/coin.md#sui_coin_Coin">Coin</a></code> type - platform wide representation of fungible
+tokens and coins. <code><a href="../sui/coin.md#sui_coin_Coin">Coin</a></code> can be described as a secure wrapper around
+<code>Balance</code> type.
+
+
+-  [Struct `Coin`](#sui_coin_Coin)
+-  [Struct `CoinMetadata`](#sui_coin_CoinMetadata)
+-  [Struct `RegulatedCoinMetadata`](#sui_coin_RegulatedCoinMetadata)
+-  [Struct `TreasuryCap`](#sui_coin_TreasuryCap)
+-  [Struct `DenyCapV2`](#sui_coin_DenyCapV2)
+-  [Struct `CurrencyCreated`](#sui_coin_CurrencyCreated)
+-  [Struct `DenyCap`](#sui_coin_DenyCap)
+-  [Constants](#@Constants_0)
+-  [Function `total_supply`](#sui_coin_total_supply)
+-  [Function `treasury_into_supply`](#sui_coin_treasury_into_supply)
+-  [Function `supply_immut`](#sui_coin_supply_immut)
+-  [Function `supply_mut`](#sui_coin_supply_mut)
+-  [Function `value`](#sui_coin_value)
+-  [Function `balance`](#sui_coin_balance)
+-  [Function `balance_mut`](#sui_coin_balance_mut)
+-  [Function `from_balance`](#sui_coin_from_balance)
+-  [Function `into_balance`](#sui_coin_into_balance)
+-  [Function `take`](#sui_coin_take)
+-  [Function `put`](#sui_coin_put)
+-  [Function `redeem_funds`](#sui_coin_redeem_funds)
+-  [Function `send_funds`](#sui_coin_send_funds)
+-  [Function `join`](#sui_coin_join)
+-  [Function `split`](#sui_coin_split)
+-  [Function `divide_into_n`](#sui_coin_divide_into_n)
+-  [Function `zero`](#sui_coin_zero)
+-  [Function `destroy_zero`](#sui_coin_destroy_zero)
+-  [Function `create_currency`](#sui_coin_create_currency)
+-  [Function `create_regulated_currency_v2`](#sui_coin_create_regulated_currency_v2)
+-  [Function `migrate_regulated_currency_to_v2`](#sui_coin_migrate_regulated_currency_to_v2)
+-  [Function `mint`](#sui_coin_mint)
+-  [Function `mint_balance`](#sui_coin_mint_balance)
+-  [Function `burn`](#sui_coin_burn)
+-  [Function `deny_list_v2_add`](#sui_coin_deny_list_v2_add)
+-  [Function `deny_list_v2_remove`](#sui_coin_deny_list_v2_remove)
+-  [Function `deny_list_v2_contains_current_epoch`](#sui_coin_deny_list_v2_contains_current_epoch)
+-  [Function `deny_list_v2_contains_next_epoch`](#sui_coin_deny_list_v2_contains_next_epoch)
+-  [Function `deny_list_v2_enable_global_pause`](#sui_coin_deny_list_v2_enable_global_pause)
+-  [Function `deny_list_v2_disable_global_pause`](#sui_coin_deny_list_v2_disable_global_pause)
+-  [Function `deny_list_v2_is_global_pause_enabled_current_epoch`](#sui_coin_deny_list_v2_is_global_pause_enabled_current_epoch)
+-  [Function `deny_list_v2_is_global_pause_enabled_next_epoch`](#sui_coin_deny_list_v2_is_global_pause_enabled_next_epoch)
+-  [Function `mint_and_transfer`](#sui_coin_mint_and_transfer)
+-  [Function `update_name`](#sui_coin_update_name)
+-  [Function `update_symbol`](#sui_coin_update_symbol)
+-  [Function `update_description`](#sui_coin_update_description)
+-  [Function `update_icon_url`](#sui_coin_update_icon_url)
+-  [Function `get_decimals`](#sui_coin_get_decimals)
+-  [Function `get_name`](#sui_coin_get_name)
+-  [Function `get_symbol`](#sui_coin_get_symbol)
+-  [Function `get_description`](#sui_coin_get_description)
+-  [Function `get_icon_url`](#sui_coin_get_icon_url)
+-  [Function `destroy_metadata`](#sui_coin_destroy_metadata)
+-  [Function `deny_cap_id`](#sui_coin_deny_cap_id)
+-  [Function `new_deny_cap_v2`](#sui_coin_new_deny_cap_v2)
+-  [Function `new_treasury_cap`](#sui_coin_new_treasury_cap)
+-  [Function `allow_global_pause`](#sui_coin_allow_global_pause)
+-  [Function `new_coin_metadata`](#sui_coin_new_coin_metadata)
+-  [Function `update_coin_metadata`](#sui_coin_update_coin_metadata)
+-  [Function `supply`](#sui_coin_supply)
+-  [Function `create_regulated_currency`](#sui_coin_create_regulated_currency)
+-  [Function `deny_list_add`](#sui_coin_deny_list_add)
+-  [Function `deny_list_remove`](#sui_coin_deny_list_remove)
+-  [Function `deny_list_contains`](#sui_coin_deny_list_contains)
+
+
+<pre><code><b>use</b> <a href="../std/address.md#std_address">std::address</a>;
+<b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/internal.md#std_internal">std::internal</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/type_name.md#std_type_name">std::type_name</a>;
+<b>use</b> <a href="../std/u128.md#std_u128">std::u128</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/accumulator.md#sui_accumulator">sui::accumulator</a>;
+<b>use</b> <a href="../sui/accumulator_settlement.md#sui_accumulator_settlement">sui::accumulator_settlement</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/bag.md#sui_bag">sui::bag</a>;
+<b>use</b> <a href="../sui/balance.md#sui_balance">sui::balance</a>;
+<b>use</b> <a href="../sui/bcs.md#sui_bcs">sui::bcs</a>;
+<b>use</b> <a href="../sui/config.md#sui_config">sui::config</a>;
+<b>use</b> <a href="../sui/deny_list.md#sui_deny_list">sui::deny_list</a>;
+<b>use</b> <a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a>;
+<b>use</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field">sui::dynamic_object_field</a>;
+<b>use</b> <a href="../sui/event.md#sui_event">sui::event</a>;
+<b>use</b> <a href="../sui/funds_accumulator.md#sui_funds_accumulator">sui::funds_accumulator</a>;
+<b>use</b> <a href="../sui/hash.md#sui_hash">sui::hash</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/party.md#sui_party">sui::party</a>;
+<b>use</b> <a href="../sui/protocol_config.md#sui_protocol_config">sui::protocol_config</a>;
+<b>use</b> <a href="../sui/table.md#sui_table">sui::table</a>;
+<b>use</b> <a href="../sui/transfer.md#sui_transfer">sui::transfer</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+<b>use</b> <a href="../sui/types.md#sui_types">sui::types</a>;
+<b>use</b> <a href="../sui/url.md#sui_url">sui::url</a>;
+<b>use</b> <a href="../sui/vec_map.md#sui_vec_map">sui::vec_map</a>;
+<b>use</b> <a href="../sui/vec_set.md#sui_vec_set">sui::vec_set</a>;
+</code></pre>
+
+
+
+<a name="sui_coin_Coin"></a>
+
+## Struct `Coin`
+
+A coin of type <code>T</code> worth <code><a href="../sui/coin.md#sui_coin_value">value</a></code>. Transferable and storable
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;<b>phantom</b> T&gt; <b>has</b> key, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_coin_CoinMetadata"></a>
+
+## Struct `CoinMetadata`
+
+Each Coin type T created through <code><a href="../sui/coin.md#sui_coin_create_currency">create_currency</a></code> function will have a
+unique instance of CoinMetadata<T> that stores the metadata for this coin type.
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/coin.md#sui_coin_CoinMetadata">CoinMetadata</a>&lt;<b>phantom</b> T&gt; <b>has</b> key, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>decimals: u8</code>
+</dt>
+<dd>
+ Number of decimal places the coin uses.
+ A coin with <code><a href="../sui/coin.md#sui_coin_value">value</a> </code> N and <code>decimals</code> D should be shown as N / 10^D
+ E.g., a coin with <code><a href="../sui/coin.md#sui_coin_value">value</a></code> 7002 and decimals 3 should be displayed as 7.002
+ This is metadata for display usage only.
+</dd>
+<dt>
+<code>name: <a href="../std/string.md#std_string_String">std::string::String</a></code>
+</dt>
+<dd>
+ Name for the token
+</dd>
+<dt>
+<code>symbol: <a href="../std/ascii.md#std_ascii_String">std::ascii::String</a></code>
+</dt>
+<dd>
+ Symbol for the token
+</dd>
+<dt>
+<code>description: <a href="../std/string.md#std_string_String">std::string::String</a></code>
+</dt>
+<dd>
+ Description of the token
+</dd>
+<dt>
+<code>icon_url: <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;<a href="../sui/url.md#sui_url_Url">sui::url::Url</a>&gt;</code>
+</dt>
+<dd>
+ URL for the token logo
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_coin_RegulatedCoinMetadata"></a>
+
+## Struct `RegulatedCoinMetadata`
+
+Similar to CoinMetadata, but created only for regulated coins that use the DenyList.
+This object is always immutable.
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/coin.md#sui_coin_RegulatedCoinMetadata">RegulatedCoinMetadata</a>&lt;<b>phantom</b> T&gt; <b>has</b> key
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>coin_metadata_object: <a href="../sui/object.md#sui_object_ID">sui::object::ID</a></code>
+</dt>
+<dd>
+ The ID of the coin's CoinMetadata object.
+</dd>
+<dt>
+<code>deny_cap_object: <a href="../sui/object.md#sui_object_ID">sui::object::ID</a></code>
+</dt>
+<dd>
+ The ID of the coin's DenyCap object.
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_coin_TreasuryCap"></a>
+
+## Struct `TreasuryCap`
+
+Capability allowing the bearer to mint and burn
+coins of type <code>T</code>. Transferable
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;<b>phantom</b> T&gt; <b>has</b> key, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>: <a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_coin_DenyCapV2"></a>
+
+## Struct `DenyCapV2`
+
+Capability allowing the bearer to deny addresses from using the currency's coins--
+immediately preventing those addresses from interacting with the coin as an input to a
+transaction and at the start of the next preventing them from receiving the coin.
+If <code><a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a></code> is true, the bearer can enable a global pause that behaves as if
+all addresses were added to the deny list.
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/coin.md#sui_coin_DenyCapV2">DenyCapV2</a>&lt;<b>phantom</b> T&gt; <b>has</b> key, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a>: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_coin_CurrencyCreated"></a>
+
+## Struct `CurrencyCreated`
+
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/coin.md#sui_coin_CurrencyCreated">CurrencyCreated</a>&lt;<b>phantom</b> T&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>decimals: u8</code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_coin_DenyCap"></a>
+
+## Struct `DenyCap`
+
+Capability allowing the bearer to freeze addresses, preventing those addresses from
+interacting with the coin as an input to a transaction.
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/coin.md#sui_coin_DenyCap">DenyCap</a>&lt;<b>phantom</b> T&gt; <b>has</b> key, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="@Constants_0"></a>
+
+## Constants
+
+
+<a name="sui_coin_EBadWitness"></a>
+
+A type passed to create_supply is not a one-time witness.
+
+
+<pre><code><b>const</b> <a href="../sui/coin.md#sui_coin_EBadWitness">EBadWitness</a>: u64 = 0;
+</code></pre>
+
+
+
+<a name="sui_coin_EInvalidArg"></a>
+
+Invalid arguments are passed to a function.
+
+
+<pre><code><b>const</b> <a href="../sui/coin.md#sui_coin_EInvalidArg">EInvalidArg</a>: u64 = 1;
+</code></pre>
+
+
+
+<a name="sui_coin_ENotEnough"></a>
+
+Trying to split a coin more times than its balance allows.
+
+
+<pre><code><b>const</b> <a href="../sui/coin.md#sui_coin_ENotEnough">ENotEnough</a>: u64 = 2;
+</code></pre>
+
+
+
+<a name="sui_coin_EGlobalPauseNotAllowed"></a>
+
+
+
+<pre><code><b>const</b> <a href="../sui/coin.md#sui_coin_EGlobalPauseNotAllowed">EGlobalPauseNotAllowed</a>: u64 = 3;
+</code></pre>
+
+
+
+<a name="sui_coin_DENY_LIST_COIN_INDEX"></a>
+
+The index into the deny list vector for the <code><a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a></code> type.
+
+
+<pre><code><b>const</b> <a href="../sui/coin.md#sui_coin_DENY_LIST_COIN_INDEX">DENY_LIST_COIN_INDEX</a>: u64 = 0;
+</code></pre>
+
+
+
+<a name="sui_coin_total_supply"></a>
+
+## Function `total_supply`
+
+Return the total number of <code>T</code>'s in circulation.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>&lt;T&gt;(cap: &<a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>&lt;T&gt;(cap: &<a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;): u64 {
+    <a href="../sui/balance.md#sui_balance_supply_value">balance::supply_value</a>(&cap.<a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_treasury_into_supply"></a>
+
+## Function `treasury_into_supply`
+
+Unwrap <code><a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a></code> getting the <code>Supply</code>.
+
+Operation is irreversible. Supply cannot be converted into a <code><a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a></code> due
+to different security guarantees (TreasuryCap can be created only once for a type)
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_treasury_into_supply">treasury_into_supply</a>&lt;T&gt;(treasury: <a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;): <a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_treasury_into_supply">treasury_into_supply</a>&lt;T&gt;(treasury: <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;): Supply&lt;T&gt; {
+    <b>let</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a> { id, <a href="../sui/coin.md#sui_coin_total_supply">total_supply</a> } = treasury;
+    id.delete();
+    <a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_supply_immut"></a>
+
+## Function `supply_immut`
+
+Get immutable reference to the treasury's <code>Supply</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_supply_immut">supply_immut</a>&lt;T&gt;(treasury: &<a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;): &<a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_supply_immut">supply_immut</a>&lt;T&gt;(treasury: &<a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;): &Supply&lt;T&gt; {
+    &treasury.<a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_supply_mut"></a>
+
+## Function `supply_mut`
+
+Get mutable reference to the treasury's <code>Supply</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_supply_mut">supply_mut</a>&lt;T&gt;(treasury: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;): &<b>mut</b> <a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_supply_mut">supply_mut</a>&lt;T&gt;(treasury: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;): &<b>mut</b> Supply&lt;T&gt; {
+    &<b>mut</b> treasury.<a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_value"></a>
+
+## Function `value`
+
+Public getter for the coin's value
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_value">value</a>&lt;T&gt;(self: &<a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_value">value</a>&lt;T&gt;(self: &<a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;): u64 {
+    self.<a href="../sui/balance.md#sui_balance">balance</a>.<a href="../sui/coin.md#sui_coin_value">value</a>()
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_balance"></a>
+
+## Function `balance`
+
+Get immutable reference to the balance of a coin.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance">balance</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: &<a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;): &<a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance">balance</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: &<a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;): &Balance&lt;T&gt; {
+    &<a href="../sui/coin.md#sui_coin">coin</a>.<a href="../sui/balance.md#sui_balance">balance</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_balance_mut"></a>
+
+## Function `balance_mut`
+
+Get a mutable reference to the balance of a coin.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_balance_mut">balance_mut</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;): &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_balance_mut">balance_mut</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;): &<b>mut</b> Balance&lt;T&gt; {
+    &<b>mut</b> <a href="../sui/coin.md#sui_coin">coin</a>.<a href="../sui/balance.md#sui_balance">balance</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_from_balance"></a>
+
+## Function `from_balance`
+
+Wrap a balance into a Coin to make it transferable.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_from_balance">from_balance</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_from_balance">from_balance</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: Balance&lt;T&gt;, ctx: &<b>mut</b> TxContext): <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt; {
+    <a href="../sui/coin.md#sui_coin_Coin">Coin</a> { id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx), <a href="../sui/balance.md#sui_balance">balance</a> }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_into_balance"></a>
+
+## Function `into_balance`
+
+Destruct a Coin wrapper and keep the balance.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_into_balance">into_balance</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;): <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_into_balance">into_balance</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;): Balance&lt;T&gt; {
+    <b>let</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a> { id, <a href="../sui/balance.md#sui_balance">balance</a> } = <a href="../sui/coin.md#sui_coin">coin</a>;
+    id.delete();
+    <a href="../sui/balance.md#sui_balance">balance</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_take"></a>
+
+## Function `take`
+
+Take a <code><a href="../sui/coin.md#sui_coin_Coin">Coin</a></code> worth of <code><a href="../sui/coin.md#sui_coin_value">value</a></code> from <code>Balance</code>.
+Aborts if <code><a href="../sui/coin.md#sui_coin_value">value</a> &gt; <a href="../sui/balance.md#sui_balance">balance</a>.<a href="../sui/coin.md#sui_coin_value">value</a></code>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_take">take</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_value">value</a>: u64, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_take">take</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: &<b>mut</b> Balance&lt;T&gt;, <a href="../sui/coin.md#sui_coin_value">value</a>: u64, ctx: &<b>mut</b> TxContext): <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt; {
+    <a href="../sui/coin.md#sui_coin_Coin">Coin</a> {
+        id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+        <a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance">balance</a>.<a href="../sui/coin.md#sui_coin_split">split</a>(<a href="../sui/coin.md#sui_coin_value">value</a>),
+    }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_put"></a>
+
+## Function `put`
+
+Put a <code><a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;</code> to the <code>Balance&lt;T&gt;</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_put">put</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin">coin</a>: <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_put">put</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: &<b>mut</b> Balance&lt;T&gt;, <a href="../sui/coin.md#sui_coin">coin</a>: <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;) {
+    <a href="../sui/balance.md#sui_balance">balance</a>.<a href="../sui/coin.md#sui_coin_join">join</a>(<a href="../sui/coin.md#sui_coin_into_balance">into_balance</a>(<a href="../sui/coin.md#sui_coin">coin</a>));
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_redeem_funds"></a>
+
+## Function `redeem_funds`
+
+Redeem a <code>Withdrawal&lt;Balance&lt;T&gt;&gt;</code> and create a <code><a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;</code> from the withdrawn Balance<T>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_redeem_funds">redeem_funds</a>&lt;T&gt;(withdrawal: <a href="../sui/funds_accumulator.md#sui_funds_accumulator_Withdrawal">sui::funds_accumulator::Withdrawal</a>&lt;<a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;&gt;, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_redeem_funds">redeem_funds</a>&lt;T&gt;(
+    withdrawal: <a href="../sui/funds_accumulator.md#sui_funds_accumulator_Withdrawal">sui::funds_accumulator::Withdrawal</a>&lt;Balance&lt;T&gt;&gt;,
+    ctx: &<b>mut</b> TxContext,
+): <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt; {
+    <a href="../sui/balance.md#sui_balance_redeem_funds">balance::redeem_funds</a>(withdrawal).into_coin(ctx)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_send_funds"></a>
+
+## Function `send_funds`
+
+Send a coin to an address balance
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_send_funds">send_funds</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;, recipient: <b>address</b>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_send_funds">send_funds</a>&lt;T&gt;(<a href="../sui/coin.md#sui_coin">coin</a>: <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;, recipient: <b>address</b>) {
+    <a href="../sui/balance.md#sui_balance_send_funds">balance::send_funds</a>(<a href="../sui/coin.md#sui_coin">coin</a>.<a href="../sui/coin.md#sui_coin_into_balance">into_balance</a>(), recipient);
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_join"></a>
+
+## Function `join`
+
+Consume the coin <code>c</code> and add its value to <code>self</code>.
+Aborts if <code>c.<a href="../sui/coin.md#sui_coin_value">value</a> + self.<a href="../sui/coin.md#sui_coin_value">value</a> &gt; U64_MAX</code>
+
+
+<pre><code><b>public</b> <b>entry</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_join">join</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;, c: <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>entry</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_join">join</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;, c: <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;) {
+    <b>let</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a> { id, <a href="../sui/balance.md#sui_balance">balance</a> } = c;
+    id.delete();
+    self.<a href="../sui/balance.md#sui_balance">balance</a>.<a href="../sui/coin.md#sui_coin_join">join</a>(<a href="../sui/balance.md#sui_balance">balance</a>);
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_split"></a>
+
+## Function `split`
+
+Split coin <code>self</code> to two coins, one with balance <code>split_amount</code>,
+and the remaining balance is left is <code>self</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_split">split</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;, split_amount: u64, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_split">split</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;, split_amount: u64, ctx: &<b>mut</b> TxContext): <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt; {
+    <a href="../sui/coin.md#sui_coin_take">take</a>(&<b>mut</b> self.<a href="../sui/balance.md#sui_balance">balance</a>, split_amount, ctx)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_divide_into_n"></a>
+
+## Function `divide_into_n`
+
+Split coin <code>self</code> into <code>n - 1</code> coins with equal balances. The remainder is left in
+<code>self</code>. Return newly created coins.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_divide_into_n">divide_into_n</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;, n: u64, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): vector&lt;<a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_divide_into_n">divide_into_n</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;, n: u64, ctx: &<b>mut</b> TxContext): vector&lt;<a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;&gt; {
+    <b>assert</b>!(n &gt; 0, <a href="../sui/coin.md#sui_coin_EInvalidArg">EInvalidArg</a>);
+    <b>assert</b>!(n &lt;= self.<a href="../sui/coin.md#sui_coin_value">value</a>(), <a href="../sui/coin.md#sui_coin_ENotEnough">ENotEnough</a>);
+    <b>let</b> split_amount = self.<a href="../sui/coin.md#sui_coin_value">value</a>() / n;
+    vector::tabulate!(n - 1, |_| self.<a href="../sui/coin.md#sui_coin_split">split</a>(split_amount, ctx))
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_zero"></a>
+
+## Function `zero`
+
+Make any Coin with a zero value. Useful for placeholding
+bids/payments or preemptively making empty balances.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_zero">zero</a>&lt;T&gt;(ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_zero">zero</a>&lt;T&gt;(ctx: &<b>mut</b> TxContext): <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt; {
+    <a href="../sui/coin.md#sui_coin_Coin">Coin</a> { id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx), <a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_zero">balance::zero</a>() }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_destroy_zero"></a>
+
+## Function `destroy_zero`
+
+Destroy a coin with value zero
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_destroy_zero">destroy_zero</a>&lt;T&gt;(c: <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_destroy_zero">destroy_zero</a>&lt;T&gt;(c: <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;) {
+    <b>let</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a> { id, <a href="../sui/balance.md#sui_balance">balance</a> } = c;
+    id.delete();
+    <a href="../sui/balance.md#sui_balance">balance</a>.<a href="../sui/coin.md#sui_coin_destroy_zero">destroy_zero</a>()
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_create_currency"></a>
+
+## Function `create_currency`
+
+Create a new currency type <code>T</code> as and return the <code><a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a></code> for
+<code>T</code> to the caller. Can only be called with a <code>one-time-witness</code>
+type, ensuring that there's only one <code><a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a></code> per <code>T</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_create_currency">create_currency</a>&lt;T: drop&gt;(witness: T, decimals: u8, symbol: vector&lt;u8&gt;, name: vector&lt;u8&gt;, description: vector&lt;u8&gt;, icon_url: <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;<a href="../sui/url.md#sui_url_Url">sui::url::Url</a>&gt;, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): (<a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_CoinMetadata">sui::coin::CoinMetadata</a>&lt;T&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_create_currency">create_currency</a>&lt;T: drop&gt;(
+    witness: T,
+    decimals: u8,
+    symbol: vector&lt;u8&gt;,
+    name: vector&lt;u8&gt;,
+    description: vector&lt;u8&gt;,
+    icon_url: Option&lt;Url&gt;,
+    ctx: &<b>mut</b> TxContext,
+): (<a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_CoinMetadata">CoinMetadata</a>&lt;T&gt;) {
+    // Make sure there's only one instance of the type T
+    <b>assert</b>!(<a href="../sui/types.md#sui_types_is_one_time_witness">sui::types::is_one_time_witness</a>(&witness), <a href="../sui/coin.md#sui_coin_EBadWitness">EBadWitness</a>);
+    (
+        <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a> {
+            id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+            <a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>: <a href="../sui/balance.md#sui_balance_create_supply">balance::create_supply</a>(witness),
+        },
+        <a href="../sui/coin.md#sui_coin_CoinMetadata">CoinMetadata</a> {
+            id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+            decimals,
+            name: name.to_string(),
+            symbol: symbol.to_ascii_string(),
+            description: description.to_string(),
+            icon_url,
+        },
+    )
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_create_regulated_currency_v2"></a>
+
+## Function `create_regulated_currency_v2`
+
+This creates a new currency, via <code><a href="../sui/coin.md#sui_coin_create_currency">create_currency</a></code>, but with an extra capability that
+allows for specific addresses to have their coins frozen. When an address is added to the
+deny list, it is immediately unable to interact with the currency's coin as input objects.
+Additionally at the start of the next epoch, they will be unable to receive the currency's
+coin.
+The <code><a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a></code> flag enables an additional API that will cause all addresses to
+be denied. Note however, that this doesn't affect per-address entries of the deny list and
+will not change the result of the "contains" APIs.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_create_regulated_currency_v2">create_regulated_currency_v2</a>&lt;T: drop&gt;(witness: T, decimals: u8, symbol: vector&lt;u8&gt;, name: vector&lt;u8&gt;, description: vector&lt;u8&gt;, icon_url: <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;<a href="../sui/url.md#sui_url_Url">sui::url::Url</a>&gt;, <a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a>: bool, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): (<a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_DenyCapV2">sui::coin::DenyCapV2</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_CoinMetadata">sui::coin::CoinMetadata</a>&lt;T&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_create_regulated_currency_v2">create_regulated_currency_v2</a>&lt;T: drop&gt;(
+    witness: T,
+    decimals: u8,
+    symbol: vector&lt;u8&gt;,
+    name: vector&lt;u8&gt;,
+    description: vector&lt;u8&gt;,
+    icon_url: Option&lt;Url&gt;,
+    <a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a>: bool,
+    ctx: &<b>mut</b> TxContext,
+): (<a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_DenyCapV2">DenyCapV2</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_CoinMetadata">CoinMetadata</a>&lt;T&gt;) {
+    <b>let</b> (treasury_cap, metadata) = <a href="../sui/coin.md#sui_coin_create_currency">create_currency</a>(
+        witness,
+        decimals,
+        symbol,
+        name,
+        description,
+        icon_url,
+        ctx,
+    );
+    <b>let</b> deny_cap = <a href="../sui/coin.md#sui_coin_DenyCapV2">DenyCapV2</a> {
+        id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+        <a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a>,
+    };
+    <a href="../sui/transfer.md#sui_transfer_freeze_object">transfer::freeze_object</a>(<a href="../sui/coin.md#sui_coin_RegulatedCoinMetadata">RegulatedCoinMetadata</a>&lt;T&gt; {
+        id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+        coin_metadata_object: <a href="../sui/object.md#sui_object_id">object::id</a>(&metadata),
+        deny_cap_object: <a href="../sui/object.md#sui_object_id">object::id</a>(&deny_cap),
+    });
+    (treasury_cap, deny_cap, metadata)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_migrate_regulated_currency_to_v2"></a>
+
+## Function `migrate_regulated_currency_to_v2`
+
+Given the <code><a href="../sui/coin.md#sui_coin_DenyCap">DenyCap</a></code> for a regulated currency, migrate it to the new <code><a href="../sui/coin.md#sui_coin_DenyCapV2">DenyCapV2</a></code> type.
+All entries in the deny list will be migrated to the new format.
+See <code><a href="../sui/coin.md#sui_coin_create_regulated_currency_v2">create_regulated_currency_v2</a></code> for details on the new v2 of the deny list.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_migrate_regulated_currency_to_v2">migrate_regulated_currency_to_v2</a>&lt;T&gt;(<a href="../sui/deny_list.md#sui_deny_list">deny_list</a>: &<b>mut</b> <a href="../sui/deny_list.md#sui_deny_list_DenyList">sui::deny_list::DenyList</a>, cap: <a href="../sui/coin.md#sui_coin_DenyCap">sui::coin::DenyCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a>: bool, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/coin.md#sui_coin_DenyCapV2">sui::coin::DenyCapV2</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_migrate_regulated_currency_to_v2">migrate_regulated_currency_to_v2</a>&lt;T&gt;(
+    <a href="../sui/deny_list.md#sui_deny_list">deny_list</a>: &<b>mut</b> DenyList,
+    cap: <a href="../sui/coin.md#sui_coin_DenyCap">DenyCap</a>&lt;T&gt;,
+    <a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a>: bool,
+    ctx: &<b>mut</b> TxContext,
+): <a href="../sui/coin.md#sui_coin_DenyCapV2">DenyCapV2</a>&lt;T&gt; {
+    <b>let</b> <a href="../sui/coin.md#sui_coin_DenyCap">DenyCap</a> { id } = cap;
+    id.delete();
+    <b>let</b> ty = type_name::with_defining_ids&lt;T&gt;().into_string().into_bytes();
+    <a href="../sui/deny_list.md#sui_deny_list">deny_list</a>.migrate_v1_to_v2(<a href="../sui/coin.md#sui_coin_DENY_LIST_COIN_INDEX">DENY_LIST_COIN_INDEX</a>, ty, ctx);
+    <a href="../sui/coin.md#sui_coin_DenyCapV2">DenyCapV2</a> {
+        id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+        <a href="../sui/coin.md#sui_coin_allow_global_pause">allow_global_pause</a>,
+    }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_mint"></a>
+
+## Function `mint`
+
+Create a coin worth <code><a href="../sui/coin.md#sui_coin_value">value</a></code> and increase the total supply
+in <code>cap</code> accordingly.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_mint">mint</a>&lt;T&gt;(cap: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_value">value</a>: u64, ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_mint">mint</a>&lt;T&gt;(cap: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_value">value</a>: u64, ctx: &<b>mut</b> TxContext): <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt; {
+    <a href="../sui/coin.md#sui_coin_Coin">Coin</a> {
+        id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+        <a href="../sui/balance.md#sui_balance">balance</a>: cap.<a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>.increase_supply(<a href="../sui/coin.md#sui_coin_value">value</a>),
+    }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_mint_balance"></a>
+
+## Function `mint_balance`
+
+Mint some amount of T as a <code>Balance</code> and increase the total
+supply in <code>cap</code> accordingly.
+Aborts if <code><a href="../sui/coin.md#sui_coin_value">value</a></code> + <code>cap.<a href="../sui/coin.md#sui_coin_total_supply">total_supply</a></code> >= U64_MAX
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_mint_balance">mint_balance</a>&lt;T&gt;(cap: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_value">value</a>: u64): <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_mint_balance">mint_balance</a>&lt;T&gt;(cap: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;, <a href="../sui/coin.md#sui_coin_value">value</a>: u64): Balance&lt;T&gt; {
+    cap.<a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>.increase_supply(<a href="../sui/coin.md#sui_coin_value">value</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_coin_burn"></a>
+
+## Function `burn`
+
+Destroy the coin <code>c</code> and decrease the total supply in <code>cap</code>
+accordingly.
+
+
+<pre><code><b>public</b> <b>entry</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_burn">burn</a>&lt;T&gt;(cap: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">sui::coin::TreasuryCap</a>&lt;T&gt;, c: <a href="../sui/coin.md#sui_coin_Coin">sui::coin::Coin</a>&lt;T&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>entry</b> <b>fun</b> <a href="../sui/coin.md#sui_coin_burn">burn</a>&lt;T&gt;(cap: &<b>mut</b> <a href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a>&lt;T&gt;, c: <a href="../sui/coin.md#sui_coin_Coin">Coin</a>&lt;T&gt;): u64 {
+    <b>let</b> <a href="../sui/coin.md#sui_coin_Coin">Coin</a> { id, <a href="../sui/balance.md#sui_balance">balance</a> } = c;
+    id.delete();
+    cap.<a href="../sui/coin.md#sui_coin_total_supply">total_supply</a>.decrease_supply(<a href="../sui/balance.md#sui_balance">balance</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+
+
+## FILE: crates/sui-framework/docs/sui/balance.md (lines 1-437: Supply, Balance, value, create_supply, join, split, withdraw_all, destroy_zero; funds-accumulator tail omitted)
+
+---
+title: Module `sui::balance`
+---
+
+A storable handler for Balances in general. Is used in the <code>Coin</code>
+module to allow balance operations and can be used to implement
+custom coins with <code><a href="../sui/balance.md#sui_balance_Supply">Supply</a></code> and <code><a href="../sui/balance.md#sui_balance_Balance">Balance</a></code>s.
+
+
+-  [Struct `Supply`](#sui_balance_Supply)
+-  [Struct `Balance`](#sui_balance_Balance)
+-  [Constants](#@Constants_0)
+-  [Function `value`](#sui_balance_value)
+-  [Function `supply_value`](#sui_balance_supply_value)
+-  [Function `create_supply`](#sui_balance_create_supply)
+-  [Function `increase_supply`](#sui_balance_increase_supply)
+-  [Function `decrease_supply`](#sui_balance_decrease_supply)
+-  [Function `zero`](#sui_balance_zero)
+-  [Function `join`](#sui_balance_join)
+-  [Function `split`](#sui_balance_split)
+-  [Function `withdraw_all`](#sui_balance_withdraw_all)
+-  [Function `destroy_zero`](#sui_balance_destroy_zero)
+-  [Function `send_funds`](#sui_balance_send_funds)
+-  [Function `redeem_funds`](#sui_balance_redeem_funds)
+-  [Function `withdraw_funds_from_object`](#sui_balance_withdraw_funds_from_object)
+-  [Function `settled_funds_value`](#sui_balance_settled_funds_value)
+-  [Function `create_supply_internal`](#sui_balance_create_supply_internal)
+-  [Function `create_staking_rewards`](#sui_balance_create_staking_rewards)
+-  [Function `destroy_storage_rebates`](#sui_balance_destroy_storage_rebates)
+-  [Function `destroy_supply`](#sui_balance_destroy_supply)
+
+
+<pre><code><b>use</b> <a href="../std/address.md#std_address">std::address</a>;
+<b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/internal.md#std_internal">std::internal</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/type_name.md#std_type_name">std::type_name</a>;
+<b>use</b> <a href="../std/u128.md#std_u128">std::u128</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/accumulator.md#sui_accumulator">sui::accumulator</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a>;
+<b>use</b> <a href="../sui/funds_accumulator.md#sui_funds_accumulator">sui::funds_accumulator</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/party.md#sui_party">sui::party</a>;
+<b>use</b> <a href="../sui/protocol_config.md#sui_protocol_config">sui::protocol_config</a>;
+<b>use</b> <a href="../sui/transfer.md#sui_transfer">sui::transfer</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+<b>use</b> <a href="../sui/vec_map.md#sui_vec_map">sui::vec_map</a>;
+</code></pre>
+
+
+
+<a name="sui_balance_Supply"></a>
+
+## Struct `Supply`
+
+A Supply of T. Used for minting and burning.
+Wrapped into a <code>TreasuryCap</code> in the <code>Coin</code> module.
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/balance.md#sui_balance_Supply">Supply</a>&lt;<b>phantom</b> T&gt; <b>has</b> store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code><a href="../sui/balance.md#sui_balance_value">value</a>: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_balance_Balance"></a>
+
+## Struct `Balance`
+
+Storable balance - an inner struct of a Coin type.
+Can be used to store coins which don't need the key ability.
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;<b>phantom</b> T&gt; <b>has</b> store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code><a href="../sui/balance.md#sui_balance_value">value</a>: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="@Constants_0"></a>
+
+## Constants
+
+
+<a name="sui_balance_ENonZero"></a>
+
+For when trying to destroy a non-zero balance.
+
+
+<pre><code><b>const</b> <a href="../sui/balance.md#sui_balance_ENonZero">ENonZero</a>: u64 = 0;
+</code></pre>
+
+
+
+<a name="sui_balance_EOverflow"></a>
+
+For when an overflow is happening on Supply operations.
+
+
+<pre><code><b>const</b> <a href="../sui/balance.md#sui_balance_EOverflow">EOverflow</a>: u64 = 1;
+</code></pre>
+
+
+
+<a name="sui_balance_ENotEnough"></a>
+
+For when trying to withdraw more than there is.
+
+
+<pre><code><b>const</b> <a href="../sui/balance.md#sui_balance_ENotEnough">ENotEnough</a>: u64 = 2;
+</code></pre>
+
+
+
+<a name="sui_balance_ENotSystemAddress"></a>
+
+Sender is not @0x0 the system address.
+
+
+<pre><code><b>const</b> <a href="../sui/balance.md#sui_balance_ENotSystemAddress">ENotSystemAddress</a>: u64 = 3;
+</code></pre>
+
+
+
+<a name="sui_balance_ENotSUI"></a>
+
+System operation performed for a coin other than SUI
+
+
+<pre><code><b>const</b> <a href="../sui/balance.md#sui_balance_ENotSUI">ENotSUI</a>: u64 = 4;
+</code></pre>
+
+
+
+<a name="sui_balance_SUI_TYPE_NAME"></a>
+
+
+
+<pre><code><b>const</b> <a href="../sui/balance.md#sui_balance_SUI_TYPE_NAME">SUI_TYPE_NAME</a>: vector&lt;u8&gt; = vector[48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 50, 58, 58, 115, 117, 105, 58, 58, 83, 85, 73];
+</code></pre>
+
+
+
+<a name="sui_balance_value"></a>
+
+## Function `value`
+
+Get the amount stored in a <code><a href="../sui/balance.md#sui_balance_Balance">Balance</a></code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_value">value</a>&lt;T&gt;(self: &<a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_value">value</a>&lt;T&gt;(self: &<a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;): u64 {
+    self.<a href="../sui/balance.md#sui_balance_value">value</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_supply_value"></a>
+
+## Function `supply_value`
+
+Get the <code><a href="../sui/balance.md#sui_balance_Supply">Supply</a></code> value.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_supply_value">supply_value</a>&lt;T&gt;(supply: &<a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_supply_value">supply_value</a>&lt;T&gt;(supply: &<a href="../sui/balance.md#sui_balance_Supply">Supply</a>&lt;T&gt;): u64 {
+    supply.<a href="../sui/balance.md#sui_balance_value">value</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_create_supply"></a>
+
+## Function `create_supply`
+
+Create a new supply for type T.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_create_supply">create_supply</a>&lt;T: drop&gt;(_: T): <a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_create_supply">create_supply</a>&lt;T: drop&gt;(_: T): <a href="../sui/balance.md#sui_balance_Supply">Supply</a>&lt;T&gt; {
+    <a href="../sui/balance.md#sui_balance_Supply">Supply</a> { <a href="../sui/balance.md#sui_balance_value">value</a>: 0 }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_increase_supply"></a>
+
+## Function `increase_supply`
+
+Increase supply by <code><a href="../sui/balance.md#sui_balance_value">value</a></code> and create a new <code><a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;</code> with this value.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_increase_supply">increase_supply</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance_value">value</a>: u64): <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_increase_supply">increase_supply</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Supply">Supply</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance_value">value</a>: u64): <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt; {
+    <b>assert</b>!(<a href="../sui/balance.md#sui_balance_value">value</a> &lt;= (<a href="../std/u64.md#std_u64_max_value">std::u64::max_value</a>!() - self.<a href="../sui/balance.md#sui_balance_value">value</a>), <a href="../sui/balance.md#sui_balance_EOverflow">EOverflow</a>);
+    self.<a href="../sui/balance.md#sui_balance_value">value</a> = self.<a href="../sui/balance.md#sui_balance_value">value</a> + <a href="../sui/balance.md#sui_balance_value">value</a>;
+    <a href="../sui/balance.md#sui_balance_Balance">Balance</a> { <a href="../sui/balance.md#sui_balance_value">value</a> }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_decrease_supply"></a>
+
+## Function `decrease_supply`
+
+Burn a Balance<T> and decrease Supply<T>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_decrease_supply">decrease_supply</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Supply">sui::balance::Supply</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_decrease_supply">decrease_supply</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Supply">Supply</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;): u64 {
+    <b>let</b> <a href="../sui/balance.md#sui_balance_Balance">Balance</a> { <a href="../sui/balance.md#sui_balance_value">value</a> } = <a href="../sui/balance.md#sui_balance">balance</a>;
+    <b>assert</b>!(self.<a href="../sui/balance.md#sui_balance_value">value</a> &gt;= <a href="../sui/balance.md#sui_balance_value">value</a>, <a href="../sui/balance.md#sui_balance_EOverflow">EOverflow</a>);
+    self.<a href="../sui/balance.md#sui_balance_value">value</a> = self.<a href="../sui/balance.md#sui_balance_value">value</a> - <a href="../sui/balance.md#sui_balance_value">value</a>;
+    <a href="../sui/balance.md#sui_balance_value">value</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_zero"></a>
+
+## Function `zero`
+
+Create a zero <code><a href="../sui/balance.md#sui_balance_Balance">Balance</a></code> for type <code>T</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_zero">zero</a>&lt;T&gt;(): <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_zero">zero</a>&lt;T&gt;(): <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt; {
+    <a href="../sui/balance.md#sui_balance_Balance">Balance</a> { <a href="../sui/balance.md#sui_balance_value">value</a>: 0 }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_join"></a>
+
+## Function `join`
+
+Join two balances together.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_join">join</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_join">join</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;): u64 {
+    <b>let</b> <a href="../sui/balance.md#sui_balance_Balance">Balance</a> { <a href="../sui/balance.md#sui_balance_value">value</a> } = <a href="../sui/balance.md#sui_balance">balance</a>;
+    self.<a href="../sui/balance.md#sui_balance_value">value</a> = self.<a href="../sui/balance.md#sui_balance_value">value</a> + <a href="../sui/balance.md#sui_balance_value">value</a>;
+    self.<a href="../sui/balance.md#sui_balance_value">value</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_split"></a>
+
+## Function `split`
+
+Split a <code><a href="../sui/balance.md#sui_balance_Balance">Balance</a></code> and take a sub balance from it.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_split">split</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance_value">value</a>: u64): <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_split">split</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;, <a href="../sui/balance.md#sui_balance_value">value</a>: u64): <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt; {
+    <b>assert</b>!(self.<a href="../sui/balance.md#sui_balance_value">value</a> &gt;= <a href="../sui/balance.md#sui_balance_value">value</a>, <a href="../sui/balance.md#sui_balance_ENotEnough">ENotEnough</a>);
+    self.<a href="../sui/balance.md#sui_balance_value">value</a> = self.<a href="../sui/balance.md#sui_balance_value">value</a> - <a href="../sui/balance.md#sui_balance_value">value</a>;
+    <a href="../sui/balance.md#sui_balance_Balance">Balance</a> { <a href="../sui/balance.md#sui_balance_value">value</a> }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_withdraw_all"></a>
+
+## Function `withdraw_all`
+
+Withdraw all balance. After this the remaining balance must be 0.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_withdraw_all">withdraw_all</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;): <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_withdraw_all">withdraw_all</a>&lt;T&gt;(self: &<b>mut</b> <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;): <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt; {
+    <b>let</b> <a href="../sui/balance.md#sui_balance_value">value</a> = self.<a href="../sui/balance.md#sui_balance_value">value</a>;
+    <a href="../sui/balance.md#sui_balance_split">split</a>(self, <a href="../sui/balance.md#sui_balance_value">value</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_balance_destroy_zero"></a>
+
+## Function `destroy_zero`
+
+Destroy a zero <code><a href="../sui/balance.md#sui_balance_Balance">Balance</a></code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_destroy_zero">destroy_zero</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">sui::balance::Balance</a>&lt;T&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/balance.md#sui_balance_destroy_zero">destroy_zero</a>&lt;T&gt;(<a href="../sui/balance.md#sui_balance">balance</a>: <a href="../sui/balance.md#sui_balance_Balance">Balance</a>&lt;T&gt;) {
+    <b>assert</b>!(<a href="../sui/balance.md#sui_balance">balance</a>.<a href="../sui/balance.md#sui_balance_value">value</a> == 0, <a href="../sui/balance.md#sui_balance_ENonZero">ENonZero</a>);
+    <b>let</b> <a href="../sui/balance.md#sui_balance_Balance">Balance</a> { <a href="../sui/balance.md#sui_balance_value">value</a>: _ } = <a href="../sui/balance.md#sui_balance">balance</a>;
+}
+</code></pre>
+
+
+
+</details>
+
+
+
+## FILE: crates/sui-framework/docs/sui/dynamic_field.md
+
+---
+title: Module `sui::dynamic_field`
+---
+
+In addition to the fields declared in its type definition, a Sui object can have dynamic fields
+that can be added after the object has been constructed. Unlike ordinary field names
+(which are always statically declared identifiers) a dynamic field name can be any value with
+the <code><b>copy</b></code>, <code>drop</code>, and <code>store</code> abilities, e.g. an integer, a boolean, or a string.
+This gives Sui programmers the flexibility to extend objects on-the-fly, and it also serves as a
+building block for core collection types
+
+
+-  [Struct `Field`](#sui_dynamic_field_Field)
+-  [Constants](#@Constants_0)
+-  [Function `add`](#sui_dynamic_field_add)
+-  [Function `borrow`](#sui_dynamic_field_borrow)
+-  [Function `borrow_mut`](#sui_dynamic_field_borrow_mut)
+-  [Function `remove`](#sui_dynamic_field_remove)
+-  [Function `exists`](#sui_dynamic_field_exists)
+-  [Function `remove_opt`](#sui_dynamic_field_remove_opt)
+-  [Function `replace`](#sui_dynamic_field_replace)
+-  [Function `exists_with_type`](#sui_dynamic_field_exists_with_type)
+-  [Macro function `borrow_or_add`](#sui_dynamic_field_borrow_or_add)
+-  [Macro function `borrow_mut_or_add`](#sui_dynamic_field_borrow_mut_or_add)
+-  [Macro function `get_do`](#sui_dynamic_field_get_do)
+-  [Macro function `get_mut_do`](#sui_dynamic_field_get_mut_do)
+-  [Macro function `get_fold`](#sui_dynamic_field_get_fold)
+-  [Macro function `get_mut_fold`](#sui_dynamic_field_get_mut_fold)
+-  [Function `exists_`](#sui_dynamic_field_exists_)
+-  [Function `remove_if_exists`](#sui_dynamic_field_remove_if_exists)
+-  [Function `field_info`](#sui_dynamic_field_field_info)
+-  [Function `field_info_mut`](#sui_dynamic_field_field_info_mut)
+-  [Function `hash_type_and_key`](#sui_dynamic_field_hash_type_and_key)
+-  [Function `add_child_object`](#sui_dynamic_field_add_child_object)
+-  [Function `borrow_child_object`](#sui_dynamic_field_borrow_child_object)
+-  [Function `borrow_child_object_mut`](#sui_dynamic_field_borrow_child_object_mut)
+-  [Function `remove_child_object`](#sui_dynamic_field_remove_child_object)
+-  [Function `has_child_object`](#sui_dynamic_field_has_child_object)
+-  [Function `has_child_object_with_ty`](#sui_dynamic_field_has_child_object_with_ty)
+
+
+<pre><code><b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+</code></pre>
+
+
+
+<a name="sui_dynamic_field_Field"></a>
+
+## Struct `Field`
+
+Internal object used for storing the field and value
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt; <b>has</b> key
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+ Determined by the hash of the object ID, the field name value and it's type,
+ i.e. hash(parent.id || name || Name)
+</dd>
+<dt>
+<code>name: Name</code>
+</dt>
+<dd>
+ The value for the name of this field
+</dd>
+<dt>
+<code>value: Value</code>
+</dt>
+<dd>
+ The value bound to this field
+</dd>
+</dl>
+
+
+</details>
+
+<a name="@Constants_0"></a>
+
+## Constants
+
+
+<a name="sui_dynamic_field_EFieldAlreadyExists"></a>
+
+The object already has a dynamic field with this name (with the value and type specified)
+
+
+<pre><code><b>const</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldAlreadyExists">EFieldAlreadyExists</a>: u64 = 0;
+</code></pre>
+
+
+
+<a name="sui_dynamic_field_EFieldDoesNotExist"></a>
+
+Cannot load dynamic field.
+The object does not have a dynamic field with this name (with the value and type specified)
+
+
+<pre><code><b>const</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">EFieldDoesNotExist</a>: u64 = 1;
+</code></pre>
+
+
+
+<a name="sui_dynamic_field_EFieldTypeMismatch"></a>
+
+The object has a field with that name, but the value type does not match
+
+
+<pre><code><b>const</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a>: u64 = 2;
+</code></pre>
+
+
+
+<a name="sui_dynamic_field_EBCSSerializationFailure"></a>
+
+Failed to serialize the field's name
+
+
+<pre><code><b>const</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_EBCSSerializationFailure">EBCSSerializationFailure</a>: u64 = 3;
+</code></pre>
+
+
+
+<a name="sui_dynamic_field_ESharedObjectOperationNotSupported"></a>
+
+The object added as a dynamic field was previously a shared object
+
+
+<pre><code><b>const</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_ESharedObjectOperationNotSupported">ESharedObjectOperationNotSupported</a>: u64 = 4;
+</code></pre>
+
+
+
+<a name="sui_dynamic_field_add"></a>
+
+## Function `add`
+
+Adds a dynamic field to the object <code><a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID</code> at field specified by <code>name: Name</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldAlreadyExists">EFieldAlreadyExists</a></code> if the object already has that field with that name.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_add">add</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name, value: Value)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_add">add</a>&lt;Name: <b>copy</b> + drop + store, Value: store&gt;(
+    // we <b>use</b> &<b>mut</b> UID in several spots <b>for</b> access control
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+    value: Value,
+) {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <b>assert</b>!(!<a href="../sui/dynamic_field.md#sui_dynamic_field_has_child_object">has_child_object</a>(object_addr, <a href="../sui/hash.md#sui_hash">hash</a>), <a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldAlreadyExists">EFieldAlreadyExists</a>);
+    <b>let</b> field = <a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a> {
+        id: <a href="../sui/object.md#sui_object_new_uid_from_hash">object::new_uid_from_hash</a>(<a href="../sui/hash.md#sui_hash">hash</a>),
+        name,
+        value,
+    };
+    <a href="../sui/dynamic_field.md#sui_dynamic_field_add_child_object">add_child_object</a>(object_addr, field)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_borrow"></a>
+
+## Function `borrow`
+
+Immutably borrows the <code><a href="../sui/object.md#sui_object">object</a></code>s dynamic field with the name specified by <code>name: Name</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">EFieldDoesNotExist</a></code> if the object does not have a field with that name.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): &Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;Name: <b>copy</b> + drop + store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, name: Name): &Value {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <b>let</b> field = <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object">borrow_child_object</a>&lt;<a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a>&lt;Name, Value&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, <a href="../sui/hash.md#sui_hash">hash</a>);
+    &field.value
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_borrow_mut"></a>
+
+## Function `borrow_mut`
+
+Mutably borrows the <code><a href="../sui/object.md#sui_object">object</a></code>s dynamic field with the name specified by <code>name: Name</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">EFieldDoesNotExist</a></code> if the object does not have a field with that name.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_mut">borrow_mut</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): &<b>mut</b> Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_mut">borrow_mut</a>&lt;Name: <b>copy</b> + drop + store, Value: store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): &<b>mut</b> Value {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <b>let</b> field = <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object_mut">borrow_child_object_mut</a>&lt;<a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a>&lt;Name, Value&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, <a href="../sui/hash.md#sui_hash">hash</a>);
+    &<b>mut</b> field.value
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_remove"></a>
+
+## Function `remove`
+
+Removes the <code><a href="../sui/object.md#sui_object">object</a></code>s dynamic field with the name specified by <code>name: Name</code> and returns the
+bound value.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">EFieldDoesNotExist</a></code> if the object does not have a field with that name.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove">remove</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove">remove</a>&lt;Name: <b>copy</b> + drop + store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID, name: Name): Value {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <b>let</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a> { id, name: _, value } = <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_child_object">remove_child_object</a>&lt;<a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a>&lt;Name, Value&gt;&gt;(object_addr, <a href="../sui/hash.md#sui_hash">hash</a>);
+    id.delete();
+    value
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_exists"></a>
+
+## Function `exists`
+
+Returns true if and only if the <code><a href="../sui/object.md#sui_object">object</a></code> has a dynamic field with the name specified by
+<code>name: Name</code> but without specifying the <code>Value</code> type
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;Name: <b>copy</b> + drop + store&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, name: Name): bool {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <a href="../sui/dynamic_field.md#sui_dynamic_field_has_child_object">has_child_object</a>(object_addr, <a href="../sui/hash.md#sui_hash">hash</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_remove_opt"></a>
+
+## Function `remove_opt`
+
+Removes the dynamic field if it exists. Returns <code>some(Value)</code> if it exists or <code>none</code> otherwise.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_opt">remove_opt</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;Value&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_opt">remove_opt</a>&lt;Name: <b>copy</b> + drop + store, Value: store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): Option&lt;Value&gt; {
+    <b>if</b> (<a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>(<a href="../sui/object.md#sui_object">object</a>, name)) {
+        option::some(<a href="../sui/dynamic_field.md#sui_dynamic_field_remove">remove</a>(<a href="../sui/object.md#sui_object">object</a>, name))
+    } <b>else</b> {
+        option::none()
+    }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_replace"></a>
+
+## Function `replace`
+
+Removes the existing value at <code>name</code> (if any) and adds <code>value</code> in its place.
+Returns the old value if it existed, or <code>none</code> otherwise.
+Note: the old and new value types may differ.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+<code>ValueOld</code> type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_replace">replace</a>&lt;Name: <b>copy</b>, drop, store, ValueNew: store, ValueOld: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name, value: ValueNew): <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;ValueOld&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_replace">replace</a>&lt;Name: <b>copy</b> + drop + store, ValueNew: store, ValueOld: store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+    value: ValueNew,
+): Option&lt;ValueOld&gt; {
+    <b>let</b> old = <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_opt">remove_opt</a>&lt;Name, ValueOld&gt;(<a href="../sui/object.md#sui_object">object</a>, name);
+    <a href="../sui/dynamic_field.md#sui_dynamic_field_add">add</a>(<a href="../sui/object.md#sui_object">object</a>, name, value);
+    old
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_exists_with_type"></a>
+
+## Function `exists_with_type`
+
+Returns true if and only if the <code><a href="../sui/object.md#sui_object">object</a></code> has a dynamic field with the name specified by
+<code>name: Name</code> with an assigned value of type <code>Value</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_exists_with_type">exists_with_type</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_exists_with_type">exists_with_type</a>&lt;Name: <b>copy</b> + drop + store, Value: store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &UID,
+    name: Name,
+): bool {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <a href="../sui/dynamic_field.md#sui_dynamic_field_has_child_object_with_ty">has_child_object_with_ty</a>&lt;<a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a>&lt;Name, Value&gt;&gt;(object_addr, <a href="../sui/hash.md#sui_hash">hash</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_borrow_or_add"></a>
+
+## Macro function `borrow_or_add`
+
+Immutably borrows the field value, adding it with <code>$default</code> if it doesn't exist.
+Note that <code>$default</code> is evaluated only if the field does not already exist.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_or_add">borrow_or_add</a>&lt;$Name: <b>copy</b>, drop, store, $Value: store&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $default: $Value): &$Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_or_add">borrow_or_add</a>&lt;$Name: <b>copy</b> + drop + store, $Value: store&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $default: $Value,
+): &$Value {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (!<a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;$Name&gt;(o, name)) <a href="../sui/dynamic_field.md#sui_dynamic_field_add">add</a>(o, name, $default);
+    <a href="../sui/borrow.md#sui_borrow">borrow</a>(o, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_borrow_mut_or_add"></a>
+
+## Macro function `borrow_mut_or_add`
+
+Mutably borrows the field value, adding it with <code>$default</code> if it doesn't exist.
+Note that <code>$default</code> is evaluated only if the field does not already exist.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_mut_or_add">borrow_mut_or_add</a>&lt;$Name: <b>copy</b>, drop, store, $Value: store&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $default: $Value): &<b>mut</b> $Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_mut_or_add">borrow_mut_or_add</a>&lt;$Name: <b>copy</b> + drop + store, $Value: store&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $default: $Value,
+): &<b>mut</b> $Value {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (!<a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;$Name&gt;(o, name)) <a href="../sui/dynamic_field.md#sui_dynamic_field_add">add</a>(o, name, $default);
+    <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_mut">borrow_mut</a>(o, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_get_do"></a>
+
+## Macro function `get_do`
+
+If the field exists, calls <code>$f</code> on an immutable reference to the value; otherwise, does nothing.
+This is like getting an <code>Option&lt;&Value&gt;</code> then calling <code><a href="../std/option.md#std_option_do">std::option::do</a></code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_do">get_do</a>&lt;$Name: <b>copy</b>, drop, store, $Value: store, $R: drop&gt;($<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $f: |&$Value| -&gt; $R)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_do">get_do</a>&lt;$Name: <b>copy</b> + drop + store, $Value: store, $R: drop&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &UID,
+    $name: $Name,
+    $f: |&$Value| -&gt; $R,
+) {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;$Name&gt;(o, name)) { $f(<a href="../sui/borrow.md#sui_borrow">borrow</a>(o, name)); }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_get_mut_do"></a>
+
+## Macro function `get_mut_do`
+
+If the field exists, calls <code>$f</code> on a mutable reference to the value; otherwise, does nothing.
+This is like getting an <code>Option&lt;&<b>mut</b> Value&gt;</code> then calling <code><a href="../std/option.md#std_option_do">std::option::do</a></code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_mut_do">get_mut_do</a>&lt;$Name: <b>copy</b>, drop, store, $Value: store, $R: drop&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $f: |&<b>mut</b> $Value| -&gt; $R)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_mut_do">get_mut_do</a>&lt;$Name: <b>copy</b> + drop + store, $Value: store, $R: drop&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $f: |&<b>mut</b> $Value| -&gt; $R,
+) {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;$Name&gt;(o, name)) { $f(<a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_mut">borrow_mut</a>(o, name)); }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_get_fold"></a>
+
+## Macro function `get_fold`
+
+If the field exists, applies <code>$some</code> to an immutable reference to the value; otherwise, returns
+<code>$none</code>.
+This is like getting an <code>Option&lt;&Value&gt;</code> then calling <code><a href="../std/option.md#std_option_fold">std::option::fold</a></code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_fold">get_fold</a>&lt;$Name: <b>copy</b>, drop, store, $Value: store, $R&gt;($<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $none: $R, $some: |&$Value| -&gt; $R): $R
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_fold">get_fold</a>&lt;$Name: <b>copy</b> + drop + store, $Value: store, $R&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &UID,
+    $name: $Name,
+    $none: $R,
+    $some: |&$Value| -&gt; $R,
+): $R {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;$Name&gt;(o, name)) $some(<a href="../sui/borrow.md#sui_borrow">borrow</a>(o, name)) <b>else</b> $none
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_get_mut_fold"></a>
+
+## Macro function `get_mut_fold`
+
+If the field exists, applies <code>$some</code> to a mutable reference to the value; otherwise, returns
+<code>$none</code>.
+This is like getting an <code>Option&lt;&<b>mut</b> Value&gt;</code> then calling <code><a href="../std/option.md#std_option_fold">std::option::fold</a></code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the field exists, but the value does not have the specified
+type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_mut_fold">get_mut_fold</a>&lt;$Name: <b>copy</b>, drop, store, $Value: store, $R&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $none: $R, $some: |&<b>mut</b> $Value| -&gt; $R): $R
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_get_mut_fold">get_mut_fold</a>&lt;$Name: <b>copy</b> + drop + store, $Value: store, $R&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $none: $R,
+    $some: |&<b>mut</b> $Value| -&gt; $R,
+): $R {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;$Name&gt;(o, name)) $some(<a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_mut">borrow_mut</a>(o, name)) <b>else</b> $none
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_exists_"></a>
+
+## Function `exists_`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_exists_">exists_</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_exists_">exists_</a>&lt;Name: <b>copy</b> + drop + store&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, name: Name): bool {
+    <a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_remove_if_exists"></a>
+
+## Function `remove_if_exists`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_if_exists">remove_if_exists</a>&lt;Name: <b>copy</b>, drop, store, Value: store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;Value&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_if_exists">remove_if_exists</a>&lt;Name: <b>copy</b> + drop + store, Value: store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): Option&lt;Value&gt; {
+    <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_opt">remove_opt</a>(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_field_info"></a>
+
+## Function `field_info`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_field_info">field_info</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): (&<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, <b>address</b>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_field_info">field_info</a>&lt;Name: <b>copy</b> + drop + store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &UID,
+    name: Name,
+): (&UID, <b>address</b>) {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <b>let</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a> { id, name: _, value } = <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object">borrow_child_object</a>&lt;<a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a>&lt;Name, ID&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, <a href="../sui/hash.md#sui_hash">hash</a>);
+    (id, value.to_address())
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_field_info_mut"></a>
+
+## Function `field_info_mut`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_field_info_mut">field_info_mut</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): (&<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, <b>address</b>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_field_info_mut">field_info_mut</a>&lt;Name: <b>copy</b> + drop + store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): (&<b>mut</b> UID, <b>address</b>) {
+    <b>let</b> object_addr = <a href="../sui/object.md#sui_object">object</a>.to_address();
+    <b>let</b> <a href="../sui/hash.md#sui_hash">hash</a> = <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>(object_addr, name);
+    <b>let</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a> { id, name: _, value } = <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object_mut">borrow_child_object_mut</a>&lt;<a href="../sui/dynamic_field.md#sui_dynamic_field_Field">Field</a>&lt;Name, ID&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, <a href="../sui/hash.md#sui_hash">hash</a>);
+    (id, value.to_address())
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_hash_type_and_key"></a>
+
+## Function `hash_type_and_key`
+
+May abort with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EBCSSerializationFailure">EBCSSerializationFailure</a></code>.
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>&lt;K: <b>copy</b>, drop, store&gt;(parent: <b>address</b>, k: K): <b>address</b>
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>native</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_hash_type_and_key">hash_type_and_key</a>&lt;K: <b>copy</b> + drop + store&gt;(
+    parent: <b>address</b>,
+    k: K,
+): <b>address</b>;
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_add_child_object"></a>
+
+## Function `add_child_object`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_add_child_object">add_child_object</a>&lt;Child: key&gt;(parent: <b>address</b>, child: Child)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>native</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_add_child_object">add_child_object</a>&lt;Child: key&gt;(parent: <b>address</b>, child: Child);
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_borrow_child_object"></a>
+
+## Function `borrow_child_object`
+
+throws <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">EFieldDoesNotExist</a></code> if a child does not exist with that ID
+or throws <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the type does not match,
+and may also abort with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EBCSSerializationFailure">EBCSSerializationFailure</a></code>
+we need two versions to return a reference or a mutable reference
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object">borrow_child_object</a>&lt;Child: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, id: <b>address</b>): &Child
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>native</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object">borrow_child_object</a>&lt;Child: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, id: <b>address</b>): &Child;
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_borrow_child_object_mut"></a>
+
+## Function `borrow_child_object_mut`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object_mut">borrow_child_object_mut</a>&lt;Child: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, id: <b>address</b>): &<b>mut</b> Child
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>native</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_borrow_child_object_mut">borrow_child_object_mut</a>&lt;Child: key&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    id: <b>address</b>,
+): &<b>mut</b> Child;
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_remove_child_object"></a>
+
+## Function `remove_child_object`
+
+throws <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">EFieldDoesNotExist</a></code> if a child does not exist with that ID
+or throws <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">EFieldTypeMismatch</a></code> if the type does not match,
+and may also abort with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EBCSSerializationFailure">EBCSSerializationFailure</a></code>.
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_child_object">remove_child_object</a>&lt;Child: key&gt;(parent: <b>address</b>, id: <b>address</b>): Child
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>native</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_remove_child_object">remove_child_object</a>&lt;Child: key&gt;(parent: <b>address</b>, id: <b>address</b>): Child;
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_has_child_object"></a>
+
+## Function `has_child_object`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_has_child_object">has_child_object</a>(parent: <b>address</b>, id: <b>address</b>): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>native</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_has_child_object">has_child_object</a>(parent: <b>address</b>, id: <b>address</b>): bool;
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_field_has_child_object_with_ty"></a>
+
+## Function `has_child_object_with_ty`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_has_child_object_with_ty">has_child_object_with_ty</a>&lt;Child: key&gt;(parent: <b>address</b>, id: <b>address</b>): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>native</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_has_child_object_with_ty">has_child_object_with_ty</a>&lt;Child: key&gt;(parent: <b>address</b>, id: <b>address</b>): bool;
+</code></pre>
+
+
+
+</details>
+
+
+## FILE: crates/sui-framework/docs/sui/dynamic_object_field.md
+
+---
+title: Module `sui::dynamic_object_field`
+---
+
+Similar to <code><a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a></code>, this module allows for the access of dynamic fields. But
+unlike, <code><a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a></code> the values bound to these dynamic fields _must_ be objects
+themselves. This allows for the objects to still exist within in storage, which may be important
+for external tools. The difference is otherwise not observable from within Move.
+
+
+-  [Struct `Wrapper`](#sui_dynamic_object_field_Wrapper)
+-  [Function `add`](#sui_dynamic_object_field_add)
+-  [Function `borrow`](#sui_dynamic_object_field_borrow)
+-  [Function `borrow_mut`](#sui_dynamic_object_field_borrow_mut)
+-  [Function `remove`](#sui_dynamic_object_field_remove)
+-  [Function `exists`](#sui_dynamic_object_field_exists)
+-  [Function `exists_with_type`](#sui_dynamic_object_field_exists_with_type)
+-  [Function `id`](#sui_dynamic_object_field_id)
+-  [Function `remove_opt`](#sui_dynamic_object_field_remove_opt)
+-  [Function `replace`](#sui_dynamic_object_field_replace)
+-  [Macro function `borrow_or_add`](#sui_dynamic_object_field_borrow_or_add)
+-  [Macro function `borrow_mut_or_add`](#sui_dynamic_object_field_borrow_mut_or_add)
+-  [Macro function `get_do`](#sui_dynamic_object_field_get_do)
+-  [Macro function `get_mut_do`](#sui_dynamic_object_field_get_mut_do)
+-  [Macro function `get_fold`](#sui_dynamic_object_field_get_fold)
+-  [Macro function `get_mut_fold`](#sui_dynamic_object_field_get_mut_fold)
+-  [Function `exists_`](#sui_dynamic_object_field_exists_)
+-  [Function `internal_add`](#sui_dynamic_object_field_internal_add)
+-  [Function `internal_borrow`](#sui_dynamic_object_field_internal_borrow)
+-  [Function `internal_borrow_mut`](#sui_dynamic_object_field_internal_borrow_mut)
+-  [Function `internal_remove`](#sui_dynamic_object_field_internal_remove)
+-  [Function `internal_exists_with_type`](#sui_dynamic_object_field_internal_exists_with_type)
+-  [Macro function `add_impl`](#sui_dynamic_object_field_add_impl)
+-  [Macro function `borrow_impl`](#sui_dynamic_object_field_borrow_impl)
+-  [Macro function `borrow_mut_impl`](#sui_dynamic_object_field_borrow_mut_impl)
+-  [Macro function `remove_impl`](#sui_dynamic_object_field_remove_impl)
+-  [Macro function `exists_with_type_impl`](#sui_dynamic_object_field_exists_with_type_impl)
+
+
+<pre><code><b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+</code></pre>
+
+
+
+<a name="sui_dynamic_object_field_Wrapper"></a>
+
+## Struct `Wrapper`
+
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;Name&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>name: Name</code>
+</dt>
+<dd>
+</dd>
+</dl>
+
+
+</details>
+
+<a name="sui_dynamic_object_field_add"></a>
+
+## Function `add`
+
+Adds a dynamic object field to the object <code><a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID</code> at field specified by <code>name: Name</code>.
+Aborts with <code>EFieldAlreadyExists</code> if the object already has that field with that name.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add">add</a>&lt;Name: <b>copy</b>, drop, store, Value: key, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name, value: Value)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add">add</a>&lt;Name: <b>copy</b> + drop + store, Value: key + store&gt;(
+    // we <b>use</b> &<b>mut</b> UID in several spots <b>for</b> access control
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+    value: Value,
+) {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add_impl">add_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name, value)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_borrow"></a>
+
+## Function `borrow`
+
+Immutably borrows the <code><a href="../sui/object.md#sui_object">object</a></code>s dynamic object field with the name specified by <code>name: Name</code>.
+Aborts with <code>EFieldDoesNotExist</code> if the object does not have a field with that name.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;Name: <b>copy</b>, drop, store, Value: key, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): &Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;Name: <b>copy</b> + drop + store, Value: key + store&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, name: Name): &Value {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_impl">borrow_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_borrow_mut"></a>
+
+## Function `borrow_mut`
+
+Mutably borrows the <code><a href="../sui/object.md#sui_object">object</a></code>s dynamic object field with the name specified by <code>name: Name</code>.
+Aborts with <code>EFieldDoesNotExist</code> if the object does not have a field with that name.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut">borrow_mut</a>&lt;Name: <b>copy</b>, drop, store, Value: key, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): &<b>mut</b> Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut">borrow_mut</a>&lt;Name: <b>copy</b> + drop + store, Value: key + store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): &<b>mut</b> Value {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut_impl">borrow_mut_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_remove"></a>
+
+## Function `remove`
+
+Removes the <code><a href="../sui/object.md#sui_object">object</a></code>s dynamic object field with the name specified by <code>name: Name</code> and returns
+the bound object.
+Aborts with <code>EFieldDoesNotExist</code> if the object does not have a field with that name.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove">remove</a>&lt;Name: <b>copy</b>, drop, store, Value: key, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove">remove</a>&lt;Name: <b>copy</b> + drop + store, Value: key + store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): Value {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove_impl">remove_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_exists"></a>
+
+## Function `exists`
+
+Returns true if and only if the <code><a href="../sui/object.md#sui_object">object</a></code> has a dynamic object field with the name specified by
+<code>name: Name</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;Name: <b>copy</b> + drop + store&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, name: Name): bool {
+    <b>let</b> key = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a> { name };
+    field::exists_with_type&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;Name&gt;, ID&gt;(<a href="../sui/object.md#sui_object">object</a>, key)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_exists_with_type"></a>
+
+## Function `exists_with_type`
+
+Returns true if and only if the <code><a href="../sui/object.md#sui_object">object</a></code> has a dynamic field with the name specified by
+<code>name: Name</code> with an assigned value of type <code>Value</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_with_type">exists_with_type</a>&lt;Name: <b>copy</b>, drop, store, Value: key, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_with_type">exists_with_type</a>&lt;Name: <b>copy</b> + drop + store, Value: key + store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &UID,
+    name: Name,
+): bool {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_with_type_impl">exists_with_type_impl</a>!&lt;_, Value&gt;(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_id"></a>
+
+## Function `id`
+
+Returns the ID of the object associated with the dynamic object field
+Returns none otherwise
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_id">id</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;<a href="../sui/object.md#sui_object_ID">sui::object::ID</a>&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_id">id</a>&lt;Name: <b>copy</b> + drop + store&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, name: Name): Option&lt;ID&gt; {
+    <b>let</b> key = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a> { name };
+    <b>if</b> (!field::exists_with_type&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;Name&gt;, ID&gt;(<a href="../sui/object.md#sui_object">object</a>, key)) <b>return</b> option::none();
+    <b>let</b> (_field, value_addr) = field::field_info&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;Name&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, key);
+    option::some(value_addr.to_id())
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_remove_opt"></a>
+
+## Function `remove_opt`
+
+Removes the dynamic object field if it exists. Returns <code>some(Value)</code> if it exists or <code>none</code>
+otherwise.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove_opt">remove_opt</a>&lt;Name: <b>copy</b>, drop, store, Value: key, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;Value&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove_opt">remove_opt</a>&lt;Name: <b>copy</b> + drop + store, Value: key + store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): Option&lt;Value&gt; {
+    <b>if</b> (<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>(<a href="../sui/object.md#sui_object">object</a>, name)) {
+        option::some(<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove">remove</a>(<a href="../sui/object.md#sui_object">object</a>, name))
+    } <b>else</b> {
+        option::none()
+    }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_replace"></a>
+
+## Function `replace`
+
+Removes the existing value at <code>name</code> (if any) and adds <code>value</code> in its place.
+Returns the old value if it existed, or <code>none</code> otherwise.
+Note: the old and new value types may differ.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified <code>ValueOld</code> type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_replace">replace</a>&lt;Name: <b>copy</b>, drop, store, ValueNew: key, store, ValueOld: key, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name, value: ValueNew): <a href="../std/option.md#std_option_Option">std::option::Option</a>&lt;ValueOld&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_replace">replace</a>&lt;Name: <b>copy</b> + drop + store, ValueNew: key + store, ValueOld: key + store&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+    value: ValueNew,
+): Option&lt;ValueOld&gt; {
+    <b>let</b> old = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove_opt">remove_opt</a>&lt;Name, ValueOld&gt;(<a href="../sui/object.md#sui_object">object</a>, name);
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add">add</a>(<a href="../sui/object.md#sui_object">object</a>, name, value);
+    old
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_borrow_or_add"></a>
+
+## Macro function `borrow_or_add`
+
+Immutably borrows the field value, adding it with <code>$default</code> if it doesn't exist.
+Note that <code>$default</code> is evaluated only if the field does not already exist.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_or_add">borrow_or_add</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key, store&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $default: $Value): &$Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_or_add">borrow_or_add</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key + store&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $default: $Value,
+): &$Value {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (!<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;$Name&gt;(o, name)) <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add">add</a>(o, name, $default);
+    <a href="../sui/borrow.md#sui_borrow">borrow</a>(o, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_borrow_mut_or_add"></a>
+
+## Macro function `borrow_mut_or_add`
+
+Mutably borrows the field value, adding it with <code>$default</code> if it doesn't exist.
+Note that <code>$default</code> is evaluated only if the field does not already exist.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut_or_add">borrow_mut_or_add</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key, store&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $default: $Value): &<b>mut</b> $Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut_or_add">borrow_mut_or_add</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key + store&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $default: $Value,
+): &<b>mut</b> $Value {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (!<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;$Name&gt;(o, name)) <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add">add</a>(o, name, $default);
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut">borrow_mut</a>(o, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_get_do"></a>
+
+## Macro function `get_do`
+
+If the field exists, calls <code>$f</code> on an immutable reference to the value; otherwise, does nothing.
+This is like getting an <code>Option&lt;&Value&gt;</code> then calling <code><a href="../std/option.md#std_option_do">std::option::do</a></code>.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_do">get_do</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key, store, $R: drop&gt;($<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $f: |&$Value| -&gt; $R)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_do">get_do</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key + store, $R: drop&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &UID,
+    $name: $Name,
+    $f: |&$Value| -&gt; $R,
+) {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;$Name&gt;(o, name)) { $f(<a href="../sui/borrow.md#sui_borrow">borrow</a>(o, name)); }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_get_mut_do"></a>
+
+## Macro function `get_mut_do`
+
+If the field exists, calls <code>$f</code> on a mutable reference to the value; otherwise, does nothing.
+This is like getting an <code>Option&lt;&<b>mut</b> Value&gt;</code> then calling <code><a href="../std/option.md#std_option_do">std::option::do</a></code>.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_mut_do">get_mut_do</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key, store, $R: drop&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $f: |&<b>mut</b> $Value| -&gt; $R)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_mut_do">get_mut_do</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key + store, $R: drop&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $f: |&<b>mut</b> $Value| -&gt; $R,
+) {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;$Name&gt;(o, name)) { $f(<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut">borrow_mut</a>(o, name)); }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_get_fold"></a>
+
+## Macro function `get_fold`
+
+If the field exists, applies <code>$some</code> to an immutable reference to the value; otherwise, returns
+<code>$none</code>.
+This is like getting an <code>Option&lt;&Value&gt;</code> then calling <code><a href="../std/option.md#std_option_fold">std::option::fold</a></code>.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_fold">get_fold</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key, store, $R&gt;($<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $none: $R, $some: |&$Value| -&gt; $R): $R
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_fold">get_fold</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key + store, $R&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &UID,
+    $name: $Name,
+    $none: $R,
+    $some: |&$Value| -&gt; $R,
+): $R {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;$Name&gt;(o, name)) $some(<a href="../sui/borrow.md#sui_borrow">borrow</a>(o, name)) <b>else</b> $none
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_get_mut_fold"></a>
+
+## Macro function `get_mut_fold`
+
+If the field exists, applies <code>$some</code> to a mutable reference to the value; otherwise, returns
+<code>$none</code>.
+This is like getting an <code>Option&lt;&<b>mut</b> Value&gt;</code> then calling <code><a href="../std/option.md#std_option_fold">std::option::fold</a></code>.
+Aborts with <code>EFieldTypeMismatch</code> if the field exists, but the value object does not have the
+specified type.
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_mut_fold">get_mut_fold</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key, store, $R&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $none: $R, $some: |&<b>mut</b> $Value| -&gt; $R): $R
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_get_mut_fold">get_mut_fold</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key + store, $R&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $none: $R,
+    $some: |&<b>mut</b> $Value| -&gt; $R,
+): $R {
+    <b>let</b> o = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>if</b> (<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>&lt;$Name&gt;(o, name)) $some(<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut">borrow_mut</a>(o, name)) <b>else</b> $none
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_exists_"></a>
+
+## Function `exists_`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_">exists_</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_">exists_</a>&lt;Name: <b>copy</b> + drop + store&gt;(<a href="../sui/object.md#sui_object">object</a>: &UID, name: Name): bool {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists">exists</a>(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_internal_add"></a>
+
+## Function `internal_add`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_add">internal_add</a>&lt;Name: <b>copy</b>, drop, store, Value: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name, value: Value)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_add">internal_add</a>&lt;Name: <b>copy</b> + drop + store, Value: key&gt;(
+    // we <b>use</b> &<b>mut</b> UID in several spots <b>for</b> access control
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+    value: Value,
+) {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add_impl">add_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name, value)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_internal_borrow"></a>
+
+## Function `internal_borrow`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_borrow">internal_borrow</a>&lt;Name: <b>copy</b>, drop, store, Value: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): &Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_borrow">internal_borrow</a>&lt;Name: <b>copy</b> + drop + store, Value: key&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &UID,
+    name: Name,
+): &Value {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_impl">borrow_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_internal_borrow_mut"></a>
+
+## Function `internal_borrow_mut`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_borrow_mut">internal_borrow_mut</a>&lt;Name: <b>copy</b>, drop, store, Value: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): &<b>mut</b> Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_borrow_mut">internal_borrow_mut</a>&lt;Name: <b>copy</b> + drop + store, Value: key&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): &<b>mut</b> Value {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut_impl">borrow_mut_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_internal_remove"></a>
+
+## Function `internal_remove`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_remove">internal_remove</a>&lt;Name: <b>copy</b>, drop, store, Value: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_remove">internal_remove</a>&lt;Name: <b>copy</b> + drop + store, Value: key&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    name: Name,
+): Value {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove_impl">remove_impl</a>!(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_internal_exists_with_type"></a>
+
+## Function `internal_exists_with_type`
+
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_exists_with_type">internal_exists_with_type</a>&lt;Name: <b>copy</b>, drop, store, Value: key&gt;(<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, name: Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b>(<a href="../sui/package.md#sui_package">package</a>) <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_internal_exists_with_type">internal_exists_with_type</a>&lt;Name: <b>copy</b> + drop + store, Value: key&gt;(
+    <a href="../sui/object.md#sui_object">object</a>: &UID,
+    name: Name,
+): bool {
+    <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_with_type_impl">exists_with_type_impl</a>!&lt;_, Value&gt;(<a href="../sui/object.md#sui_object">object</a>, name)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_add_impl"></a>
+
+## Macro function `add_impl`
+
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add_impl">add_impl</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name, $value: $Value)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_add_impl">add_impl</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key&gt;(
+    // we <b>use</b> &<b>mut</b> UID in several spots <b>for</b> access control
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+    $value: $Value,
+) {
+    <b>let</b> <a href="../sui/object.md#sui_object">object</a> = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>let</b> value = $value;
+    <b>let</b> key = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a> { name };
+    <b>let</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_id">id</a> = <a href="../sui/object.md#sui_object_id">object::id</a>(&value);
+    field::add(<a href="../sui/object.md#sui_object">object</a>, key, <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_id">id</a>);
+    <b>let</b> (field, _) = field::field_info&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;$Name&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, key);
+    add_child_object(field.to_address(), value);
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_borrow_impl"></a>
+
+## Macro function `borrow_impl`
+
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_impl">borrow_impl</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key&gt;($<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name): &$Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_impl">borrow_impl</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &UID,
+    $name: $Name,
+): &$Value {
+    <b>let</b> <a href="../sui/object.md#sui_object">object</a> = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>let</b> key = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a> { name };
+    <b>let</b> (field, value_id) = field::field_info&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;$Name&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, key);
+    borrow_child_object&lt;$Value&gt;(field, value_id)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_borrow_mut_impl"></a>
+
+## Macro function `borrow_mut_impl`
+
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut_impl">borrow_mut_impl</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name): &<b>mut</b> $Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_borrow_mut_impl">borrow_mut_impl</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+): &<b>mut</b> $Value {
+    <b>let</b> <a href="../sui/object.md#sui_object">object</a> = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>let</b> key = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a> { name };
+    <b>let</b> (field, value_id) = field::field_info_mut&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;$Name&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, key);
+    borrow_child_object_mut&lt;$Value&gt;(field, value_id)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_remove_impl"></a>
+
+## Macro function `remove_impl`
+
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove_impl">remove_impl</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key&gt;($<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> <a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name): $Value
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_remove_impl">remove_impl</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &<b>mut</b> UID,
+    $name: $Name,
+): $Value {
+    <b>let</b> <a href="../sui/object.md#sui_object">object</a> = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>let</b> key = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a> { name };
+    <b>let</b> (field, value_id) = field::field_info&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;$Name&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, key);
+    <b>let</b> value = remove_child_object&lt;$Value&gt;(field.to_address(), value_id);
+    field::remove&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;$Name&gt;, ID&gt;(<a href="../sui/object.md#sui_object">object</a>, key);
+    value
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_dynamic_object_field_exists_with_type_impl"></a>
+
+## Macro function `exists_with_type_impl`
+
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_with_type_impl">exists_with_type_impl</a>&lt;$Name: <b>copy</b>, drop, store, $Value: key&gt;($<a href="../sui/object.md#sui_object">object</a>: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>, $name: $Name): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>macro</b> <b>fun</b> <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_exists_with_type_impl">exists_with_type_impl</a>&lt;$Name: <b>copy</b> + drop + store, $Value: key&gt;(
+    $<a href="../sui/object.md#sui_object">object</a>: &UID,
+    $name: $Name,
+): bool {
+    <b>let</b> <a href="../sui/object.md#sui_object">object</a> = $<a href="../sui/object.md#sui_object">object</a>;
+    <b>let</b> name = $name;
+    <b>let</b> key = <a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a> { name };
+    <b>if</b> (!field::exists_with_type&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;$Name&gt;, ID&gt;(<a href="../sui/object.md#sui_object">object</a>, key)) <b>return</b> <b>false</b>;
+    <b>let</b> (field, value_id) = field::field_info&lt;<a href="../sui/dynamic_object_field.md#sui_dynamic_object_field_Wrapper">Wrapper</a>&lt;$Name&gt;&gt;(<a href="../sui/object.md#sui_object">object</a>, key);
+    field::has_child_object_with_ty&lt;$Value&gt;(field.to_address(), value_id)
+}
+</code></pre>
+
+
+
+</details>
+
+
+## FILE: crates/sui-framework/docs/sui/table.md
+
+---
+title: Module `sui::table`
+---
+
+A table is a map-like collection. But unlike a traditional collection, it's keys and values are
+not stored within the <code><a href="../sui/table.md#sui_table_Table">Table</a></code> value, but instead are stored using Sui's object system. The
+<code><a href="../sui/table.md#sui_table_Table">Table</a></code> struct acts only as a handle into the object system to retrieve those keys and values.
+Note that this means that <code><a href="../sui/table.md#sui_table_Table">Table</a></code> values with exactly the same key-value mapping will not be
+equal, with <code>==</code>, at runtime. For example
+```
+let table1 = table::new<u64, bool>();
+let table2 = table::new<u64, bool>();
+table::add(&mut table1, 0, false);
+table::add(&mut table1, 1, true);
+table::add(&mut table2, 0, false);
+table::add(&mut table2, 1, true);
+// table1 does not equal table2, despite having the same entries
+assert!(&table1 != &table2);
+```
+
+
+-  [Struct `Table`](#sui_table_Table)
+-  [Constants](#@Constants_0)
+-  [Function `new`](#sui_table_new)
+-  [Function `add`](#sui_table_add)
+-  [Function `borrow`](#sui_table_borrow)
+-  [Function `borrow_mut`](#sui_table_borrow_mut)
+-  [Function `remove`](#sui_table_remove)
+-  [Function `contains`](#sui_table_contains)
+-  [Function `length`](#sui_table_length)
+-  [Function `is_empty`](#sui_table_is_empty)
+-  [Function `destroy_empty`](#sui_table_destroy_empty)
+-  [Function `drop`](#sui_table_drop)
+
+
+<pre><code><b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+</code></pre>
+
+
+
+<a name="sui_table_Table"></a>
+
+## Struct `Table`
+
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/table.md#sui_table_Table">Table</a>&lt;<b>phantom</b> K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, <b>phantom</b> V: store&gt; <b>has</b> key, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+ the ID of this table
+</dd>
+<dt>
+<code>size: u64</code>
+</dt>
+<dd>
+ the number of key-value pairs in the table
+</dd>
+</dl>
+
+
+</details>
+
+<a name="@Constants_0"></a>
+
+## Constants
+
+
+<a name="sui_table_ETableNotEmpty"></a>
+
+
+
+<pre><code><b>const</b> <a href="../sui/table.md#sui_table_ETableNotEmpty">ETableNotEmpty</a>: u64 = 0;
+</code></pre>
+
+
+
+<a name="sui_table_new"></a>
+
+## Function `new`
+
+Creates a new, empty table
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_new">new</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_new">new</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(ctx: &<b>mut</b> TxContext): <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt; {
+    <a href="../sui/table.md#sui_table_Table">Table</a> {
+        id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+        size: 0,
+    }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_add"></a>
+
+## Function `add`
+
+Adds a key-value pair to the table <code><a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;</code>
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldAlreadyExists">sui::dynamic_field::EFieldAlreadyExists</a></code> if the table already has an entry with
+that key <code>k: K</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_add">add</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;, k: K, v: V)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_add">add</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;, k: K, v: V) {
+    field::add(&<b>mut</b> <a href="../sui/table.md#sui_table">table</a>.id, k, v);
+    <a href="../sui/table.md#sui_table">table</a>.size = <a href="../sui/table.md#sui_table">table</a>.size + 1;
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_borrow"></a>
+
+## Function `borrow`
+
+Immutable borrows the value associated with the key in the table <code><a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">sui::dynamic_field::EFieldDoesNotExist</a></code> if the table does not have an entry with
+that key <code>k: K</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;, k: K): &V
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;, k: K): &V {
+    field::borrow(&<a href="../sui/table.md#sui_table">table</a>.id, k)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_borrow_mut"></a>
+
+## Function `borrow_mut`
+
+Mutably borrows the value associated with the key in the table <code><a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">sui::dynamic_field::EFieldDoesNotExist</a></code> if the table does not have an entry with
+that key <code>k: K</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_borrow_mut">borrow_mut</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;, k: K): &<b>mut</b> V
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_borrow_mut">borrow_mut</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;, k: K): &<b>mut</b> V {
+    field::borrow_mut(&<b>mut</b> <a href="../sui/table.md#sui_table">table</a>.id, k)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_remove"></a>
+
+## Function `remove`
+
+Removes the key-value pair in the table <code><a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;</code> and returns the value.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">sui::dynamic_field::EFieldDoesNotExist</a></code> if the table does not have an entry with
+that key <code>k: K</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_remove">remove</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;, k: K): V
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_remove">remove</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<b>mut</b> <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;, k: K): V {
+    <b>let</b> v = field::remove(&<b>mut</b> <a href="../sui/table.md#sui_table">table</a>.id, k);
+    <a href="../sui/table.md#sui_table">table</a>.size = <a href="../sui/table.md#sui_table">table</a>.size - 1;
+    v
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_contains"></a>
+
+## Function `contains`
+
+Returns true if there is a value associated with the key <code>k: K</code> in table <code><a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;</code>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_contains">contains</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;, k: K): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_contains">contains</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;, k: K): bool {
+    field::exists_with_type&lt;K, V&gt;(&<a href="../sui/table.md#sui_table">table</a>.id, k)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_length"></a>
+
+## Function `length`
+
+Returns the size of the table, the number of key-value pairs
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_length">length</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_length">length</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;): u64 {
+    <a href="../sui/table.md#sui_table">table</a>.size
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_is_empty"></a>
+
+## Function `is_empty`
+
+Returns true if the table is empty (if <code><a href="../sui/table.md#sui_table_length">length</a></code> returns <code>0</code>)
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_is_empty">is_empty</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_is_empty">is_empty</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: &<a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;): bool {
+    <a href="../sui/table.md#sui_table">table</a>.size == 0
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_destroy_empty"></a>
+
+## Function `destroy_empty`
+
+Destroys an empty table
+Aborts with <code><a href="../sui/table.md#sui_table_ETableNotEmpty">ETableNotEmpty</a></code> if the table still contains values
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_destroy_empty">destroy_empty</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: <a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_destroy_empty">destroy_empty</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: store&gt;(<a href="../sui/table.md#sui_table">table</a>: <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;) {
+    <b>let</b> <a href="../sui/table.md#sui_table_Table">Table</a> { id, size } = <a href="../sui/table.md#sui_table">table</a>;
+    <b>assert</b>!(size == 0, <a href="../sui/table.md#sui_table_ETableNotEmpty">ETableNotEmpty</a>);
+    id.delete()
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_table_drop"></a>
+
+## Function `drop`
+
+Drop a possibly non-empty table.
+Usable only if the value type <code>V</code> has the <code><a href="../sui/table.md#sui_table_drop">drop</a></code> ability
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_drop">drop</a>&lt;K: <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</a>, store, V: <a href="../sui/table.md#sui_table_drop">drop</a>, store&gt;(<a href="../sui/table.md#sui_table">table</a>: <a href="../sui/table.md#sui_table_Table">sui::table::Table</a>&lt;K, V&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_drop">drop</a>&lt;K: <b>copy</b> + <a href="../sui/table.md#sui_table_drop">drop</a> + store, V: <a href="../sui/table.md#sui_table_drop">drop</a> + store&gt;(<a href="../sui/table.md#sui_table">table</a>: <a href="../sui/table.md#sui_table_Table">Table</a>&lt;K, V&gt;) {
+    <b>let</b> <a href="../sui/table.md#sui_table_Table">Table</a> { id, size: _ } = <a href="../sui/table.md#sui_table">table</a>;
+    id.delete()
+}
+</code></pre>
+
+
+
+</details>
+
+
+## FILE: crates/sui-framework/docs/sui/bag.md
+
+---
+title: Module `sui::bag`
+---
+
+A bag is a heterogeneous map-like collection. The collection is similar to <code><a href="../sui/table.md#sui_table">sui::table</a></code> in that
+its keys and values are not stored within the <code><a href="../sui/bag.md#sui_bag_Bag">Bag</a></code> value, but instead are stored using Sui's
+object system. The <code><a href="../sui/bag.md#sui_bag_Bag">Bag</a></code> struct acts only as a handle into the object system to retrieve those
+keys and values.
+Note that this means that <code><a href="../sui/bag.md#sui_bag_Bag">Bag</a></code> values with exactly the same key-value mapping will not be
+equal, with <code>==</code>, at runtime. For example
+```
+let bag1 = bag::new();
+let bag2 = bag::new();
+bag::add(&mut bag1, 0, false);
+bag::add(&mut bag1, 1, true);
+bag::add(&mut bag2, 0, false);
+bag::add(&mut bag2, 1, true);
+// bag1 does not equal bag2, despite having the same entries
+assert!(&bag1 != &bag2);
+```
+At it's core, <code><a href="../sui/bag.md#sui_bag">sui::bag</a></code> is a wrapper around <code>UID</code> that allows for access to
+<code><a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a></code> while preventing accidentally stranding field values. A <code>UID</code> can be
+deleted, even if it has dynamic fields associated with it, but a bag, on the other hand, must be
+empty to be destroyed.
+
+
+-  [Struct `Bag`](#sui_bag_Bag)
+-  [Constants](#@Constants_0)
+-  [Function `new`](#sui_bag_new)
+-  [Function `add`](#sui_bag_add)
+-  [Function `borrow`](#sui_bag_borrow)
+-  [Function `borrow_mut`](#sui_bag_borrow_mut)
+-  [Function `remove`](#sui_bag_remove)
+-  [Function `contains`](#sui_bag_contains)
+-  [Function `contains_with_type`](#sui_bag_contains_with_type)
+-  [Function `length`](#sui_bag_length)
+-  [Function `is_empty`](#sui_bag_is_empty)
+-  [Function `destroy_empty`](#sui_bag_destroy_empty)
+
+
+<pre><code><b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+</code></pre>
+
+
+
+<a name="sui_bag_Bag"></a>
+
+## Struct `Bag`
+
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a> <b>has</b> key, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+ the ID of this bag
+</dd>
+<dt>
+<code>size: u64</code>
+</dt>
+<dd>
+ the number of key-value pairs in the bag
+</dd>
+</dl>
+
+
+</details>
+
+<a name="@Constants_0"></a>
+
+## Constants
+
+
+<a name="sui_bag_EBagNotEmpty"></a>
+
+
+
+<pre><code><b>const</b> <a href="../sui/bag.md#sui_bag_EBagNotEmpty">EBagNotEmpty</a>: u64 = 0;
+</code></pre>
+
+
+
+<a name="sui_bag_new"></a>
+
+## Function `new`
+
+Creates a new, empty bag
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_new">new</a>(ctx: &<b>mut</b> <a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>): <a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_new">new</a>(ctx: &<b>mut</b> TxContext): <a href="../sui/bag.md#sui_bag_Bag">Bag</a> {
+    <a href="../sui/bag.md#sui_bag_Bag">Bag</a> {
+        id: <a href="../sui/object.md#sui_object_new">object::new</a>(ctx),
+        size: 0,
+    }
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_add"></a>
+
+## Function `add`
+
+Adds a key-value pair to the bag <code><a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a></code>
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldAlreadyExists">sui::dynamic_field::EFieldAlreadyExists</a></code> if the bag already has an entry with
+that key <code>k: K</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_add">add</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>, k: K, v: V)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_add">add</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a>, k: K, v: V) {
+    field::add(&<b>mut</b> <a href="../sui/bag.md#sui_bag">bag</a>.id, k, v);
+    <a href="../sui/bag.md#sui_bag">bag</a>.size = <a href="../sui/bag.md#sui_bag">bag</a>.size + 1;
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_borrow"></a>
+
+## Function `borrow`
+
+Immutable borrows the value associated with the key in the bag <code><a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a></code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">sui::dynamic_field::EFieldDoesNotExist</a></code> if the bag does not have an entry with
+that key <code>k: K</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">sui::dynamic_field::EFieldTypeMismatch</a></code> if the bag has an entry for the key, but
+the value does not have the specified type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>, k: K): &V
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/borrow.md#sui_borrow">borrow</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a>, k: K): &V {
+    field::borrow(&<a href="../sui/bag.md#sui_bag">bag</a>.id, k)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_borrow_mut"></a>
+
+## Function `borrow_mut`
+
+Mutably borrows the value associated with the key in the bag <code><a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a></code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">sui::dynamic_field::EFieldDoesNotExist</a></code> if the bag does not have an entry with
+that key <code>k: K</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">sui::dynamic_field::EFieldTypeMismatch</a></code> if the bag has an entry for the key, but
+the value does not have the specified type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_borrow_mut">borrow_mut</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>, k: K): &<b>mut</b> V
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_borrow_mut">borrow_mut</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a>, k: K): &<b>mut</b> V {
+    field::borrow_mut(&<b>mut</b> <a href="../sui/bag.md#sui_bag">bag</a>.id, k)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_remove"></a>
+
+## Function `remove`
+
+Mutably borrows the key-value pair in the bag <code><a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a></code> and returns the value.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldDoesNotExist">sui::dynamic_field::EFieldDoesNotExist</a></code> if the bag does not have an entry with
+that key <code>k: K</code>.
+Aborts with <code><a href="../sui/dynamic_field.md#sui_dynamic_field_EFieldTypeMismatch">sui::dynamic_field::EFieldTypeMismatch</a></code> if the bag has an entry for the key, but
+the value does not have the specified type.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_remove">remove</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>, k: K): V
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_remove">remove</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<b>mut</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a>, k: K): V {
+    <b>let</b> v = field::remove(&<b>mut</b> <a href="../sui/bag.md#sui_bag">bag</a>.id, k);
+    <a href="../sui/bag.md#sui_bag">bag</a>.size = <a href="../sui/bag.md#sui_bag">bag</a>.size - 1;
+    v
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_contains"></a>
+
+## Function `contains`
+
+Returns true iff there is an value associated with the key <code>k: K</code> in the bag <code><a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a></code>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_contains">contains</a>&lt;K: <b>copy</b>, drop, store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>, k: K): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_contains">contains</a>&lt;K: <b>copy</b> + drop + store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a>, k: K): bool {
+    field::exists&lt;K&gt;(&<a href="../sui/bag.md#sui_bag">bag</a>.id, k)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_contains_with_type"></a>
+
+## Function `contains_with_type`
+
+Returns true iff there is an value associated with the key <code>k: K</code> in the bag <code><a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a></code>
+with an assigned value of type <code>V</code>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_contains_with_type">contains_with_type</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>, k: K): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_contains_with_type">contains_with_type</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a>, k: K): bool {
+    field::exists_with_type&lt;K, V&gt;(&<a href="../sui/bag.md#sui_bag">bag</a>.id, k)
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_length"></a>
+
+## Function `length`
+
+Returns the size of the bag, the number of key-value pairs
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_length">length</a>(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_length">length</a>(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a>): u64 {
+    <a href="../sui/bag.md#sui_bag">bag</a>.size
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_is_empty"></a>
+
+## Function `is_empty`
+
+Returns true iff the bag is empty (if <code><a href="../sui/bag.md#sui_bag_length">length</a></code> returns <code>0</code>)
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_is_empty">is_empty</a>(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_is_empty">is_empty</a>(<a href="../sui/bag.md#sui_bag">bag</a>: &<a href="../sui/bag.md#sui_bag_Bag">Bag</a>): bool {
+    <a href="../sui/bag.md#sui_bag">bag</a>.size == 0
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_bag_destroy_empty"></a>
+
+## Function `destroy_empty`
+
+Destroys an empty bag
+Aborts with <code><a href="../sui/bag.md#sui_bag_EBagNotEmpty">EBagNotEmpty</a></code> if the bag still contains values
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_destroy_empty">destroy_empty</a>(<a href="../sui/bag.md#sui_bag">bag</a>: <a href="../sui/bag.md#sui_bag_Bag">sui::bag::Bag</a>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/bag.md#sui_bag_destroy_empty">destroy_empty</a>(<a href="../sui/bag.md#sui_bag">bag</a>: <a href="../sui/bag.md#sui_bag_Bag">Bag</a>) {
+    <b>let</b> <a href="../sui/bag.md#sui_bag_Bag">Bag</a> { id, size } = <a href="../sui/bag.md#sui_bag">bag</a>;
+    <b>assert</b>!(size == 0, <a href="../sui/bag.md#sui_bag_EBagNotEmpty">EBagNotEmpty</a>);
+    id.delete()
+}
+</code></pre>
+
+
+
+</details>
+
+
+## FILE: crates/sui-framework/docs/sui/event.md
+
+---
+title: Module `sui::event`
+---
+
+Events module. Defines the <code><a href="../sui/event.md#sui_event_emit">sui::event::emit</a></code> function which
+creates and sends a custom MoveEvent as a part of the effects
+certificate of the transaction.
+
+Every MoveEvent has the following properties:
+ - sender
+ - type signature (<code>T</code>)
+ - event data (the value of <code>T</code>)
+ - timestamp (local to a node)
+ - transaction digest
+
+Example:
+```
+module my::marketplace {
+   use sui::event;
+   /* ... */
+   struct ItemPurchased has copy, drop {
+     item_id: ID, buyer: address
+   }
+   entry fun buy(/* .... */) {
+      /* ... */
+      event::emit(ItemPurchased { item_id: ..., buyer: .... })
+   }
+}
+```
+
+
+-  [Function `emit`](#sui_event_emit)
+-  [Function `emit_authenticated`](#sui_event_emit_authenticated)
+-  [Function `emit_authenticated_impl`](#sui_event_emit_authenticated_impl)
+
+
+<pre><code><b>use</b> <a href="../std/address.md#std_address">std::address</a>;
+<b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/type_name.md#std_type_name">std::type_name</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/accumulator.md#sui_accumulator">sui::accumulator</a>;
+<b>use</b> <a href="../sui/accumulator_settlement.md#sui_accumulator_settlement">sui::accumulator_settlement</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/bcs.md#sui_bcs">sui::bcs</a>;
+<b>use</b> <a href="../sui/dynamic_field.md#sui_dynamic_field">sui::dynamic_field</a>;
+<b>use</b> <a href="../sui/hash.md#sui_hash">sui::hash</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/party.md#sui_party">sui::party</a>;
+<b>use</b> <a href="../sui/transfer.md#sui_transfer">sui::transfer</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+<b>use</b> <a href="../sui/vec_map.md#sui_vec_map">sui::vec_map</a>;
+</code></pre>
+
+
+
+<a name="sui_event_emit"></a>
+
+## Function `emit`
+
+Emit a custom Move event, sending the data offchain.
+
+Used for creating custom indexes and tracking onchain
+activity in a way that suits a specific application the most.
+
+The type <code>T</code> is the main way to index the event, and can contain
+phantom parameters, eg <code><a href="../sui/event.md#sui_event_emit">emit</a>(MyEvent&lt;<b>phantom</b> T&gt;)</code>.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/event.md#sui_event_emit">emit</a>&lt;T: <b>copy</b>, drop&gt;(<a href="../sui/event.md#sui_event">event</a>: T)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="../sui/event.md#sui_event_emit">emit</a>&lt;T: <b>copy</b> + drop&gt;(<a href="../sui/event.md#sui_event">event</a>: T);
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_event_emit_authenticated"></a>
+
+## Function `emit_authenticated`
+
+Emits a custom Move event which can be authenticated by a light client.
+
+This method emits the authenticated event to the event stream for the Move package that
+defines the event type <code>T</code>.
+Only the package that defines the type <code>T</code> can emit authenticated events to this stream.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/event.md#sui_event_emit_authenticated">emit_authenticated</a>&lt;T: <b>copy</b>, drop&gt;(<a href="../sui/event.md#sui_event">event</a>: T)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/event.md#sui_event_emit_authenticated">emit_authenticated</a>&lt;T: <b>copy</b> + drop&gt;(<a href="../sui/event.md#sui_event">event</a>: T) {
+    <b>let</b> stream_id = type_name::original_id&lt;T&gt;();
+    <b>let</b> accumulator_addr = <a href="../sui/accumulator.md#sui_accumulator_accumulator_address">accumulator::accumulator_address</a>&lt;EventStreamHead&gt;(stream_id);
+    <a href="../sui/event.md#sui_event_emit_authenticated_impl">emit_authenticated_impl</a>&lt;EventStreamHead, T&gt;(accumulator_addr, stream_id, <a href="../sui/event.md#sui_event">event</a>);
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_event_emit_authenticated_impl"></a>
+
+## Function `emit_authenticated_impl`
+
+
+
+<pre><code><b>fun</b> <a href="../sui/event.md#sui_event_emit_authenticated_impl">emit_authenticated_impl</a>&lt;StreamHeadT, T: <b>copy</b>, drop&gt;(accumulator_id: <b>address</b>, stream: <b>address</b>, <a href="../sui/event.md#sui_event">event</a>: T)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>native</b> <b>fun</b> <a href="../sui/event.md#sui_event_emit_authenticated_impl">emit_authenticated_impl</a>&lt;StreamHeadT, T: <b>copy</b> + drop&gt;(
+    accumulator_id: <b>address</b>,
+    stream: <b>address</b>,
+    <a href="../sui/event.md#sui_event">event</a>: T,
+);
+</code></pre>
+
+
+
+</details>
+
+
+## FILE: crates/sui-framework/docs/sui/clock.md
+
+---
+title: Module `sui::clock`
+---
+
+APIs for accessing time from move calls, via the <code><a href="../sui/clock.md#sui_clock_Clock">Clock</a></code>: a unique
+shared object that is created at 0x6 during genesis.
+
+
+-  [Struct `Clock`](#sui_clock_Clock)
+-  [Constants](#@Constants_0)
+-  [Function `timestamp_ms`](#sui_clock_timestamp_ms)
+-  [Function `create`](#sui_clock_create)
+-  [Function `consensus_commit_prologue`](#sui_clock_consensus_commit_prologue)
+
+
+<pre><code><b>use</b> <a href="../std/ascii.md#std_ascii">std::ascii</a>;
+<b>use</b> <a href="../std/bcs.md#std_bcs">std::bcs</a>;
+<b>use</b> <a href="../std/option.md#std_option">std::option</a>;
+<b>use</b> <a href="../std/string.md#std_string">std::string</a>;
+<b>use</b> <a href="../std/vector.md#std_vector">std::vector</a>;
+<b>use</b> <a href="../sui/address.md#sui_address">sui::address</a>;
+<b>use</b> <a href="../sui/hex.md#sui_hex">sui::hex</a>;
+<b>use</b> <a href="../sui/object.md#sui_object">sui::object</a>;
+<b>use</b> <a href="../sui/party.md#sui_party">sui::party</a>;
+<b>use</b> <a href="../sui/transfer.md#sui_transfer">sui::transfer</a>;
+<b>use</b> <a href="../sui/tx_context.md#sui_tx_context">sui::tx_context</a>;
+<b>use</b> <a href="../sui/vec_map.md#sui_vec_map">sui::vec_map</a>;
+</code></pre>
+
+
+
+<a name="sui_clock_Clock"></a>
+
+## Struct `Clock`
+
+Singleton shared object that exposes time to Move calls.  This
+object is found at address 0x6, and can only be read (accessed
+via an immutable reference) by entry functions.
+
+Entry Functions that attempt to accept <code><a href="../sui/clock.md#sui_clock_Clock">Clock</a></code> by mutable
+reference or value will fail to verify, and honest validators
+will not sign or execute transactions that use <code><a href="../sui/clock.md#sui_clock_Clock">Clock</a></code> as an
+input parameter, unless it is passed by immutable reference.
+
+
+<pre><code><b>public</b> <b>struct</b> <a href="../sui/clock.md#sui_clock_Clock">Clock</a> <b>has</b> key
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>id: <a href="../sui/object.md#sui_object_UID">sui::object::UID</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>: u64</code>
+</dt>
+<dd>
+ The clock's timestamp, which is set automatically by a
+ system transaction every time consensus commits a
+ schedule, or by <code>sui::clock::increment_for_testing</code> during
+ testing.
+</dd>
+</dl>
+
+
+</details>
+
+<a name="@Constants_0"></a>
+
+## Constants
+
+
+<a name="sui_clock_ENotSystemAddress"></a>
+
+Sender is not @0x0 the system address.
+
+
+<pre><code><b>const</b> <a href="../sui/clock.md#sui_clock_ENotSystemAddress">ENotSystemAddress</a>: u64 = 0;
+</code></pre>
+
+
+
+<a name="sui_clock_timestamp_ms"></a>
+
+## Function `timestamp_ms`
+
+The <code><a href="../sui/clock.md#sui_clock">clock</a></code>'s current timestamp as a running total of
+milliseconds since an arbitrary point in the past.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>(<a href="../sui/clock.md#sui_clock">clock</a>: &<a href="../sui/clock.md#sui_clock_Clock">sui::clock::Clock</a>): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>(<a href="../sui/clock.md#sui_clock">clock</a>: &<a href="../sui/clock.md#sui_clock_Clock">Clock</a>): u64 {
+    <a href="../sui/clock.md#sui_clock">clock</a>.<a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_clock_create"></a>
+
+## Function `create`
+
+Create and share the singleton Clock -- this function is
+called exactly once, during genesis.
+
+
+<pre><code><b>fun</b> <a href="../sui/clock.md#sui_clock_create">create</a>(ctx: &<a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>fun</b> <a href="../sui/clock.md#sui_clock_create">create</a>(ctx: &TxContext) {
+    <b>assert</b>!(ctx.sender() == @0x0, <a href="../sui/clock.md#sui_clock_ENotSystemAddress">ENotSystemAddress</a>);
+    <a href="../sui/transfer.md#sui_transfer_share_object">transfer::share_object</a>(<a href="../sui/clock.md#sui_clock_Clock">Clock</a> {
+        id: <a href="../sui/object.md#sui_object_clock">object::clock</a>(),
+        // Initialised to zero, but set to a real timestamp by a
+        // system transaction before it can be witnessed by a <b>move</b>
+        // call.
+        <a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>: 0,
+    })
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="sui_clock_consensus_commit_prologue"></a>
+
+## Function `consensus_commit_prologue`
+
+
+
+<pre><code><b>fun</b> <a href="../sui/clock.md#sui_clock_consensus_commit_prologue">consensus_commit_prologue</a>(<a href="../sui/clock.md#sui_clock">clock</a>: &<b>mut</b> <a href="../sui/clock.md#sui_clock_Clock">sui::clock::Clock</a>, <a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>: u64, ctx: &<a href="../sui/tx_context.md#sui_tx_context_TxContext">sui::tx_context::TxContext</a>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>fun</b> <a href="../sui/clock.md#sui_clock_consensus_commit_prologue">consensus_commit_prologue</a>(<a href="../sui/clock.md#sui_clock">clock</a>: &<b>mut</b> <a href="../sui/clock.md#sui_clock_Clock">Clock</a>, <a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>: u64, ctx: &TxContext) {
+    // Validator will make a special system call with sender set <b>as</b> 0x0.
+    <b>assert</b>!(ctx.sender() == @0x0, <a href="../sui/clock.md#sui_clock_ENotSystemAddress">ENotSystemAddress</a>);
+    <a href="../sui/clock.md#sui_clock">clock</a>.<a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a> = <a href="../sui/clock.md#sui_clock_timestamp_ms">timestamp_ms</a>
+}
+</code></pre>
+
+
+
+</details>
+
