@@ -1197,12 +1197,12 @@ def test_hyperframes_runner_pin_checked_once_per_process(monkeypatch):
 def test_default_runner_routes_sui_tool_to_sui_runner(tmp_path, monkeypatch):
     from kp_build.verifier import default_runner
     seen = {}
-    def fake_sui(artifact, tool, *, _run=None):
-        seen["call"] = (artifact, tool)
+    def fake_sui(artifact, tool, *, gate_code=None, _run=None):
+        seen["call"] = (artifact, tool, gate_code)
         return {"codes": []}
     monkeypatch.setattr("kp_build.sui_runner.sui_move_runner", fake_sui)
-    assert default_runner("pkg-dir", "sui-move-build") == {"codes": []}
-    assert seen["call"] == ("pkg-dir", "sui-move-build")
+    assert default_runner("pkg-dir", "sui-move-build", gate_code="red_violation") == {"codes": []}
+    assert seen["call"] == ("pkg-dir", "sui-move-build", "red_violation")
 
 
 def test_default_runner_routes_everything_else_to_hyperframes(monkeypatch):
