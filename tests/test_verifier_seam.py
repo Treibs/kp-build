@@ -1181,3 +1181,25 @@ def test_hyperframes_runner_pin_checked_once_per_process(monkeypatch):
     assert hyperframes_runner("x", "lint", _run=run) == {"codes": []}
     assert sum(1 for c in run.calls if c[:2] == ["npm", "view"]) == 1
     assert sum(1 for c in run.calls if c[0] == "npx") == 2
+
+
+def test_default_runner_routes_sui_tool_to_sui_runner(tmp_path, monkeypatch):
+    from kp_build.verifier import default_runner
+    seen = {}
+    def fake_sui(artifact, tool, *, _run=None):
+        seen["call"] = (artifact, tool)
+        return {"codes": []}
+    monkeypatch.setattr("kp_build.sui_runner.sui_move_runner", fake_sui)
+    assert default_runner("pkg-dir", "sui-move-build") == {"codes": []}
+    assert seen["call"] == ("pkg-dir", "sui-move-build")
+
+
+def test_default_runner_routes_everything_else_to_hyperframes(monkeypatch):
+    from kp_build import verifier
+    seen = {}
+    def fake_hf(artifact, tool, *, _run=None):
+        seen["call"] = (artifact, tool)
+        return {"codes": ["x"]}
+    monkeypatch.setattr(verifier, "hyperframes_runner", fake_hf)
+    assert verifier.default_runner("a.json", "lint") == {"codes": ["x"]}
+    assert seen["call"] == ("a.json", "lint")
