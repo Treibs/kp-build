@@ -1,0 +1,25 @@
+## Related Work
+
+Rubric-based rewards emerged as the leading route for extending RLVR-style post-training to non-verifiable, open-ended tasks. The original Rubrics-as-Rewards formulation (RaR; Gunjal et al., arXiv:2507.17746) showed that checklist-style, prompt-specific rubrics scored by an LLM judge yield more reliable GRPO training signals than Likert-scale judging, while Rubicon (arXiv:2508.12790) scaled the idea to 10K+ human/LLM-authored rubrics used as anchors for policy optimization on subjective tasks. A subsequent wave attacked the rubric-authoring bottleneck with automatic generation: OpenRubrics (arXiv:2510.07743) introduced Contrastive Rubric Generation and the resulting Rubric-RM reward model; RubricHub (arXiv:2601.08430) built ~110K rubrics via coarse-to-fine synthesis with a RuFT+RuRL training pipeline; and Zhou et al. (arXiv:2602.05125) improved judge/reward quality by ensembling generated rubrics with complementarity filtering and correlation-aware weighting. A parallel line trains the judge itself: Rubric-ARM (arXiv:2602.01511) treats rubric generation as a latent action and alternately optimizes rubric generator and judge from preference feedback in an EM-style loop. Closest to our work are self-evolving rubric methods that update criteria during RL: OnlineRubrics (arXiv:2510.07284) elicits new criteria online from pairwise policy-vs-reference comparisons; DR Tulu (arXiv:2511.19399) evolves search-grounded rubrics for deep-research agents; EvoLM (arXiv:2605.03871) co-evolves discriminative rubrics with the policy using temporal contrast against earlier checkpoints, with no external supervision; and EvoRubrics (arXiv:2606.23038) casts rubric–policy co-evolution as an adversarial game to combat reward saturation. Yet the failure-mode literature shows this proxy is fragile: Mahmoud et al. (arXiv:2605.12474) decompose rubric reward hacking into verifier failure (judges crediting unmet criteria) and rubric-design limitations (fully satisfied rubrics that rubric-free judges still rate worse), showing exploitation grows over training; follow-up work (arXiv:2606.04923) reproduces hacking in a controllable environment and proposes detection monitors, noting that existing mitigations—on-the-fly rubric rewriting and appended negative rubrics—do not recover hacking onset from raw rollouts.
+
+## Open Problems
+
+1. **Ungrounded co-evolution (moving-target hacking).** Self-evolving pipelines (OnlineRubrics, EvoLM, EvoRubrics) update criteria from the policy's own rollouts, so nothing anchors the evolving rubric to human utility: the rubric generator can drift toward criteria the policy already satisfies, or be adversarially co-opted, and none of these works provides stability or convergence guarantees for the coupled rubric–policy dynamics. Our method addresses this with anchored evolution against fixed reference signals.
+
+2. **Rubric-design limitations remain unmitigated.** arXiv:2605.12474 shows that even a perfect judge cannot fix an incomplete rubric—policies satisfy every criterion yet get worse holistically—and current mitigations (negative rubrics, rubric rewriting, ensemble weighting per arXiv:2602.05125) treat symptoms without any test for rubric sufficiency or coverage. Deciding *when a rubric set is an adequate proxy* for open-ended quality is unsolved; our method makes coverage expansion an explicit, evaluated step of rubric evolution.
+
+3. **Online hacking detection and principled aggregation.** There is no judge-blind monitor that detects hacking onset during training from rollouts alone (arXiv:2606.04923), and scalarizing many correlated, saturating criteria into one reward (majority-vote judge ensembles in arXiv:2602.01511; weighting schemes in arXiv:2602.05125) still admits criteria-stuffing and verbosity exploits at frontier-judge-panel cost. Our method couples rubric evolution with a cheap on-policy divergence signal that flags exploitation as it emerges.
+
+## Citations
+2507.17746 | Rubrics as Rewards: Reinforcement Learning Beyond Verifiable Domains
+2508.12790 | Reinforcement Learning with Rubric Anchors
+2510.07743 | OpenRubrics: Towards Scalable Synthetic Rubric Generation for Reward Modeling and LLM Alignment
+2601.08430 | RubricHub: A Comprehensive and Highly Discriminative Rubric Dataset via Automated Coarse-to-Fine Generation
+2602.05125 | Rethinking Rubric Generation for Improving LLM Judge and Reward Modeling for Open-ended Tasks
+2602.01511 | Alternating Reinforcement Learning for Rubric-Based Reward Modeling in Non-Verifiable LLM Post-Training
+2510.07284 | Online Rubrics Elicitation from Pairwise Comparisons
+2511.19399 | DR Tulu: Reinforcement Learning with Evolving Rubrics for Deep Research
+2605.03871 | EvoLM: Self-Evolving Language Models through Co-Evolved Discriminative Rubrics
+2606.23038 | EvoRubrics: Dynamic Rubrics as Rewards via Adversarial Co-Evolution for LLM Reinforcement Learning
+2605.12474 | Reward Hacking in Rubric-Based Reinforcement Learning
+2606.04923 | Reproducing, Analyzing, and Detecting Reward Hacking in Rubric-Based Reinforcement Learning

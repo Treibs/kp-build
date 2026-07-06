@@ -29,7 +29,11 @@ digest plus a machine index). It is a reusable knowledge *asset*, not a report.
    --ground` confirms it actually appears in the paper (the arXiv abstract for free, or ar5iv fulltext),
    marking each claim `grounded` (✓, confirmed), `unconfirmed` (not in the abstract — may be in the
    body), or `ungrounded` (checked the fulltext, not there → capped + flagged). Confidence stays
-   corpus-relative.*
+   corpus-relative. Fuzzy matching accepts on the single longest contiguous block covering ≥60% of the
+   passage — which alone would let a long quote with one tampered number (year/percentage/measurement)
+   near an end still verify. A digit guard closes this: on the fuzzy path every number token in the
+   passage must also appear in the text, else the verdict downgrades to `unconfirmed` (abstain, not
+   `ungrounded` — number formatting legitimately varies). Exact substring matches are exempt.*
 5. **Concepts** — definition/taxonomy scaffolding (least valuable; the model mostly has this).
 
 ## Package schema (v1) — a portable directory (and a valid 0xLT/kpm package)
@@ -108,8 +112,15 @@ This is what makes the package "compute-amortizing" — load it, skip the resear
    flagged, no orphans).
 7. **Falsify (acceptance gate)** — `kp-build falsify <dir> --question … --base … --kp …` scores a
    KP-loaded agent vs a base agent on a held-out task, on **precision** (cited papers that actually
-   exist) AND **recall** (spine coverage), records the f1 verdict into the manifest, and tells you
-   honestly if the package does not beat base (e.g. on a topic the model already knows).
+   exist) AND **recall** (spine adoption), records the f1 verdict into the manifest (atomically —
+   write-then-rename; `--no-record` to score without touching it), and tells you honestly if the
+   package does not beat base (e.g. on a topic the model already knows). **Honest limit:** both
+   mechanical axes favor the KP side by construction — the KP agent is instructed to cite the spine
+   it was handed, and recall is graded against that same spine. The optional **blind quality panel**
+   (`--emit-judge-prompts N` → fresh judges → `--judge-rounds a,b,…`) is the non-circular axis: it
+   replays recorded slot-alternated A/B verdicts through the same JudgeVerifier the build uses
+   (even-length panels only), and a judged-worse panel *vetoes* a mechanical win. Without a panel,
+   the verdict discloses what it does not certify.
 
 ## Non-negotiables
 - **No hallucinated citations (hard gate).** A citation is `verified` only when an explicit arXiv id
@@ -117,4 +128,6 @@ This is what makes the package "compute-amortizing" — load it, skip the resear
   cannot anchor a shipped claim. The gate never rescues a mismatched id via a title search.
 - Coverage is scope-relative and can be too shallow — citation-graph expansion mitigates; the
   manifest records what was searched so the gap is honest.
-- The package is stale the day a field moves; the manifest carries `built` + a re-run is a diff.
+- The package is stale the day a field moves; the manifest carries `built`, and `kp-build refresh <dir>`
+  reports age + post-build citation-graph candidates + a re-probe prompt (exit 0 fresh / 1 stale /
+  3 inconclusive).

@@ -13,7 +13,7 @@ package; the **spine** = the package's set of verified, real papers.
 | package | what kind of topic | `probe` | did the package help? (after-build test) |
 |---|---|---|---|
 | [`agent-memory/`](#agent-memory) ⭐ | **LLM agent memory** — AI frontier | BUILD | **helps** — base **fabricated/mislabeled 10 of 16 cites**; precision 0.38 → 1.00, coverage 0.71 → 1.00, f1 0.49 → 1.00 |
-| [`coding-agents/`](#coding-agents) | **autonomous AI coding agents** — SWE-bench frontier | BUILD | **helps** — base **fabricated 14 of 25 cites**; precision 0.44 → 1.00, f1 0.48 → 1.00 |
+| [`coding-agents/`](#coding-agents) | **autonomous AI coding agents** — SWE-bench frontier | BUILD | **helps** — base **fabricated/mislabeled 14 of 25 cites**; precision 0.44 → 1.00, f1 0.48 → 1.00 |
 | [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | recent ML — model **gets cites wrong** | BUILD | **helps** — wins on *precision* (kills mislabeled cites) **and** coverage |
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | ML the model **knows cold** | SKIP | **helps on coverage only** — precision was already 1.0 |
 | [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | a 2026 topic the model **can't name** (post-cutoff) | BUILD† | **helps** — coverage 0.07 → 1.00 |

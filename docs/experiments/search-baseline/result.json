@@ -1,0 +1,43 @@
+{
+  "date": "2026-07-06",
+  "package": "examples/rubric-based-rl-nonverifiable",
+  "base_agent": "same model, WebSearch/WebFetch allowed (10 searches), no package",
+  "kp_agent": "same model, no search, CONTEXT.md briefing injected",
+  "judge_rounds_recorded": [
+    "b",
+    "a",
+    "b",
+    "a",
+    "b",
+    "a"
+  ],
+  "judge_tally": {
+    "kp_wins": 0,
+    "base_wins": 6,
+    "ties": 0,
+    "status": "judged-worse"
+  },
+  "mechanical": {
+    "base": {
+      "cited": 12,
+      "checked": 12,
+      "real": 12,
+      "fake": 0,
+      "precision": 1.0,
+      "recall": 0.267,
+      "f1": 0.421
+    },
+    "kp": {
+      "cited": 15,
+      "checked": 12,
+      "unresolved": 3,
+      "real": 12,
+      "fake": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  },
+  "verdict": "KP DID NOT HELP (blind panel veto, 0-6-0)",
+  "exit_code": 1
+}
