@@ -1,0 +1,36 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Sui Move contract authoring (Move 2024 edition, mainnet toolchain)",
+  "scope": "",
+  "built": "2026-07-06",
+  "stats": {
+    "papers_verified": 0,
+    "papers_total": 0,
+    "claims": 44,
+    "open_problems": 0,
+    "debates": 0,
+    "benchmarks": 0,
+    "relations": 0,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0,
+      "relations": 0
+    }
+  },
+  "goals": {},
+  "goal_metrics": [],
+  "source_span": {
+    "oldest": null,
+    "newest": null,
+    "latest_checked": "2026-07-06"
+  },
+  "coverage": {
+    "note": "not recorded \u2014 coverage completeness is unverified"
+  },
+  "falsification": {
+    "run": false
+  }
+}
