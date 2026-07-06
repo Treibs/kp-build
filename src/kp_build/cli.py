@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -32,7 +33,7 @@ class ResearchInputError(ValueError):
 def _coerce_year(v, where, errs):
     if v is None:
         return None
-    if isinstance(v, bool):                       # bool is an int subclass — reject explicitly (F4)
+    if isinstance(v, bool):                       # bool is an int subclass — reject explicitly
         errs.append(f"{where}: year {v!r} is a boolean, not a year")
         return None
     if isinstance(v, int):
@@ -45,8 +46,8 @@ def _coerce_year(v, where, errs):
 
 
 def _strlist(v, where, errs):
-    """A list-of-strings field. A bare string becomes a single element (never iterated char-by-char,
-    F2); a non-list/non-string is an error rather than a silent corruption."""
+    """A list-of-strings field. A bare string becomes a single element (never iterated char-by-char);
+    a non-list/non-string is an error rather than a silent corruption."""
     if v is None:
         return []
     if isinstance(v, str):
@@ -58,7 +59,7 @@ def _strlist(v, where, errs):
 
 
 def _section(d, key, errs):
-    """Return d[key] as a list of dict elements; aggregate type errors instead of crashing (F1)."""
+    """Return d[key] as a list of dict elements; aggregate type errors instead of crashing."""
     raw = d.get(key) or []
     if not isinstance(raw, list):
         errs.append(f"'{key}' must be a list, got {type(raw).__name__}")
@@ -89,7 +90,7 @@ def _load(path: str) -> Package:
     def _uid(nid, kind, i):
         if not nid:
             return
-        # M1: every node id is used verbatim as a filename (claims/<id>.md, relations/<id>.md, ...) —
+        # every node id is used verbatim as a filename (claims/<id>.md, relations/<id>.md, ...) —
         # path-validate it like cite_key, or a crafted id writes OUTSIDE --out.
         if nid in (".", "..") or not re.fullmatch(r"[A-Za-z0-9_.-]+", nid):
             errs.append(f"{kind}[{i}]: id {nid!r} has unsafe characters (used as a filename; "
@@ -143,7 +144,7 @@ def _load(path: str) -> Package:
             if not art:
                 errs.append(f"claims[{i}].execution: needs an artifact")
             elif art.startswith(("/", "\\")) or "://" in art or ".." in re.split(r"[\\/]", art):
-                # M5: the artifact is handed to a subprocess that reads files — must be a relative path
+                # the artifact is handed to a subprocess that reads files — must be a relative path
                 # inside the pack; reject absolute paths, '..' traversal, and URL schemes.
                 errs.append(f"claims[{i}].execution.artifact {art!r} must be a relative path inside the "
                             f"pack (no absolute path, '..', or URL)")
@@ -153,7 +154,7 @@ def _load(path: str) -> Package:
             if not src:
                 errs.append(f"claims[{i}].grounding: needs a 'source' (the pinned source the passage is quoted from)")
             elif src in (".", "..") or not re.fullmatch(r"[A-Za-z0-9_.-]+", src):
-                # the source keys the corpus file (corpus/<source>.txt) — same filename-safety rule as cite_key (M5)
+                # the source keys the corpus file (corpus/<source>.txt) — same filename-safety rule as cite_key
                 errs.append(f"claims[{i}].grounding.source {src!r} has unsafe characters "
                             f"(used as a corpus filename; allowed: letters, digits, '_', '.', '-')")
             if not grnd.get("supporting_passage"):
@@ -178,7 +179,7 @@ def _load(path: str) -> Package:
         if not any(oracles):
             errs.append(f"claims[{i}] ({c.get('id', '?')}): needs a 'paper', an 'execution', a 'grounding', "
                         f"or a 'judgment' directive")
-        elif sum(oracles) > 1:                       # M2: exactly one verification basis per node
+        elif sum(oracles) > 1:                       # exactly one verification basis per node
             errs.append(f"claims[{i}] ({c.get('id', '?')}): has more than one verification basis "
                         f"(a claim is verified by exactly one of paper / execution / grounding / judgment — a "
                         f"mechanical, grounding, or panel verdict must not be overridable by a citation)")
@@ -310,15 +311,15 @@ def _cmd_build(args) -> int:
     if args.no_verify:
         for p in pkg.papers:
             p.verified = Verification(exists=True, status="verified", via="(unchecked)", checked=today)
-        # M3/M4b: do NOT trust an inbound claim verdict. Reset citation claims (they ship via their stamped
+        # do NOT trust an inbound claim verdict. Reset citation claims (they ship via their stamped
         # paper); stamp execution/grounding (no-paper) claims as (unchecked) so a claim-spine pack under
         # --no-verify isn't silently EMPTY (and an inbound exists:true can't ship unchecked).
         for c in pkg.claims:
             if c.paper:
                 c.verified = Verification()
             else:                                   # ship under --no-verify, but NEVER say 'verified': it
-                kind = ("grounding" if c.grounding else "judgment" if c.judgment   # wasn't checked (M1 —
-                        else "execution")                                          # honest, kind-aware stamp)
+                kind = ("grounding" if c.grounding else "judgment" if c.judgment   # wasn't checked — an
+                        else "execution")                                          # honest, kind-aware stamp
                 c.verified = Verification(exists=True, status="unverified", kind=kind,
                                           via="(unchecked)", checked=today)
         summary = {"total": len(pkg.papers), "verified": len(pkg.papers),
@@ -367,7 +368,7 @@ def _cmd_build(args) -> int:
         print(f"  grounded {g['grounded']} · unconfirmed {g['unconfirmed']} · ungrounded {g['ungrounded']}",
               file=sys.stderr)
 
-    # M4/M5: running execution gates shells out to the hyperframes CLI on local files — require an explicit
+    # running execution gates shells out to the hyperframes CLI on local files — require an explicit
     # --execute opt-in, and never under --no-verify (which stamps execution claims (unchecked) above).
     n_exec = sum(1 for c in pkg.claims if c.execution)
     if n_exec and args.execute and not args.no_verify:
@@ -383,7 +384,8 @@ def _cmd_build(args) -> int:
 
     # V2-a (grounding): ground each grounding-claim passage against its pinned corpus. Unlike execution's warn-and-drop,
     # a grounding-spine claim that isn't gated would ship NEITHER via a paper NOR via a verdict and silently
-    # VANISH at the ship gate (and M3 misses it in a mixed pack) — so refuse to build rather than drop it.
+    # VANISH at the ship gate (and the ships-empty backstop below misses it in a mixed pack) — so refuse to
+    # build rather than drop it.
     if args.ground_verify and args.no_verify:
         print("warn: --ground-verify skipped because --no-verify was set (grounding claims stamped unchecked)",
               file=sys.stderr)
@@ -420,7 +422,7 @@ def _cmd_build(args) -> int:
     out = assemble(pkg, args.out, built=today,
                    name=args.name or None, version=args.version, license=args.license)
     res = validate(out)
-    # M3: a claim-spine package must not silently ship EMPTY (e.g. execution claims dropped for lack of --execute).
+    # a claim-spine package must not silently ship EMPTY (e.g. execution claims dropped for lack of --execute).
     if pkg.claims and json.loads((out / "wikillm.json").read_text())["stats"]["claims"] == 0:
         print("error: every claim was dropped — a claim-spine package would ship EMPTY. "
               "Did the verifier run? (execution claims need --execute; citations need the network).",
@@ -468,49 +470,75 @@ def _cmd_verify(args) -> int:
 
 
 def _cmd_falsify(args) -> int:
-    from .falsify import score_answer, verdict
+    from .falsify import score_answer, verdict, helped, judge_prompts, judge_replay
     pkg = Path(args.package_dir)
+    if args.emit_judge_prompts:
+        # emit the blind quality-panel prompts (the non-circular axis) and exit — no scoring, no manifest.
+        # Each prompt goes to a FRESH judge; its one-word verdict is a SLOT winner, recorded in order.
+        ps = judge_prompts(args.question, Path(args.base).read_text(encoding="utf-8"),
+                           Path(args.kp).read_text(encoding="utf-8"), rounds=args.emit_judge_prompts)
+        for i, p in enumerate(ps, 1):
+            print(f"=== JUDGE PROMPT {i}/{len(ps)} — give to a FRESH judge (no shared context); record "
+                  f"its one-word verdict (A/B/TIE) in order ===")
+            print(p)
+        print(f"\nthen: kp-build falsify {args.package_dir} --question '...' --base {args.base} "
+              f"--kp {args.kp} --judge-rounds a,b,tie,...", file=sys.stderr)
+        return 0
     index = json.loads((pkg / "index.json").read_text())
     spine = [{"arxiv_id": p.get("arxiv_id", ""), "doi": p.get("doi", ""), "cite_key": p["cite_key"]}
              for p in index.get("papers", []) if p.get("verified")]
     base = score_answer(Path(args.base).read_text(), spine=spine, throttle=args.throttle)
     kp = score_answer(Path(args.kp).read_text(), spine=spine, throttle=args.throttle)
-    v = verdict(base, kp)
+    judge = judge_replay([r for r in args.judge_rounds.split(",") if r.strip()]) if args.judge_rounds else None
+    v = verdict(base, kp, judge)
     print("falsification:")
     print(f"  base : {base}")
     print(f"  kp   : {kp}")
+    if judge:
+        print(f"  judge: {judge}")
     print(f"  VERDICT: {v}")
-    # record into the manifest
-    man = json.loads((pkg / "wikillm.json").read_text())
-    man["falsification"] = {"run": True, "question": args.question, "base": base, "kp": kp, "verdict": v}
-    (pkg / "wikillm.json").write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
-    helped = (kp.get("f1") is not None and base.get("f1") is not None and kp["f1"] > base["f1"]) or \
-             (kp["hallucination_rate"] < base["hallucination_rate"])
-    return 0 if helped else 1
+    if not args.no_record:
+        man = json.loads((pkg / "wikillm.json").read_text())
+        man["falsification"] = {"run": True, "question": args.question, "base": base, "kp": kp,
+                                **({"judge": judge} if judge else {}), "verdict": v}
+        # write-then-rename: the manifest holds the package's recorded verdict — a crash mid-write must
+        # truncate a temp file, never the record itself.
+        tmp = pkg / "wikillm.json.tmp"
+        tmp.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
+        os.replace(tmp, pkg / "wikillm.json")
+    return 0 if helped(base, kp, judge) else 1
 
 
 def _cmd_probe(args) -> int:
     """Topic-weakness pre-screen: decide whether a package is worth building BEFORE paying for it.
     Two modes: --emit-prompt prints the unaided base-answer task for the topic; --answer scores that
     answer and returns build / skip / inconclusive (exit 0 / 1 / 3; usage/IO errors exit 2)."""
-    from .falsify import probe_prompt, probe_verdict
+    from .falsify import probe_prompt, probe_verdict, probe_verdict_multi
     if args.emit_prompt:
         print(probe_prompt(args.question or "<the research area>"))
         return 0
-    if not args.answer:
-        print("error: --answer FILE required (the unaided agent's answer), or use --emit-prompt "
-              "to print the prompt to give that agent", file=sys.stderr)
+    files = args.answer or []
+    if not files:
+        print("error: --answer FILE required (the unaided agent's answer; repeat for 2-3 independent "
+              "samples), or use --emit-prompt to print the prompt to give that agent", file=sys.stderr)
         return 2
-    if not Path(args.answer).is_file():                 # distinct from an INCONCLUSIVE verdict (exit 3)
-        print(f"error: answer file not found: {args.answer}", file=sys.stderr)
+    missing = [f for f in files if not Path(f).is_file()]
+    if missing:                                         # distinct from an INCONCLUSIVE verdict (exit 3)
+        print(f"error: answer file not found: {', '.join(missing)}", file=sys.stderr)
         return 2
     as_of = args.as_of or None        # recency check is OPT-IN (--as-of): a settled topic's old cites are not weakness
-    v = probe_verdict(Path(args.answer).read_text(encoding="utf-8"),
-                      threshold=args.threshold, min_real=args.min_real, throttle=0.2, as_of=as_of)
+    kw = dict(threshold=args.threshold, min_real=args.min_real, throttle=0.2, as_of=as_of)
+    if len(files) == 1:               # single-sample path unchanged (probe_verdict_multi wraps the same rule)
+        v = probe_verdict(Path(files[0]).read_text(encoding="utf-8"), **kw)
+    else:
+        v = probe_verdict_multi([Path(f).read_text(encoding="utf-8") for f in files], **kw)
     head = {"build": "BUILD — the topic is model-weak (worth packaging)",
             "skip": "SKIP — the model already knows this (a package adds ~0 value)",
             "inconclusive": "INCONCLUSIVE — re-run"}[v["decision"]]
     print(f"topic pre-screen: {head}")
+    for i, s in enumerate(v.get("samples", []), 1):
+        print(f"  sample {i}: {s['decision'].upper()} — {s['real']} real · {s['fake']} fabricated/mislabeled "
+              f"· {s.get('hedged', 0)} hedged")
     if v["checked"]:
         print(f"  unaided base agent: {v['cited']} cited · {v['real']} real · "
               f"{v['fake']} fabricated/mislabeled · {v.get('hedged', 0)} hedged · "
@@ -539,6 +567,35 @@ def _cmd_expand(args) -> int:
     print(f"  {len(cands)} candidate paper(s) not already in the package "
           f"(relevance-filter + verify before adding)", file=sys.stderr)
     return 0
+
+
+def _cmd_refresh(args) -> int:
+    """Staleness report for a built package. Value concentrates exactly where fields move fastest, so a
+    frontier package rots in months — this is the mechanical half of keeping the amortization story true:
+    age + post-build citation-graph candidates + the re-probe prompt. Exit 0 fresh / 1 stale / 3
+    inconclusive (mirrors probe; 2 stays reserved for usage/IO errors)."""
+    from .refresh import refresh
+    as_of = args.as_of or datetime.date.today().isoformat()   # the CLI supplies the clock, never the engine
+    r = refresh(args.package_dir, as_of=as_of, recency_months=args.recency_months, per_seed=args.limit)
+    head = {"stale": "STALE — refresh recommended",
+            "fresh": "FRESH — no post-build work found",
+            "inconclusive": "INCONCLUSIVE — expansion returned nothing (quiet field or unreachable index); re-run"}
+    print(f"staleness check: {head[r['decision']]}")
+    age = f"{r['age_months']} month(s)" if r["age_months"] is not None else "unknown"
+    print(f"  built {r['built'] or '?'} · as of {r['as_of']} · age {age} · spine {r['spine_size']} paper(s)")
+    print(f"  neighbors: {r['total_candidates']} candidate(s) · {r['new_since_build']} post-build · "
+          f"{r['undated_candidates']} undated (reported, not counted as new)")
+    for c in r["candidates"][:10]:
+        print(f"    + {c.get('arxiv_id') or c.get('doi') or '?'}  {(c.get('title') or '')[:70]}")
+    if len(r["candidates"]) > 10:
+        print(f"    ... and {len(r['candidates']) - 10} more (--json prints all)")
+    print(f"  -> {r['reason']}")
+    if args.json:
+        print(json.dumps(r, indent=2))
+    print("  next: re-probe the topic (the report's 'reprobe_prompt', or `kp-build probe --emit-prompt` "
+          "with --as-of), verify + fold the candidates in via the expand path, bump the version.",
+          file=sys.stderr)
+    return {"fresh": 0, "stale": 1, "inconclusive": 3}[r["decision"]]
 
 
 def _cmd_report(args) -> int:
@@ -599,9 +656,20 @@ def main(argv=None) -> int:
     fal.add_argument("--base", required=True, help="file with the base agent's answer")
     fal.add_argument("--kp", required=True, help="file with the KP-loaded agent's answer")
     fal.add_argument("--throttle", type=float, default=0.2, help="seconds between citation checks (avoid rate limits)")
+    fal.add_argument("--emit-judge-prompts", type=int, default=0, metavar="N",
+                     help="print N blind quality-panel prompts (KP/base slot-alternated) and exit; give each "
+                          "to a FRESH judge, record its A/B/TIE verdicts in order for --judge-rounds")
+    fal.add_argument("--judge-rounds", default="",
+                     help="recorded blind-panel slot winners, comma-separated (e.g. a,b,tie,a) — the "
+                          "non-circular quality axis; even count >=2; judged-worse VETOES a helps verdict")
+    fal.add_argument("--no-record", action="store_true",
+                     help="score and print only — do not rewrite wikillm.json (e.g. experiments against a "
+                          "committed package whose recorded verdict must stay)")
     fal.set_defaults(func=_cmd_falsify)
     prb = sub.add_parser("probe", help="pre-screen a topic: is it model-weak enough to be worth building?")
-    prb.add_argument("--answer", default="", help="the unaided agent's answer to score")
+    prb.add_argument("--answer", action="append", default=[],
+                     help="the unaided agent's answer to score; repeat with 2-3 independently sampled answers "
+                          "to cut single-sample variance (any weakness-showing sample decides BUILD)")
     prb.add_argument("--question", default="", help="the topic / research area")
     prb.add_argument("--emit-prompt", action="store_true", help="print the base-answer prompt for the topic and exit")
     prb.add_argument("--threshold", type=float, default=0.25, help="hallucination rate at/above which the topic is model-weak (build)")
@@ -613,6 +681,16 @@ def main(argv=None) -> int:
     exp.add_argument("--limit", type=int, default=40, help="max neighbors per seed per direction")
     exp.add_argument("--direction", choices=("both", "references", "citations"), default="both")
     exp.set_defaults(func=_cmd_expand)
+    rfr = sub.add_parser("refresh", help="staleness report for a built package: age + post-build "
+                                         "citation-graph candidates + a re-probe prompt (exit 0 fresh / 1 stale / 3 inconclusive)")
+    rfr.add_argument("package_dir")
+    rfr.add_argument("--as-of", default="", dest="as_of",
+                     help="reference date YYYY-MM[-DD] (default: today) — the staleness clock")
+    rfr.add_argument("--recency-months", type=int, default=30, dest="recency_months",
+                     help="age beyond which a package is stale on its own (default 30)")
+    rfr.add_argument("--limit", type=int, default=40, help="max neighbors per seed per direction")
+    rfr.add_argument("--json", action="store_true", help="also print the full machine-readable report")
+    rfr.set_defaults(func=_cmd_refresh)
     rep = sub.add_parser("report", help="render a self-contained HTML report (requires a falsification result)")
     rep.add_argument("package_dir")
     rep.add_argument("--output", "-o", default="", help="output .html (default <package_dir>/report.html)")

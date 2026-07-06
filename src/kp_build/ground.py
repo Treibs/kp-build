@@ -29,6 +29,8 @@ from .citations import _http_get, _safe, _resolve, _arxiv_abstract, strip_arxiv_
 
 _WORD = re.compile(r"[a-z0-9]+")
 _TAG = re.compile(r"<[^>]+>")
+_NUM = re.compile(r"\d+")    # over the NORMALIZED form, where _norm has already split '0.5'->'0 5' and
+                             # '1,000'->'1 000' — a decimal point never survives, so digit RUNS are the unit
 
 
 def _strip_tags(s: str) -> str:
@@ -75,11 +77,13 @@ def _norm(s: str) -> str:
 
 def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY):
     """Is the passage present in the text? Tri-state — True / False / None:
-      - None  = COULD NOT verify (passage too short to check reliably, or text too large to fuzzy-scan).
+      - None  = COULD NOT verify (passage too short to check reliably, text too large to fuzzy-scan, or
+                a fuzzy match whose passage carries a number the text does not — see the digit guard).
                 The caller must treat this as 'unconfirmed', never as an absence/failure.
       - True  = present: an exact normalized substring, or the SINGLE longest contiguous match covers
                 >= *contiguity* of the passage (the longest BLOCK, not the SUM of scattered blocks, so a
-                word-salad whose tokens merely appear scattered across the text does NOT clear the bar).
+                word-salad whose tokens merely appear scattered across the text does NOT clear the bar)
+                AND every digit run in the passage also appears in the text.
       - False = CHECKED a manageable text and the passage is genuinely absent (only this earns a hard
                 'ungrounded' verdict in fulltext mode)."""
     p, t = _norm(passage), _norm(text)
@@ -87,11 +91,22 @@ def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY)
         return None                # too short / no text -> can't reliably verify (not an absence)
     if p in t:
         return True                # exact substring is reliable at ANY size — keep this ABOVE the size gate,
-                                   # or a verbatim quote in a long paper would fall through to None
+                                   # or a verbatim quote in a long paper would fall through to None; it also
+                                   # trivially contains every digit, so the guard below is fuzzy-path-only
     if len(t) > _MAX_FUZZY:
         return None                # too large to fuzzy-scan -> can't verify; never a hard false negative
     m = difflib.SequenceMatcher(None, p, t, autojunk=False).find_longest_match(0, len(p), 0, len(t))
-    return m.size / len(p) >= contiguity
+    if m.size / len(p) < contiguity:
+        return False
+    # a tampered NUMBER near one end of a long quote sits OUTSIDE the longest block yet the block still
+    # clears the contiguity bar — the highest-stakes distortion (year/percentage/measurement) would verify.
+    # So on the fuzzy path every digit run in the passage must also occur in the text. _norm has already
+    # collapsed '1,000'->'1 000' and '0.5'->'0 5' on BOTH sides; spelled-out numbers ('five' vs '5') are
+    # the variance that remains, which is why a miss abstains (None/unconfirmed), never hard-False.
+    runs = set(_NUM.findall(t))
+    if any(n not in runs for n in _NUM.findall(p)):
+        return None
+    return True
 
 
 def fetch_paper_text(paper, *, get: Callable[[str], str] = _http_get, fulltext: bool = False,
