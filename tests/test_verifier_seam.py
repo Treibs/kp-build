@@ -882,6 +882,17 @@ def test_load_parses_execution_directive_and_relaxes_paper_requirement(tmp_path)
     assert pkg.claims[0].paper == ""                  # an execution claim needs no citation paper
 
 
+def test_load_accepts_sui_move_build_execution_tool(tmp_path):
+    from kp_build.cli import _load
+    rj = {"topic": "sui", "scope": "s", "claims": [
+        {"id": "s1", "statement": "contract compiles", "supporting_passage": "build passes",
+         "execution": {"tool": "sui-move-build", "gate_code": "build_error", "artifact": "some-dir"}}]}
+    pkg = _load(_write(tmp_path, rj))
+    assert pkg.claims[0].execution["tool"] == "sui-move-build"
+    assert pkg.claims[0].execution["gate_code"] == "build_error"
+    assert pkg.claims[0].paper == ""
+
+
 def test_load_rejects_claim_with_neither_paper_nor_execution(tmp_path):
     from kp_build.cli import _load, ResearchInputError
     rj = {"topic": "t", "claims": [{"id": "x", "statement": "s", "supporting_passage": "p"}]}

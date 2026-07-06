@@ -141,8 +141,8 @@ def _load(path: str) -> Package:
                 errs.append(f"claims[{i}]: missing {fld}")
         exec_d = c.get("execution") or {}
         if exec_d and not exec_d.get("aesthetic"):   # V2-a execution directive (instead of a citation paper)
-            if exec_d.get("tool") not in ("lint", "inspect", "validate"):
-                errs.append(f"claims[{i}].execution: tool must be lint|inspect|validate")
+            if exec_d.get("tool") not in ("lint", "inspect", "validate", "sui-move-build"):
+                errs.append(f"claims[{i}].execution: tool must be lint|inspect|validate|sui-move-build")
             if not exec_d.get("gate_code"):
                 errs.append(f"claims[{i}].execution: needs a gate_code (or aesthetic:true)")
             art = exec_d.get("artifact", "")
