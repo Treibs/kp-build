@@ -173,7 +173,7 @@ class GoalMetric:
 
     ``oracle_kind`` tells falsify how the KPI is graded: ``execution`` = a mechanical run measures it
     directly; ``grounding``/``none`` = no run-oracle, so the does-it-help signal degrades to
-    cited-property recall (a grounding delta, NOT independent field performance — see the design review).
+    cited-property recall (a grounding delta, NOT independent field performance).
     """
 
     name: str
@@ -288,7 +288,7 @@ def paper_ref_str(p: "Paper") -> str:
 def claim_to_md(c: Claim, *, paper_ref: str = "") -> str:
     d = asdict(c)
     if paper_ref:
-        d["paper_ref"] = paper_ref           # denormalized id so the chunk resolves standalone (FMT-8)
+        d["paper_ref"] = paper_ref           # denormalized id so the chunk resolves standalone
     if c.paper:                              # citation/academic claim: link to its Paper
         tail = f"\n\n— [[papers/{c.paper}]]" + (f" ({paper_ref})" if paper_ref else "")
     elif c.verified.exists and c.verified.via == "(unchecked)":   # shipped under --no-verify, NOT checked
@@ -303,7 +303,7 @@ def claim_to_md(c: Claim, *, paper_ref: str = "") -> str:
 def claim_from_md(text: str) -> Claim:
     fm, _ = _split(text)
     v = fm.get("verified") or {}
-    # use dataclass defaults for absent keys — never override with None (F3, symmetric round-trip)
+    # use dataclass defaults for absent keys — never override with None (symmetric round-trip)
     return Claim(
         id=fm.get("id", ""), statement=fm.get("statement", ""), paper=fm.get("paper", ""),
         supporting_passage=fm.get("supporting_passage", ""),

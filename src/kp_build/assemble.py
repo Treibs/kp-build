@@ -53,10 +53,10 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     for p in pkg.papers:
         (out / "papers" / f"{p.cite_key}.md").write_text(paper_to_md(p), encoding="utf-8")
 
-    # prune unverified refs into COPIES — never mutate the caller's input dataclasses (ASSM-1)
+    # prune unverified refs into COPIES — never mutate the caller's input dataclasses
     claims = []
     for c in pkg.claims:
-        # M2: a claim's OWN verdict is authoritative (a mechanical disproof outranks a citation) — the ONE
+        # a claim's OWN verdict is authoritative (a mechanical disproof outranks a citation) — the ONE
         # ship rule lives in schema.claim_ships, shared with digest so they can't drift.
         if claim_ships(c, verified):
             c2 = replace(c, corroborated_by=[k for k in c.corroborated_by if k in verified])
