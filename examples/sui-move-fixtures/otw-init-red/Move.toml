@@ -1,0 +1,5 @@
+[package]
+name = "otw_init_red"
+edition = "2024"
+
+[dependencies]

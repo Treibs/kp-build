@@ -24,3 +24,4 @@ docs/kp-build-review.html
 docs/_demo.html
 /.demoframes/
 .demo-check.png
+examples/sui-move-fixtures/**/build/

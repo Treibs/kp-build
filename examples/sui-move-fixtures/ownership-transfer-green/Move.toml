@@ -1,0 +1,5 @@
+[package]
+name = "ownership_transfer_green"
+edition = "2024"
+
+[dependencies]

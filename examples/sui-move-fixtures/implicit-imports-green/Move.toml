@@ -1,0 +1,5 @@
+[package]
+name = "implicit_imports_green"
+edition = "2024"
+
+[dependencies]

@@ -1,0 +1,5 @@
+[package]
+name = "capability_green"
+edition = "2024"
+
+[dependencies]

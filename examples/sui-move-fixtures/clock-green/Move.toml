@@ -1,0 +1,5 @@
+[package]
+name = "clock_green"
+edition = "2024"
+
+[dependencies]

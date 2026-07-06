@@ -1,0 +1,1 @@
+Structs with the 'key' ability must have 'id: sui::object::UID' as their first field

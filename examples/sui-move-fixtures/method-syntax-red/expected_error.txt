@@ -1,0 +1,1 @@
+'friend's are deprecated. Remove and replace 'public(friend)' with 'public(package)'

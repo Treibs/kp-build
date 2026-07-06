@@ -1,0 +1,5 @@
+[package]
+name = "method_syntax_red"
+edition = "2024"
+
+[dependencies]

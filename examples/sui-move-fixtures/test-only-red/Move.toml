@@ -1,0 +1,5 @@
+[package]
+name = "test_only_red"
+edition = "2024"
+
+[dependencies]

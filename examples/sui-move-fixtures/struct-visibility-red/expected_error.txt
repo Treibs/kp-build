@@ -1,0 +1,1 @@
+Visibility annotations are required on struct declarations
