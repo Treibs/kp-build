@@ -94,6 +94,21 @@ def test_passage_fuzzy_no_numbers_unchanged_true():
                            "the approach generalizes across model families without any manual effort") is True
 
 
+def test_passage_digit_grouping_variants_do_not_trip_the_guard():
+    # '1,000' (passage) vs '1000' (text) is the SAME number in a different grouping — _norm turns the
+    # comma into a space so the naive runs {'1','000'} vs {'1000'} would falsely abstain a legitimate
+    # verbatim quote; the guard now matches runs against the grouping-collapsed form too, both directions
+    quote = "the benchmark evaluates retrieval and reranking quality across scientific abstracts totaling {n} documents"
+    assert passage_in_text(quote.format(n="1,000"), quote.format(n="1000") + " overall") is True
+    assert passage_in_text(quote.format(n="1000"), quote.format(n="1,000") + " overall") is True
+
+
+def test_passage_digit_grouping_collapse_does_not_rescue_a_tamper():
+    # degrouping must not launder a genuinely different number: 1,000 tampered to 1,500 still abstains
+    quote = "the benchmark evaluates retrieval and reranking quality across scientific abstracts totaling {n} documents"
+    assert passage_in_text(quote.format(n="1,500"), quote.format(n="1,000") + " overall") is None
+
+
 # ── fetch ────────────────────────────────────────────────────────────────────────
 
 def test_arxiv_abstract_parses_summary():

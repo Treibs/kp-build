@@ -8,6 +8,7 @@ or unverified reference. Everything dropped is counted and reported (never silen
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import replace, asdict
 from pathlib import Path
 
@@ -145,7 +146,12 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
         "coverage": pkg.coverage or {"note": "not recorded — coverage completeness is unverified"},
         "falsification": falsification or {"run": False},
     }
-    (out / "wikillm.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    # write-then-rename, same as falsify's manifest rewrite: the manifest is the package's record
+    # (including any prior falsification verdict on a rebuild) — a crash mid-write must truncate a
+    # temp file, never the record itself
+    tmp = out / "wikillm.json.tmp"
+    tmp.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, out / "wikillm.json")
 
     # the 0xLT/kpm distribution envelope — makes this a valid, installable kpm package
     knowledge = build_knowledge_json(pkg, name=name, version=version, license=license)

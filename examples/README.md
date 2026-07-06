@@ -2,9 +2,12 @@
 
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
-Five packages — three show what the `probe` pre-screen and the falsification gate discriminate (and the
-blind spot one drove a fix for); the fourth shows kp-build works **beyond arXiv** (Crossref/DOI); the fifth
-is the **flagship** — an everyday-health topic anyone can use, with the evidence separated from the hype.
+Seven **citation** packages (the table below) map what the `probe` pre-screen and the falsification gate
+discriminate (one drove a blind-spot fix), show kp-build works **beyond arXiv** (Crossref/DOI), and include
+the **flagship** — an everyday-health topic anyone can use, with the evidence separated from the hype.
+Alongside them, five packages exercise the other verifier kinds: `hf-kpmodel/` and `mesh-kpmodel/`
+(**execution**), `http-semantics-grounding/` and `vwt-grounding/` (**doc-grounding**), and
+[`hf-creative-direction/`](hf-creative-direction/) (**judgment** — the blind-panel example).
 
 Each row is one package. **`probe`** is kp-build's cheap up-front guess at whether building will help (BUILD
 vs SKIP); the **after-build test** is the real, measured falsification verdict. **KP** = the knowledge
@@ -21,7 +24,9 @@ package; the **spine** = the package's set of verified, real papers.
 | [`sleep-insomnia-evidence/`](#sleep-insomnia-evidence) | **everyday health** (evidence vs hype) | SKIP | **helps** — base *fabricated* a study + missed ¾ of the evidence; precision 0.90 → 1.00, recall 0.26 → 0.74, f1 0.40 → 0.85 |
 
 *Scores are 0–1, higher is better. **precision** = of the papers it cited, how many are real and correctly
-labeled; **coverage** (recall) = how much of the verified spine it found; **f1** = the two combined.*
+labeled; **coverage** (recall) = how much of the verified spine it adopted — graded against the package's
+own paper set, which the KP side nearly satisfies by construction (see the main README's honest limit);
+**f1** = the two combined.*
 
 † **This package exposed a probe blind spot and drove a fix.** The probe was originally *precision-only* — it
 greenlit a build only when the unaided model *fabricated* citations above a threshold rate (a single stray

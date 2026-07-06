@@ -50,8 +50,9 @@ it guards the largest cost:
    (`base1.txt`, `base2.txt`, …). One sample is high-variance exactly where the decision matters — the
    sleep example's false SKIP came from one clean-looking sample.
 3. Score them: `kp-build probe --answer base1.txt --answer base2.txt` → **BUILD / SKIP / INCONCLUSIVE**
-   (exit 0 / 1 / 3; a usage or file error is exit 2). Aggregation is asymmetric by design: a fabrication
-   or hedge in ANY sample is observed weakness → BUILD; SKIP requires every sample clean.
+   (exit 0 / 1 / 3; a usage or file error is exit 2). Aggregation is asymmetric by design, at the
+   decision level: any sample the screen decides is BUILD decides the aggregate (observed weakness can't
+   be un-observed by a luckier draw); SKIP requires every sample's decision to be skip.
    - **BUILD** — the unaided model is weak here: it fabricates/mislabels citations, **HEDGES** (writes
      placeholder ids like `arXiv:2510.xxxxx` for work it can't recall — proof it knows of a frontier it
      can't name), or is too thin → proceed to step 1.

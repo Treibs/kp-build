@@ -44,7 +44,7 @@ manager for knowledge; see [*Sharing a package through KPM*](#sharing-a-package-
 
 ## Install
 
-Two ways to use it: **run the five shipped example packages** (Quickstart) or **author a new one** with the
+Two ways to use it: **run the twelve shipped example packages** (Quickstart) or **author a new one** with the
 `/kp-build` skill (Build your own). Either way, start with the engine:
 
 ```bash
@@ -130,8 +130,8 @@ assemble, ground, lint, score. Two hard gates run at build time:
   fabricates, **hedges** (writes placeholder ids like `arXiv:2510.xxxxx` for work it can't recall), or is
   too thin → **BUILD** (the model is weak here, so a package will help). If it already cites cleanly →
   **SKIP** (don't spend the compute). One sample is noisy exactly where the decision matters, so pass
-  `--answer` 2–3 times with independent samples — a fabrication observed in *any* sample is real weakness,
-  while SKIP must hold in every one.
+  `--answer` 2–3 times with independent samples — any sample the screen decides is BUILD decides the
+  aggregate (observed weakness can't be un-observed by a luckier draw), while SKIP must hold in every one.
 - **`falsify` — *did it actually help?*** (after) Tries to *disprove* the package's value: it scores a
   package-loaded agent against an unaided one on a held-out task, on **precision** (cites that exist and
   match) and **spine adoption** (recall of the verified paper set). Survive that, and it's a recorded win;
@@ -148,8 +148,9 @@ assemble, ground, lint, score. Two hard gates run at build time:
   panel preferred the search answer 6–0 — and the veto flipped the verdict to *did not help*. See
   [`docs/experiments/search-baseline/`](docs/experiments/search-baseline/) for the full run.
 - **`refresh` — *is it still fresh?*** (later) A package rots the day its field moves. `kp-build refresh
-  <pkg>` reports the package's age plus post-build citation-graph candidates (papers its spine now points
-  at that didn't exist at build time) and emits a re-probe prompt — exit 0 fresh / 1 stale / 3 inconclusive.
+  <pkg>` reports the package's age plus post-build citation-graph candidates (papers the citation graph
+  links to the verified spine — mostly new work citing it — that didn't exist at build time) and emits a
+  re-probe prompt — exit 0 fresh / 1 stale / 3 inconclusive.
 
 ## The example packages
 
@@ -224,7 +225,7 @@ kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — 
 ```
 src/kp_build/      the engine (scope→survey→extract→verify→ground→assemble→falsify→report)
 skill/SKILL.md     the /kp-build orchestration spec (drives the research subagents)
-examples/          twelve real built packages + their research.json inputs and falsification evidence
+examples/          twelve real built packages + their inputs (falsification evidence on the seven citation ones)
 docs/              explainer / metrics / orchestration (HTML)
 SPEC.md            the package format + pipeline, in full
 ```

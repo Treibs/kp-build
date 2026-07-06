@@ -234,10 +234,12 @@ def _spine_handles(spine: list[dict]) -> list[set]:
 
 def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get,
                  throttle: float = 0.0, sleep=time.sleep) -> dict:
-    """Full score: precision (integrity) + recall (coverage of the verified spine) + f1.
+    """Full score: precision (integrity) + spine-adoption recall + f1.
 
-    *spine* is a list of the package's VERIFIED papers as {arxiv_id, doi, cite_key}. recall = fraction
-    of spine papers the answer cited. f1 balances not-hallucinating with actually-using-the-field.
+    *spine* is a list of the package's VERIFIED papers as {arxiv_id, doi, cite_key}. recall = the
+    fraction of spine papers the answer cited — ADOPTION of the package's own paper set (the treatment
+    is the answer key; see the module docstring's circularity note), not coverage of the field. f1
+    balances not-hallucinating with actually-adopting-the-spine.
     """
     base = score_citations(answer, get=get, throttle=throttle, sleep=sleep)
     cited_handles = {_norm_handle(h) for h, _ in parse_citations(answer)}
@@ -327,9 +329,10 @@ def probe_verdict_multi(answers: list, **kw) -> dict:
 
     A single sampled answer is high-variance exactly where the decision matters (near the fabrication
     threshold / min_real boundary) — the sleep pilot's false SKIP came from one clean-looking sample
-    that the full falsification then contradicted. Aggregation is asymmetric BY DESIGN: a fabrication
-    or hedge the model produced in ANY sample is real, observed weakness (weakness can't be un-observed
-    by a luckier sample), while "knows the field cleanly" must hold in EVERY sample to SKIP. So:
+    that the full falsification then contradicted. Aggregation is asymmetric BY DESIGN, at the
+    DECISION level: any sample whose screen decides BUILD decides the aggregate (weakness that clears
+    the screen's bar in one sample can't be un-observed by a luckier draw), while "knows the field
+    cleanly" must hold in EVERY sample to SKIP. So:
     any BUILD -> build; else any INCONCLUSIVE -> inconclusive; else skip. The false-SKIP rate can only
     go down with more samples; the price is a higher build rate, which `falsify` still gates after the
     build. Returns the DECIDING sample's report plus {samples: [per-sample verdicts], n}."""
@@ -395,7 +398,9 @@ def judge_replay(recorded: list) -> dict:
     rounds = [str(r).strip().lower() for r in recorded]
     bad = sorted({r for r in rounds if r not in ("a", "b", "tie")})
     if bad:
-        raise ValueError(f"judge rounds must each be 'a', 'b', or 'tie' — got: {', '.join(bad)}")
+        # repr, so an EMPTY item (e.g. a doubled comma in --judge-rounds) is visible in the message
+        raise ValueError(f"judge rounds must each be 'a', 'b', or 'tie' — got: "
+                         f"{', '.join(repr(r) for r in bad)}")
     if len(rounds) < 2 or len(rounds) % 2 != 0:
         raise ValueError("judge rounds must be an EVEN number of recorded comparisons (>=2) — the KP "
                          "answer must occupy slot a and slot b equally for position bias (and a lazy "

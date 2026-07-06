@@ -15,8 +15,9 @@ a package's life:
   mislabeled citations, hedges (placeholder ids like `arXiv:2510.xxxxx` — the model admitting it
   can't recall a paper it knows exists), thin grounding, or staleness → BUILD. Clean, recent, real
   citations → SKIP, don't spend the compute. One sample is noisy exactly where the decision matters,
-  so multi-sample aggregation is asymmetric by design: a fabrication observed in *any* sample is real
-  weakness (it can't be un-observed by a luckier draw), while SKIP must hold in *every* sample.
+  so multi-sample aggregation is asymmetric by design, at the decision level: any sample the screen
+  decides is BUILD decides the aggregate (weakness that clears the screen's bar in one sample can't
+  be un-observed by a luckier draw), while SKIP must hold in *every* sample.
 - **`falsify` (after)** — a post-build measurement that tries to *disprove* the package's value:
   score a package-loaded agent against the unaided one on a held-out task. Fail, and the verdict says
   DID NOT HELP; the recorded manifest keeps that verdict.
@@ -157,11 +158,12 @@ than silently:
   before the first tool run in a process, compares the registry's `dist.integrity` (sha512) against a
   recorded value — trust-on-first-use, recorded when the pin was taken. Once per process, not per
   claim; a mismatch never sets the confirmed flag.
-- **A mismatch refuses, it never degrades.** If the registry serves a different artifact under the
-  same version, the runner raises and the ExecutionVerifier maps that to status `error` — an
-  unverified claim, never a pass on an untrusted tool. Honest scope: this blocks the registry
-  *later* serving a different artifact for the pinned version; it does not protect against a
-  compromise that predates the pin.
+- **A mismatch refuses, it never degrades.** If the check can't confirm the recorded integrity, the
+  runner raises and the ExecutionVerifier maps that to status `error` — an unverified claim, never a
+  pass on an untrusted tool. Honest scope: the check and `npx`'s own fetch are two *separate*
+  registry requests (a check/fetch gap), so a registry that answers them differently defeats it, and
+  it does not protect against a compromise that predates the pin. It raises the bar against a lazy
+  later swap; it is not tamper-proof — the airtight path is the audited-binary escape hatch below.
 - **`KP_BUILD_HYPERFRAMES_BIN` is the escape hatch.** Point it at a pre-audited local binary and the
   runner executes that directly, skipping both the download and the registry check — nothing is
   fetched, so there is no registry to distrust. Supplying an audited binary is the operator's

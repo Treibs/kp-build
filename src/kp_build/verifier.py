@@ -155,7 +155,7 @@ class ExecutionVerifier:
 
 
 class JudgeVerifier:
-    """The v2-b aesthetic/quality verifier — judges an answer RELATIVE to a baseline, blind (V2-b §judge).
+    """The aesthetic/quality verifier — judges an answer RELATIVE to a baseline, blind.
 
     Quality and taste are not mechanically checkable, so this is deliberately NOT an absolute score: a
     taste verdict is non-reproducible and tautological unless it is
@@ -215,7 +215,8 @@ class JudgeVerifier:
 
 
 # Supply-chain pin (TOFU): recorded via `npm view hyperframes@0.6.91 dist.integrity` on 2026-07-06.
-# Blocks the registry later serving a different artifact under the same version pin.
+# Raises the bar against the registry later swapping the artifact under the same version pin — not
+# airtight; see the honest-scope note in hyperframes_runner's docstring.
 _HYPERFRAMES_PKG = "hyperframes@0.6.91"
 _HYPERFRAMES_INTEGRITY = "sha512-bxszvDkf+lzui09tf5WQUxtKd9OGo0DtuSpCR8LNY+bM1qqs0yJVaQ7iJyQwfqH9TrRDHob7PEeqtUayTbWe2A=="
 # Per-process cache: a multi-gate build queries `npm view` once, not per claim. Module-level and
@@ -231,13 +232,18 @@ def hyperframes_runner(artifact, tool, *, _run=None):
 
     Supply-chain threat model (honest scope): ``npx`` fetches from the registry at build time, so before
     the first tool run in a process the registry's ``dist.integrity`` for the pinned version is compared
-    against ``_HYPERFRAMES_INTEGRITY`` (trust-on-first-use, recorded 2026-07-06). This blocks the registry
-    later serving a different artifact for the same version — and a hijacked re-publish at the pinned
-    version ONLY if its integrity differs. It does NOT protect against a compromise that predates the pin.
-    A mismatch (or empty answer) RAISES; ExecutionVerifier maps a raising runner to status ``error``,
-    never a pass. If ``KP_BUILD_HYPERFRAMES_BIN`` is set, that binary is run directly and the registry
-    check is SKIPPED entirely — the operator supplied their own audited install, trusting it is their
-    explicit choice (and nothing is fetched, so there is no registry to distrust)."""
+    against ``_HYPERFRAMES_INTEGRITY`` (trust-on-first-use, recorded 2026-07-06). This catches the
+    registry later serving a different artifact for the same version — and a hijacked re-publish at the
+    pinned version ONLY if its integrity differs. Honest scope, stated plainly: the check and ``npx``'s
+    own metadata+tarball fetch are two SEPARATE registry requests (a classic check/fetch gap), so a
+    registry that answers them differently — clean metadata to the check, self-consistent poisoned
+    metadata+tarball to npx — defeats it, and whatever npx fetched persists in its cache. It raises the
+    bar against a lazy swap; it is not tamper-proof, and it does NOT protect against a compromise that
+    predates the pin. A mismatch (or no answer — npm offline looks the same) RAISES; ExecutionVerifier
+    maps a raising runner to status ``error``, never a pass. The airtight path is
+    ``KP_BUILD_HYPERFRAMES_BIN``: that binary is run directly and the registry check is SKIPPED —
+    nothing is fetched, so there is no registry to distrust; supplying an audited binary is the
+    operator's explicit trust decision, not the engine's."""
     import os
     import subprocess
     import json as _json
@@ -252,8 +258,9 @@ def hyperframes_runner(artifact, tool, *, _run=None):
                      capture_output=True, text=True, timeout=180)
             if (getattr(iv, "stdout", "") or "").strip() != _HYPERFRAMES_INTEGRITY:
                 raise RuntimeError(
-                    f"supply-chain check failed for {_HYPERFRAMES_PKG}: the registry serves a different "
-                    "artifact than the one this pin was recorded against — refusing to fetch/execute it")
+                    f"supply-chain check failed for {_HYPERFRAMES_PKG}: could not confirm the recorded "
+                    "dist.integrity (registry serves a different artifact, or npm gave no answer) — "
+                    "refusing to fetch/execute it")
             _hyperframes_integrity_ok = True
         cmd = ["npx", "--yes", _HYPERFRAMES_PKG, tool, "--json", str(artifact)]
     p = run(cmd, capture_output=True, text=True, timeout=180)

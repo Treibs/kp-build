@@ -84,3 +84,19 @@ def test_context_md_neutralizes_prompt_injection(tmp_path):
     for line in ctx.splitlines():
         assert not line.startswith("=== ")
         assert "```" not in line
+
+
+def test_assemble_manifest_write_is_write_then_rename(tmp_path, monkeypatch):
+    # wikillm.json is the package's record (a rebuild carries a prior falsification verdict), and
+    # DESIGN-NOTES promises write-then-rename for manifest writes — pin the os.replace mechanism
+    import os as _os
+    import kp_build.assemble as A
+    real, seen = _os.replace, []
+    def spy(src, dst):
+        seen.append((Path(src).name, Path(dst).name))
+        real(src, dst)
+    monkeypatch.setattr(A.os, "replace", spy)
+    out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
+    assert ("wikillm.json.tmp", "wikillm.json") in seen
+    assert not (out / "wikillm.json.tmp").exists()
+    json.loads((out / "wikillm.json").read_text(encoding="utf-8"))      # the record landed intact

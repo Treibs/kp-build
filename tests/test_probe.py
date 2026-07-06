@@ -369,3 +369,22 @@ def test_cli_probe_multi_answer_prints_per_sample_lines(tmp_path, monkeypatch, c
     out = capsys.readouterr().out
     assert "sample 1: SKIP" in out and "sample 2: BUILD" in out
     assert "2-sample probe" in out
+
+
+def test_cli_probe_duplicate_answer_files_warn_on_stderr(tmp_path, monkeypatch, capsys):
+    # the multi-sample screen assumes INDEPENDENT samples — the same file passed twice adds no
+    # information and makes the aggregate look better-sampled than it is; warn, don't change the call
+    import kp_build.falsify as F
+    a1 = tmp_path / "a1.txt"; a1.write_text("clean sample", encoding="utf-8")
+    a2 = tmp_path / "a2.txt"; a2.write_text("clean sample", encoding="utf-8")   # same CONTENT
+    def fake_probe(ans, **kw):
+        return {"cited": 4, "checked": 4, "real": 4, "fake": 0, "hedged": 0,
+                "hallucination_rate": 0.0, "decision": "skip", "reason": "knows it"}
+    monkeypatch.setattr(F, "probe_verdict", fake_probe)
+    assert main(["probe", "--answer", str(a1), "--answer", str(a2)]) == 1       # skip -> exit 1, unchanged
+    err = capsys.readouterr().err
+    assert "duplicate" in err and "independence" in err
+    # distinct samples stay silent
+    a2.write_text("a different sample", encoding="utf-8")
+    assert main(["probe", "--answer", str(a1), "--answer", str(a2)]) == 1
+    assert "duplicate" not in capsys.readouterr().err

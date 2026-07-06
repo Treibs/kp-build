@@ -213,3 +213,70 @@ def test_cli_falsify_emit_judge_prompts_scores_nothing(tmp_path, monkeypatch, ca
     assert "the kp answer" in out.out and "the base answer" in out.out  # both sides embedded, blind
     assert "--judge-rounds" in out.err                                  # next-step hint
     assert (pkg / "wikillm.json").read_bytes() == before                # no manifest touch
+
+
+# ── round-1 hardening: flag validation order, round parity, tri-state exit, atomicity ─
+
+
+def test_cli_falsify_emit_judge_prompts_zero_is_usage_error_not_a_full_run(tmp_path, monkeypatch, capsys):
+    # --emit-judge-prompts 0 must NOT be read as "flag absent" and silently fall through into a
+    # full, manifest-rewriting falsify run
+    import kp_build.falsify as F
+    pkg, base, kp = _falsify_pkg(tmp_path, monkeypatch)
+    def boom(*a, **k):
+        raise AssertionError("a rejected emit request must not score answers")
+    monkeypatch.setattr(F, "score_answer", boom)
+    before = (pkg / "wikillm.json").read_bytes()
+    assert _run(pkg, base, kp, "--emit-judge-prompts", "0") == 2
+    assert ">= 1" in capsys.readouterr().err
+    assert _run(pkg, base, kp, "--emit-judge-prompts", "-3") == 2
+    assert (pkg / "wikillm.json").read_bytes() == before                # manifest never touched
+
+
+def test_cli_falsify_judge_rounds_validated_before_any_scoring(tmp_path, monkeypatch):
+    # a malformed panel is a statically checkable usage error — it must not first spend the two
+    # (paid, throttled) citation-scoring passes
+    import kp_build.falsify as F
+    pkg, base, kp = _falsify_pkg(tmp_path, monkeypatch)
+    calls = []
+    monkeypatch.setattr(F, "score_answer", lambda text, **kw: calls.append(text) or _rep(0.9))
+    assert _run(pkg, base, kp, "--judge-rounds", "a,b,a") == 2          # odd panel
+    assert calls == []                                                  # rejected BEFORE scoring
+
+
+def test_cli_falsify_interior_empty_judge_round_is_rejected_not_dropped(tmp_path, monkeypatch, capsys):
+    # silently dropping the empty item in 'a,b,,b' would shift the parity of every later round and
+    # invert the alternation (slot 'a' means the KP answer only on even rounds) — and an even number
+    # of dropped empties still passes the even-count gate, so this must be an error, not a filter
+    pkg, base, kp = _falsify_pkg(tmp_path, monkeypatch)
+    assert _run(pkg, base, kp, "--judge-rounds", "a,b,,b") == 2
+    assert "''" in capsys.readouterr().err                              # the empty item is visible
+    assert _run(pkg, base, kp, "--judge-rounds", "a,b,") == 0           # ONE trailing comma is harmless
+
+
+def test_cli_falsify_inconclusive_is_exit_3_not_1(tmp_path, monkeypatch):
+    # helped() is tri-state and the exit code must carry all three (0/1/3, the probe/refresh map):
+    # 'nothing checkable on the KP side' is INCONCLUSIVE, distinct from 'measured, did not help'
+    import kp_build.falsify as F
+    pkg, base, kp = _falsify_pkg(tmp_path, monkeypatch)
+    empty_kp = {**_rep(0.0), "cited": 0, "checked": 0}
+    reports = {"the base answer": _rep(0.4, fake=2, hall=0.5), "the kp answer": empty_kp}
+    monkeypatch.setattr(F, "score_answer", lambda text, spine=None, **kw: reports[text])
+    assert _run(pkg, base, kp, "--no-record") == 3
+
+
+def test_cli_falsify_manifest_rewrite_actually_calls_os_replace(tmp_path, monkeypatch):
+    # the atomicity claim IS the write-then-rename call — 'no temp file left behind' is also
+    # satisfied by a plain write_text (mutation testing showed it), so pin the mechanism itself
+    import os as _os
+    import kp_build.cli as C
+    pkg, base, kp = _falsify_pkg(tmp_path, monkeypatch)
+    real, seen = _os.replace, {}
+    def spy(src, dst):
+        seen["src"], seen["dst"] = Path(src), Path(dst)
+        seen["tmp_written"] = Path(src).is_file()
+        real(src, dst)
+    monkeypatch.setattr(C.os, "replace", spy)
+    assert _run(pkg, base, kp) == 0
+    assert seen["src"] == pkg / "wikillm.json.tmp" and seen["dst"] == pkg / "wikillm.json"
+    assert seen["tmp_written"]                  # the temp held the payload BEFORE the rename

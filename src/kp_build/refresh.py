@@ -20,7 +20,10 @@ Two honesty rules shape the design. First, the engine never reads the wall clock
 required and caller-supplied, so a refresh report is deterministic and replayable (the CLI passes
 today; a test passes anything). Second, the verdict mirrors the probe's tri-state: a zero-candidate
 expansion is INCONCLUSIVE, not fresh — expand() degrades silently per-seed, so a zero total cannot
-distinguish a quiet field from an unreachable index, and we abstain rather than guess.
+distinguish a quiet field from an unreachable index, and we abstain rather than guess. The same rule
+covers a manifest whose ``built`` date is missing or unparseable: with no build date, neither age nor
+"post-dates the build" is computable, so the verdict is INCONCLUSIVE — never a default "fresh" that
+would let a rotting package pass forever on a broken field.
 """
 
 from __future__ import annotations
@@ -81,12 +84,17 @@ def refresh(package_dir: str | Path, *, as_of: str, get=_http_get, recency_month
     new_since_build: list[dict] = []
     undated = 0
     for c in cands:
+        if built_m is None:
+            # no build month to compare against — EVERY candidate is unjudgeable, dated or not
+            # (counting a dated candidate as merely 'undated' here would mislabel the failure)
+            undated += 1
+            continue
         ym = _arxiv_ym(c.get("arxiv_id") or "")
         if ym is not None:
             # month-resolution: the arXiv YYMM prefix post-dates the build's month index
-            if built_m is not None and ym > built_m:
+            if ym > built_m:
                 new_since_build.append(c)
-        elif isinstance(c.get("year"), int) and built_year is not None:
+        elif isinstance(c.get("year"), int):
             # year-only candidates (DOI/S2 metadata) are judged COARSELY: strict '>' because a
             # same-year paper may still pre-date the build month — the asymmetry undercounts
             # (a false 'fresh' beat a false 'stale' here; the arXiv path has real resolution)
@@ -102,7 +110,15 @@ def refresh(package_dir: str | Path, *, as_of: str, get=_http_get, recency_month
     stale_by_age = age_months is not None and age_months > recency_months
     age_str = (f"~{age_months} month(s) old at {as_of}" if age_months is not None
                else "of unknown age (built date missing/unparseable — the age signal abstains)")
-    if stale_by_age or new_list:
+    if built_m is None:
+        # fail-CLOSED: with no build date, neither staleness signal can run — a package with a broken
+        # 'built' field must not read as fresh forever (the age test can never fire and no candidate
+        # can ever count as post-build). Same abstain doctrine as the zero-candidate case below.
+        decision = "inconclusive"
+        reason = (f"the manifest's built date is missing/unparseable ({built!r}) — neither age nor "
+                  f"'post-dates the build' can be computed, so none of the {len(cands)} expansion "
+                  f"candidate(s) can be judged; fix the manifest's 'built' field and re-run")
+    elif stale_by_age or new_list:
         decision = "stale"
         if new_list and stale_by_age:
             reason = (f"{len(new_list)} expansion candidate(s) post-date the {built} build AND the "

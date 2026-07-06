@@ -83,7 +83,8 @@ def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY)
       - True  = present: an exact normalized substring, or the SINGLE longest contiguous match covers
                 >= *contiguity* of the passage (the longest BLOCK, not the SUM of scattered blocks, so a
                 word-salad whose tokens merely appear scattered across the text does NOT clear the bar)
-                AND every digit run in the passage also appears in the text.
+                AND every digit run in the passage also appears SOMEWHERE in the text (a
+                presence-anywhere check — see the guard's honest-scope note below).
       - False = CHECKED a manageable text and the passage is genuinely absent (only this earns a hard
                 'ungrounded' verdict in fulltext mode)."""
     p, t = _norm(passage), _norm(text)
@@ -99,12 +100,18 @@ def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY)
     if m.size / len(p) < contiguity:
         return False
     # a tampered NUMBER near one end of a long quote sits OUTSIDE the longest block yet the block still
-    # clears the contiguity bar — the highest-stakes distortion (year/percentage/measurement) would verify.
-    # So on the fuzzy path every digit run in the passage must also occur in the text. _norm has already
-    # collapsed '1,000'->'1 000' and '0.5'->'0 5' on BOTH sides; spelled-out numbers ('five' vs '5') are
-    # the variance that remains, which is why a miss abstains (None/unconfirmed), never hard-False.
-    runs = set(_NUM.findall(t))
-    if any(n not in runs for n in _NUM.findall(p)):
+    # clears the contiguity bar. So on the fuzzy path every digit run in the passage must also occur in
+    # the text. Honest scope: this checks presence ANYWHERE in the text — a tampered number that happens
+    # to collide with any other run in the source (a page number, a year) still passes, so the guard
+    # NARROWS the seam, it does not close it. Digit-grouping variants ('1,000' vs '1000' — _norm turned
+    # the comma into a space) must not trip it on a legitimate verbatim quote, so runs are matched
+    # against both the as-normalized and the grouping-collapsed forms of each side. Spelled-out numbers
+    # ('five' vs '5') are the variance that remains, which is why a miss abstains
+    # (None/unconfirmed), never hard-False.
+    _degroup = lambda s: re.sub(r"(?<=\d) (?=\d{3}\b)", "", s)
+    runs = set(_NUM.findall(t)) | set(_NUM.findall(_degroup(t)))
+    if (any(n not in runs for n in _NUM.findall(p))
+            and any(n not in runs for n in _NUM.findall(_degroup(p)))):
         return None
     return True
 

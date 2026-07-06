@@ -156,14 +156,26 @@ def test_report_keys_and_reprobe_prompt(tmp_path):
     assert set(rep["candidates"][0]) == {"title", "year", "arxiv_id", "doi", "via"}
 
 
-def test_unparseable_built_abstains_on_age(tmp_path):
-    # built missing/garbled -> age_months None (abstain, never guess); a dated candidate can't be
-    # compared against an unknown build month either, so it doesn't force 'stale'
+def test_unparseable_built_is_inconclusive_never_fresh(tmp_path):
+    # built missing/garbled -> NEITHER staleness signal can run: the age test can never fire and no
+    # candidate can ever count as post-build, so 'fresh' here would be fail-OPEN — a package with a
+    # broken 'built' field would read fresh forever. The honest verdict is INCONCLUSIVE (exit 3 at
+    # the CLI), and every candidate is reported unjudgeable, dated or not.
     out = _pkg(tmp_path, built="unknown")
     get = _get([{"title": "Dated", "year": 2026, "arxiv_id": "2603.00042"}])
     rep = refresh(out, as_of="2026-07", get=get)
     assert rep["age_months"] is None and rep["new_since_build"] == 0
-    assert rep["decision"] == "fresh" and "abstain" in rep["reason"]
+    assert rep["decision"] == "inconclusive"
+    assert "built" in rep["reason"] and "re-run" in rep["reason"]
+    assert rep["undated_candidates"] == rep["total_candidates"] == 1
+
+
+def test_missing_built_key_is_inconclusive_even_with_zero_candidates(tmp_path):
+    # no 'built' at all + a quiet expansion: still inconclusive (both the broken-built and the
+    # zero-candidate abstains point the same way — never a defaulted 'fresh')
+    out = _pkg(tmp_path, built="")
+    rep = refresh(out, as_of="2026-07", get=_get([]))
+    assert rep["decision"] == "inconclusive" and rep["age_months"] is None
 
 
 # ── the CLI wrapper: exit codes mirror probe's tri-state ─────────────────────────────

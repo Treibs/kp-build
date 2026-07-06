@@ -470,9 +470,17 @@ def _cmd_verify(args) -> int:
 
 
 def _cmd_falsify(args) -> int:
+    """Post-build measurement: does the package actually help? Exit 0 helps / 1 did not help /
+    3 INCONCLUSIVE (nothing checkable on one side — mirrors probe/refresh); 2 reserved for usage/IO."""
     from .falsify import score_answer, verdict, helped, judge_prompts, judge_replay
     pkg = Path(args.package_dir)
-    if args.emit_judge_prompts:
+    if args.emit_judge_prompts is not None:
+        if args.emit_judge_prompts < 1:
+            # 0/negative must be a usage error, not a silent fall-through into a full
+            # (manifest-rewriting) falsify run
+            print(f"error: --emit-judge-prompts needs N >= 1 (got {args.emit_judge_prompts}); "
+                  f"N is clamped up to an even panel of >= 2", file=sys.stderr)
+            return 2
         # emit the blind quality-panel prompts (the non-circular axis) and exit — no scoring, no manifest.
         # Each prompt goes to a FRESH judge; its one-word verdict is a SLOT winner, recorded in order.
         ps = judge_prompts(args.question, Path(args.base).read_text(encoding="utf-8"),
@@ -484,12 +492,22 @@ def _cmd_falsify(args) -> int:
         print(f"\nthen: kp-build falsify {args.package_dir} --question '...' --base {args.base} "
               f"--kp {args.kp} --judge-rounds a,b,tie,...", file=sys.stderr)
         return 0
+    judge = None
+    if args.judge_rounds:
+        # validate + replay the recorded panel BEFORE the two scoring passes — a malformed panel is
+        # a usage error and must not cost the (paid, throttled) citation checks. One TRAILING comma
+        # is tolerated; an interior empty item is rejected by judge_replay: silently dropping one
+        # would shift the parity of every later round and invert the alternation (slot 'a' means
+        # the KP answer only on even rounds).
+        toks = args.judge_rounds.split(",")
+        if len(toks) > 1 and toks[-1].strip() == "":
+            toks = toks[:-1]
+        judge = judge_replay(toks)
     index = json.loads((pkg / "index.json").read_text())
     spine = [{"arxiv_id": p.get("arxiv_id", ""), "doi": p.get("doi", ""), "cite_key": p["cite_key"]}
              for p in index.get("papers", []) if p.get("verified")]
     base = score_answer(Path(args.base).read_text(), spine=spine, throttle=args.throttle)
     kp = score_answer(Path(args.kp).read_text(), spine=spine, throttle=args.throttle)
-    judge = judge_replay([r for r in args.judge_rounds.split(",") if r.strip()]) if args.judge_rounds else None
     v = verdict(base, kp, judge)
     print("falsification:")
     print(f"  base : {base}")
@@ -506,7 +524,11 @@ def _cmd_falsify(args) -> int:
         tmp = pkg / "wikillm.json.tmp"
         tmp.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
         os.replace(tmp, pkg / "wikillm.json")
-    return 0 if helped(base, kp, judge) else 1
+    h = helped(base, kp, judge)
+    # helped() is tri-state; the exit code must carry all three (0/1/3, same map as probe/refresh) —
+    # collapsing None into 1 would make "nothing was checkable" indistinguishable from "measured,
+    # did not help" to a script
+    return 0 if h else (3 if h is None else 1)
 
 
 def _cmd_probe(args) -> int:
@@ -528,10 +550,16 @@ def _cmd_probe(args) -> int:
         return 2
     as_of = args.as_of or None        # recency check is OPT-IN (--as-of): a settled topic's old cites are not weakness
     kw = dict(threshold=args.threshold, min_real=args.min_real, throttle=0.2, as_of=as_of)
-    if len(files) == 1:               # single-sample path unchanged (probe_verdict_multi wraps the same rule)
-        v = probe_verdict(Path(files[0]).read_text(encoding="utf-8"), **kw)
+    texts = [Path(f).read_text(encoding="utf-8") for f in files]
+    if len(texts) > 1 and len(set(texts)) < len(texts):
+        # the multi-sample screen assumes INDEPENDENT samples — the same file twice adds no
+        # information, it just makes the aggregate look better-sampled than it is
+        print(f"warn: {len(texts) - len(set(texts))} duplicate --answer file(s) — identical samples "
+              f"add no independence to the multi-sample screen", file=sys.stderr)
+    if len(texts) == 1:               # single-sample path unchanged (probe_verdict_multi wraps the same rule)
+        v = probe_verdict(texts[0], **kw)
     else:
-        v = probe_verdict_multi([Path(f).read_text(encoding="utf-8") for f in files], **kw)
+        v = probe_verdict_multi(texts, **kw)
     head = {"build": "BUILD — the topic is model-weak (worth packaging)",
             "skip": "SKIP — the model already knows this (a package adds ~0 value)",
             "inconclusive": "INCONCLUSIVE — re-run"}[v["decision"]]
@@ -579,7 +607,7 @@ def _cmd_refresh(args) -> int:
     r = refresh(args.package_dir, as_of=as_of, recency_months=args.recency_months, per_seed=args.limit)
     head = {"stale": "STALE — refresh recommended",
             "fresh": "FRESH — no post-build work found",
-            "inconclusive": "INCONCLUSIVE — expansion returned nothing (quiet field or unreachable index); re-run"}
+            "inconclusive": "INCONCLUSIVE — can't decide from this run (see reason); fix + re-run"}
     print(f"staleness check: {head[r['decision']]}")
     age = f"{r['age_months']} month(s)" if r["age_months"] is not None else "unknown"
     print(f"  built {r['built'] or '?'} · as of {r['as_of']} · age {age} · spine {r['spine_size']} paper(s)")
@@ -650,13 +678,14 @@ def main(argv=None) -> int:
     v = sub.add_parser("verify", help="citation check only")
     v.add_argument("--input", "-i", required=True)
     v.set_defaults(func=_cmd_verify)
-    fal = sub.add_parser("falsify", help="score base vs KP-loaded answers; record the verdict in the manifest")
+    fal = sub.add_parser("falsify", help="score base vs KP-loaded answers; record the verdict in the manifest "
+                                         "(exit 0 helps / 1 did not help / 3 inconclusive)")
     fal.add_argument("package_dir")
     fal.add_argument("--question", required=True)
     fal.add_argument("--base", required=True, help="file with the base agent's answer")
     fal.add_argument("--kp", required=True, help="file with the KP-loaded agent's answer")
     fal.add_argument("--throttle", type=float, default=0.2, help="seconds between citation checks (avoid rate limits)")
-    fal.add_argument("--emit-judge-prompts", type=int, default=0, metavar="N",
+    fal.add_argument("--emit-judge-prompts", type=int, default=None, metavar="N",
                      help="print N blind quality-panel prompts (KP/base slot-alternated) and exit; give each "
                           "to a FRESH judge, record its A/B/TIE verdicts in order for --judge-rounds")
     fal.add_argument("--judge-rounds", default="",
