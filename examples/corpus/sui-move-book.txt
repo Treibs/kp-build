@@ -1,0 +1,2620 @@
+# Source: https://github.com/MystenLabs/move-book @ 8ce4dcb9a23bef62d4d7ffe5c36e7002845d4897 — Apache-2.0. Excerpts for offline doc-grounding verification.
+
+## FILE: book/move-basics/struct.md
+
+---
+description: "Define custom types with struct in Move: create, pack, unpack, and access fields for building data models in Sui smart contracts."
+---
+
+# Custom Types with Struct
+
+Move's type system shines when it comes to defining custom types. User defined types can be custom
+tailored to the specific needs of the application, not only on the data level, but also in its
+behavior. In this section we introduce the struct definition and how to use it.
+
+## Struct
+
+To define a custom type, you can use the `struct` keyword followed by the name of the type. After
+the name, you can define the fields of the struct. Each field is defined with the
+`field_name: field_type` syntax. Field definitions must be separated by commas. The fields can be of
+any type, including other structs.
+
+> Move does not support recursive structs, meaning a struct cannot contain itself as a field.
+
+```move file=packages/samples/sources/move-basics/struct.move anchor=def
+
+```
+
+In the example above, we define a `Record` struct with five fields. The `title` field is of type
+`String`, the `artist` field is of type `Artist`, the `year` field is of type `u16`, the `is_debut`
+field is of type `bool`, and the `edition` field is of type `Option<u16>`. The `edition` field is of
+type `Option<u16>` to represent that the edition is optional.
+
+Structs are private by default, meaning they cannot be imported and used outside of the module they
+are defined in. Their fields are also private and can't be accessed from outside the module. See
+[visibility](./visibility) for more information on different visibility modifiers.
+
+> Fields of a struct are private and can only be accessed by the module defining the struct. Reading
+> and writing the fields of a struct in other modules is only possible if the module defining the
+> struct provides public functions to access the fields.
+
+## Create and use an instance
+
+We described the _definition_ of a struct. Now let's see how to initialize a struct and use it. A
+struct can be initialized using the `struct_name { field1: value1, field2: value2, ... }` syntax.
+The fields can be initialized in any order, and all of the required fields must be set.
+
+```move file=packages/samples/sources/move-basics/struct.move anchor=pack
+
+```
+
+In the example above, we create an instance of the `Artist` struct and set the `name` field to a
+string "The Beatles".
+
+To access the fields of a struct, you can use the `.` operator followed by the field name.
+
+```move file=packages/samples/sources/move-basics/struct.move anchor=access
+
+```
+
+Only the module defining the struct can access its fields (both mutably and immutably). So the above
+code should be in the same module as the `Artist` struct.
+
+<!-- ## Accessing Fields
+
+Struct fields are private and can be accessed only by the module defining the struct. To access the fields of a struct, you can use the `.` operator followed by the field name.
+
+```move
+# anchor: access file=packages/samples/sources/move-basics/struct.move anchor=access
+```
+-->
+
+## Unpacking a struct
+
+Structs are non-discardable by default, meaning that the initialized struct value must be used,
+either by storing it or unpacking it. Unpacking a struct means deconstructing it into its fields.
+This is done using the `let` keyword followed by the struct name and the field names.
+
+```move file=packages/samples/sources/move-basics/struct.move anchor=unpack
+
+```
+
+In the example above we unpack the `Artist` struct and create a new variable `name` with the value
+of the `name` field. Because the variable is not used, the compiler will raise a warning. To
+suppress the warning, you can use the underscore `_` to indicate that the variable is intentionally
+unused.
+
+```move file=packages/samples/sources/move-basics/struct.move anchor=unpack_ignore
+
+```
+
+## Further Reading
+
+- [Structs](./../../reference/structs) in the Move Reference.
+
+
+## FILE: book/move-basics/visibility.md
+
+---
+description: "Visibility modifiers in Move: private, public, public(package), and entry functions for controlling access to module members."
+---
+
+# Visibility Modifiers
+
+Every module member has a visibility. By default, all module members are _private_ - meaning they
+are only accessible within the module they are defined in. However, you can add a visibility
+modifier to make a module member _public_ - visible outside the module, or _public(package)_ -
+visible in the modules within the same package, or _entry_ - can be called from a transaction but
+can't be called from other modules.
+
+## Internal Visibility
+
+A function or a struct defined in a module which has no visibility modifier is _private_ to the
+module. It can't be called from other modules.
+
+```move
+module book::internal_visibility;
+
+// This function can be called from other functions in the same module
+fun internal() { /* ... */ }
+
+// Same module -> can call internal()
+fun call_internal() {
+    internal();
+}
+```
+
+The following code will not compile:
+
+<!-- TODO: add failure flag to example -->
+
+```move
+module book::try_calling_internal;
+
+use book::internal_visibility;
+
+// Different module -> can't call internal()
+fun try_calling_internal() {
+    internal_visibility::internal();
+}
+```
+
+Note that just because a struct field is not visible from Move does not mean that its value is kept
+confidential &mdash; it is always possible to read the contents of an on-chain object from outside
+of Move. You should never store unencrypted secrets inside of objects.
+
+## Public Visibility
+
+A struct or a function can be made _public_ by adding the `public` keyword before the `fun` or
+`struct` keyword.
+
+```move
+module book::public_visibility;
+
+// This function can be called from other modules
+public fun public_fun() { /* ... */ }
+```
+
+A public function can be imported and called from other modules. The following code will compile:
+
+```move
+module book::try_calling_public;
+
+use book::public_visibility;
+
+// Different module -> can call public_fun()
+fun try_calling_public() {
+    public_visibility::public_fun();
+}
+```
+
+Unlike some languages, struct fields cannot be made public.
+
+## Package Visibility
+
+A function with _package_ visibility can be called from any module within the same package, but not
+from modules in other packages. In other words, it is _internal_ to the package.
+
+```move
+module book::package_visibility;
+
+public(package) fun package_only() { /* ... */ }
+```
+
+A package function can be called from any module within the same package:
+
+```move
+module book::try_calling_package;
+
+use book::package_visibility;
+
+// Same package `book` -> can call package_only()
+fun try_calling_package() {
+    package_visibility::package_only();
+}
+```
+
+## Native Functions
+
+Some functions in the [framework](./../programmability/sui-framework) and
+[standard library](./standard-library) are marked with the `native` modifier. These functions are
+natively provided by the Move VM and do not have a body in Move source code. To learn more about the
+native modifier, refer to the
+[Move Reference](./../../reference/functions?highlight=native#native-functions).
+
+```move
+module std::type_name;
+
+public native fun get<T>(): TypeName;
+```
+
+This is an example from `std::type_name`, learn more about this module in the
+[reflection chapter](./type-reflection).
+
+## Further Reading
+
+- [Visibility](./../../reference/functions#visibility) in the Move Reference.
+
+
+## FILE: book/move-basics/struct-methods.md
+
+---
+description: "Struct methods in Move: use receiver syntax to call functions on struct instances with dot notation for cleaner code."
+---
+
+# Struct Methods
+
+Move Compiler supports _receiver syntax_ `e.f()`, which allows defining methods which can be called
+on instances of a struct. The term "receiver" specifically refers to the instance that receives the
+method call. This is like the method syntax in other programming languages. It is a convenient way
+to define functions that operate on the fields of a struct, providing direct access to the struct's
+fields and creating cleaner, more intuitive code than passing the struct as a parameter.
+
+## Method syntax
+
+If the first argument of a function is a struct internal to the module that defines the function,
+then the function can be called using the `.` operator. However, if the type of the first argument
+is defined in another module, then method won't be associated with the struct by default. In this
+case, the `.` operator syntax is not available, and the function must be called using standard
+function call syntax.
+
+When a module is imported, its methods are automatically associated with the struct.
+
+```move file=packages/samples/sources/move-basics/struct-methods.move anchor=hero
+
+```
+
+## Method Aliases
+
+Method aliases help avoid name conflicts when modules define multiple structs and their methods.
+They can also provide more descriptive method names for structs.
+
+Here's the syntax:
+
+```move
+// for local method association
+use fun function_path as Type.method_name;
+
+// exported alias
+public use fun function_path as Type.method_name;
+```
+
+> Public aliases are only allowed for structs defined in the same module. For structs defined in
+> other modules, aliases can still be created but cannot be made public.
+
+In the example below, we changed the `hero` module and added another type - `Villain`. Both `Hero`
+and `Villain` have similar field names and methods. To avoid name conflicts, we prefixed methods
+with `hero_` and `villain_` respectively. However, using aliases allows these methods to be called
+on struct instances without the prefix:
+
+```move file=packages/samples/sources/move-basics/struct-methods-2.move anchor=hero_and_villain
+
+```
+
+In the test function, the `health` method is called directly on the `Hero` and `Villain` instances
+without the prefix, as the compiler automatically associates the methods with their respective
+structs.
+
+> Note: In the test function, `hero.health()` is calling the aliased method, not directly accessing
+> the private `health` field. While the `Hero` and `Villain` structs are public, their fields remain
+> private to the module. The method call `hero.health()` uses the public alias defined by
+> `public use fun hero_health as Hero.health`, which provides controlled access to the private
+> field.
+
+<!-- ## Aliasing an external module's method
+
+It is also possible to associate a function defined in another module with a struct from the current
+module. Following the same approach, we can create an alias for the method defined in another
+module. Let's use the `bcs::to_bytes` method from the [Standard Library](./standard-library) and
+associate it with the `Hero` struct. It will allow serializing the `Hero` struct to a vector of
+bytes.
+
+```move file=packages/samples/sources/move-basics/struct-methods-3.move anchor=hero_to_bytes
+``` -->
+
+## Further Reading
+
+- [Method Syntax](./../../reference/method-syntax) in the Move Reference.
+
+
+## FILE: book/move-basics/importing-modules.md
+
+---
+description: "How to import modules in Move using the use keyword: single imports, grouped imports, member imports, and resolving naming conflicts."
+---
+
+# Importing Modules
+
+<!--
+    TODO: create a better example for:
+        1. Importing a module in general
+        2. Importing a member
+        3. Importing multiple members
+        4. Grouping imports
+        5. Self keyword for groups
+-->
+
+<!--
+
+Goals:
+    - Show the import syntax
+    - Local dependencies
+    - External dependencies
+    - Importing modules from other packages
+
+ -->
+
+Move achieves high modularity and code reuse by allowing module imports. Modules within the same
+package can import each other, and a new package can depend on already existing packages and use
+their modules too. This section will cover the basics of importing modules and how to use them in
+your own code.
+
+## Importing a Module
+
+Modules defined in the same package can import each other. The `use` keyword is followed by the
+module path, which consists of the package address (or alias) and the module name separated by `::`.
+
+```move title="File: sources/module_one.move" file=packages/samples/sources/move-basics/importing-modules.move anchor=module_one
+
+```
+
+Another module defined in the same package can import the first module using the `use` keyword.
+
+```move title="File: sources/module_two.move" file=packages/samples/sources/move-basics/importing-modules-two.move anchor=module_two
+
+```
+
+> Note: Any item (struct, function, constant, etc.) that you want to import from another module must
+> be marked with the `public` (or `public(package)` - see [visibility modifiers](./visibility))
+> keyword to make it accessible outside its defining module. For example, the `Character` struct and
+> the `new` function in `module_one` are marked public so they can be used in `module_two`.
+
+## Importing Members
+
+You can also import specific members from a module. This is useful when you only need a single
+function or a single type from a module. The syntax is the same as for importing a module, but you
+add the member name after the module path.
+
+```move file=packages/samples/sources/move-basics/importing-modules-members.move anchor=members
+
+```
+
+## Grouping Imports
+
+Imports can be grouped into a single `use` statement using curly braces `{}`. This allows for
+cleaner and more organized code when importing multiple members from the same module or package.
+
+```move file=packages/samples/sources/move-basics/importing-modules-grouped.move anchor=grouped
+
+```
+
+Importing function names is less common in Move, since the function names can overlap and cause
+confusion. A recommended practice is to import the entire module and use the module path to access
+the function. Types have unique names and should be imported individually.
+
+To import members and the module itself in the group import, you can use the `Self` keyword. The
+`Self` keyword refers to the module itself and can be used to import the module and its members.
+
+```move file=packages/samples/sources/move-basics/importing-modules-self.move anchor=self
+
+```
+
+## Resolving Name Conflicts
+
+When importing multiple members from different modules, it is possible to have name conflicts. For
+example, if you import two modules that both have a function with the same name, you will need to
+use the module path to access the function. It is also possible to have modules with the same name
+in different packages. To resolve the conflict and avoid ambiguity, Move offers the `as` keyword to
+rename the imported member.
+
+```move file=packages/samples/sources/move-basics/importing-modules-conflict-resolution.move anchor=conflict
+
+```
+
+## Adding an External Dependency
+
+Move packages can depend on other packages; the dependencies are listed in the
+[Package Manifest](./../concepts/manifest) file called `Move.toml`.
+
+Package dependencies are defined in the [Package Manifest](./../concepts/manifest) as follows:
+
+```ini title="Move.toml"
+[dependencies]
+Example = { git = "https://github.com/Example/example.git", subdir = "path/to/package", rev = "v1.2.3" }
+Local = { local = "../my_other_package" }
+```
+
+The `dependencies` section contains an entry for each package dependency. The key of the entry is
+the name of the package (`Example` or `Local` in the example), and the value is either a git import
+table or a local path. The git import contains the URL of the package, the subdirectory where the
+package is located, and the revision of the package. The local path is a relative path to the qa
+package directory.
+
+If you add a dependency, all of its dependencies also become available to your package.
+
+If a dependency is added to the `Move.toml` file, the compiler will automatically fetch (and later
+refetch) the dependencies when building the package.
+
+> Starting with version 1.45 of the sui CLI, the system packages are automatically included as
+> dependencies for all packages if they are not present in `Move.toml`. Therefore, `MoveStdlib`,
+> `Sui`, `System`, `Bridge`, and `Deepbook` are all available without an explicit import.
+
+## Importing a Module from Another Package
+
+Normally, packages define their addresses in the `[addresses]` section. You can use aliases instead
+of full addresses. For example, instead of using `0x2::coin` to reference the Sui `coin` module, you
+can use `sui::coin`. The `sui` alias is defined in the Sui Framework package's manifest. Similarly,
+the `std` alias is defined in the Standard Library package and can be used instead of `0x1` to
+access standard library modules.
+
+To import a module from another package, use the `use` keyword followed by the module path. The
+module path consists of the package address (or alias) and the module name, separated by `::`.
+
+```move file=packages/samples/sources/move-basics/importing-modules-external.move anchor=external
+
+```
+
+> Note: Module address names come from the `[addresses]` section of the manifest file (`Move.toml`),
+> not the names used in the `[dependencies]` section.
+
+
+## FILE: book/move-basics/standard-library.md
+
+---
+description: "Overview of the Move Standard Library: common modules for strings, vectors, options, and type names available in every Move package."
+---
+
+# Standard Library
+
+<!-- The Move standard library provides a set of modules  -->
+
+The Move Standard Library provides functionality for native types and operations. It is a standard
+collection of modules that do not interact with storage, but provide basic tools for working with
+and manipulating data. It is the only dependency of the
+[Sui Framework](./../programmability/sui-framework), and is imported together with it.
+
+## Most Common Modules
+
+In this book we go into detail about most of the modules in the Standard Library, however, it is
+also helpful to give an overview of the features, so that you can get a sense of what is available
+and which module implements it.
+
+<!-- Custom CSS addition in the theme/custom.css  -->
+<div class="modules-table">
+
+| Module                                                                           | Description                                                                | Chapter                              |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| [std::string](https://docs.sui.io/references/framework/std/string)               | Provides basic string operations                                           | [String](./string)                   |
+| [std::ascii](https://docs.sui.io/references/framework/std/ascii)                 | Provides basic ASCII operations                                            | -                                    |
+| [std::option](https://docs.sui.io/references/framework/std/option)               | Implements `Option<T>`                                                     | [Option](./option)                   |
+| [std::vector](https://docs.sui.io/references/framework/std/vector)               | Native operations on the vector type                                       | [Vector](./vector)                   |
+| [std::bcs](https://docs.sui.io/references/framework/std/bcs)                     | Contains the `bcs::to_bytes()` function                                    | [BCS](./../programmability/bcs)      |
+| [std::address](https://docs.sui.io/references/framework/std/address)             | Contains a single `address::length` function                               | [Address](./address)                 |
+| [std::type_name](https://docs.sui.io/references/framework/std/type_name)         | Allows runtime _type reflection_                                           | [Type Reflection](./type-reflection) |
+| [std::hash](https://docs.sui.io/references/framework/std/hash)                   | Hashing functions: `sha2_256` and `sha3_256`                               | -                                    |
+| [std::debug](https://docs.sui.io/references/framework/std/debug)                 | Contains debugging functions, which are available in only in **test** mode | -                                    |
+| [std::bit_vector](https://docs.sui.io/references/framework/std/bit_vector)       | Provides operations on bit vectors                                         | -                                    |
+| [std::fixed_point32](https://docs.sui.io/references/framework/std/fixed_point32) | Provides the `FixedPoint32` type                                           | -                                    |
+
+</div>
+
+## Integer Modules
+
+The Move Standard Library provides a set of functions associated with integer types. These functions
+are split into multiple modules, each associated with a specific integer type. The modules should
+not be imported directly, as their functions are available on every integer value.
+
+> All of the modules provide the same set of functions. Namely, `max`, `diff`,
+> `divide_and_round_up`, `sqrt` and `pow`.
+
+<!-- Custom CSS addition in the theme/custom.css  -->
+<div class="modules-table">
+
+| Module                                                         | Description                   |
+| -------------------------------------------------------------- | ----------------------------- |
+| [std::u8](https://docs.sui.io/references/framework/std/u8)     | Functions for the `u8` type   |
+| [std::u16](https://docs.sui.io/references/framework/std/u16)   | Functions for the `u16` type  |
+| [std::u32](https://docs.sui.io/references/framework/std/u32)   | Functions for the `u32` type  |
+| [std::u64](https://docs.sui.io/references/framework/std/u64)   | Functions for the `u64` type  |
+| [std::u128](https://docs.sui.io/references/framework/std/u128) | Functions for the `u128` type |
+| [std::u256](https://docs.sui.io/references/framework/std/u256) | Functions for the `u256` type |
+
+</div>
+
+## Exported Addresses
+
+The Standard Library exports a single named address - `std = 0x1`. Note the alias `std` is defined
+here.
+
+```toml
+[addresses]
+std = "0x1"
+```
+
+## Implicit Imports
+
+Some modules are imported implicitly and are available in the module without the explicit `use`
+import. For the Standard Library, these modules and types include:
+
+- std::vector
+- std::option
+- std::option::Option
+
+## Importing std without Sui Framework
+
+The Move Standard Library can be imported to the package directly. However, `std` alone is not
+enough to build a meaningful application, as it does not provide any storage capabilities and can't
+interact with the on-chain state.
+
+```toml
+MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "framework/mainnet" }
+```
+
+## Source Code
+
+The source code of the Move Standard Library is available in the
+[Sui repository](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/packages/move-stdlib/sources).
+
+
+## FILE: book/object/object-model.md
+
+---
+description: "What is a Sui Object: unique identifiers, types, ownership, and native operations like transfer and share for on-chain digital assets."
+---
+
+# What is an Object?
+
+The Object Model in Sui can be viewed as a high-level abstraction representing digital assets as
+_objects_. These objects have their own type and associated behaviors, a unique identifier, and
+support native storage operations like _transfer_ and _share_. Designed to be intuitive and easy to
+use, the Object Model enables a wide range of use cases to be implemented with ease.
+
+Objects in Sui have the following properties:
+
+- **Type:** Every object has a type, defining the structure and behavior of the object. Objects of
+  different types cannot be mixed or used interchangeably, ensuring objects are used correctly
+  according to their type system.
+
+- **Unique ID:** Each object has a unique identifier, distinguishing it from other objects. This ID
+  is generated upon the object's creation and is immutable. It's used to track and identify objects
+  within the system.
+
+<!-- Note: consider "shared across many entities" -->
+
+- **Owner:** Every object is associated with an owner, who has control over changes to the object.
+  Ownership on Sui can be exclusive to an account, shared across the network, or frozen, allowing
+  read-only access without modification or transfer capabilities. We will discuss ownership in more
+  detail in the following sections.
+
+  Note that ownership does not control the confidentiality of an object &mdash; it is always
+  possible to read the contents of an on-chain object from outside of Move. You should never store
+  unencrypted secrets inside of objects.
+
+- **Data:** Objects encapsulate their data, simplifying management and manipulation. The data
+  structure and operations are defined by the object's type.
+
+- **Version:** The transition from accounts to objects is facilitated by object versioning.
+  Traditionally, blockchains use a _nonce_ to prevent replay attacks. In Sui, the object's version
+  acts as a nonce, preventing replay attacks for each object.
+
+- **Digest:** Every object has a digest, which is a hash of the object's data. The digest is used to
+  cryptographically verify the integrity of the object's data and ensures that it has not been
+  tampered with. The digest is calculated when the object is created and is updated whenever the
+  object's data changes.
+
+## Summary
+
+- Objects in Sui are high-level abstractions representing digital assets.
+- Objects have a type, unique ID, owner, data, version, and digest.
+- The Object Model simplifies asset management and enables a wide range of use cases.
+
+## Further Reading
+
+- [Object Model](https://docs.sui.io/guides/developer/objects/object-model) in Sui Documentation.
+
+
+## FILE: book/object/ownership.md
+
+---
+description: "Object ownership types in Sui: single owner, shared state, immutable objects, and object-owned objects explained with examples."
+---
+
+# Ownership
+
+Sui introduces four distinct ownership types for objects: single owner, shared state, immutable
+shared state, and object-owner. Each model offers unique characteristics and suits different use
+cases, enhancing flexibility and control in object management.
+
+Note that ownership does not control the confidentiality of an object &mdash; it is always possible
+to read the contents of an on-chain object from outside of Move. You should never store unencrypted
+secrets inside of objects.
+
+See the [Storage Functions](../storage/storage-functions.md) chapter for details on how to change
+the owner or ownership type of an object.
+
+## Account Owner (or Single Owner)
+
+The account owner, also known as the _single owner_ model, is the foundational ownership type in
+Sui. Here, an object is owned by a single account, granting that account exclusive control over the
+object within the behaviors associated with its type. This model embodies the concept of _true
+ownership_, where the account possesses complete authority over the object, making it inaccessible
+to others for modification or transfer. This level of ownership clarity is a significant advantage
+over other blockchain systems, where ownership definitions can be more ambiguous, and smart
+contracts may have the ability to alter or transfer assets without the owner's consent.
+
+Just like your private mobile phone, you own it, you can easily unlock and operate it, but others cannot.
+Sui is designed to prevent things like cracking someone else's phone password (bypassing permission
+checks to use objects that do not belong to others). Therefore, no one can use your assets unless
+authorized by you.
+
+## Shared State
+
+Single owner model has its limitations: for example, it is very tricky to implement a marketplace
+for digital assets without a shared state. For a generic marketplace scenario, imagine that Alice
+owns an asset X, and she wants to sell it by putting it into a shared marketplace. Then Bob can come
+and buy the asset directly from the marketplace. The reason why this is tricky is that it is
+impossible to write a smart contract that would "lock" the asset in Alice's account and take it out
+when Bob buys it. First, it will be a violation of the single owner model, and second, it requires a
+shared access to the asset.
+
+To facilitate a problem of shared data access, Sui has introduced a shared ownership model. In this
+model, an object can be shared with the network. Shared objects can be read and modified by any
+account on the network, and the rules of interaction are defined by the implementation of the
+object. Typical uses for shared objects are: marketplaces, shared resources, escrows, and other
+scenarios where multiple accounts need access to the same state.
+
+## Immutable (Frozen) State
+
+Sui also offers the _frozen object_ model, where an object becomes permanently read-only. These
+immutable objects, while readable, cannot be modified or moved, providing a stable and constant
+state accessible to all network participants. Frozen objects are ideal for public data, reference
+materials, and other use cases where the state permanence is desirable.
+
+## Object Owner
+
+The last ownership model in Sui is the _object owner_. In this model, an object is owned by another
+object. This feature allows creating complex relationships between objects, storing large
+heterogeneous collections, and implementing extensible and modular systems. Practically speaking,
+since the transactions are initiated by accounts, the transaction still accesses the parent object,
+but it can then access the child objects through the parent object.
+
+A use case we love to mention is a game character. Alice can own the Hero object from a game, and
+the Hero can own items: also represented as objects, like a "Map", or a "Compass". Alice may take
+the "Map" from the "Hero" object, and then send it to Bob, or sell it on a marketplace. With object
+owner, it becomes very natural to imagine how the assets can be structured and managed in relation
+to each other.
+
+## Summary
+
+- **Single Owner:** Objects are owned by a single account, granting exclusive control over the
+  object.
+- **Shared State:** Objects can be shared with the network, allowing multiple accounts to read and
+  modify the object.
+- **Immutable State:** Objects become permanently read-only, providing a stable and constant state.
+- **Object Owner:** Objects can own other objects, enabling complex relationships and modular
+  systems.
+
+## Next Steps
+
+In the next section we will talk about transaction execution paths in Sui, and how the ownership
+models affect the transaction execution.
+
+
+## FILE: book/storage/key-ability.md
+
+---
+description: "The key ability in Move makes a struct an object that can be stored, owned, and transferred on the Sui blockchain."
+---
+
+# Ability: Key
+
+In the [Basic Syntax][basic-syntax] chapter, we already covered two out of four abilities:
+[Drop][drop-ability] and [Copy][copy-ability]. They affect the behavior of a value in a scope and
+are not directly related to storage. Now it is time to cover the `key` ability, which allows a
+struct to be _stored_.
+
+Historically, the `key` ability was created to mark a type as a _key in storage_. A type with the
+`key` ability could be stored at the top level in global storage and could be _owned_ by an account
+or address. With the introduction of the [Object Model][object-model], the `key` ability became the
+defining ability for _objects_.
+
+> Later in the book, we will refer to any struct with the `key` ability as an Object.
+
+## Object Definition
+
+A struct with the `key` ability is considered _an object_ and can be used in storage functions. The
+Sui Verifier requires the first field of the struct to be named `id` and to have the type `UID`.
+Additionally, it requires all fields to have the `store` ability — we’ll explore it in detail [on
+the next page][store-ability].
+
+```move
+/// `User` object definition.
+public struct User has key {
+    id: UID, // required by Sui Bytecode Verifier
+    name: String, // field types must have `store`
+}
+
+/// Creates a new instance of the `User` type.
+/// Uses the special struct `TxContext` to derive a Unique ID (UID).
+public fun new(name: String, ctx: &mut TxContext): User {
+    User {
+        id: object::new(ctx), // creates a new UID
+        name,
+    }
+}
+```
+
+## Relation to `copy` and `drop`
+
+`UID` is a type that does not have the [`drop`][drop-ability] or [`copy`][copy-ability] abilities.
+Since it is required as a field of any type with the `key` ability, this means that types with `key`
+can never have `drop` or `copy`.
+
+This property can be leveraged in [ability constraints][generics]: requiring `drop` or `copy`
+automatically excludes `key`, and conversely, requiring `key` excludes types with `drop` or `copy`.
+
+## Types with the `key` Ability
+
+Due to the `UID` requirement for types with `key`, none of the native types in Move can have the
+`key` ability, nor can any of the types in the [Standard Library][standard-library]. The `key`
+ability is present only in some [Sui Framework][sui-framework] types and in custom types.
+
+## Summary
+
+- The `key` ability defines an object
+- The first field of an object must be `id` with type `UID`
+- Fields of a `key` type must the have [`store`][store-ability] ability
+- Objects cannot have [`drop`][drop-ability] or [`copy`][copy-ability]
+
+## Next Steps
+
+The `key` ability defines objects in Move and forces the fields to have `store`. In the next section
+we cover the `store` ability to later explain how [storage operations](./storage-functions.md) work.
+
+## Further Reading
+
+- [Type Abilities](./../../reference/abilities) in the Move Reference.
+
+[drop-ability]: ./../move-basics/drop-ability
+[copy-ability]: ./../move-basics/copy-ability
+[store-ability]: ./store-ability.md
+[generics]: ./../move-basics/generics#constraints-on-type-parameters
+[sui-framework]: ./../programmability/sui-framework
+[standard-library]: ./../move-basics/standard-library
+[object-model]: ./../object
+[basic-syntax]: ./../move-basics
+
+
+## FILE: book/storage/uid-and-id.md
+
+---
+description: "UID and ID in Sui Move: unique object identifiers, how they are created, used for dynamic fields, and guaranteed to be unique."
+---
+
+# UID and ID
+
+The use of the `UID` type is required by the Sui Verifier on all types that have the
+[`key`](./key-ability.md) ability. Here we go deeper into `UID` and its usage.
+
+## Definition
+
+The `UID` type is defined in the `sui::object` module and is a wrapper around an `ID` which, in
+turn, wraps the `address` type. The UIDs on Sui are guaranteed to be unique, and can't be reused
+after the object was deleted.
+
+```move
+module sui::object;
+
+/// UID is a unique identifier of an object
+public struct UID has store {
+    id: ID
+}
+
+/// ID is a wrapper around an address
+public struct ID has store, drop {
+    bytes: address
+}
+```
+
+## Fresh UID Generation
+
+- `UID` is _derived_ from the `tx_hash` and an `index` which is incremented for each new UID.
+- The `derive_id` function is implemented in the `sui::tx_context` module, and that is why
+  [TxContext](./../programmability/transaction-context.md) is required for `UID` generation.
+- Sui Verifier will not allow using a UID that wasn't created in the same function. That prevents
+  UIDs from being pre-generated or reused after the object was unpacked.
+
+New UID is created with the `object::new` function. It takes a mutable reference to `TxContext`, and
+returns a new `UID`.
+
+```move
+public fun uid(ctx: &mut TxContext) {
+  let id = object::new(ctx); // Create a fresh UID from TxContext.
+  id.delete(); // Delete the UID.
+}
+```
+
+`UID` acts as a representation of an object, and allows defining behaviors and features of an
+object. One of the key features - [Dynamic Fields](./../programmability/dynamic-fields) - is
+possible because of the `UID` type being explicit. Additionally, it allows receiving objects sent to
+other objects. This feature is called [Transfer to Object (TTO)](./transfer-to-object.md), and we
+will explain later in this chapter.
+
+## UID Derivation
+
+Sui allows deriving UID's from other UIDs using _derivation keys_. This functionality is implemented
+in the [`sui::derived_object`][derived-object] module and allows generating predictable and
+deterministic `UIDs` for easier off-chain discovery. UID for each pair of parent + key can be
+generated only once!
+
+```move
+use sui::derived_object;
+
+/// Some central application object.
+public struct Base has key { id: UID }
+
+/// Derived Object.
+public struct Derived has key { id: UID }
+
+/// Create and share a new Derived object using `address` as a `key`.
+public fun derive(base: &mut Base, key: address) {
+    let id = derived_object::claim(&mut base.id, key);
+    transfer::share_object(Derived { id })
+}
+```
+
+Derived addresses reduce the load on off-chain indexers, since it is enough to store the ID of the
+parent object and get derived IDs using a derivation function. ID derivation function is part of the
+most SDKs, and also present in Move:
+
+```move
+module sui::derived_object;
+
+/// Checks if a UID was derived with `key` at `parent`.
+public fun exists<K: copy + drop + store>(parent: &UID, key: K): bool;
+
+/// Derive inner `address` of a UID, regardless of whether it was created.
+public fun derive_address<K: copy + drop + store>(parent: ID, key: K): address;
+```
+
+The same derivation functionality is used to generate UIDs for
+[dynamic fields](./../programmability/dynamic-fields.md).
+
+## UID Lifecycle
+
+The `UID` type is created with the `object::new` function, and deleted with the `object::delete`
+function. The `object::delete` consumes the UID _by value_, hence, it is only possible to delete
+object's UID after the object [was unpacked](./../move-basics/struct.md#unpacking-a-struct).
+
+```move
+public struct Character has key { id: UID }
+
+public fun character(ctx: &mut TxContext) {
+    // Instantiate `Character` object.
+    let char = Character { id: object::new(ctx) };
+
+    // Unpack object to get its UID.
+    let Character { id } = char;
+
+    // Delete the UID.
+    id.delete();
+}
+```
+
+## Keeping the UID
+
+The `UID` does not need to be deleted immediately after the object struct is unpacked. Sometimes it
+may carry [Dynamic Fields](./../programmability/dynamic-fields) or objects transferred to it via
+[Transfer To Object](./transfer-to-object.md). In such cases, the UID may be kept and stored in a
+separate object.
+
+## Proof of Deletion
+
+The ability to return the UID of an object may be utilized in pattern called _proof of deletion_. It
+is a rarely used technique, but it may be useful in some cases, for example, the creator or an
+application may incentivize the deletion of an object by exchanging the deleted IDs for some reward.
+
+In framework development this method could be used to ignore / bypass certain restrictions on
+"taking" the object. If there's a container that enforces certain logic on transfers, like Kiosk
+does, there could be a special scenario of skipping the checks by providing a proof of deletion.
+
+This is one of the open topics for exploration and research, and it may be used in various ways.
+
+## ID
+
+When talking about `UID` we should also mention the `ID` type. It is a wrapper around the `address`
+type, and is used to represent an address-pointer. Usually, `ID` is used to point at an object,
+however, there is no restriction, and no guarantee that the `ID` points to an existing object.
+
+> ID can be received as a transaction argument in a
+> [Transaction Block](./../concepts/what-is-a-transaction). Alternatively, ID can be created from an
+> `address` value using `to_id()` function.
+
+```move
+public fun conversion_methods(ctx: &mut TxContext) {
+    let uid: UID = object::new(ctx);
+    let id: ID = uid.to_inner();
+
+    let addr_from_uid: address = uid.to_address();
+    let addr_from_id: address = id.to_address();
+
+    uid.delete();
+}
+```
+
+This example demonstrates different conversion methods: `UID.to_inner` creates a copy of underlying
+`ID`, and `UID.to_address` returns inner address. Another often useful method `ID.to_address` copies
+inner value from the `ID` type.
+
+## Fresh Object Address
+
+[`TxContext`](./../programmability/transaction-context.md) provides the `fresh_object_address`
+function which can be utilized to create unique addresses and `ID` - it may be useful in some
+application that assign unique identifiers to user actions - for example, an order_id in a
+marketplace.
+
+## Links
+
+- [`sui::object`][object] module documentation
+- [`sui::derived_object`][derived-object] module documentation
+- [Derived Objects](https://docs.sui.io/guides/developer/objects/derived-objects) in Sui
+  Documentation
+
+[object]: https://docs.sui.io/references/framework/sui_sui/object
+[derived-object]: https://docs.sui.io/references/framework/sui_sui/derived_object
+
+
+## FILE: book/storage/storage-functions.md
+
+---
+description: "Sui storage functions: transfer, share, freeze, and receive objects using the sui::transfer module in Move smart contracts."
+---
+
+# Storage Functions
+
+The module that defines main storage operations is `sui::transfer`. It is implicitly imported in all
+packages that depend on the [Sui Framework](./../programmability/sui-framework), so, like other
+implicitly imported modules (e.g. `std::option` or `std::vector`), it does not require adding a use
+statement.
+
+> For quick reference, [Appendix C: Transfer Functions](./../appendix/transfer-functions.md)
+> contains a list of all storage functions and object states.
+
+## Overview
+
+The `transfer` module provides functions to perform storage operations for each of the
+[ownership types](./../object/ownership).
+
+1. [Transfer](#transfer) - send an object to an address, put it into _address owned_ state;
+2. [Freeze](#freeze) - put an object into _immutable_ state, so it becomes a _public constant_ and
+   can never change.
+3. [Share](#share) - put an object into a _shared_ state, so it is available to everyone;
+
+The `transfer` module is a go-to for most of the storage operations, except a special case with
+[Dynamic Fields](./../programmability/dynamic-fields) which are covered in the next chapter.
+
+## Ownership and References: a Quick Recap
+
+In the [Ownership and Scope](./../move-basics/ownership-and-scope) and
+[References](./../move-basics/references) chapters, we covered the basics of ownership and
+references in Move. It is important that you understand these concepts when using storage functions.
+Here is a quick recap of the most important points:
+
+- The _move_ semantics in Move means that the value is _moved_ from one scope to another. In other
+  words, if an instance of a type is passed to a function _by value_, it is _moved_ to the function
+  scope and can't be accessed in the caller scope anymore.
+- To maintain the ownership of the value, you can pass it _by reference_. Either by _immutable
+  reference_ `&T` or _mutable reference_ `&mut T`. Then the value is _borrowed_ and can be accessed
+  in the callee scope, however the owner stays the same.
+
+```move
+/// Moved by value
+public fun take<T>(value: T) { /* value is moved here! */ abort }
+
+/// For immutable reference, value stays in parent scope.
+public fun borrow<T>(value: &T) { /* value is borrowed here! can be read */ abort }
+
+/// For mutable reference, value stays in parent scope but can be mutated.
+public fun borrow_mut<T>(value: &mut T) { /* value is mutably borrowed here! */ abort }
+```
+
+<!-- TODO part on:
+    - object does not have an associated storage type
+    - the same type of object can be stored differently
+    - the objects must be specified in the transaction by their ID
+ -->
+
+## Internal Rule in Transfer Functions
+
+Storage operations can only be performed on objects, and come in two forms: _internal_ and _public_.
+Internal, or sometimes called _restricted_, transfer functions can be performed on [`key`][key]-only
+types, and - comes with the name - enforce [internal constraint](./internal-constraint.md). Public
+versions can be called on any object that has `key` and [`store`][store]. Hence, `key`-only types'
+storage is fully governed by their defining module, and `store` allows calling public transfer
+functions in other modules.
+
+```move
+/// T: internal, can be called only in the module which defines the `T`.
+public fun transfer<T: key>(obj: T, recipient: address);
+
+/// No requirement for `T` to be internal to the caller, but requires `store`.
+public fun public_transfer<T: key + store>(obj: T, recipient: address);
+```
+
+In the example above, the `transfer` function can only be called from the module that defines the
+`T`, and has a type constraint `T: key`. While `public_transfer` - clearly indicated in the name -
+can be called from any module, but requires `T` to have `key` and `store`.
+
+Knowing this rule is critical for understanding application design in Move. Choice between making
+object publicly transferable (`key` and `store`) and keeping it internal (`key`-only) may
+drastically affect application logic and further development.
+
+## Transfer
+
+The `transfer::transfer` function is a function used to transfer an object to an address. Its
+signature is as follows, only accepts a type with the [`key` ability](./key-ability.md) and an
+[address](./../move-basics/address.md) of the recipient. Note that the object is passed into the
+function _by value_, therefore it is _moved_ to the function scope and then moved to the recipient
+address.
+
+```move
+module sui::transfer;
+
+// Transfer `obj` to `recipient`.
+public fun transfer<T: key>(obj: T, recipient: address);
+
+// Public version of the `transfer` function.
+public fun public_transfer<T: key + store>(obj: T, recipient: address);
+```
+
+### Transfer Example
+
+In the following example, you can see how it can be used in a module that defines and sends an
+object to the transaction sender.
+
+```move
+module book::transfer_to_sender;
+
+/// A struct with `key` is an object. The first field is `id: UID`!
+public struct AdminCap has key { id: UID }
+
+/// `init` function is a special function that is called when the module
+/// is published. It is a good place to do a setup for an application.
+fun init(ctx: &mut TxContext) {
+    // Create a new `AdminCap` object, in this scope.
+    let admin_cap = AdminCap { id: object::new(ctx) };
+
+    // Transfer the object to the transaction sender.
+    transfer::transfer(admin_cap, ctx.sender());
+}
+
+/// Transfers the `AdminCap` object to the `recipient`. Thus, the recipient
+/// becomes the owner of the object, and only they can access it.
+public fun transfer_admin_cap(cap: AdminCap, recipient: address) {
+    transfer::transfer(cap, recipient);
+}
+```
+
+When the module is published, the `init` function will get called, and the `AdminCap` object which
+we created in it will be _transferred_ to the transaction sender. The `ctx.sender()` function
+returns the sender address for the current transaction.
+
+Once the `AdminCap` has been transferred to the sender, for example, to `0xa11ce`, the sender, and
+only the sender, will be able to access the object. This type of ownership is called _address
+ownership_.
+
+> Address owned objects are a subject to _true ownership_ - only owner address can access them. This
+> is a fundamental concept in the Sui storage model.
+
+### Public Transfer
+
+Let's extend the example with a function that uses `AdminCap` to authorize a mint of a new object
+and its transfer to an address:
+
+```move
+/// Some `Gift` object that the admin can `mint_and_transfer` to an address.
+public struct Gift has key, store { id: UID }
+
+/// Creates a new `Gift` object and transfers it to the `recipient`.
+public fun mint_and_transfer(
+    _: &AdminCap, recipient: address, ctx: &mut TxContext
+) {
+    let gift = Gift { id: object::new(ctx) };
+    transfer::public_transfer(gift, recipient);
+}
+```
+
+The `mint_and_transfer` function is a _public_ function that "could" be called by anyone, but it
+requires a reference to an `AdminCap` as the first argument. Without it, the function will not be
+callable. This is a simple and very explicit way to restrict access to privileged functions called
+_[Capability](./../programmability/capability)_. Because the `AdminCap` object is _address owned_,
+only `0xa11ce` will be able to call the `mint_and_transfer` function.
+
+Unlike `AdminCap` where we restricted transferability as well as usability by adding only `key`
+ability, `Gift` has a `key` and `store` combination, which means, that whoever owns a `Gift` can
+freely call `transfer::public_transfer` and send it to anyone else. Without `store`, in our current
+implementation, `Gift` would've been _"soulbound"_ meaning that the happy owner of the `Gift` would
+not be able to do anything with it.
+
+### Quick Recap
+
+- `transfer` function is used to send an object to an address;
+- The object becomes _address owned_ and can only be accessed by the recipient;
+- _Address owned_ object can be used by reference or by value, including being transferred to
+  another address;
+- _Public_ version of it is `public_transfer` and requires `store`
+- Functions can be gated by requiring an object to be passed as an argument, creating a
+  _capability_.
+
+## Freeze
+
+The `transfer::freeze_object` function is a function that is used to put an object into an
+_immutable_ state. Once an object is _frozen_, it can never change, and it can be accessed by anyone
+by immutable reference.
+
+The function signature is as follows, only accepts a type with the [`key` ability](./key-ability).
+Just like all other storage functions, it takes the object _by value_. The public version of this
+function is `public_freeze_object`, and requires `T` to have `store`.
+
+```move
+module sui::transfer;
+
+// Make object immutable and allow anyone to read it.
+public fun freeze_object<T: key>(obj: T);
+
+// Public version of the `freeze_object` function.
+public fun public_freeze_object<T: key + store>(obj: T);
+```
+
+Let's extend the previous example and add a function that allows the admin to create a `Config`
+object and freeze it:
+
+```move
+/// Some `Config` object that the admin can `create_and_freeze`.
+public struct Config has key {
+    id: UID,
+    message: String
+}
+
+/// Creates a new `Config` object and freezes it.
+public fun create_and_freeze(
+    _: &AdminCap,
+    message: String,
+    ctx: &mut TxContext
+) {
+    let config = Config {
+        id: object::new(ctx),
+        message
+    };
+
+    // Freeze the object so it becomes immutable.
+    transfer::freeze_object(config);
+}
+
+/// Returns the message from the `Config` object.
+/// Can access the object by immutable reference!
+public fun message(c: &Config): String { c.message }
+```
+
+Config is an object that has a `message` field, and the `create_and_freeze` function creates a new
+`Config` and freezes it. Once the object is frozen, it can be accessed by anyone by immutable
+reference. The `message` function is a public function that returns the message from the `Config`
+object. Config is now publicly available by its ID, and the message can be read by anyone.
+
+> Function definitions are not connected to object's state. It is possible to define a function that
+> takes a mutable reference to a type that is always frozen. However, it will not be callable on a
+> frozen object.
+
+The `message` function in the example above can be called on an immutable `Config` object. However,
+two functions shown below are not callable on a frozen object:
+
+```move
+// === These can't be called on a frozen object! ===
+
+/// The function can be defined, but it won't be callable on a frozen object.
+/// Only immutable references are allowed.
+public fun message_mut(c: &mut Config): &mut String { &mut c.message }
+
+/// Deletes the `Config` object, takes it by value.
+/// Can't be called on a frozen object!
+public fun delete_config(c: Config) {
+    let Config { id, message: _ } = c;
+    id.delete()
+}
+```
+
+To summarize:
+
+- `transfer::freeze_object` function is used to put an object into an _immutable_ state;
+- Once an object is _frozen_, it can never be changed, deleted or transferred, and it can be
+  accessed by anyone by immutable reference;
+- _Public_ version of the `freeze_object` function is `public_freeze_object` and requires the `T` to
+  have `store`.
+
+## Owned -> Frozen
+
+Since the `transfer::freeze_object` signature accepts any type with the `key` ability, it can take
+an object that was created in the same scope, but it can also take an object that was owned by an
+account. This means that the `freeze_object` function can be used to _freeze_ an object that was
+_transferred_ to the sender. For security concerns, we would not want to freeze the `AdminCap`
+object - it would be a security risk, since anyone would be able to access it. However, we can
+freeze the `Gift` object that was minted and transferred to the recipient:
+
+> Single Owner -> Immutable conversion is possible!
+
+```move
+/// Freezes the `Gift` object so it becomes immutable.
+/// Gift has `key` and `store`, so `public_freeze_object` can be used!
+public fun freeze_gift(gift: Gift) {
+    transfer::public_freeze_object(gift);
+}
+```
+
+## Share
+
+The `transfer::share_object` function is a function used to put an object into a _shared_ state.
+Once an object is _shared_, it can be accessed by anyone by a mutable reference (hence, immutable
+too). The function signature is as follows, only accepts a type with the
+[`key` ability](./key-ability):
+
+```move
+module sui::transfer;
+
+/// Put an object to a Shared state - can be accessed mutably and immutably.
+public fun share_object<T: key>(obj: T);
+
+/// Public version of `share_object` function.
+public fun public_share_object<T: key + store>(obj: T);
+```
+
+Like other transfer functions, `share_object` has its _public_ version which requires `T` to have
+`store`.
+
+Once an object is _shared_, it is publicly available as a mutable reference.
+
+## Special Case: Shared Object Deletion
+
+While the shared object can't normally be taken by value, there is one special case where it can -
+if the function that takes it deletes the object. This is a special case in the Sui storage model,
+and it is used to allow the deletion of shared objects. To show how it works, we will create a
+function that creates and shares a Config object and then another one that deletes it:
+
+```move
+/// Creates a new `Config` object and shares it.
+public fun create_and_share(message: String, ctx: &mut TxContext) {
+    let config = Config {
+        id: object::new(ctx),
+        message
+    };
+
+    // Share the object so it becomes shared.
+    transfer::share_object(config);
+}
+```
+
+The `create_and_share` function creates a new `Config` object and shares it. The object is now
+publicly available as a mutable reference. Let's create a function that deletes the shared object:
+
+```move
+/// Deletes the `Config` object, takes it by value.
+/// Can be called on a shared object!
+public fun delete_config(c: Config) {
+    let Config { id, message: _ } = c;
+    id.delete()
+}
+```
+
+The `delete_config` function takes the `Config` object by value and deletes it, and the Sui Verifier
+would allow this call. However, if the function returned the `Config` object back or attempted to
+`freeze` or `transfer` it, the Sui Verifier would reject the transaction.
+
+```move
+// Won't work!
+public fun transfer_shared(c: Config, to: address) {
+    transfer::transfer(c, to);
+}
+```
+
+To summarize:
+
+- `share_object` function is used to put an object into a _shared_ state;
+- Once an object is _shared_, it can be accessed by anyone by a mutable reference;
+- Shared objects can be deleted, but they can't be transferred or frozen;
+- _Public_ version of the `share_object` function is `public_share_object` and requires the `T` to
+  have `store`.
+
+## Next Steps
+
+Now that you know main features of the `transfer` module, you can start building more complex
+applications on Sui that involve storage operations. In the next chapter, we will cover the
+[Store Ability](./store-ability) which allows storing data inside objects and relaxes transfer
+restrictions which we barely touched on here. And after that we will cover the
+[UID and ID](./uid-and-id) types which are the most important types in the Sui storage model.
+
+[key]: ./key-ability.md
+[store]: ./store-ability.md
+
+
+## FILE: book/storage/transfer-restrictions.md
+
+---
+draft: true
+description: "Restricted vs public transfer in Sui Move: how the store ability controls whether objects can be transferred outside their module."
+---
+
+<!-- This page is deprecated. Saving content for now, but should redirect to storage-functions -->
+
+# Restricted and Public Transfer
+
+Storage Operations that we described in the [previous sections](./storage-functions) are restricted
+by default - they can only be called in the module defining the object. In other terms, the type
+must be _internal_ to the module to be used in storage operations. This restriction is implemented
+in the Sui Verifier and is enforced at the bytecode level.
+
+However, to allow objects to be transferred and stored in other modules, these restrictions can be
+relaxed. The `sui::transfer` module offers a set of _public\_\*_ functions that allow calling
+storage operations in other modules. The functions are prefixed with `public_` and are available to
+all modules and transactions.
+
+## Public Storage Operations
+
+The `sui::transfer` module provides the following public functions. They are almost identical to the
+ones we already covered, but can be called from any module.
+
+```move
+module sui::transfer;
+
+/// Public version of the `transfer` function.
+public fun public_transfer<T: key + store>(object: T, to: address) {}
+
+/// Public version of the `share_object` function.
+public fun public_share_object<T: key + store>(object: T) {}
+
+/// Public version of the `freeze_object` function.
+public fun public_freeze_object<T: key + store>(object: T) {}
+```
+
+To illustrate the usage of these functions, consider the following example: module A defines an
+ObjectK with `key` and ObjectKS with `key + store` abilities, and module B tries to implement a
+`transfer` function for these objects.
+
+> In this example we use `transfer::transfer`, but the behavior is identical for `share_object` and
+> `freeze_object` functions.
+
+```move
+/// Defines `ObjectK` and `ObjectKS` with `key` and `key + store`
+/// abilities respectively
+module book::transfer_a;
+
+public struct ObjectK has key { id: UID }
+public struct ObjectKS has key, store { id: UID }
+```
+
+```move
+/// Imports the `ObjectK` and `ObjectKS` types from `transfer_a` and attempts
+/// to implement different `transfer` functions for them
+module book::transfer_b;
+
+// types are not internal to this module
+use book::transfer_a::{ObjectK, ObjectKS};
+
+// Fails! ObjectK is not `store`, and ObjectK is not internal to this module
+public fun transfer_k(k: ObjectK, to: address) {
+    transfer::transfer(k, to);
+}
+
+// Fails! ObjectKS has `store` but the function is not public
+public fun transfer_ks(ks: ObjectKS, to: address) {
+    transfer::transfer(ks, to);
+}
+
+// Fails! ObjectK is not `store`, `public_transfer` requires `store`
+public fun public_transfer_k(k: ObjectK, to: address) {
+    transfer::public_transfer(k, to);
+}
+
+// Works! ObjectKS has `store` and the function is public
+public fun public_transfer_ks(ks: ObjectKS, to: address) {
+    transfer::public_transfer(ks, to);
+}
+```
+
+To expand on the example above:
+
+- ❌ `transfer_k` fails because ObjectK is not internal to module `transfer_b`
+- ❌ `transfer_ks` fails because ObjectKS is not internal to module `transfer_b`
+- ❌ `public_transfer_k` fails because ObjectK does not have the `store` ability
+- ✅ `public_transfer_ks` works because ObjectKS has the `store` ability and the transfer is public
+
+## Implications of `store`
+
+The decision on whether to add the `store` ability to a type should be made carefully. On one hand,
+it is de-facto a requirement for the type to be _usable_ by other applications. On the other hand,
+it allows _wrapping_ and changing the intended storage model. For example, a character may be
+intended to be owned by accounts, but with the `store` ability it can be frozen (cannot be shared -
+this transition is restricted).
+
+
+## FILE: book/storage/store-ability.md
+
+---
+description: "The store ability in Move allows types to be used as fields in objects and enables public transfer and storage operations on Sui."
+---
+
+# Ability: Store
+
+The [`key` ability][key-ability] requires all fields to have `store`, which defines what the `store`
+ability means: it is the ability to serve as a field of an Object. A struct with
+[`copy`][copy-ability] or [`drop`][drop-ability] but without `store` can never be _stored_. A type
+with `key` but without `store` cannot be wrapped - used as a field—in another object, and is
+constrained to always remain at the top level.
+
+## Definition
+
+The `store` ability allows a type to be used as a field in a struct with the `key` ability.
+
+```move
+// hidden-block-start
+use std::string::String;
+
+// hidden-block-end
+/// Extra metadata with `store`; all fields must have `store` as well!
+public struct Metadata has store {
+    bio: String,
+}
+
+/// An object for a single user record.
+public struct User has key {
+    id: UID,
+    name: String,       // String has `store`
+    age: u8,            // All integers have `store`
+    metadata: Metadata, // Another type with the `store` ability
+}
+```
+
+## Relation to `copy` and `drop`
+
+All three non-`key` abilities can be used in any combination.
+
+## Relation to `key`
+
+An object with the `store` ability can be _stored_ in other objects.
+
+> While not a language or verifier feature, `store` acts as a _public_ modifier on a struct,
+> allowing calling _public_ [transfer functions](./storage-functions.md) which do not have an
+> [internal constraint](./internal-constraint.md).
+
+## Types with the `store` Ability
+
+All native types (except references) in Move have the `store` ability. This includes:
+
+- [bool](./../move-basics/primitive-types.md#booleans)
+- [unsigned integers](./../move-basics/primitive-types.md#integer-types)
+- [vector](./../move-basics/vector.md)
+- [address](./../move-basics/address.md)
+
+All of the types defined in the standard library have the `store` ability as well. This includes:
+
+- [Option](./../move-basics/option.md)
+- [String](./../move-basics/string.md) and [ASCII String](./../move-basics/string.md)
+- [TypeName](./../move-basics/type-reflection.md)
+
+## Further Reading
+
+- [Type Abilities](./../../reference/abilities) in the Move Reference.
+
+[key-ability]: ./key-ability.md
+[drop-ability]: ./../move-basics/drop-ability.md
+[copy-ability]: ./../move-basics/copy-ability.md
+
+
+## FILE: book/appendix/transfer-functions.md
+
+---
+description: "Quick reference for Sui transfer functions: transfer, share, freeze, receive, and their public variants with permissions and end states."
+---
+
+# Appendix C: Transfer Functions
+
+## Transfer Functions Comparison
+
+| Function                  | Public Function         | End State     | Permissions               |
+| ------------------------- | ----------------------- | ------------- | ------------------------- |
+| [`transfer`][transfer]    | `public_transfer`       | Address Owned | Full                      |
+| [`share_object`][share]   | `public_share_object`   | Shared        | Ref, Mut Ref, Delete      |
+| [`freeze_object`][freeze] | `public_freeze_object`  | Frozen        | Ref                       |
+| [`party_transfer`][party] | `public_party_transfer` | Party         | [See Party table](#party) |
+
+## States Comparison
+
+| State         | Description                                               |
+| ------------- | --------------------------------------------------------- |
+| Address Owned | Object can be accessed fully by an address (or an object) |
+| Shared        | Object can be referenced and deleted by anyone            |
+| Frozen        | Object can be accessed via immutable reference            |
+| Party         | Depends on the Party settings ([see Party table](#party)) |
+
+## Party
+
+| Function       | Description                                  |
+| -------------- | -------------------------------------------- |
+| `single_owner` | Object has same permissions as Address Owned |
+
+[transfer]: https://docs.sui.io/references/framework/sui_sui/transfer#sui_transfer_transfer
+[share]: https://docs.sui.io/references/framework/sui_sui/transfer#sui_transfer_share_object
+[freeze]: https://docs.sui.io/references/framework/sui_sui/transfer#sui_transfer_freeze_object
+[party]: https://docs.sui.io/references/framework/sui_sui/transfer#sui_transfer_party_transfer
+
+
+## FILE: book/programmability/module-initializer.md
+
+---
+description: "The init function in Move: run one-time setup code when a module is published on Sui, with rules and best practices."
+---
+
+# Module Initializer
+
+A common use case in many applications is to run certain code just once when the package is
+published. Imagine a simple store module that needs to create the main Store object upon its
+publication. In Sui, this is achieved by defining an `init` function within the module. This
+function will automatically be called when the module is published.
+
+> All of the modules' `init` functions are called during the publishing process. Currently, this
+> behavior is limited to the publish command and does not extend to package upgrades.
+>
+> <!-- [package upgrades]() -->
+
+```move file=packages/samples/sources/programmability/module-initializer.move anchor=main
+
+```
+
+In the same package, another module can have its own `init` function, encapsulating distinct logic.
+
+```move file=packages/samples/sources/programmability/module-initializer-2.move anchor=other
+
+```
+
+## `init` Features
+
+The function is called on publish, if it is present in the module and follows the rules:
+
+- The function has to be named `init`, be private and have no return values.
+- Takes one or two arguments: [One Time Witness](./one-time-witness) (optional) and
+  [TxContext](./transaction-context). With `TxContext` always being the last argument.
+
+```move
+fun init(ctx: &mut TxContext) { /* ... */}
+fun init(otw: OTW, ctx: &mut TxContext) { /* ... */ }
+```
+
+TxContext can also be passed as immutable reference: `&TxContext`. However, practically speaking, it
+should always be `&mut TxContext` since the `init` function can't access the on-chain state and to
+create new objects it requires the mutable reference to the context.
+
+```move
+fun init(ctx: &TxContext) { /* ... */}
+fun init(otw: OTW, ctx: &TxContext) { /* ... */ }
+```
+
+## Trust and Security
+
+While `init` function can be used to create sensitive objects once, it is important to know that the
+same object (e.g. `StoreOwnerCap` from the first example) can still be created in another function.
+Especially given that new functions can be added to the module during an upgrade. So the `init`
+function is a good place to set up the initial state of the module, but it is not a security measure
+on its own.
+
+There are ways to guarantee that the object was created only once, such as the
+[One Time Witness](./one-time-witness). And there are ways to limit or disable the upgrade of the
+module, which we will cover in the Package Upgrades chapter.
+
+## Next Steps
+
+As follows from the definition, the `init` function is guaranteed to be called only once when the
+module is published. So it is a good place to put the code that initializes module's objects and
+sets up the environment and configuration.
+
+For example, if there's a [Capability](./capability) which is required for certain actions, it
+should be created in the `init` function. In the next chapter we will talk about the `Capability`
+pattern in more detail.
+
+
+## FILE: book/programmability/one-time-witness.md
+
+---
+description: "One Time Witness (OTW) in Sui Move: a type guaranteed to be instantiated only once, used for Publisher and Coin creation."
+---
+
+# One Time Witness
+
+While regular [Witness](./witness-pattern) is a great way to statically prove the ownership of a
+type, there are cases where we need to ensure that a Witness is instantiated only once. And this is
+the purpose of the One Time Witness (OTW).
+
+<!--
+Notes to self:
+  - background first or definition first - which one is better?
+  - why would someone read this section?
+  - if we removed the OTW from docs, then we should give definition first.
+-->
+
+## Definition
+
+The OTW is a special type of Witness that can be used only once. It cannot be manually created and
+it is guaranteed to be unique per module. Sui Adapter treats a type as an OTW if it follows these
+rules:
+
+1. Has only `drop` ability.
+2. Has no fields.
+3. Is not a generic type.
+4. Named after the module with all uppercase letters.
+
+Here is an example of an OTW:
+
+```move file=packages/samples/sources/programmability/one-time-witness.move anchor=definition
+
+```
+
+The OTW cannot be constructed manually, and any code attempting to do so will result in a
+compilation error. The OTW can be received as the first argument in the
+[module initializer](./module-initializer). And because the `init` function is called only once per
+module, the OTW is guaranteed to be instantiated only once.
+
+## Enforcing the OTW
+
+To check if a type is an OTW, `sui::types` module of the [Sui Framework](./sui-framework) offers a
+special function `is_one_time_witness` that can be used to check if the type is an OTW.
+
+```move file=packages/samples/sources/programmability/one-time-witness.move anchor=usage
+
+```
+
+<!-- ## Background
+
+Before we get to actual definition of the OTW, let's consider a simple example. We want to build a generic implementation of a Coin type, which can be initialized with a witness. A instance of a witness `T` is used to create a new `TreasuryCap<T>` which is then used to mint a new `Coin<T>`.
+
+```move
+module book::simple_coin {
+
+    /// Controls the supply of the Coin.
+    public struct TreasuryCap<phantom T> has key, store {
+        id: UID,
+        total_supply: u64,
+    }
+
+    /// The Coin type where the `T` is a witness.
+    public struct Coin<phantom T> has key, store {
+        id: UID,
+        value: u64,
+    }
+
+    /// Create a new TreasuryCap with a witness.
+    /// Vulnerable: we can create multiple TreasuryCap<T> with the same witness.
+    public fun new<T: drop>(_: T, ctx: &mut TxContext): TreasuryCap<T> {
+        TreasuryCap { id: object::new(ctx), total_supply: 0 }
+    }
+
+    /// We use a regular witness to authorize the minting.
+    public fun mint<T>(
+        treasury: &mut TreasuryCap<T>,
+        value: u64,
+        ctx: &mut TxContext
+    ) {
+        treasury.total_supply = treasury.total_supply + value;
+        Coin { id: object::new(ctx), value }
+    }
+}
+```
+
+A dishonest developer would be able to create multiple `TreasuryCap`s with the same witness, and mint more `Coin`s than expected. Here is an example of such a malicious module:
+
+```move
+module book::simple_coin_cheater {
+    /// The Coin witness.
+    public struct Move has drop {}
+
+    /// Initialize the TreasuryCap with the Move witness.
+    /// ...and do it twice! >_<
+    fun init(ctx: &mut TxContext) {
+        let treasury_cap = book::simple_coin::new(Move {}, ctx);
+        let secret_treasury = book::simple_coin::new(Move {}, ctx);
+
+        transfer::public_transfer(treasury_cap, ctx.sender())
+        transfer::public_transfer(secret_treasury, ctx.sender())
+    }
+}
+
+```
+
+The example above has no protection against issuing multiple `TreasuryCap`s with the same witness, and in real-world application, this creates a problem of trust. If it was a human decision to support a Coin based on this implementation, they would have to make sure that:
+
+- there is only one `TreasuryCap` for a given `T`.
+- the module cannot be upgraded to issue more `TreasuryCap`s.
+- the module code does not contain any backdoors to issue more `TreasuryCap`s.
+
+However, it is not possible to check any of these conditions inside the Move code. And to prevent the need for trust, Sui introduces the OTW pattern.
+
+## Solving the Coin Problem
+
+To solve the case of multiple `TreasuryCap`s, we can use the OTW pattern. By defining the `COIN_OTW` type as an OTW, we can ensure that the `COIN_OTW` is used only once. The `COIN_OTW` is then used to create a new `TreasuryCap` and mint a new `Coin`.
+
+```move
+module book::coin_otw {
+
+    /// The OTW for the `book::coin_otw` module.
+    struct COIN_OTW has drop {}
+
+    /// Receive the instance of `COIN_OTW` as the first argument.
+    fun init(otw: COIN_OTW, ctx: &mut TxContext) {
+        let treasury_cap = book::simple_coin::new(COIN_OTW {}, ctx);
+        transfer::public_transfer(treasury_cap, ctx.sender())
+    }
+}
+```
+
+
+ -->
+
+<!-- ## Case Study: Coin
+
+TODO: add a story behind TreasuryCap and Coin
+
+-->
+
+## Summary
+
+The OTW pattern is a great way to ensure that a type is used only once. Most of the developers
+should understand how to define and receive the OTW, while the OTW checks and enforcement is mostly
+needed in libraries and frameworks. For example, the `sui::coin` module requires an OTW in the
+`coin::create_currency` method, therefore enforcing that the `coin::TreasuryCap` is created only
+once.
+
+OTW is a powerful tool that lays the foundation for the [Publisher](./publisher) object, which we
+will cover in the next section.
+
+<!--
+
+## Questions
+- What other ways could be used to prevent multiple `TreasuryCap`s?
+- Are there any other ways to use the OTW?
+
+ -->
+
+
+## FILE: book/programmability/capability.md
+
+---
+description: "The Capability pattern in Move: use owned objects as access-control tokens to authorize privileged operations in Sui smart contracts."
+---
+
+# Pattern: Capability
+
+In programming, a _capability_ is a token that gives the owner the right to perform a specific
+action. It is a pattern that is used to control access to resources and operations. A simple example
+of a capability is a key to a door. If you have the key, you can open the door. If you don't have
+the key, you can't open the door. A more practical example is an Admin Capability which allows the
+owner to perform administrative operations, which regular users cannot.
+
+## Capability is an Object
+
+In the [Sui Object Model](./../object/), capabilities are represented as objects. An owner of an
+object can pass this object to a function to prove that they have the right to perform a specific
+action. Due to strict typing, the function taking a capability as an argument can only be called
+with the correct capability.
+
+> There's a convention to name capabilities with the `Cap` suffix, for example, `AdminCap` or
+> `KioskOwnerCap`.
+
+```move file=packages/samples/sources/programmability/capability.move anchor=main
+
+```
+
+## Using `init` for Admin Capability
+
+A very common practice is to create a single `AdminCap` object on package publish. This way, the
+application can have a setup phase where the admin account prepares the state of the application.
+
+```move file=packages/samples/sources/programmability/capability-2.move anchor=admin_cap
+
+```
+
+## Address Check vs Capability
+
+Utilizing objects as capabilities is a relatively new concept in blockchain programming. And in
+other smart-contract languages, authorization is often performed by checking the address of the
+sender. This pattern is still viable on Sui, however, overall recommendation is to use capabilities
+for better security, discoverability, and code organization.
+
+Let's look at how the `new` function that creates a user would look like if it was using the address
+check:
+
+```move file=packages/samples/sources/programmability/capability-3.move anchor=with_address
+
+```
+
+And now, let's see how the same function would look like with the capability:
+
+```move file=packages/samples/sources/programmability/capability-4.move anchor=with_capability
+
+```
+
+Using capabilities has several advantages over the address check:
+
+- Migration of admin rights is easier with capabilities due to them being objects. In case of
+  address, if the admin address changes, all the functions that check the address need to be
+  updated - hence, require a package upgrade.
+- Function signatures are more descriptive with capabilities. It is clear that the `new` function
+  requires the `AdminCap` to be passed as an argument. And this function can't be called without it.
+- Object Capabilities don't require extra checks in the function body, and hence, decrease the
+  chance of a developer mistake.
+- An owned Capability also serves in discovery. The owner of the AdminCap can see the object in
+  their account (via a Wallet or Explorer), and know that they have the admin rights. This is less
+  transparent with the address check.
+
+However, the address approach has its own advantages. For example, if an address is multisig, and
+transaction building gets more complex, it might be easier to check the address. Also, if there's a
+central object of the application that is used in every function, it can store the admin address,
+and this would simplify migration. The central object approach is also valuable for revocable
+capabilities, where the admin can revoke the capability from the user.
+
+
+## FILE: book/testing/testing-basics.md
+
+---
+description: "Move testing basics: write tests with the #[test] attribute, use expected failures, and organize test-only code in your modules."
+---
+
+# Testing Basics
+
+The Move compiler has a built-in testing framework - tests are written in Move and live alongside
+your source code. You annotate functions with `#[test]`, and the compiler handles discovery and
+execution. The VM execution environment is the same as in production, so your code runs with
+identical semantics. However, network and storage features are simulated in tests and don't behave
+exactly as they do during actual on-chain execution - something to keep in mind when testing
+interactions with objects, transactions, and other platform-specific functionality.
+
+## What is a Test?
+
+A test is a function annotated with the `#[test]` attribute. Tests cannot take arguments and should
+not return a value. Test functions are automatically detected and executed when running the test
+command. If a test function [aborts](./../move-basics/assert-and-abort.md) unexpectedly, the test
+fails.
+
+```move
+module book::my_module;
+
+#[test]
+fun test_addition() {
+    assert!(2 + 2 == 4);
+}
+
+#[test]
+fun test_that_aborts() {
+    abort // This test will FAIL - unexpected abort
+}
+
+#[test, expected_failure]
+fun test_expected_abort() {
+    abort // This test will PASS - abort was expected
+}
+```
+
+## Running Tests
+
+To run tests, use the `sui move test` command. The compiler builds the package in _test mode_ and
+runs all tests found in the package.
+
+```bash
+sui move test
+```
+
+Example output:
+
+```
+Running Move unit tests
+[ PASS    ] book::my_module::test_addition
+[ FAIL    ] book::my_module::test_that_aborts
+[ PASS    ] book::my_module::test_expected_abort
+Test result: FAILED. Total tests: 3; passed: 2; failed: 1
+```
+
+## Filtering Tests
+
+Run specific tests by providing a filter string. Only tests whose fully qualified name contains the
+filter will run:
+
+```bash
+# Run tests containing "addition" in the name
+sui move test addition
+
+# Run all tests in a specific module
+sui move test my_module
+
+# Run a specific test
+sui move test book::my_module::test_addition
+```
+
+## Expected Failures
+
+Use `#[expected_failure]` to test that code aborts under certain conditions. The test passes only if
+it aborts; if it completes normally, the test fails.
+
+### Basic Expected Failure
+
+```move
+#[test, expected_failure]
+fun test_division_by_zero() {
+    let _ = 1 / 0; // Aborts - test passes
+}
+```
+
+### Expected Abort Code
+
+Specify the expected abort code to ensure the function fails for the right reason:
+
+```move
+module book::errors;
+
+const EInvalidInput: u64 = 1;
+const ENotFound: u64 = 2;
+
+public fun validate(x: u64) {
+    assert!(x > 0, EInvalidInput);
+}
+
+#[test, expected_failure(abort_code = EInvalidInput)]
+fun test_validate_zero_fails() {
+    validate(0); // Aborts with EInvalidInput - test passes
+}
+
+#[test, expected_failure(abort_code = ENotFound)]
+fun test_wrong_error_code() {
+    validate(0); // Aborts with EInvalidInput, not ENotFound - test FAILS
+}
+```
+
+### Expected Location
+
+Specify where the abort should occur using `location`:
+
+```move
+#[test, expected_failure(abort_code = EInvalidInput, location = book::errors)]
+fun test_abort_location() {
+    validate(0);
+}
+
+// Use `location = Self` for aborts in the current module
+#[test, expected_failure(abort_code = 1, location = Self)]
+fun test_abort_in_self() {
+    abort 1
+}
+```
+
+## Test-Only Code
+
+Code marked with `#[test_only]` is compiled only in test mode. Use it for test utilities, helper
+functions, or imports that shouldn't exist in production code. It is common for `#[test_only]`
+functions to have `public` or `public(package)` visibility so they can be called from tests in other
+modules - since test-only code is stripped from production builds, this does not affect the public
+API of your package.
+
+> Note: a good rule of thumb is to add `_for_testing` suffix to test-only functions and constants.
+> This helps distinguish them from production code and makes it easier to find them in the codebase.
+> Given that test-only functions often do things that production code cannot, this is a good way to
+> ensure that you are not accidentally using a test-only function in production code.
+
+### Test-Only Imports
+
+```move
+#[test_only]
+use std::unit_test::assert_eq;
+
+#[test]
+fun test_with_assert_eq() {
+    assert_eq!(2 + 2, 4);
+}
+```
+
+### Test-Only Functions
+
+```move
+#[test_only]
+fun setup_test_data(): vector<u64> {
+    vector[1, 2, 3, 4, 5]
+}
+
+#[test]
+fun test_sum() {
+    let data = setup_test_data();
+    let mut sum = 0;
+    data.do!(|x| sum = sum + x);
+    assert!(sum == 15);
+}
+```
+
+### Test-Only Constants
+
+```move
+#[test_only]
+const TEST_ADDRESS: address = @0xCAFE;
+```
+
+### Test-Only Modules
+
+An entire module can be test-only:
+
+```move
+#[test_only]
+module book::test_helpers;
+
+public fun create_test_scenario(): u64 { 42 }
+```
+
+## Useful CLI Options
+
+| Option                 | Description                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| `<filter>`             | Run only tests matching the filter (positional argument)                                |
+| `--coverage`           | Collect coverage information (see [Coverage](./coverage.md))                            |
+| `--trace`              | Generate traces for coverage LCOV output                                                |
+| `--statistics`         | Show execution statistics including gas usage (see [Gas Profiling](./gas-profiling.md)) |
+| `--threads <n>`        | Number of threads for parallel test execution                                           |
+| `--rand-num-iters <n>` | Number of iterations for [random tests](./random-test.md)                               |
+| `--seed <n>`           | Seed for reproducible random test runs                                                  |
+
+## Test Output
+
+When a test fails, the output shows:
+
+- The test name and FAIL status
+- The abort code (if any)
+- The location where the failure occurred
+- A stack trace for debugging
+
+```table
+┌── test_that_failed ──────
+│ error[E11001]: test failure
+│    ┌─ ./sources/module.move:15:9
+│    │
+│ 15 │         assert!(balance == 100);
+│    │         ^^^^^^^^^^^^^^^^^^^^^^^ Test was not expected to error, but it
+│    │         aborted with code 1 originating in the module 0x0::module
+│
+└──────────────────
+```
+
+## Next Steps
+
+In the next sections you will learn how to write good tests, how to use test utilities, how to test
+transactions and how to master the testing framework.
+
+
+## FILE: book/testing/test-scenario.md
+
+---
+description: "Test Scenario in Sui Move: simulate multi-transaction flows, test object transfers, and verify shared object behavior in tests."
+---
+
+# Test Scenario
+
+The `test_scenario` module from the [Sui Framework](./../programmability/sui-framework.md) provides
+a way to simulate multi-transaction scenarios in tests. It maintains a view of the global object
+pool and allows you to test how objects are created, transferred, and accessed across multiple
+transactions.
+
+```move
+#[test_only]
+use sui::test_scenario;
+```
+
+## Starting and Ending a Scenario
+
+A test scenario begins with `test_scenario::begin` which takes the sender address as an argument.
+The scenario must be ended with `test_scenario::end` to clean up resources. Failing to end a
+scenario will result in a compilation error.
+
+> **Note:** there should be only one scenario per test. Creating multiple scenarios in the same test
+> may produce unexpected results and should be avoided.
+
+```move
+use sui::test_scenario;
+
+#[test]
+fun test_basic_scenario() {
+    let alice = @0xA;
+
+    // Start a scenario with alice as the sender
+    let mut scenario = test_scenario::begin(alice);
+
+    // ... perform operations ...
+
+    // End the scenario - returns TransactionEffects
+    scenario.end();
+}
+```
+
+## Transaction Simulation
+
+Use `next_tx` to advance to a new transaction with a specified sender. Objects transferred in the
+previous transaction become available in the next one. Each `next_tx` call returns
+[`TransactionEffects`](#reading-transaction-effects) containing information about what happened in
+the previous transaction.
+
+```move
+use sui::test_scenario;
+
+#[test]
+fun test_multi_transaction() {
+    let alice = @0xA;
+    let bob = @0xB;
+
+    let mut scenario = test_scenario::begin(alice);
+
+    // First transaction: alice creates an object
+    // Objects created here are not yet in anyone's inventory
+
+    // Advance to second transaction with bob as sender
+    // Objects from the first transaction are now available
+    let _effects = scenario.next_tx(bob);
+
+    // ... bob can now access objects transferred to him ...
+
+    scenario.end();
+}
+```
+
+> Important: Objects transferred during a transaction are only available after calling `next_tx`.
+> You cannot access an object in the same transaction where it was transferred.
+
+## Accessing Owned Objects
+
+[Owned objects](./../object/ownership.md#account-owner-or-single-owner) transferred to an address can be
+accessed using `take_from_sender` or `take_from_address`. The object then can be passed to a
+function, returned with `return_to_sender` or `return_to_address`, or transferred elsewhere using
+`public_transfer` (if the object has `store` ability).
+
+```move
+module book::test_scenario_example;
+
+public struct Item has key, store {
+    id: UID,
+    value: u64,
+}
+
+public fun create(value: u64, ctx: &mut TxContext): Item {
+    Item { id: object::new(ctx), value }
+}
+
+public fun value(item: &Item): u64 { item.value }
+
+#[test]
+fun test_take_and_return() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    // Transaction 1: Create and transfer an item to alice
+    {
+        let item = create(100, scenario.ctx());
+        transfer::public_transfer(item, alice);
+    };
+
+    // Transaction 2: Alice takes the item
+    scenario.next_tx(alice);
+    {
+        // Take the most recent Item from sender's inventory
+        let item = scenario.take_from_sender<Item>();
+        assert_eq!(item.value(), 100);
+
+        // Return the item to sender's inventory
+        scenario.return_to_sender(item);
+    };
+
+    scenario.end();
+}
+```
+
+### Taking by ID
+
+When multiple objects of the same type exist, use `take_from_sender_by_id` or
+`take_from_address_by_id` to take a specific one:
+
+```move
+#[test]
+fun test_take_by_id() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    // Create two items
+    let item1 = create(100, scenario.ctx());
+    let item2 = create(200, scenario.ctx());
+    let id1 = object::id(&item1);
+
+    transfer::public_transfer(item1, alice);
+    transfer::public_transfer(item2, alice);
+
+    scenario.next_tx(alice);
+    {
+        // Take the specific item by ID
+        let item = scenario.take_from_sender_by_id<Item>(id1);
+        assert_eq!(item.value(), 100);
+        scenario.return_to_sender(item);
+    };
+
+    scenario.end();
+}
+```
+
+### Checking Object Availability
+
+Before taking an object, you can check if one exists:
+
+```move
+#[test]
+fun test_has_object() {
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    // No items exist yet
+    assert!(!scenario.has_most_recent_for_sender<Item>());
+
+    let item = create(100, scenario.ctx());
+    transfer::public_transfer(item, alice);
+
+    scenario.next_tx(alice);
+
+    // Now an item exists
+    assert!(scenario.has_most_recent_for_sender<Item>());
+
+    scenario.end();
+}
+```
+
+## Accessing Shared Objects
+
+[Shared objects](./../object/ownership.md#shared-state) are accessed using `take_shared` and must be
+returned with `return_shared`:
+
+```move
+module book::shared_counter;
+
+public struct Counter has key {
+    id: UID,
+    value: u64,
+}
+
+public fun create(ctx: &mut TxContext) {
+    transfer::share_object(Counter {
+        id: object::new(ctx),
+        value: 0,
+    })
+}
+
+public fun increment(counter: &mut Counter) {
+    counter.value = counter.value + 1;
+}
+
+public fun value(counter: &Counter): u64 { counter.value }
+
+#[test]
+fun test_shared_object() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let bob = @0xB;
+
+    let mut scenario = test_scenario::begin(alice);
+
+    // Alice creates a shared counter
+    create(scenario.ctx());
+
+    // Bob increments it
+    scenario.next_tx(bob);
+    {
+        let mut counter = scenario.take_shared<Counter>();
+        counter.increment();
+        assert_eq!(counter.value(), 1);
+        test_scenario::return_shared(counter);
+    };
+
+    // Alice increments it again
+    scenario.next_tx(alice);
+    {
+        let mut counter = scenario.take_shared<Counter>();
+        counter.increment();
+        assert_eq!(counter.value(), 2);
+        test_scenario::return_shared(counter);
+    };
+
+    scenario.end();
+}
+```
+
+### The `with_shared` Macro
+
+For cleaner code, use the `with_shared!` macro which handles take and return automatically:
+
+```move
+#[test]
+fun test_with_shared_macro() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    create(scenario.ctx());
+    scenario.next_tx(alice);
+
+    scenario.with_shared!<Counter>(|counter, _scenario| {
+        counter.increment();
+        assert_eq!(counter.value(), 1);
+    });
+
+    scenario.end();
+}
+```
+
+## Accessing Immutable Objects
+
+[Immutable (frozen) objects](./../object/ownership.md#immutable-frozen-state) are accessed with
+`take_immutable` and returned with `return_immutable`:
+
+```move
+module book::immutable_config;
+
+public struct Config has key {
+    id: UID,
+    max_value: u64,
+}
+
+public fun create(max_value: u64, ctx: &mut TxContext) {
+    transfer::freeze_object(Config {
+        id: object::new(ctx),
+        max_value,
+    })
+}
+
+public fun max_value(config: &Config): u64 { config.max_value }
+
+#[test]
+fun test_immutable_object() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    // Create an immutable config
+    create(1000, scenario.ctx());
+
+    scenario.next_tx(alice);
+    {
+        // Take the immutable object
+        let config = scenario.take_immutable<Config>();
+        assert_eq!(config.max_value(), 1000);
+
+        // Return it to the global inventory
+        test_scenario::return_immutable(config);
+    };
+
+    scenario.end();
+}
+```
+
+## Accessing Transaction Context
+
+The `ctx` method provides access to the [`TxContext`](./../programmability/transaction-context.md)
+for the current transaction. Use it when calling functions that require a context:
+
+```move
+#[test]
+fun test_context_access() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    // Access the transaction context
+    let ctx = scenario.ctx();
+
+    // Use it for operations that need context
+    let item = create(100, ctx);
+    transfer::public_transfer(item, alice);
+
+    // The sender matches what we passed to begin()
+    assert_eq!(ctx.sender(), alice);
+
+    scenario.end();
+}
+```
+
+## Reading Transaction Effects
+
+Both `next_tx` and `end` return `TransactionEffects` which contains information about what happened
+during the transaction:
+
+```move
+#[test]
+fun test_transaction_effects() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let bob = @0xB;
+    let mut scenario = test_scenario::begin(alice);
+
+    // Create objects in first transaction
+    let item1 = create(100, scenario.ctx());
+    let item2 = create(200, scenario.ctx());
+    transfer::public_transfer(item1, alice);
+    transfer::public_transfer(item2, bob);
+
+    // Get effects from the first transaction
+    let effects = scenario.next_tx(alice);
+
+    // Check what was created
+    assert_eq!(effects.created().length(), 2);
+
+    // Check transfers to accounts
+    assert_eq!(effects.transferred_to_account().size(), 2);
+
+    // Check number of events emitted
+    assert_eq!(effects.num_user_events(), 0);
+
+    scenario.end();
+}
+```
+
+### Available Effect Fields
+
+| Method                     | Returns               | Description                          |
+| -------------------------- | --------------------- | ------------------------------------ |
+| `created()`                | `vector<ID>`          | Objects created in this transaction  |
+| `written()`                | `vector<ID>`          | Objects modified in this transaction |
+| `deleted()`                | `vector<ID>`          | Objects deleted in this transaction  |
+| `transferred_to_account()` | `VecMap<ID, address>` | Objects transferred to addresses     |
+| `transferred_to_object()`  | `VecMap<ID, ID>`      | Objects transferred to other objects |
+| `shared()`                 | `vector<ID>`          | Objects shared in this transaction   |
+| `frozen()`                 | `vector<ID>`          | Objects frozen in this transaction   |
+| `num_user_events()`        | `u64`                 | Number of events emitted             |
+
+## System Objects
+
+Use `create_system_objects` to make system objects like `Clock`, `Random`, and `DenyList` available
+in tests. For more detailed coverage of testing with system objects, see
+[Using System Objects](./using-system-objects.md).
+
+```move
+use sui::clock::Clock;
+
+#[test]
+fun test_with_clock() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    // Create system objects (Clock, Random, DenyList)
+    scenario.create_system_objects();
+
+    scenario.next_tx(alice);
+    {
+        // Now Clock is available as a shared object
+        let clock = scenario.take_shared<Clock>();
+        assert_eq!(clock.timestamp_ms(), 0);
+        test_scenario::return_shared(clock);
+    };
+
+    scenario.end();
+}
+```
+
+## Epoch and Time Manipulation
+
+Test [time-dependent logic](./../programmability/epoch-and-time.md) using `next_epoch` and
+`later_epoch`:
+
+```move
+#[test]
+fun test_epoch_advancement() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let alice = @0xA;
+    let mut scenario = test_scenario::begin(alice);
+
+    // Check initial epoch
+    assert_eq!(scenario.ctx().epoch(), 0);
+
+    // Advance to next epoch
+    scenario.next_epoch(alice);
+    assert_eq!(scenario.ctx().epoch(), 1);
+
+    // Advance epoch and time together (1000ms = 1 second)
+    scenario.later_epoch(1000, alice);
+    assert_eq!(scenario.ctx().epoch(), 2);
+    assert_eq!(scenario.ctx().epoch_timestamp_ms(), 1000);
+
+    scenario.end();
+}
+```
+
+## Complete Example
+
+Here's a complete example testing a simple token transfer flow:
+
+```move
+module book::simple_token;
+
+public struct Token has key, store {
+    id: UID,
+    amount: u64,
+}
+
+public fun mint(amount: u64, ctx: &mut TxContext): Token {
+    Token { id: object::new(ctx), amount }
+}
+
+public fun amount(token: &Token): u64 { token.amount }
+
+#[test]
+fun test_token_transfer_flow() {
+    use std::unit_test::assert_eq;
+    use sui::test_scenario;
+
+    let admin = @0xAD;
+    let alice = @0xA;
+    let bob = @0xB;
+
+    // Start scenario as admin
+    let mut scenario = test_scenario::begin(admin);
+
+    // Admin mints tokens for alice
+    {
+        let token = mint(1000, scenario.ctx());
+        transfer::public_transfer(token, alice);
+    };
+
+    // Alice receives and transfers to bob
+    scenario.next_tx(alice);
+    {
+        assert!(scenario.has_most_recent_for_sender<Token>());
+        let token = scenario.take_from_sender<Token>();
+        assert_eq!(token.amount(), 1000);
+        transfer::public_transfer(token, bob);
+    };
+
+    // Bob receives the token
+    scenario.next_tx(bob);
+    {
+        let token = scenario.take_from_sender<Token>();
+        assert_eq!(token.amount(), 1000);
+        scenario.return_to_sender(token);
+    };
+
+    // Verify final state via effects
+    let effects = scenario.end();
+    assert_eq!(effects.transferred_to_account().size(), 0); // No transfers in final tx
+}
+```
+
+## Summary
+
+| Function                    | Purpose                                |
+| --------------------------- | -------------------------------------- |
+| `begin(sender)`             | Start a new scenario                   |
+| `end(scenario)`             | End the scenario and get final effects |
+| `next_tx(scenario, sender)` | Advance to next transaction            |
+| `ctx(scenario)`             | Get mutable reference to `TxContext`   |
+| `take_from_sender<T>`       | Take owned object from sender          |
+| `return_to_sender(obj)`     | Return object to sender                |
+| `take_shared<T>`            | Take shared object                     |
+| `return_shared(obj)`        | Return shared object                   |
+| `take_immutable<T>`         | Take immutable object                  |
+| `return_immutable(obj)`     | Return immutable object                |
+| `create_system_objects`     | Create Clock, Random, DenyList         |
+| `next_epoch`                | Advance to next epoch                  |
+| `later_epoch(ms, sender)`   | Advance epoch and time                 |
+
+## Further Reading
+
+- [Using System Objects](./using-system-objects.md) - Creating and manipulating Clock, Random,
+  DenyList, Coin, and Balance in tests
+- [Test Utilities](./test-utilities.md) - `assert_eq!`, `destroy`, and other testing helpers
+- [Transaction Context](./../programmability/transaction-context.md) - Understanding `TxContext` and
+  its fields
+- [Object Ownership](./../object/ownership.md) - How owned, shared, and immutable objects work
+- [Epoch and Time](./../programmability/epoch-and-time.md) - Working with time in Sui
+
+

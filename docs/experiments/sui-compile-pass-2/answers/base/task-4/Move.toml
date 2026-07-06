@@ -1,0 +1,6 @@
+[package]
+name = "base_4"
+edition = "2024"
+
+[addresses]
+nft_collection = "0x0"

@@ -1,0 +1,5 @@
+[package]
+name = "dynamic_fields_red"
+edition = "2024"
+
+[dependencies]

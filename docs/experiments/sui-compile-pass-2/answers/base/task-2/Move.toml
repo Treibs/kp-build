@@ -1,0 +1,6 @@
+[package]
+name = "base_2"
+edition = "2024"
+
+[addresses]
+mailbox = "0x0"

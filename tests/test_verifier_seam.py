@@ -882,6 +882,17 @@ def test_load_parses_execution_directive_and_relaxes_paper_requirement(tmp_path)
     assert pkg.claims[0].paper == ""                  # an execution claim needs no citation paper
 
 
+def test_load_accepts_sui_move_build_execution_tool(tmp_path):
+    from kp_build.cli import _load
+    rj = {"topic": "sui", "scope": "s", "claims": [
+        {"id": "s1", "statement": "contract compiles", "supporting_passage": "build passes",
+         "execution": {"tool": "sui-move-build", "gate_code": "build_error", "artifact": "some-dir"}}]}
+    pkg = _load(_write(tmp_path, rj))
+    assert pkg.claims[0].execution["tool"] == "sui-move-build"
+    assert pkg.claims[0].execution["gate_code"] == "build_error"
+    assert pkg.claims[0].paper == ""
+
+
 def test_load_rejects_claim_with_neither_paper_nor_execution(tmp_path):
     from kp_build.cli import _load, ResearchInputError
     rj = {"topic": "t", "claims": [{"id": "x", "statement": "s", "supporting_passage": "p"}]}
@@ -1181,3 +1192,25 @@ def test_hyperframes_runner_pin_checked_once_per_process(monkeypatch):
     assert hyperframes_runner("x", "lint", _run=run) == {"codes": []}
     assert sum(1 for c in run.calls if c[:2] == ["npm", "view"]) == 1
     assert sum(1 for c in run.calls if c[0] == "npx") == 2
+
+
+def test_default_runner_routes_sui_tool_to_sui_runner(tmp_path, monkeypatch):
+    from kp_build.verifier import default_runner
+    seen = {}
+    def fake_sui(artifact, tool, *, _run=None):
+        seen["call"] = (artifact, tool)
+        return {"codes": []}
+    monkeypatch.setattr("kp_build.sui_runner.sui_move_runner", fake_sui)
+    assert default_runner("pkg-dir", "sui-move-build") == {"codes": []}
+    assert seen["call"] == ("pkg-dir", "sui-move-build")
+
+
+def test_default_runner_routes_everything_else_to_hyperframes(monkeypatch):
+    from kp_build import verifier
+    seen = {}
+    def fake_hf(artifact, tool, *, _run=None):
+        seen["call"] = (artifact, tool)
+        return {"codes": ["x"]}
+    monkeypatch.setattr(verifier, "hyperframes_runner", fake_hf)
+    assert verifier.default_runner("a.json", "lint") == {"codes": ["x"]}
+    assert seen["call"] == ("a.json", "lint")

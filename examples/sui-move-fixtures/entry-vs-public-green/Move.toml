@@ -1,0 +1,5 @@
+[package]
+name = "entry_vs_public_green"
+edition = "2024"
+
+[dependencies]

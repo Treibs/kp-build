@@ -1,0 +1,1264 @@
+# Source: https://github.com/MystenLabs/sui @ d9f4797dbdcc9c5ec019fa190b432ea0e1bc39c1 — docs licensed CC-BY-4.0 (LICENSE-docs; code Apache-2.0). Excerpts for offline doc-grounding verification.
+
+## FILE: docs/content/develop/objects/index.mdx
+
+---
+title: Objects
+description: Learn about the Sui object model, how to use objects, and different object ownership methods. 
+keywords: [ object model, objects on sui, sui move package, sui move object, move objects, move packages, objects, packages, referring to objects, object metadata, transaction-objects, transaction objects, relating objects and transactions ]
+pagination_prev: null
+---
+
+Learn about the Sui object model, how to use objects, and different object ownership methods. 
+
+import DocCardList from '@theme/DocCardList';
+
+<DocCardList />
+
+## FILE: docs/content/develop/objects/object-ownership/index.mdx
+
+---
+title: Types of Object Ownership
+description: Learn about different types of object ownership on Sui.
+keywords: [ object model, objects on sui, sui move package, sui move object, move objects, move packages, objects, packages, referring to objects, object metadata, transaction-objects, transaction objects, relating objects and transactions ]
+pagination_prev: null
+---
+
+Every object has an owner that determines who can use it in transactions and whether the object is versioned on the fastpath or through consensus.
+
+| Ownership type | Access model | Versioning path |
+| --- | --- | --- |
+| [Address-owned](/develop/objects/object-ownership/address-owned) | A single address can use the object. | Fastpath |
+| [Shared](/develop/objects/object-ownership/shared) | Any address can use the object, subject to Move checks. | Consensus |
+| [Immutable](/develop/objects/object-ownership/immutable) | Any address can read the object; no one can mutate it. | Fixed after it becomes immutable |
+| [Wrapped](/develop/objects/object-ownership/wrapped) | Only accessible through the object that wraps it. | Depends on the wrapper |
+| [Consensus-address owned / party](/develop/objects/object-ownership/party) | A single address owns the object, but the object is sequenced by consensus. | Consensus |
+
+APIs expose consensus-address-owned objects with a `ConsensusAddressOwner` owner variant. Party objects are the public Move-facing way to create this ownership form with `sui::party::Party` and `sui::transfer::party_transfer` or `sui::transfer::public_party_transfer`. Use them when you want single-address ownership with consensus sequencing, for example to allow multiple inflight transactions against the same logical object without fastpath locks.
+
+:::caution
+
+Anyone can submit a transaction that references a shared object. Shared-object access is *not* restricted by ownership, so secure it in Move with explicit authorization checks (such as a capability argument, a `tx_context::sender()` check, or validating object ownership). Do not assume that referencing a shared object implies the caller is authorized. See [Access control](/develop/security/best-practices#access-control).
+
+:::
+
+Learn about different types of object ownership on Sui.
+
+import DocCardList from '@theme/DocCardList';
+
+<DocCardList />
+
+## FILE: docs/content/develop/objects/object-ownership/address-owned.mdx
+
+---
+title: Address-Owned Objects
+description: Address-owned objects are owned by a Sui 32-byte address, which can either be an account address or an object ID. Learn how to create and access these objects.
+keywords: [ address-owned objects, address-owned, owned objects, objects owned by address, accessing objects, accessing owned objects, address ownership ]
+---
+
+Address-owned objects are owned by a 32-byte address. 32-byte addresses are either an account address derived from a particular signature scheme or an object ID. An address-owned object is only accessible to its owner. You can transfer objects that you own to different addresses.
+
+## Create address-owned objects
+
+Use these [`transfer` module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move) functions to create address-owned objects:
+
+- Use the [`sui::transfer::transfer`](/references/framework/sui_sui/transfer#sui_transfer_transfer) function if you are defining [custom transfer rules](/develop/objects/transfers/custom-rules) for the object. 
+
+- Use the [`sui::transfer::public_transfer`](/references/framework/sui_sui/transfer#sui_transfer_public_transfer) function to create an address-owned object if the object has the `store` capability.
+
+```
+public fun transfer<T: key>(obj: T, recipient: address)
+public fun public_transfer<T: key + store>(obj: T, recipient: address)
+```
+
+An object's ownership can change over the life of that object, either by adding it as a [dynamic object field](/develop/objects/dynamic-fields), transferring it to a different address, or making it [immutable](/develop/objects/object-ownership/immutable). However, after you create an object and set its ownership, it cannot be [shared](/develop/objects/object-ownership/shared).
+
+<ImportContent source="examples/move/basics/sources/object_basics.move" mode="code" fun="create" noComments />
+
+## When to use address-owned objects
+
+Use address-owned objects when you need:
+
+- Single ownership
+
+- Better performance than shared objects
+
+- Avoidance of consensus sequencing
+
+## Interact with address-owned objects
+
+You can access address-owned objects in 2 different ways depending on whether the address owner of the object corresponds to an address or an object ID.
+
+If the address owner of the object is an account address, then you can use and access it directly as an owned object during the execution of a transaction signed by that address. Other addresses cannot access owned objects in any way.
+
+If the address owner of the object corresponds to an object ID, then you must access and dynamically authenticate it during the execution of the transaction using the mechanisms defined in [Transfer to Object](/develop/objects/transfers/transfer-to-object).
+
+To interact with an address-owned object through the CLI, first view the objects you own:
+
+```sh
+$ export ADDR=`sui client active-address`
+```
+```sh
+$ sui client objects $ADDR
+```
+
+You can see [`sui::transfer::public_transfer`](/references/framework/sui_sui/transfer#sui_transfer_public_transfer) function used in the [`color_object` example module](https://github.com/MystenLabs/sui/blob/main/examples/move/color_object/sources/example.move) tests. The test creates a new address-owned `ColorObject` object, then calls `public_transfer` to transfer it to the owner's address. 
+
+Save the [`color_object` example code](https://github.com/MystenLabs/sui/blob/main/examples/move/color_object/sources/example.move), then publish the `ColorObject` code onchain using the Sui CLI:
+
+<ImportContent source="info-gas-budget" mode="snippet" />
+
+```sh
+$ sui client publish $ROOT/examples/move/color_object --gas-budget <GAS-AMOUNT>
+```
+
+Set the package object ID to the `$PACKAGE` environment variable, if you have it set. Then create a new `ColorObject`:
+
+```sh
+$ sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "create" --args 0 255 0
+```
+
+Set the newly created object ID to `$OBJECT`. To view the objects in the current active address:
+
+```sh
+$ sui client objects $ADDR
+```
+
+You can see that it is now owned by your address by querying the object information and viewing the `Owner` field in the output:
+
+```sh
+$ sui client object $OBJECT
+```
+
+## Test address-owned objects
+
+The following test creates an address-owned object, transfers it to the owner, then verifies that the owner field is correct:
+
+<ImportContent source="examples/move/color_object/sources/example.move" mode="code" fun="test_transfer"/>
+
+## FILE: docs/content/develop/objects/object-ownership/shared.mdx
+
+---
+title: Shared Objects
+description: Anyone can access shared objects on the Sui network, so care must be taken to secure access, if needed.
+keywords: [ shared objects, sharing objects, objects that are shared, public objects, accessing shared objects, accessing public objects ]
+---
+
+A shared object is a public, mutable object that is accessible to anyone on the network. They are designed such that multiple users or smart contracts can interact with the same object concurrently.
+
+## Create shared objects
+
+Use the [`sui::transfer::share_object`](/references/framework/sui_sui/transfer#sui_transfer_share_object) function to create a shared object, making it publicly accessible on the network. Extended functionality and accessibility of shared objects requires additional effort by securing access, if needed.
+
+Shared objects require the `key` ability.
+
+```move
+public struct Donut has key { id: UID }
+
+fun init(ctx: &mut TxContext) {
+    transfer::transfer(ShopOwnerCap {
+        id: object::new(ctx)
+    }, ctx.sender());
+
+    transfer::share_object(DonutShop {
+        id: object::new(ctx),
+        price: 1000,
+        balance: balance::zero()
+    })
+```
+
+## When to use shared objects
+
+Shared objects are ideal for things like marketplaces, games, or other scenarios where global state needs to be accessed or modified by multiple parties.
+
+## Interact with shared objects 
+
+The following example creates a shop to sell digital donuts. Everyone needs access to the shop to purchase donuts from it, so the example creates the shop as a shared object using [`sui::transfer::share_object`](/references/framework/sui_sui/transfer#sui_transfer_share_object).
+
+```move
+module examples::donuts;
+
+use sui::sui::SUI;
+use sui::coin::{Self, Coin};
+use sui::balance::{Self, Balance};
+
+/// For when Coin balance is too low.
+const ENotEnough: u64 = 0;
+
+/// Capability that grants an owner the right to collect profits.
+public struct ShopOwnerCap has key { id: UID }
+
+/// A purchasable Donut. For simplicity's sake we ignore implementation.
+public struct Donut has key { id: UID }
+
+/// A shared object. `key` ability is required.
+public struct DonutShop has key {
+    id: UID,
+    price: u64,
+    balance: Balance<SUI>
+}
+
+/// Init function is often ideal place for initializing
+/// a shared object as it is called only once.
+fun init(ctx: &mut TxContext) {
+    transfer::transfer(ShopOwnerCap {
+        id: object::new(ctx)
+    }, ctx.sender());
+
+    // Share the object to make it accessible to everyone!
+    transfer::share_object(DonutShop {
+        id: object::new(ctx),
+        price: 1000,
+        balance: balance::zero()
+    })
+}
+
+/// Entry function available to everyone who owns a Coin.
+public fun buy_donut(
+    shop: &mut DonutShop, payment: &mut Coin<SUI>, ctx: &mut TxContext
+) {
+    assert!(coin::value(payment) >= shop.price, ENotEnough);
+
+    // Take amount = `shop.price` from Coin<SUI>
+    let paid = payment.balance_mut.split(shop.price);
+
+    // Put the coin to the Shop's balance
+    shop.balance.join(paid);
+
+    transfer::transfer(Donut {
+        id: object::new(ctx)
+    }, ctx.sender())
+}
+
+/// Consume donut and get nothing...
+public fun eat_donut(d: Donut) {
+    let Donut { id } = d;
+    id.delete();
+}
+
+/// Take coin from `DonutShop` and transfer it to tx sender.
+/// Requires authorization with `ShopOwnerCap`.
+public fun collect_profits(
+    _: &ShopOwnerCap, shop: &mut DonutShop, ctx: &mut TxContext
+) {
+    let amount = shop.balance.value();
+    let profits = shop.balance.split(amount).into_coin(ctx);
+
+    transfer::public_transfer(profits, ctx.sender())
+}
+```
+
+## FILE: docs/content/develop/objects/object-ownership/immutable.mdx
+
+---
+title: Immutable Objects
+description: Immutable objects cannot be changed, transferred, or deleted. Immutable objects cannot have an owner and anyone can use them.
+keywords: [ immutable objects, objects immutable, create immutable object, convert object, use immutable object, test immutable object ]
+---
+
+Objects on Sui can either be immutable or mutable. An immutable object cannot be mutated, transferred, or deleted. These objects have no owner and are freely accessible to everyone.
+
+## Create immutable objects
+
+To make an object immutable, call the [`sui::transfer::public_freeze_object`](/references/framework/sui_sui/transfer#sui_transfer_public_freeze_object) function from the [transfer module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/transfer.move):
+
+```move
+public native fun public_freeze_object<T: key>(obj: T);
+```
+
+This call permanently makes the object immutable. The operation cannot be reversed. Only freeze objects when you are certain they never need modification.
+
+You can see this function used in the [`color_object` example module](https://github.com/MystenLabs/sui/blob/main/examples/move/color_object/sources/example.move) tests. The test creates a new address-owned `ColorObject` object, then calls `public_freeze_object` to turn it into an immutable object.
+
+<ImportContent source="examples/move/color_object/sources/example.move" mode="code" fun="test_immutable" noComments />
+
+In this test, you must own a `ColorObject` initially. After freezing, the object becomes immutable and ownerless.
+
+The [`sui::transfer::public_freeze_object`](/references/framework/sui_sui/transfer#sui_transfer_public_freeze_object) function requires that you pass the object by value. If you are allowed to pass the object by a mutable reference, you could still mutate the object after the [`sui::transfer::public_freeze_object`](/references/framework/sui_sui/transfer#sui_transfer_public_freeze_object) call. This contradicts the fact that it should have become immutable.
+
+Alternatively, you can also provide an API that creates an immutable object at creation:
+
+```move
+public fun create_immutable(red: u8, green: u8, blue: u8, ctx: &mut TxContext) {
+    let color_object = new(red, green, blue, ctx);
+    transfer::public_freeze_object(color_object)
+}
+```
+
+This function creates a new `ColorObject` and immediately makes it immutable before it has an owner.
+
+## When to use immutable objects
+
+After an object becomes immutable, the rules of who can use this object in Move calls change:
+
+1. You can only pass an immutable object as a read-only, immutable reference to Move functions as `&T`.
+
+2. All network participants can access immutable objects.
+
+Consider a function that copies the value of one object to another:
+
+```move
+public fun copy_into(from: &ColorObject, into: &mut ColorObject);
+```
+
+In this function, anyone can pass an immutable object as the first argument, `from`, but not the second argument. Because you can never change immutable objects, there is no data race, even when multiple transactions are using the same immutable object at the same time. The existence of immutable objects does not pose any requirement on consensus.
+
+## Interact with immutable objects
+
+First, view the objects you own:
+
+```sh
+$ export ADDR=`sui client active-address`
+```
+```sh
+$ sui client objects $ADDR
+```
+
+Publish the `ColorObject` code onchain using the Sui CLI:
+
+<ImportContent source="info-gas-budget" mode="snippet" />
+
+```sh
+$ sui client publish $ROOT/examples/move/color_object --gas-budget <GAS-AMOUNT>
+```
+
+Set the package object ID to the `$PACKAGE` environment variable, if you have it set. Then create a new `ColorObject`:
+
+```sh
+$ sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "create" --args 0 255 0
+```
+
+Set the newly created object ID to `$OBJECT`. To view the objects in the current active address:
+
+```sh
+$ sui client objects $ADDR
+```
+
+You should see an object with the ID you used for `$OBJECT`. To turn it into an immutable object:
+
+```sh
+$ sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "freeze_object" --args \"$OBJECT\"
+```
+
+View the list of objects again:
+
+```sh
+$ sui client objects $ADDR
+```
+
+`$OBJECT` is no longer listed. It is no longer owned by anyone. You can see that it is now immutable by querying the object information:
+
+```sh
+$ sui client object $OBJECT
+```
+
+The response includes:
+
+```sh
+Owner: Immutable  // This field shows the object's immutable status
+```
+
+If you try to mutate it:
+
+```sh
+$ sui client call --gas-budget <GAS-AMOUNT> --package $PACKAGE --module "color_object" --function "update" --args \"$OBJECT\" 0 0 0
+```
+
+The response indicates that you cannot pass an immutable object to a mutable argument.
+
+## Test immutable objects
+
+You can interact with immutable objects in unit tests using `test_scenario::take_immutable<T>` to take an immutable object wrapper from global storage, and `test_scenario::return_immutable` to return the wrapper back to the global storage.
+
+The `test_scenario::take_immutable<T>` function is required because you can access immutable objects solely through read-only references. The `test_scenario` runtime keeps track of the usage of this immutable object. If the compiler does not return the object through `test_scenario::return_immutable` before the start of the next transaction, the test stops.
+
+```move
+let sender1 = @0x1;
+let scenario_val = test_scenario::begin(sender1);
+let scenario = &mut scenario_val;
+{
+    let ctx = test_scenario::ctx(scenario);
+    color_object::create_immutable(255, 0, 255, ctx);
+};
+scenario.next_tx(sender1);
+{
+    // has_most_recent_for_sender returns false for immutable objects.
+    assert!(!test_scenario::has_most_recent_for_sender<ColorObject>(scenario))
+};
+```
+
+This test submits a transaction as `sender1`, which tries to create an immutable object.
+
+The `has_most_recent_for_sender<ColorObject>` function no longer returns `true`, because the object is no longer owned.
+
+To show that this object is indeed not owned by anyone, start the next transaction with `sender2`. It uses `take_immutable` and succeeds. This means that any sender can take an immutable object. To return the object, call the `return_immutable` function.
+
+```move
+// Any sender can work.
+let sender2 = @0x2;
+scenario.next_tx(sender2);
+{
+    let object = test_scenario::take_immutable<ColorObject>(scenario);
+    let (red, green, blue) = color_object::get_color(object);
+    assert!(red == 255 && green == 0 && blue == 255)
+    test_scenario::return_immutable(object);
+};
+```
+
+To verify immutability, create a function attempting to modify a `ColorObject`:
+
+```move
+public fun update(
+    object: &mut ColorObject,
+    red: u8, green: u8, blue: u8,
+) {
+    object.red = red;
+    object.green = green;
+    object.blue = blue;
+}
+```
+
+The function fails because the `ColorObject` is immutable.
+
+
+## FILE: docs/content/develop/objects/object-ownership/wrapped.mdx
+
+---
+title: Wrapped Objects
+description: Wrapped objects are object data structures nested inside of another object data structure. Objects can be wrapped directly, through `Option`, or through `vector` fields. 
+keywords: [ wrapped objects, wrapping objects, unwrapping objects, direct wrapping, wrap directly, wrap object directly, wrap object option, option wrap, vector wrap, wrap object vector ]
+---
+
+Wrapping refers to nesting structs to organize data structures in Move. When an object is wrapped, the object no longer exists independently onchain. You can no longer look up the object by its ID, as the object becomes part of the data of the object that wraps it. Most importantly, you can no longer pass the wrapped object as an argument in a Move call. The only access point is through the object that wraps it.
+
+It is not possible to create circular wrapping behavior, where A wraps B, B wraps C, and C also wraps A.
+
+This example shows a basic wrapper pattern:
+
+```move
+public struct Foo has key {
+    id: UID,
+    bar: Bar,
+}
+
+public struct Bar has store {
+    value: u64,
+}
+```
+
+To embed a struct type in an object with a `key` ability, the struct type must have the `store` ability.
+
+In the preceding example, `Bar` is a normal struct, but it is not an object because it doesn't have the `key` ability. The following code turns `Bar` into an object:
+
+```move
+public struct Bar has key, store {
+    id: UID,
+    value: u64,
+}
+```
+
+If you put the object of type `Bar` into an object of type `Foo`, the object type `Foo` wraps the object type `Bar`. The object type `Foo` is the wrapper or wrapping object.
+
+## Wrapping and unwrapping
+
+<CodeWalkthrough source="examples/move/basics/sources/object_basics.move" language="move">
+  <Step lines="69-71" title="Create a wrapped object">
+    The `wrap` function takes an `Object` by value and places it inside a new `Wrapper` struct. The `Wrapper` is then transferred to the sender. After wrapping, the original object is no longer directly accessible onchain and can only be reached through the wrapper.
+  </Step>
+  <Step lines="73-78" title="Unwrap a wrapped object">
+    You can take out the wrapped object and transfer it to an address, modify it, delete it, or freeze it. This is called unwrapping. The `unwrap` function destructs the `Wrapper`, deletes its UID, and transfers the inner `Object` back to the sender. The object's ID stays the same across wrapping and unwrapping.
+  </Step>
+</CodeWalkthrough>
+
+## Direct wrapping
+
+Direct wrapping occurs when an object type contains another object type as a direct field. In direct wrapping, the wrapped object cannot be extracted without destroying the wrapper. This provides strong encapsulation guarantees and is ideal for implementing object locking patterns. Direct wrapping requires explicit contract calls to modify access.
+
+The following example implementation of a trusted swap demonstrates how to use direct wrapping. Assume there is an NFT-style `Object` type that has `scarcity` and `style`. In this example, `scarcity` determines how rare the object is, and `style` determines the object content or how it's rendered. You are only willing to trade this `Object` with one that has identical `scarcity` but with a different `style`.
+
+First, define an object type:
+
+```move
+public struct Object has key, store {
+    id: UID,
+    scarcity: u8,
+    style: u8,
+}
+```
+
+In a real application, you might make sure that there is a limited supply of the objects and a mechanism to mint them to a list of owners. For demonstration purposes, this example simplifies creation:
+
+```move
+public fun new(scarcity: u8, style: u8, ctx: &mut TxContext): Object {
+    Object { id: object::new(ctx), scarcity, style }
+}
+```
+
+Only object owners can send a transaction to mutate the object. One person cannot send a transaction that would swap their own object with someone else's object.
+
+To swap objects, the same address must own both objects. Anyone who wants to swap their object can send their objects to the third party, such as a site that offers swapping services, and the third party helps perform the swap and send the objects to the appropriate owner. 
+
+To ensure that you retain custody of your objects and not give full custody to the third party, use direct wrapping. To define a wrapper object type:
+
+```move
+public struct SwapRequest has key {
+    id: UID,
+    owner: address,
+    object: Object,
+    fee: Balance<SUI>,
+}
+```
+
+`SwapRequest` defines a Sui object type, wraps the `object` to swap, and tracks the original `owner` of the object. To define an interface to request a swap by someone who owns an `Object`:
+
+```move
+public fun request_swap(
+    object: Object,
+    fee: Coin<SUI>,
+    service: address,
+    ctx: &mut TxContext,
+) {
+    assert!(coin::value(&fee) >= MIN_FEE, EFeeTooLow);
+
+    let request = SwapRequest {
+        id: object::new(ctx),
+        owner: ctx.sender(),
+        object,
+        fee: coin::into_balance(fee),
+    };
+
+    transfer::transfer(request, service)
+}
+
+```
+
+In the preceding function, you must pass the object by value so that it is fully consumed and wrapped into `SwapRequest`. The example also provides a fee of type `Coin<SUI>` and checks that the fee is sufficient. The example turns `Coin` into `Balance` when it's put into the `wrapper` object. This is because `Coin` is only used to pass objects, such as transaction inputs or objects sent to addresses. For coin balances that need to be embedded in other structs, use `Balance` instead to avoid the overhead of carrying around an unnecessary `UID` field.
+
+The wrapper object is then sent to the service operator with the address specified in the call as `service`.
+
+The interface for the function that the service operator can call to perform a swap between 2 objects sent from 2 addresses resembles:
+
+```move
+public fun execute_swap(s1: SwapRequest, s2: SwapRequest): Balance<SUI>;
+```
+
+`s1` and `s2` are 2 wrapped objects that were sent from different object owners to the service operator. Both wrapped objects are passed by value because they eventually need to be [unpacked](https://move-book.com/move-basics/struct#destructing-structures).
+
+First, unpack the 2 objects to obtain the inner fields:
+
+```move
+let SwapRequest {id: id1, owner: owner1, object: o1, fee: fee1} = s1;
+let SwapRequest {id: id2, owner: owner2, object: o2, fee: fee2} = s2;
+```
+
+Then, check that the swap is legitimate and the 2 objects have identical scarcity but different styles:
+
+```move
+assert!(o1.scarcity == o2.scarcity, EBadSwap);
+assert!(o1.style != o2.style, EBadSwap);
+```
+
+To perform the actual swap:
+
+```move
+transfer::transfer(o1, owner2);
+transfer::transfer(o2, owner1);
+```
+
+Next, send `o1` to the original owner of `o2`, and send `o2` to the original owner of `o1`. The service can then delete the wrapping `SwapRequest` objects:
+
+```move
+id1.delete();
+id2.delete();
+```
+
+Finally, the service merges together `fee1` and `fee2` and returns the result. The service provider can turn the result into a coin or merge it into some larger pool where it collects all fees:
+
+```move
+fee1.join(fee2);
+```
+
+After this call, the 2 objects are swapped and the service provider collects the service fee.
+
+Because the contract defined only 1 way to deal with `SwapRequest` (`execute_swap`), there is no other way the service operator can interact with `SwapRequest` despite its ownership.
+
+View the full source code in the [`trusted_swap`](https://github.com/MystenLabs/sui/blob/main/examples/move/trusted_swap) example.
+
+## Wrapping through `Option`
+
+When an object `Bar` is directly wrapped into `Foo`, there is not much flexibility, as a `Foo` object must have a `Bar` object in it, and to take out the `Bar` object you must destroy the `Foo` object. 
+
+For more flexibility, the wrapping type might not always have the wrapped object in it and the wrapped object might be replaced with a different object at some point.
+
+To demonstrate this consider the following example for creating a warrior game character with a sword and shield. The warrior might have a sword and shield or it might not have either. The warrior should be able to add a sword and shield and replace the current ones at any time. To design this, define a `SimpleWarrior` type:
+
+```move
+public struct SimpleWarrior has key {
+    id: UID,
+    sword: Option<Sword>,
+    shield: Option<Shield>,
+}
+```
+
+Each `SimpleWarrior` type has an optional `sword` and `shield` wrapped in it, defined as:
+
+```move
+public struct Sword has key, store {
+    id: UID,
+    strength: u8,
+}
+
+public struct Shield has key, store {
+    id: UID,
+    armor: u8,
+}
+```
+
+When you create a new warrior, set the `sword` and `shield` to `none` to indicate there is no equipment yet:
+
+```move
+public fun create_warrior(ctx: &mut TxContext) {
+    let warrior = SimpleWarrior {
+        id: object::new(ctx),
+        sword: option::none(),
+        shield: option::none(),
+    };
+    transfer::transfer(warrior, ctx.sender())
+}
+```
+
+You can then define functions to equip new swords or new shields:
+
+```move
+public fun equip_sword(warrior: &mut SimpleWarrior, sword: Sword, ctx: &mut TxContext) {
+    if (warrior.sword.is_some()) {
+        let old_sword = warrior.sword.extract();
+        transfer::transfer(old_sword, ctx.sender());
+    };
+    warrior.sword.fill(sword);
+}
+```
+
+The function passes a `warrior` as a mutable reference of `SimpleWarrior`, and passes a `sword` by value to wrap it into the `warrior`.
+
+Because `Sword` is a Sui object type without `drop` ability, if the warrior already has a sword equipped, the warrior can't drop that sword. If you call `option::fill` without first calling `equip_sword`, an error occurs. `equip_sword` checks whether there is already a sword equipped and if so, removes it and sends it back to the sender. To the player, this returns an equipped sword to their inventory when they equip the different sword.
+
+View the source code in the [`simple_warrior`](https://github.com/MystenLabs/sui/tree/main/examples/move/simple_warrior) example or check out the [`hero`](https://github.com/MystenLabs/sui/tree/main/examples/move/hero) example for a more complex implementation.
+
+## Wrapping through `vector`
+
+The concept of wrapping objects in a `vector` field of another object is similar to wrapping through `Option`, as an object can contain 0, 1, or many wrapped objects of the same type.
+
+To wrap an object through `vector`:
+
+```move
+public struct Pet has key, store {
+    id: UID,
+    cuteness: u64,
+}
+
+public struct Farm has key {
+    id: UID,
+    pets: vector<Pet>,
+}
+```
+
+This example wraps a `vector` of `Pet` in `Farm` and can be accessed only through the `Farm` object.
+
+## FILE: docs/content/develop/transactions/txn-overview.mdx
+
+---
+title: What is a Transaction?
+description: Sui has two types of transactions, programmable transaction blocks and system transactions.
+keywords: [ ptbs, system transactions, programmable transaction, transaction blocks, transactions, sui transactions, transaction metadata ]
+---
+
+Every update on Sui, whether to the network itself or to objects on the network, happens through a transaction. Transactions handle everything from creating objects and minting assets to managing network operations.
+
+Sui has two types of transactions:
+
+- **[Programmable transaction blocks (PTBs)](/develop/transactions/ptbs/prog-txn-blocks):** Enable everyday network activities like deploying smart contracts and sending tokens. Anyone can create and submit PTBs.
+
+- **System transactions:** Manage network events such as epoch changes and checkpoint creation. Only validators can submit system transactions.
+
+## Transaction metadata
+
+Programmable transaction blocks have the following metadata fields:
+
+- **Sender address:** The [address](/getting-started/onboarding/get-address) of the user sending the transaction.
+
+- **Gas input:** A reference pointing to the object used to pay for the transaction's execution and storage. The sender address must own the object and it must be of type `sui::coin::Coin<SUI>`. Alternatively, the gas payment can be an empty list, in which case the transaction pays gas from the sender's address balance.
+
+- **Gas price:** An unsigned integer specifying the number of native tokens per gas unit that the transaction pays. The gas price must be greater than zero.
+
+- **Maximum gas budget:** The maximum number of gas units the transaction can use. If execution exceeds this budget, the transaction aborts without any effects except charging the gas input object. The gas input object must have a balance greater than or equal to the gas price multiplied by the maximum gas budget. This product represents the maximum amount the transaction can charge.
+
+- **Epoch:** The epoch the transaction is intended for.
+
+- **Type:** Identifies whether the transaction is a call, publish, or native transaction and its type-specific data.
+
+- **Authenticator:** A cryptographic signature paired with a public key. The public key must verify the signature and match the sender address.
+
+- **Expiration:** Optional. An epoch number that acts as a deadline. Validators only accept the transaction if the current epoch is less than or equal to the expiration epoch. If the deadline passes, the transaction never executes. By default, transactions do not expire. Transactions that use address balance gas payments must use `ValidDuring` expiration with both a minimum and maximum epoch specified.
+
+System transactions do not have gas input, price, or budget, and do not have an expiration. The sender address of a system transaction is always `0x0`.
+
+## Example of a transaction flow
+
+The relationship between objects and transactions is written in a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG). The following example shows how objects and transactions connect to each other on Sui.
+
+Consider two objects:
+
+- Object A contains 5 SUI coins and belongs to Tom.
+
+- Object B contains 2 SUI coins and belongs to John.
+
+Tom decides to send 1 SUI coin to Alice. In this case, Object A is the input to this transaction and 1 SUI coin is debited from this object. The output of the transaction is:
+
+- Object A with 4 SUI coins that still belongs to Tom.
+- New Object C that contains 1 SUI coin and belongs to Alice.
+
+At the same time, John decides to send 2 SUI coins to Alice. The output of this transaction is:
+
+- Object B that contains 2 SUI coins and now belongs to Alice.
+
+Because both transactions interact with different objects, the second transaction executes in parallel with the first transaction that sends coins from Tom to Alice.
+
+After receiving 2 SUI coins, Alice sends them to Tom. Now Tom has 6 SUI coins, 4 from Object A and 2 from Object B.
+
+Finally, Tom sends all of his SUI coins to John. For this transaction, the input is both Object A and Object B. Object B is destroyed, and its value is added to Object A. As a result, the transaction's output is only Object A with a value of 6 SUI.
+
+![Transaction example](./images/example-transaction_transactions_v1.png)
+
+## Anatomy of a transaction response
+
+When you query a transaction (for example, from Sui Explorer or `getTransaction`), the response contains the following fields:
+
+| Field             | Description                                                        |
+|-------------------|--------------------------------------------------------------------|
+| `digest`          | Unique identifier (hash) of the transaction.                       |
+| `sender`          | Address that signed and submitted the transaction.                 |
+| `gasData`         | Gas budget, price, payment coin, and owner address.                |
+| `transaction`     | The commands executed (transfers, Move calls, publish, and so on). |
+| `effects`         | Execution result: status, created/mutated/deleted objects.         |
+| `events`          | Custom events emitted by Move code during execution.               |
+| `balanceChanges`  | Net SUI/token balance changes per address.                         |
+| `objectChanges`   | Objects created, mutated, wrapped, or deleted.                     |
+| `checkpoint`      | The checkpoint (similar to a block number) that includes this transaction. |
+| `timestampMs`     | Millisecond timestamp of the checkpoint.                           |
+
+## Limits on transactions, objects, and data
+
+Sui has some limits on transactions and the data used in them, such as a maximum size and number of objects used. You can find these limits in the [`sui-protocol-config` crate](https://github.com/MystenLabs/sui/blob/main/crates/sui-protocol-config/src/lib.rs) of the Sui repo. The limits are defined in the `ProtocolConfig` struct and values set in the `get_for_version_impl` function.
+
+
+## FILE: docs/content/develop/transactions/ptbs/prog-txn-blocks.mdx
+
+---
+title: What is a PTB?
+description: Programmable transaction blocks are a group of commands that complete a transaction on Sui.
+keywords: [ programmable transaction blocks, transaction blocks, program transaction blocks, PTB, PTBs, what are PTBs, what is PTB, transaction group, programmable group of transactions, program transaction block, block of transactions, group of transactions ]
+---
+
+:::tip Local network prerequisite
+
+If you connect to Localnet, verify your local node is running first. See [Connecting to a local network](/getting-started/onboarding/local-network).
+
+:::
+
+Transactions on Sui are composed of groups of commands that execute on inputs to define the result of the transaction. Referred to as **programmable transaction blocks (PTBs)**, these groups of commands define all user transactions on Sui. PTBs allow a user to call multiple Move functions, manage their objects, and manage their coins in a single transaction without publishing a new Move package. Designed with automation and transaction builders in mind, PTBs are a lightweight and flexible way of generating transactions. 
+
+However, more intricate programming patterns, such as loops, are not supported. In such cases, you must publish a new Move package.
+
+The individual transaction commands within a PTB execute in order. You can use the results from one transaction command in any subsequent transaction command within the PTB. The effects of each transaction command in the block, such as object modifications or transfers, are applied atomically at the end of the transaction. If one transaction command fails, the entire block fails and no effects from the commands are applied.
+
+A PTB can perform up to 1,024 unique operations in a single execution, whereas transactions on traditional blockchains would require 1,024 individual executions to accomplish the same result. This structure also results in cheaper gas fees. The cost of facilitating individual transactions is always more than the cost of those same transactions blocked together in a PTB.
+
+## Transaction components
+
+There are two parts of a PTB that are relevant to execution semantics. Other transaction information, such as the transaction sender or the gas limit, might be referenced but are out of scope. The structure of a PTB is:
+
+```rust
+{
+    inputs: [Input],
+    commands: [Command],
+}
+```
+
+Looking closer at the two main components:
+
+- The `inputs` value is a vector of arguments, `[Input]`. These arguments are either objects or pure values that you can use in the commands. The objects are either owned by the sender or are shared or immutable objects. The pure values represent basic Move values, such as `u64` or `String` values, which you can construct purely from their bytes. For historical reasons, `Input` is `CallArg` in the Rust implementation.
+
+- The `commands` value is a vector of commands, `[Command]`. The possible commands are:
+
+- `tx.splitCoins(coin, amounts)`: Creates new coins with the defined amounts, split from the provided coin. Returns the coins so that it can be used in subsequent transactions.
+
+  - Example: `tx.splitCoins(tx.gas, [tx.pure.u64(100), tx.pure.u64(200)])`
+
+- `tx.mergeCoins(destinationCoin, sourceCoins)`: Merges the sourceCoins into the destinationCoin.
+
+  - Example: `tx.mergeCoins(tx.object(coin1), [tx.object(coin2), tx.object(coin3)])`
+
+- `tx.transferObjects(objects, address)`: Transfers a list of objects to the specified address.
+
+  - Example: `tx.transferObjects([tx.object(thing1), tx.object(thing2)], tx.pure.address(myAddress))`
+
+- `tx.moveCall({ target, arguments, typeArguments })`: Executes a Move call. Returns whatever the Sui Move call returns.
+
+  - Example: `tx.moveCall({ target: '0x2::devnet_nft::mint', arguments: [tx.pure.string(name), tx.pure.string(description), tx.pure.string(image)] })`
+- `tx.makeMoveVec({ type, elements })`: Constructs a vector of objects that can be passed into a moveCall. This is required as there's no other way to define a vector as an input.
+
+  - Example: `tx.makeMoveVec({ elements: [tx.object(id1), tx.object(id2)] })`
+
+- `tx.publish(modules, dependencies)`: Publishes a Move package. Returns the upgrade capability object.
+
+- `tx.upgrade(modules, dependencies, packageId: EXAMPLE_PACKAGE_ID, ticket)`: Upgrades an existing package. No `init` functions are called for upgraded modules.
+
+Learn more about each [PTB command](/references/ptb-commands).
+
+## Inputs and results
+
+Inputs are the values that are provided to the PTB, and results are the values that are produced by the PTB commands. The inputs are either objects or basic Move values, and the results are arbitrary Move values, including objects. Inputs and results form the data flow through a PTB's execution.
+
+They can be seen as populating an array of values. For inputs, there is a single array, but for results, there is an array for each individual transaction command, creating a 2D-array of result values. You can access these values by borrowing, mutably or immutably, by copying, if the type permits, or by moving, which takes the value out of the array without re-indexing.
+
+Learn more about [inputs and results](/develop/transactions/ptbs/inputs-and-results).
+
+## `Argument` structure and usage
+
+Commands take `Argument` values that specify which input or result to use. The runtime infers whether to pass the argument by reference or by value based on the command's expected type.
+
+The `Argument` enum has 4 variants:
+
+- `Input(u16)`: References an input by its index. For example, with inputs `[Object1, Object2, Pure1, Object3]`, use `Input(0)` for `Object1` and `Input(2)` for `Pure1`.
+
+- `GasCoin`: References the SUI coin used to pay for gas. When using address balance gas payment (empty gas payment list), `GasCoin` references a synthetic coin created from the sender or sponsor address balance. **This is separate from other inputs because it has special restrictions**:
+
+    - `&mut` or `&` usage anywhere.
+    - Only by value through `TransferObjects` or `sui::coin::send_funds`
+        - If you need an owned `Coin<SUI>` from the `GasCoin`, first use `SplitCoins`.
+
+- `NestedResult(u16, u16)`: References a result from a previous command. The first index specifies the command, the second specifies which result from that command. For example, if command 1 returns `[Value1, Value2]`, use `NestedResult(1, 0)` for `Value1` and `NestedResult(1, 1)` for `Value2`.
+
+- `Result(u16)`: Shorthand for `NestedResult(i, 0)`, but only valid when the command at index `i` returns exactly 1 result. Use `NestedResult` for commands that return 0 or multiple results.
+
+## Execution {#execution}
+
+For the execution of PTBs, the input vector is populated by the input objects or pure value bytes. The transaction commands are then executed in order, and the results are stored in the result vector. Finally, the effects of the transaction are applied atomically.
+
+### Start of execution
+
+At the beginning of execution, the PTB runtime loads the input objects into the input array. The network already verifies the objects, checking rules like existence and valid ownership. The pure value bytes are also loaded into the array but not validated until usage.
+
+The most important consideration at this stage is the effects on the gas coin. At the beginning of execution, the system withdraws the maximum gas budget (in terms of SUI) from the gas coin. The system returns any unused gas to the gas coin at the end of execution, even if the coin has changed owners.
+
+### Object consumption 
+
+All objects created or returned by Move commands must either be consumed (destroyed, transferred, or used by another command) or explicitly dropped if the type has the `drop` ability. 
+
+In a PTB, if you create an object through a Move command and do not destroy, transfer, or use it in a subsequent command, the transaction fails with an error. 
+
+### Pre-execution validation
+
+When a transaction is signed, the network performs the following validations on specific commands:
+
+- [`SplitCoins`](/references/ptb-commands) and [`MergeCoins`](/references/ptb-commands): Verifies that the argument arrays (`AmountArgs` and `ToMergeArgs`) are non-empty.
+
+- [`MakeMoveVec`](/references/ptb-commands): Verifies that the type must be specified for an empty vector of `Args`.
+
+- [`Publish`](/references/ptb-commands): Verifies that the `ModuleBytes` are not empty.
+
+### Argument usage rules {#arguments}
+
+Each argument can be used by reference or by value. The usage is based on the type of the argument and the type signature of the command:
+
+- If the signature expects an `&mut T`, the runtime checks the argument has type `T` and it is then mutably borrowed.
+
+- If the signature expects an `&T`, the runtime checks the argument has type `T` and it is then immutably borrowed.
+
+- If the signature expects a `T`, the runtime verifies the argument has type `T`, then copies the value if `T: copy` or moves it otherwise. Objects are always moved because `sui::object::UID` does not have the `copy` ability.
+
+The transaction fails if an argument is used in any form after being moved. There is no way to restore an argument to its position (its input or result index) after it is moved.
+
+If an argument is copied but does not have the `drop` ability, then the last usage is inferred to be a move. As a result, if an argument has `copy` and does not have `drop`, the last usage must be by value. Otherwise, the transaction fails because a value without `drop` has not been used.
+
+#### Borrowing rules
+
+Borrowing follows additional rules to ensure safe reference usage:
+
+- **Mutable borrow:** No other borrows can be outstanding. An overlapping mutable borrow could create dangling references.
+
+- **Immutable borrow:** No mutable borrows can be outstanding. Multiple immutable borrows are allowed.
+
+- **Move:** No borrows can be outstanding. Moving a borrowed value invalidates existing references.
+
+- **Copy:** Allowed regardless of outstanding borrows.
+
+#### Special object handling
+
+Object inputs have the type `T` of the underlying object. `ObjectArg::Receiving` inputs are the exception and have type `sui::transfer::Receiving<T>`. This wrapper indicates the object is owned by another object, not the sender. Call `sui::transfer::receive` with the parent object to unwrap it and prove ownership.
+
+Shared objects have restrictions on by value usage to ensure they remain shared or are deleted by the end of the transaction:
+
+- Read-only shared objects (marked as not `mutable`) cannot be used by value.
+
+- Shared objects cannot be transferred or frozen. These operations succeed during execution but cause the transaction to fail at the end.
+
+- Shared objects can be wrapped or converted to dynamic fields during execution, but must be re-shared or deleted before the transaction completes.
+
+#### Move call rules
+
+PTBs can call any `public` function and any `entry` function, whether private (`entry fun f()`), or `public(package)` (`public(package) entry fun f()`). Non-entry private and `public(package)` functions cannot be called from PTBs. Note that in this way, there is no reason to add `entry` to a `public` function.
+
+:::info
+
+Previously, `entry` functions had signature restrictions that limited their parameter and return types compared to `public` functions. These restrictions have been removed. `entry` functions can now have the same signature as any `public` function.
+
+:::
+
+**Return types:**
+Move calls cannot return references (`&T` or `&mut T`).
+
+**Private generics:**
+Some framework functions have type parameters that can only be instantiated with types defined in the same module. Since PTBs are not modules, they cannot supply these types and therefore cannot call these functions directly. For example, certain `sui::transfer` functions like `transfer` and `share_object` require a type defined in the calling module, and as such cannot be called from a PTB. Instead, use the `public_transfer` and `public_share_object` variants.
+
+**`TxContext` handling:**
+`TxContext` parameters (`&TxContext` or `&mut TxContext`) are automatically injected by the runtime; callers do not supply them. `TxContext` can appear at any position in the parameter list, and a function can have multiple `TxContext` parameters as long as they are immutable (`&TxContext`). These parameters are not counted toward the user-supplied argument count for indexing purposes.
+
+#### Non-public entry function restrictions
+
+A non-public `entry` function is a function declared with `entry` that is **not** `public`. It is either private (`entry fun f()`) or `public(package)` (`public(package) entry fun f()`). These functions can be called directly in PTBs but not from other packages.
+
+Non-public `entry` functions have a single restriction: their arguments cannot be in a "hot" clique (see below) when the function is called. This restriction ensures that arguments to non-public `entry` functions are not entangled with outstanding [hot potato](https://move-book.com/programmability/hot-potato-pattern) values that could force behavior after the function executes.
+
+**Hot potato values**
+
+A value is a hot potato if its type has neither the `drop` nor the `store` ability. Hot potato values must be consumed (moved by value) before the transaction completes; they cannot be silently dropped or stored.
+
+**Cliques**
+
+The system tracks which values are entangled using cliques. As described above, the goal is to prevent hot potato values from forcing behavior outside of the call to the non-public `entry` function. The cliques provide a modeling of this "entanglement" by keeping a count of how many hot potato values are live and which values they have interacted with:
+
+- Each PTB input starts in its own clique with a hot count of 0.
+- When values are used together as arguments in a command, their cliques merge. The hot counts add together.
+- Hot potato return values from a command increment the merged clique's hot count.
+- Moving (consuming) a hot potato decrements its clique's hot count.
+- Before a non-public `entry` call, the merged clique of its arguments must have a hot count of 0.
+
+A non-public `entry` function can consume hot potato values, but they must be the last hot values in their clique. The hot count check happens after arguments are consumed but before the function is verified.
+
+**Shared objects consumed by value**
+
+Consuming a shared object by value permanently marks its clique as "always hot." Since shared objects cannot be wrapped (they must be re-shared or deleted) consuming one by value is treated similarly to a hot potato that can never be resolved. A non-public `entry` function can receive a shared object by value directly, but it cannot receive a value whose clique previously interacted with a shared object consumed by value.
+
+**Examples**
+
+Consider the following module:
+
+```move
+module ex::m;
+
+public struct HotPotato()
+
+public fun hot<T>(x: &mut Coin<T>): HotPotato { ... }
+
+entry fun spend<T>(x: &mut Coin<T>) { ... }
+
+public fun cool(h: HotPotato) { ... }
+```
+
+In this invalid PTB, the `HotPotato` from command 0 is still alive in the same clique as `Input(0)` when `spend` is called:
+
+```rust
+// Invalid PTB
+// Input 0: Coin<SUI>
+// cliques: { Input(0) } => 0
+0: ex::m::hot(Input(0));
+// cliques: { Input(0), Result(0) } => 1
+1: ex::m::spend(Input(0)); // INVALID: Input(0)'s clique has count > 0
+2: ex::m::cool(Result(0));
+```
+
+However, if the hot potato is consumed before calling `spend`, the clique's count drops to 0 and the call succeeds:
+
+```rust
+// Valid PTB
+// Input 0: Coin<SUI>
+// cliques: { Input(0) } => 0
+0: ex::m::hot(Input(0));
+// cliques: { Input(0), Result(0) } => 1
+1: ex::m::cool(Result(0));
+// cliques: { Input(0) } => 0
+2: ex::m::spend(Input(0)); // Valid: Input(0)'s clique has count 0
+```
+
+In a flash loan scenario, entanglement extends transitively. Even if a value was not directly involved in the loan, being in the same clique as the loan's hot potato makes it ineligible for a non-public `entry` call:
+
+```move
+module flash::loan;
+
+public struct Loan { amount: u64 }
+
+public fun issue(bank: &mut Bank, amount: u64): (Balance<SUI>, Loan) { ERROR }
+
+public fun repay(bank: &mut Bank, loan: Loan, repayment: Balance<SUI>) { ERROR }
+```
+
+```rust
+// Invalid PTB
+// Input 0: flash::loan::Bank, Input 1: u64
+// cliques: { Input(0) } => 0, { Input(1) } => 0
+0: flash::loan::issue(Input(0), Input(1))
+// cliques: { Input(0), Input(1), NestedResult(0,0), NestedResult(0,1) } => 1
+1: sui::coin::from_balance(NestedResult(0,0));
+// cliques: { Input(0), Input(1), NestedResult(0,1), Result(1) } => 1
+2: ex::m::spend(Result(1)); // INVALID: Result(1)'s clique has count > 0
+3: sui::coin::into_balance(Result(1));
+4: flash::loan::repay(Input(0), NestedResult(0,1), Result(3));
+```
+
+Even though the `Coin` created in command 1 was not directly involved in the flash loan, it is part of a clique with the outstanding `Loan` hot potato (`NestedResult(0,1)`). Repaying the loan before calling `spend` would make the PTB valid.
+
+#### Pure value type checking
+
+Pure values are not type checked until they are used. The first time a pure value appears as an argument expecting type `T`, the system checks that `T` is a valid pure type (see the [Inputs section](/develop/transactions/ptbs/inputs-and-results)) and that the bytes deserialize to `T`. Each distinct type creates a separate typed copy of the bytes, so the same pure input can be used at multiple types as long as the bytes are valid for each. For example, you can use the same bytes as an ASCII string `std::ascii::String` and as a UTF-8 string `std::string::String`. Each typed copy is treated as its own input, so mutations affect only that type's value, not all values created from the same bytes.
+
+#### Publish and upgrade rules
+
+Both commands embed their module bytes and dependency IDs directly in the command structure, however, these are not PTB `Argument` values.
+
+**Publish:**
+
+- Returns a single `sui::package::UpgradeCap`.
+- After the package is staged, the runtime calls each module's `init` function (if present) in the order the modules are provided (in the vector of serialized bytes). `init` receives `&mut TxContext` and optionally a one-time witness. Additional `init` arguments are not yet supported but are planned.
+- The package is available to `init` functions during execution. It is staged before they run.
+
+**Upgrade:**
+
+- Takes exactly one PTB argument: a `sui::package::UpgradeTicket` (by value).
+- Returns a single `sui::package::UpgradeReceipt`.
+- Does not call `init` functions. Newly added modules in an upgrade cannot have `init` functions.
+- The module digest and package ID in the ticket must match exactly.
+- The upgrade policy (compatible, additive, dep-only) is enforced from the ticket.
+
+### End of execution
+
+At the end of execution, the remaining values are checked and effects for the transaction are calculated.
+
+**For inputs:**
+
+- Remaining immutable or read only input objects are skipped (no modifications made).
+
+- Remaining mutable input objects are returned to their original owners (shared remain shared, owned remain owned).
+
+- Remaining pure input values are dropped (all permissible types have `copy` and `drop`).
+
+- Shared objects are only deleted or re-shared. Any other operation (wrap, transfer, freezing) results in an error.
+
+**For results:**
+
+- Remaining results with the `drop` ability are dropped.
+
+- If a value has `copy` but not `drop`, its last usage must have been by-value (treated as a move).
+
+- Otherwise, an error is given for unused values without `drop`.
+
+**For gas:**
+
+Any remaining SUI deducted from the gas coin at the beginning of execution is returned to the coin, even if the owner has changed. The maximum possible gas is deducted at the beginning of execution, and unused gas is returned at the end (all in SUI). Because the gas coin can only be taken by value with `TransferObjects`, it has not been wrapped or deleted.
+
+The total effects (created, mutated, and deleted objects) are then passed out of the execution layer and applied by the Sui network.
+
+## Execution example 
+
+By following each command's execution, you can see how inputs flow through commands, how results accumulate, and how the final transaction effects are determined.
+
+Suppose you want to buy 2 items from a marketplace costing `100 MIST`. You keep one item for yourself and send the other item plus the remaining coin to a friend at address `0x808`.
+
+```rust
+{
+  inputs: [
+    Pure(/* @0x808 BCS bytes */ ...),
+    Object(SharedObject { /* Marketplace shared object */ id: market_id, ... }),
+    Pure(/* 100u64 BCS bytes */ ...),
+  ]
+  commands: [
+    SplitCoins(GasCoin, [Input(2)]),
+    MoveCall("some_package", "some_marketplace", "buy_two", [], [Input(1), NestedResult(0, 0)]),
+    TransferObjects([GasCoin, NestedResult(1, 0)], Input(0)),
+    MoveCall("sui", "tx_context", "sender", [], []),
+    TransferObjects([NestedResult(1, 1)], NestedResult(3, 0)),
+  ]
+}
+```
+
+The inputs include the friend's address, the marketplace object, and the coin split value. The commands split off the coin, call the marketplace function, send the gas coin and one object, grab your address (through `sui::tx_context::sender`), and send the remaining object to yourself.
+
+**Command 0: `SplitCoins(GasCoin, [Input(2)])`**
+
+Accesses the gas coin by mutable reference and loads `Input(2)` as `100u64` (copied, not moved). Creates a new coin.
+
+| State | Value |
+| :---- | :---- |
+| Gas coin balance | `499,900 MIST` |
+| Result | `[Coin<SUI> { id: new_coin, value: 100 }]` |
+
+**Command 1: `MoveCall("some_package", "some_marketplace", "buy_two", ...)`**
+
+Calls `buy_two(marketplace: &mut Marketplace, coin: Coin<SUI>, ctx: &mut TxContext): (Item, Item)`. Uses `Input(1)` by mutable reference (marketplace) and `NestedResult(0, 0)` by value (coin is moved and consumed).
+
+| State | Value |
+| :---- | :---- |
+| `Results[0][0]` | moved |
+| Result | `[Item { id: id1 }, Item { id: id2 }]` |
+
+**Command 2: `TransferObjects([GasCoin, NestedResult(1, 0)], Input(0))`**
+
+Transfers the gas coin and first item to `0x808`. Both objects are taken by value (moved).
+
+| State | Value |
+| :---- | :---- |
+| Gas coin | moved |
+| `Results[1][0]` | moved |
+| Result | `[]` |
+
+**Command 3: `MoveCall("sui", "tx_context", "sender", [], [])`**
+
+Calls `sender(ctx: &TxContext): address`. Returns the sender's address.
+
+| State | Value |
+| :---- | :---- |
+| Result | `[sender_address]` |
+
+**Command 4: `TransferObjects([NestedResult(1, 1)], NestedResult(3, 0))`**
+
+Transfers the second item to the sender. The item is moved by value; the address is copied by value.
+
+| State | Value |
+| :---- | :---- |
+| `Results[1][1]` | moved |
+| Result | `[]` |
+
+#### Initial state
+
+```rust
+Gas Coin: Coin<SUI> { id: gas_coin, balance: 1_000_000u64 }
+Inputs: [Pure(@0x808), Marketplace { id: market_id }, Pure(100u64)]
+Results: []
+```
+
+After maximum gas budget of `500_000` is deducted:
+
+```rust
+Gas Coin: Coin<SUI> { id: gas_coin, balance: 500_000u64 }
+```
+
+#### Final state
+
+```rust
+Gas Coin: _ (moved)
+Inputs: [Pure(@0x808), Marketplace { id: market_id } (mutated), Pure(100u64)]
+Results: [
+  [_],
+  [_, _],
+  [],
+  [sender_address],
+  []
+]
+```
+
+#### End of execution checks
+
+- Input objects: Gas coin moved. Marketplace remains shared (mutated).
+
+- Results: All remaining values have `drop` ability (Pure inputs, sender's address). All other results moved.
+
+- Shared objects: Marketplace not moved, remains shared.
+
+**Transaction effects:**
+
+- Coin split from gas (`new_coin`) does not appear (created and deleted in same transaction).
+
+- Gas coin and `Item { id: id1 }` transferred to `0x808`. Remaining gas returned to gas coin despite owner change.
+
+- `Item { id: id2 }` transferred to sender.
+
+- Marketplace object returned as shared (mutated).
+
+## FILE: docs/content/develop/write-move/sui-move-concepts.mdx
+
+---
+title: Move Concepts
+description: Move is an open source language for writing safe packages to manipulate onchain objects.
+keywords: [ move on sui, move language, what is move, move objects, move smart contracts, move objects, move packages, move, move concepts ]
+---
+
+<ImportContent source="move-summary" mode="snippet" />
+
+You can use Move to define, create, and manage programmable Sui objects representing assets and smart contracts. Sui's [object system](/develop/sui-architecture/object-model) is implemented by adding new functionality to Move while also imposing additional restrictions.
+
+Move on Sui contains some important differences from Move on other blockchains. Sui takes advantage of Move's security and flexibility, enhancing it with the features to vastly improve throughput, reduce delays in finality, and make Move programming more approachable. For full details, see the [Sui Smart Contracts Platform](/doc/sui.pdf) whitepaper.
+
+:::tip
+
+Where the Sui documentation refers to the Move language, the content is documenting the specific Move implementation on the Sui blockchain. If relevant, the documentation expressly refers to the original use case for the Move language as Move on Diem.
+
+:::
+
+## Key differences {#differences}
+
+Key differences of Move on Sui include:
+
+- Sui uses its own [object-centric global storage](#global-storage)
+
+- Addresses represent [object IDs](#object-ids)
+
+- Sui objects have [globally unique IDs](#global-unique)
+
+- Sui has [module initializers (`init`)](#module-initializers)
+
+- Sui has unique use cases for the [`entry` keyword](#entry-functions)
+
+### Object-centric global storage {#global-storage}
+
+In Move on Diem, global storage is part of the programming model. Resources and modules are held in global storage, owned by an account which has an address. Transactions are free to access resources from any account in global storage when they run, using special operations such as `move_to` and `move_from`.
+
+This approach introduces a scaling issue, as it is not possible to statically determine which transactions are contending over the same resource and which are not. This is similar to the scaling issues faced by other blockchains where smart contracts typically store account information in large, internal mappings, which limit throughput.
+
+Move on Sui addresses the scaling issue by not having global storage or its related operations. When objects (in contrast to resources) and packages (sets of modules) are stored on Sui, they are each given unique identifiers. All of a transaction's inputs are explicitly specified up front using these unique identifiers to allow the network to schedule transactions with non-overlapping inputs in parallel.
+
+### Addresses represent object IDs {#object-ids}
+
+In Move on Diem, there is a 16 byte `address` type used to represent account addresses in global storage. A 16 byte address is sufficient for the Move on Diem security model.
+
+Sui doesn't have global storage, so `address` is repurposed as a 32 byte identifier used for both objects and accounts. Each transaction is signed by an account (the sender) that is accessible from the transaction context, and each object stores its `address` wrapped in its `id: UID` field.
+
+See the [address section](https://move-book.com/reference/primitive-types/address) in The Move Book for an overview on addresses and refer to <UnsafeLink href="/references/framework/sui-framework/sui_sui/object">object.move</UnsafeLink> in the Sui framework for implementation details.
+
+### Object with key ability, globally unique IDs {#global-unique}
+
+In Move on Diem, the `key` ability indicates that the type is a resource, meaning it, along with an account address, can be used as a key in global storage.
+
+On Sui, the `key` ability indicates that a struct is an object type and comes with an additional requirement that the first field of the struct has signature `id: UID` to contain the object's unique address onchain. Sui's bytecode verifier ensures that new objects are always assigned fresh `UID`s. Identifiers are never reused.
+
+### Module initializers {#module-initializers}
+
+As described in [object-centric global storage](#global-storage), you publish Move modules into Sui storage. The Sui runtime executes a special initializer function you optionally define in a module only once at the time of module publication to pre-initialize module-specific data, for example, creating singleton objects. See the [module initializer section](https://move-book.com/programmability/module-initializer) in The Move Book for more information.
+
+### Entry functions {#entry-functions}
+
+The `entry` keyword has a specific use case in Move on Sui. Use `entry` when you want some functionality to be usable by anyone on chain, but not be wrapped around other Move logic. In other words, a function can be called in [programmable transaction blocks (PTBs)](/develop/transactions/ptbs/prog-txn-blocks) but not in other Sui packages. For example, this is utilized when using Sui's onchain randomness standard to prevent other smart contract engineers from creating logic to essentially front-run or back-run the randomness generation. Find more information about this in the [on-chain randomness page](/sui-stack/on-chain-primitives/randomness-onchain#use-non-public-entry-functions).
+
+Make your function private (don't add the `public` visibility keyword) and mark it with the `entry` keyword, as in `entry fun example_function`.
+
+In addition to this Sui-specific use case, there are other rules and restrictions for `entry` functions:
+
+- Non-public `entry` functions (private or `public(package)`) have restrictions on arguments that are entangled with hot potato values in a PTB. See [Non-public entry function restrictions](/develop/transactions/ptbs/prog-txn-blocks#non-public-entry-function-restrictions) for details.
+
+:::info
+
+Previously, `entry` functions had additional restrictions on their signatures (their types for parameters and return values), but this is no longer the case. `entry` functions can have the same arguments or return values as a `public` function in a PTB.
+
+:::
+
+

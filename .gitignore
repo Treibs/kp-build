@@ -24,3 +24,8 @@ docs/kp-build-review.html
 docs/_demo.html
 /.demoframes/
 .demo-check.png
+examples/sui-move-fixtures/**/build/
+docs/experiments/sui-compile-pass/answers/**/build/
+docs/experiments/sui-compile-pass/answers/**/Move.lock
+docs/experiments/sui-compile-pass-2/answers/**/build/
+docs/experiments/sui-compile-pass-2/answers/**/Move.lock

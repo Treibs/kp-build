@@ -1,0 +1,6 @@
+[package]
+name = "kp_4"
+edition = "2024"
+
+[addresses]
+my_nft = "0x0"

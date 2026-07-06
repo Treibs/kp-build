@@ -1,0 +1,5 @@
+[package]
+name = "object_new_green"
+edition = "2024"
+
+[dependencies]

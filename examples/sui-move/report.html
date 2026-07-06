@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sui Move contract authoring (Move 2024 edition, mainnet toolchain) — wikillm report</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1a1c22;--mut:#6b7280;--line:#e6e8ee;--acc:#4f46e5;
+--paper:#4f46e5;--claim:#0d9488;--problem:#d97706;--debate:#9333ea;--benchmark:#2563eb;
+--good:#16a34a;--warn:#d97706;--bad:#dc2626;--shadow:0 1px 2px rgba(20,20,40,.05)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.tabnum,.bar-val,.donut-num,.num,.delta b{font-variant-numeric:tabular-nums}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px 70px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em}
+a{color:var(--benchmark)}
+/* header */
+.accent{height:4px;background:linear-gradient(90deg,#312e81,#4f46e5)}
+.toolbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+border-bottom:1px solid var(--line)}
+.toolbar .in{max-width:1040px;margin:0 auto;padding:9px 20px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.t-topic{font-size:18px;font-weight:600;line-height:1.2}
+.t-scope{color:var(--mut);font-size:12.5px;max-width:560px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;border:0;background:none;font-family:inherit;text-align:left;padding:0}
+.t-scope.open{white-space:normal}
+.chips-meta{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.chip-meta{background:#eef0fb;color:#3730a3;border-radius:99px;padding:2px 9px;font-size:11.5px;font-weight:500}
+/* verdict card */
+.verdict-card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:18px 0 14px;overflow:hidden}
+.tiles{display:grid;grid-template-columns:1.25fr .85fr 1fr}
+.tile{padding:18px 20px;border-right:1px solid var(--line)}.tile:last-child{border-right:0}
+.tile-h{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);font-weight:600;margin-bottom:10px}
+.verdict{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;padding:7px 12px 7px 0;border-radius:8px}
+.verdict .vbar{width:4px;align-self:stretch;border-radius:3px}
+.verdict.good{color:#14532d}.verdict.good .vbar{background:var(--good)}
+.verdict.warn{color:#7c2d12}.verdict.warn .vbar{background:var(--warn)}
+.verdict.bad{color:#7f1d1d}.verdict.bad .vbar{background:var(--bad)}
+.verdict.neutral{color:var(--mut);font-weight:600;background:var(--bg);padding:7px 12px}
+.delta{font-size:13.5px;margin:2px 0 8px}.delta .d{font-weight:700}.delta .d.good{color:var(--good)}.delta .d.warn{color:var(--warn)}.delta .d.bad{color:var(--bad)}
+.tile-sub{color:var(--mut);font-size:12.5px;margin-top:4px}
+.expander{background:none;border:0;color:var(--acc);font-size:12.5px;cursor:pointer;padding:4px 0}
+.help-detail{display:none;margin-top:6px}
+.metric{margin:7px 0}.metric-h{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
+.bar-row{display:flex;align-items:center;gap:7px;margin:3px 0}.bar-name{width:30px;font-size:11px;color:var(--mut)}
+.bar-track{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:99px;height:9px;overflow:hidden}
+.bar-fill{display:block;height:100%}.bar-fill.base{background:#cbd5e1}.bar-fill.kp{background:var(--acc)}
+.bar-val{width:32px;text-align:right;font-size:12px}
+.fakes{margin-top:9px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 11px}
+.fakes-h{font-size:12px;font-weight:600;color:#9a3412;margin-bottom:4px}.fakes ul{margin:0;padding-left:16px}.fakes li{font-size:11.5px;margin:2px 0}
+.donut-wrap{display:flex;justify-content:center}.donut{width:84px;height:84px}.donut-num{font-size:17px;font-weight:700;fill:var(--ink)}
+.sub-chip{display:inline-block;margin-top:8px;font-size:11.5px;border-radius:99px;padding:2px 9px;text-decoration:none}
+.sub-chip.bad{background:#fee2e2;color:#b91c1c}
+.ct-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px}
+.ct{display:flex;flex-direction:column}.ct b{font-size:21px;line-height:1}.ct span{color:var(--mut);font-size:11.5px}
+.gap-note{margin-top:9px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:11.5px;border-radius:8px;padding:6px 9px}
+.bottom-line{border-top:1px solid var(--line);padding:11px 20px;color:#374151;font-size:13.5px;background:#fcfcfd}
+/* tab bar */
+.tabbar{position:sticky;top:43px;z-index:20;display:flex;gap:4px;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{flex:0 0 auto;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-size:13px;color:var(--mut);cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:7px}
+.tab.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.badge{font-size:11px;font-variant-numeric:tabular-nums;background:var(--bg);color:var(--mut);border-radius:99px;padding:0 7px;min-width:18px;text-align:center}
+.tab.active .badge{background:rgba(255,255,255,.25);color:#fff}
+/* panels */
+.panel{background:var(--card);border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;padding:16px 20px;margin-bottom:18px}
+.panel-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.empty{color:var(--mut)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:3px 11px;font-size:12px;cursor:pointer;color:var(--mut)}
+.chip.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.key{background:#eef0fb;color:var(--acc);border-radius:5px;padding:1px 6px;text-decoration:none}
+a.keylink{cursor:pointer}
+.dot{display:inline-block;width:9px;height:9px;border-radius:99px;vertical-align:middle;margin-right:3px}
+.dot.paper{background:var(--paper)}
+/* spine */
+ul.spine{list-style:none;margin:0;padding:0}
+ul.spine li{padding:9px 0 9px 10px;border-bottom:1px solid var(--line);border-left:3px solid var(--paper);border-radius:2px;margin-bottom:2px}
+ul.spine li:last-child{border-bottom:0}ul.spine li.dim{opacity:.5;border-left-color:#cbd5e1}
+ul.spine li.flash{background:#eef0fb;transition:background .3s}
+.ptitle{font-weight:600}.ident{color:var(--mut);font-size:12px;margin-top:2px}.ident a{text-decoration:none}.ident a:hover{text-decoration:underline}
+.pill{font-size:10.5px;border-radius:99px;padding:1px 8px;vertical-align:middle}
+.pill.ok{background:#dcfce7;color:#15803d}.pill.no{background:#fee2e2;color:#b91c1c}.pill.st{background:var(--bg);color:var(--mut);border:1px solid var(--line)}
+/* rows (problems/debates/claims) */
+.row{padding:11px 0 11px 11px;border-bottom:1px solid var(--line);border-left:3px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row.problem{border-left-color:var(--problem)}.row.debate{border-left-color:var(--debate)}.row.claim{border-left-color:var(--claim)}
+.row.refuted{opacity:.62;border-left-color:var(--bad)}
+.row-stmt{font-weight:600;margin-bottom:3px}.row-sub{color:#374151;font-size:13px;margin-bottom:4px}
+.row-meta{color:var(--mut);font-size:12px;margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dq{font-weight:600;margin-bottom:7px}
+.pos{border-left:2px solid var(--debate);padding:2px 0 2px 10px;margin:6px 0}.pos-h{font-size:13px;font-weight:600}.pos-s{font-size:13px;color:#374151}
+.corr{background:#ecfdf5;color:#065f46;border-radius:5px;padding:0 6px;font-size:11px}
+/* benchmarks */
+table.sota{width:100%;border-collapse:collapse;font-size:13px}
+table.sota th{text-align:left;color:var(--mut);font-weight:600;border-bottom:2px solid var(--line);padding:6px 8px}
+table.sota td{border-bottom:1px solid var(--line);padding:6px 8px}td.num{font-weight:600}
+/* claims */
+.tag{font-size:10.5px;border-radius:5px;padding:1px 7px;color:#fff;text-transform:uppercase;letter-spacing:.03em}
+.t-result{background:var(--claim)}.t-finding{background:var(--benchmark)}.t-method{background:var(--debate)}.t-definition{background:var(--mut)}
+.cstmt{margin:6px 0 0}
+.passage-toggle{background:none;border:0;color:var(--acc);font-size:12px;cursor:pointer;padding:5px 0 0;display:block}
+.teaser{color:var(--mut);font-size:12.5px;font-style:italic}
+.claim blockquote{display:none;margin:5px 0 0;padding:5px 11px;border-left:3px solid var(--line);color:#374151;font-size:12.5px;background:var(--bg);border-radius:0 6px 6px 0}
+.dots{display:inline-flex;gap:3px}.dots i{width:6px;height:6px;border-radius:99px;background:var(--line)}.dots i.on{background:var(--claim)}
+/* graph */
+.ghint{color:var(--mut);font-size:12px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lg{display:inline-flex;align-items:center;gap:5px}.lg::before{content:"";width:9px;height:9px;border-radius:99px}
+.lg.paper::before{background:var(--paper)}.lg.claim::before{background:var(--claim)}.lg.problem::before{background:var(--problem)}.lg.debate::before{background:var(--debate)}.lg.benchmark::before{background:var(--benchmark)}
+#graph{width:100%;height:500px;border:1px solid var(--line);border-radius:9px;background:#fcfcfd;cursor:grab}
+/* footer */
+.prov{margin-top:6px;color:var(--mut)}.method{margin:10px 0;font-size:12.5px}.method pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;font-size:11.5px}
+.foot{font-size:12px;text-align:center;margin-top:8px}
+/* view-all / print: un-tab into a linear stack */
+body.viewall .tabbar{display:none}body.viewall .panel{display:block!important;border-radius:12px;border-top:1px solid var(--line);margin-bottom:14px}
+body.viewall .claim blockquote{display:block!important}body.viewall .teaser,body.viewall .passage-toggle{display:none}
+@media print{.toolbar{position:static}.tabbar,.expander,.passage-toggle,.panel-tools,#view-all{display:none}
+ .panel{display:block!important;border:1px solid #ccc;border-radius:8px;margin-bottom:12px;break-inside:avoid}.claim blockquote{display:block!important}.help-detail{display:block!important}}
+@media (max-width:760px){.tiles{grid-template-columns:1fr}.tile{border-right:0;border-bottom:1px solid var(--line)}.chips-meta{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style></head>
+<body>
+<div class="accent"></div>
+<div class="toolbar"><div class="in"><span class="t-topic">Sui Move contract authoring (Move 2024 edition, mainnet toolchain)</span><button class="t-scope" id="scope" aria-expanded="false" title="click to expand"></button><span class="chips-meta"><span class="chip-meta">@kp/sui-move-contract-authoring-move-2024-edition-mainnet@0.1.0</span><span class="chip-meta">built 2026-07-06</span><span class="chip-meta">0/0 verified</span><span class="chip-meta">years n/a</span></span></div></div>
+<div class="wrap"><section class="verdict-card"><div class="tiles"><div class="tile"><div class="tile-h">Does it help?</div><div class="verdict warn"><span class="vbar"></span>TIE</div><button id="help-expand" class="expander">show base-vs-KP detail ▸</button><div id="help-detail" class="help-detail"><div class="metric"><div class="metric-h">precision</div><div class="bar-row"><span class="bar-name">base</span><span class="bar-track"><span class="bar-fill base" style="width:0%"></span></span><span class="bar-val">—</span></div><div class="bar-row"><span class="bar-name">KP</span><span class="bar-track"><span class="bar-fill kp" style="width:0%"></span></span><span class="bar-val">—</span></div></div><div class="metric"><div class="metric-h">recall</div><div class="bar-row"><span class="bar-name">base</span><span class="bar-track"><span class="bar-fill base" style="width:0%"></span></span><span class="bar-val">—</span></div><div class="bar-row"><span class="bar-name">KP</span><span class="bar-track"><span class="bar-fill kp" style="width:0%"></span></span><span class="bar-val">—</span></div></div><div class="metric"><div class="metric-h">f1</div><div class="bar-row"><span class="bar-name">base</span><span class="bar-track"><span class="bar-fill base" style="width:0%"></span></span><span class="bar-val">—</span></div><div class="bar-row"><span class="bar-name">KP</span><span class="bar-track"><span class="bar-fill kp" style="width:0%"></span></span><span class="bar-val">—</span></div></div></div></div><div class="tile"><div class="tile-h">Are citations real?</div><div class="donut-wrap"><svg viewBox="0 0 84 84" class="donut" aria-hidden="true"><circle cx="42" cy="42" r="32.0" fill="none" stroke="#e6e8ee" stroke-width="9"/><circle cx="42" cy="42" r="32.0" fill="none" stroke="#16a34a" stroke-width="9" stroke-linecap="round" stroke-dasharray="201.1" stroke-dashoffset="201.1" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" class="donut-num">0/0</text></svg></div><div class="tile-sub">all citations verified</div></div><div class="tile"><div class="tile-h">How much is here?</div><div class="ct-grid"><div class="ct"><b>0</b><span>papers</span></div><div class="ct"><b>0</b><span>claims</span></div><div class="ct"><b>0</b><span>problems</span></div><div class="ct"><b>0</b><span>debates</span></div><div class="ct"><b>0</b><span>benchmarks</span></div></div><div class="gap-note">⚠ no open problems — treat coverage with suspicion</div></div></div><div class="bottom-line">0/0 citations verified against arXiv/Crossref. No open problems surfaced — a likely coverage gap.</div></section><div class="tabbar" role="tablist"><button id="tab-btn-spine" class="tab active" data-tab="spine" role="tab" aria-selected="true" aria-controls="tab-spine" tabindex="0">Spine<span class="badge">0</span></button><button id="tab-btn-problems" class="tab" data-tab="problems" role="tab" aria-selected="false" aria-controls="tab-problems" tabindex="-1">Problems<span class="badge">0</span></button><button id="tab-btn-debates" class="tab" data-tab="debates" role="tab" aria-selected="false" aria-controls="tab-debates" tabindex="-1">Debates<span class="badge">0</span></button><button id="tab-btn-benchmarks" class="tab" data-tab="benchmarks" role="tab" aria-selected="false" aria-controls="tab-benchmarks" tabindex="-1">Benchmarks<span class="badge">0</span></button><button id="tab-btn-claims" class="tab" data-tab="claims" role="tab" aria-selected="false" aria-controls="tab-claims" tabindex="-1">Claims<span class="badge">0</span></button><button id="tab-btn-graph" class="tab" data-tab="graph" role="tab" aria-selected="false" aria-controls="tab-graph" tabindex="-1">Graph<span class="badge">44</span></button></div><section class="panel" id="tab-spine" role="tabpanel" aria-labelledby="tab-btn-spine" style="display:block"><div class="panel-tools"><button id="verified-only" class="chip">verified only</button></div><ul class="spine"></ul></section><section class="panel" id="tab-problems" role="tabpanel" aria-labelledby="tab-btn-problems" style="display:none"><p class="empty">No open problems surfaced — likely a coverage gap (the most valuable section is empty).</p></section><section class="panel" id="tab-debates" role="tabpanel" aria-labelledby="tab-btn-debates" style="display:none"><p class="empty">No debates surfaced.</p></section><section class="panel" id="tab-benchmarks" role="tabpanel" aria-labelledby="tab-btn-benchmarks" style="display:none"><p class="empty">No reported results.</p></section><section class="panel" id="tab-claims" role="tabpanel" aria-labelledby="tab-btn-claims" style="display:none"><p class="empty">No claims.</p></section><section class="panel" id="tab-graph" role="tabpanel" aria-labelledby="tab-btn-graph" style="display:none"><div class="ghint">drag nodes · hover for titles · <span class="lg paper">paper</span><span class="lg claim">claim</span><span class="lg problem">problem</span><span class="lg debate">debate</span><span class="lg benchmark">benchmark</span></div><div id="graph"></div></section><footer class="prov"><button id="view-all" class="chip">view all / print</button> <details class="method"><summary>what was searched</summary><pre>{
+  &quot;note&quot;: &quot;not recorded \u2014 coverage completeness is unverified&quot;
+}</pre></details><div class="foot">Generated by kp-build · a wikillm knowledge package · confidence is corpus-relative</div></footer></div>
+<script>
+const G={"nodes": [{"id": "struct-visibility-green", "type": "claim", "label": "struct-visibility-green", "title": ""}, {"id": "struct-visibility-red", "type": "claim", "label": "struct-visibility-red", "title": ""}, {"id": "struct-visibility-doc", "type": "claim", "label": "struct-visibility-doc", "title": ""}, {"id": "method-syntax-green", "type": "claim", "label": "method-syntax-green", "title": ""}, {"id": "method-syntax-red", "type": "claim", "label": "method-syntax-red", "title": ""}, {"id": "method-syntax-doc", "type": "claim", "label": "method-syntax-doc", "title": ""}, {"id": "implicit-imports-green", "type": "claim", "label": "implicit-imports-green", "title": ""}, {"id": "implicit-imports-doc", "type": "claim", "label": "implicit-imports-doc", "title": ""}, {"id": "abilities-green", "type": "claim", "label": "abilities-green", "title": ""}, {"id": "abilities-red", "type": "claim", "label": "abilities-red", "title": ""}, {"id": "abilities-doc", "type": "claim", "label": "abilities-doc", "title": ""}, {"id": "macros-2024-green", "type": "claim", "label": "macros-2024-green", "title": ""}, {"id": "macros-2024-red", "type": "claim", "label": "macros-2024-red", "title": ""}, {"id": "macros-2024-doc", "type": "claim", "label": "macros-2024-doc", "title": ""}, {"id": "object-new-green", "type": "claim", "label": "object-new-green", "title": ""}, {"id": "object-new-red", "type": "claim", "label": "object-new-red", "title": ""}, {"id": "object-new-doc", "type": "claim", "label": "object-new-doc", "title": ""}, {"id": "ownership-transfer-green", "type": "claim", "label": "ownership-transfer-green", "title": ""}, {"id": "ownership-transfer-red", "type": "claim", "label": "ownership-transfer-red", "title": ""}, {"id": "ownership-transfer-doc", "type": "claim", "label": "ownership-transfer-doc", "title": ""}, {"id": "entry-vs-public-green", "type": "claim", "label": "entry-vs-public-green", "title": ""}, {"id": "entry-vs-public-doc", "type": "claim", "label": "entry-vs-public-doc", "title": ""}, {"id": "otw-init-green", "type": "claim", "label": "otw-init-green", "title": ""}, {"id": "otw-init-red", "type": "claim", "label": "otw-init-red", "title": ""}, {"id": "otw-init-doc", "type": "claim", "label": "otw-init-doc", "title": ""}, {"id": "capability-green", "type": "claim", "label": "capability-green", "title": ""}, {"id": "capability-doc", "type": "claim", "label": "capability-doc", "title": ""}, {"id": "coin-currency-green", "type": "claim", "label": "coin-currency-green", "title": ""}, {"id": "coin-currency-red", "type": "claim", "label": "coin-currency-red", "title": ""}, {"id": "coin-currency-doc", "type": "claim", "label": "coin-currency-doc", "title": ""}, {"id": "dynamic-fields-green", "type": "claim", "label": "dynamic-fields-green", "title": ""}, {"id": "dynamic-fields-red", "type": "claim", "label": "dynamic-fields-red", "title": ""}, {"id": "dynamic-fields-doc", "type": "claim", "label": "dynamic-fields-doc", "title": ""}, {"id": "events-green", "type": "claim", "label": "events-green", "title": ""}, {"id": "events-red", "type": "claim", "label": "events-red", "title": ""}, {"id": "events-doc", "type": "claim", "label": "events-doc", "title": ""}, {"id": "clock-green", "type": "claim", "label": "clock-green", "title": ""}, {"id": "clock-red", "type": "claim", "label": "clock-red", "title": ""}, {"id": "clock-doc", "type": "claim", "label": "clock-doc", "title": ""}, {"id": "test-scenario-green", "type": "claim", "label": "test-scenario-green", "title": ""}, {"id": "test-scenario-doc", "type": "claim", "label": "test-scenario-doc", "title": ""}, {"id": "test-only-green", "type": "claim", "label": "test-only-green", "title": ""}, {"id": "test-only-red", "type": "claim", "label": "test-only-red", "title": ""}, {"id": "test-only-doc", "type": "claim", "label": "test-only-doc", "title": ""}], "edges": []};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const tabs=$$('.tab'),panels=$$('.panel');let cur='spine',graphBuilt=false;
+function activate(id,push){
+  if(!tabs.some(t=>t.dataset.tab===id))id='spine';cur=id;
+  tabs.forEach(t=>{const on=t.dataset.tab===id;t.classList.toggle('active',on);t.setAttribute('aria-selected',on?'true':'false');t.setAttribute('tabindex',on?'0':'-1');});
+  panels.forEach(p=>p.style.display=(p.id==='tab-'+id)?'block':'none');
+  if(id==='graph'&&!graphBuilt){buildGraph();graphBuilt=true;}
+  if(push)history.replaceState(null,'','#tab-'+id);
+}
+tabs.forEach(t=>t.onclick=()=>activate(t.dataset.tab,true));
+$('.tabbar').addEventListener('keydown',e=>{
+  const i=tabs.findIndex(t=>t.classList.contains('active'));let j=null;
+  if(e.key==='ArrowRight')j=(i+1)%tabs.length;if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;
+  if(j!==null){activate(tabs[j].dataset.tab,true);tabs[j].focus();e.preventDefault();}});
+const h0=(location.hash.match(/^#tab-(\w+)/)||[])[1];activate(h0||'spine',false);
+// scope expand
+const sc=$('#scope');if(sc)sc.onclick=()=>{const open=sc.classList.toggle('open');sc.setAttribute('aria-expanded',open?'true':'false');};
+// cite-key cross-links
+function jump(key){activate('spine',true);const r=document.getElementById('paper-'+key);
+  if(r){r.scrollIntoView({block:'center'});r.classList.add('flash');setTimeout(()=>r.classList.remove('flash'),1200);}}
+$$('.keylink').forEach(a=>a.onclick=e=>{e.preventDefault();jump(a.dataset.key);});
+$$('.keylink-fakes').forEach(a=>a.onclick=e=>{e.preventDefault();activate('spine',true);});
+// claim passages
+$$('.passage-toggle').forEach(b=>b.onclick=()=>{const bq=b.parentElement.querySelector('blockquote');
+  const open=getComputedStyle(bq).display!=='none';bq.style.display=open?'none':'block';b.textContent=open?'show passage ▸':'hide passage ▾';});
+const ea=$('#expand-all');if(ea)ea.onclick=()=>{$$('#tab-claims blockquote').forEach(bq=>bq.style.display='block');
+  $$('.passage-toggle').forEach(b=>b.textContent='hide passage ▾');};
+// claims filter
+$$('.chip[data-t]').forEach(c=>c.onclick=()=>{$$('.chip[data-t]').forEach(x=>x.classList.remove('active'));c.classList.add('active');
+  const t=c.dataset.t;$$('.claim').forEach(el=>el.style.display=(t==='all'||el.dataset.t===t)?'':'none');});
+// help expander
+const he=$('#help-expand');if(he)he.onclick=()=>{const d=$('#help-detail');const open=getComputedStyle(d).display!=='none';
+  d.style.display=open?'none':'block';he.textContent=open?'show base-vs-KP detail ▸':'hide base-vs-KP detail ▾';};
+// verified-only
+const vo=$('#verified-only');if(vo)vo.onclick=()=>{const on=vo.classList.toggle('active');
+  $$('#tab-spine li.dim').forEach(li=>li.style.display=on?'none':'');vo.textContent=on?'show all':'verified only';};
+// view all / print
+const va=$('#view-all');if(va)va.onclick=()=>{const on=document.body.classList.toggle('viewall');
+  if(on){panels.forEach(p=>p.style.display='block');if(!graphBuilt){buildGraph();graphBuilt=true;}}else{activate(cur,false);}
+  va.textContent=on?'tabbed view':'view all / print';};
+// lazy force-directed graph
+function buildGraph(){
+  const el=$('#graph');if(!el||!G.nodes.length)return;
+  const W=el.clientWidth||900,H=500,COL={paper:'#4f46e5',claim:'#0d9488',problem:'#d97706',debate:'#9333ea',benchmark:'#2563eb'};
+  const NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('width','100%');svg.setAttribute('height',H);el.appendChild(svg);
+  const N=G.nodes.map((n,i)=>({...n,x:W/2+Math.cos(i)*180+(i%7)*9,y:H/2+Math.sin(i)*150+(i%5)*9,vx:0,vy:0}));
+  const idx={};N.forEach((n,i)=>idx[n.id]=i);
+  const E=G.edges.map(e=>({s:idx[e.from],t:idx[e.to]})).filter(e=>e.s!=null&&e.t!=null);
+  const deg={};E.forEach(e=>{deg[e.s]=(deg[e.s]||0)+1;deg[e.t]=(deg[e.t]||0)+1;});
+  for(let it=0;it<320;it++){
+    for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+      let dx=N[i].x-N[j].x,dy=N[i].y-N[j].y,d2=dx*dx+dy*dy||1,f=2600/d2,d=Math.sqrt(d2);
+      dx/=d;dy/=d;N[i].vx+=dx*f;N[i].vy+=dy*f;N[j].vx-=dx*f;N[j].vy-=dy*f;}
+    E.forEach(e=>{let a=N[e.s],b=N[e.t],dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1,f=(d-70)*0.02;
+      dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;});
+    N.forEach(n=>{n.vx+=(W/2-n.x)*0.004;n.vy+=(H/2-n.y)*0.004;n.x+=Math.max(-12,Math.min(12,n.vx));n.y+=Math.max(-12,Math.min(12,n.vy));n.vx*=0.82;n.vy*=0.82;
+      n.x=Math.max(16,Math.min(W-16,n.x));n.y=Math.max(16,Math.min(H-16,n.y));});}
+  E.forEach(e=>{const l=document.createElementNS(NS,'line');l.setAttribute('x1',N[e.s].x);l.setAttribute('y1',N[e.s].y);
+    l.setAttribute('x2',N[e.t].x);l.setAttribute('y2',N[e.t].y);l.setAttribute('stroke','#d4d7e0');svg.appendChild(l);});
+  let drag=null;
+  N.forEach((n,i)=>{const g=document.createElementNS(NS,'g');g.style.cursor='grab';
+    const c=document.createElementNS(NS,'circle'),r=n.type==='paper'?7+Math.min(6,deg[i]||0):5;
+    c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r',r);c.setAttribute('fill',COL[n.type]||'#888');
+    c.setAttribute('stroke','#fff');c.setAttribute('stroke-width','1.5');
+    const tt=document.createElementNS(NS,'title');tt.textContent=n.type+': '+n.label+(n.title?' — '+n.title:'');c.appendChild(tt);g.appendChild(c);
+    if(n.type==='paper'){const tx=document.createElementNS(NS,'text');tx.setAttribute('x',n.x+r+2);tx.setAttribute('y',n.y+3);
+      tx.setAttribute('font-size','9');tx.setAttribute('fill','#555');tx.textContent=n.label;g.appendChild(tx);}
+    g.onmousedown=ev=>{drag={i,c,g,n};ev.preventDefault();};svg.appendChild(g);});
+  svg.addEventListener('mousemove',ev=>{if(!drag)return;const p=svg.getBoundingClientRect();
+    const x=(ev.clientX-p.left)/p.width*W,y=(ev.clientY-p.top)/p.height*H;drag.n.x=x;drag.n.y=y;
+    drag.c.setAttribute('cx',x);drag.c.setAttribute('cy',y);
+    drag.g.querySelectorAll('text').forEach(t=>{t.setAttribute('x',x+10);t.setAttribute('y',y+3);});
+    E.forEach((e,k)=>{if(e.s===drag.i||e.t===drag.i){const l=svg.querySelectorAll('line')[k];
+      l.setAttribute('x1',N[e.s].x);l.setAttribute('y1',N[e.s].y);l.setAttribute('x2',N[e.t].x);l.setAttribute('y2',N[e.t].y);}});});
+  window.addEventListener('mouseup',()=>drag=null);
+}
+</script>
+</body></html>

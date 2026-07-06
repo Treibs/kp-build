@@ -1,0 +1,5 @@
+[package]
+name = "events_red"
+edition = "2024"
+
+[dependencies]

@@ -1,0 +1,13 @@
+{
+  "name": "@kp/sui-move-contract-authoring-move-2024-edition-mainnet",
+  "version": "0.1.0",
+  "description": "Sui Move contract authoring (Move 2024 edition, mainnet toolchain)",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

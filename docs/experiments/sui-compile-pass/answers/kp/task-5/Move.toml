@@ -1,0 +1,6 @@
+[package]
+name = "task_5"
+edition = "2024"
+
+[addresses]
+guestbook = "0x0"

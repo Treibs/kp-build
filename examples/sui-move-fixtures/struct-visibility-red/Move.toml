@@ -1,0 +1,5 @@
+[package]
+name = "struct_visibility_red"
+edition = "2024"
+
+[dependencies]

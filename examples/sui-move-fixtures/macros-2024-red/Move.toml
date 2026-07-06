@@ -1,0 +1,5 @@
+[package]
+name = "macros_2024_red"
+edition = "2024"
+
+[dependencies]

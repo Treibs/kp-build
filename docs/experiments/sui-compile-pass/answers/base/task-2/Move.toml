@@ -1,0 +1,6 @@
+[package]
+name = "task_2"
+edition = "2024"
+
+[addresses]
+kits = "0x0"

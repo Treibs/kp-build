@@ -289,6 +289,18 @@ def hyperframes_runner(artifact, tool, *, _run=None):
     return None
 
 
+def default_runner(artifact, tool, *, _run=None):
+    """The build's execution runner: routes a directive's ``tool`` to its family's runner.
+
+    Tool names are namespaced by convention — ``sui-move-build`` is the Sui compiler gate;
+    everything else is a hyperframes CLI tool (lint/inspect/validate), the pre-dispatch default,
+    so existing packs' verdicts are byte-identical."""
+    if tool == "sui-move-build":
+        from .sui_runner import sui_move_runner
+        return sui_move_runner(artifact, tool, _run=_run)
+    return hyperframes_runner(artifact, tool, _run=_run)
+
+
 def verify_execution_claims(pkg, *, runner, today: str = "", base_dir=None) -> dict:
     """Build step: run the ExecutionVerifier (injected ``runner``) on every claim carrying an ``execution``
     directive, setting its per-claim ``verified``. Citation/academic claims are untouched. Returns a summary.

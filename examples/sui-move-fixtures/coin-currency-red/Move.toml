@@ -1,0 +1,5 @@
+[package]
+name = "coin_currency_red"
+edition = "2024"
+
+[dependencies]

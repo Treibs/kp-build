@@ -1,0 +1,6 @@
+[package]
+name = "task_1"
+edition = "2024"
+
+[addresses]
+counter = "0x0"

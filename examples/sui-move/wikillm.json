@@ -1,0 +1,59 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Sui Move contract authoring (Move 2024 edition, mainnet toolchain)",
+  "scope": "",
+  "built": "2026-07-06",
+  "stats": {
+    "papers_verified": 0,
+    "papers_total": 0,
+    "claims": 44,
+    "open_problems": 0,
+    "debates": 0,
+    "benchmarks": 0,
+    "relations": 0,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0,
+      "relations": 0
+    }
+  },
+  "goals": {},
+  "goal_metrics": [],
+  "source_span": {
+    "oldest": null,
+    "newest": null,
+    "latest_checked": "2026-07-06"
+  },
+  "coverage": {
+    "note": "not recorded \u2014 coverage completeness is unverified"
+  },
+  "falsification": {
+    "run": true,
+    "question": "Held-out Sui Move contract tasks - does the pack improve output quality on the pinned toolchain (sui 1.74.1-8fc60f1fa966)?",
+    "experiment_1": {
+      "metric": "compile-pass (5 representative tasks)",
+      "base": "5/5",
+      "kp": "5/5",
+      "verdict": "ceiling - metric could not discriminate; did not clear the ship rule",
+      "path": "docs/experiments/sui-compile-pass/"
+    },
+    "experiment_2": {
+      "metrics": "compile-pass (primary) + zero-warning clean-compile (secondary), pre-registered before answers at commit b9653b6",
+      "base": {
+        "compile_pass": "4/5",
+        "clean_compile": "2/5"
+      },
+      "kp": {
+        "compile_pass": "4/5",
+        "clean_compile": "3/5"
+      },
+      "verdict": "primary tie, secondary kp wins -> ships under pre-registered rule branch 2",
+      "path": "docs/experiments/sui-compile-pass-2/"
+    },
+    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009).",
+    "experiment": "docs/experiments/sui-compile-pass-2/"
+  }
+}
