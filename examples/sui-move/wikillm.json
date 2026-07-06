@@ -32,14 +32,28 @@
   },
   "falsification": {
     "run": true,
-    "question": "5 held-out Sui Move contract tasks - does the pack raise compile-pass rate on the pinned toolchain (sui 1.74.1-8fc60f1fa966)?",
-    "base": {
-      "compile_pass": "5/5"
+    "question": "Held-out Sui Move contract tasks - does the pack improve output quality on the pinned toolchain (sui 1.74.1-8fc60f1fa966)?",
+    "experiment_1": {
+      "metric": "compile-pass (5 representative tasks)",
+      "base": "5/5",
+      "kp": "5/5",
+      "verdict": "ceiling - metric could not discriminate; did not clear the ship rule",
+      "path": "docs/experiments/sui-compile-pass/"
     },
-    "kp": {
-      "compile_pass": "5/5"
+    "experiment_2": {
+      "metrics": "compile-pass (primary) + zero-warning clean-compile (secondary), pre-registered before answers at commit 443981c",
+      "base": {
+        "compile_pass": "4/5",
+        "clean_compile": "2/5"
+      },
+      "kp": {
+        "compile_pass": "4/5",
+        "clean_compile": "3/5"
+      },
+      "verdict": "primary tie, secondary kp wins -> ships under pre-registered rule branch 2",
+      "path": "docs/experiments/sui-compile-pass-2/"
     },
-    "verdict": "ceiling - both arms compiled 5/5, the pre-registered metric could not discriminate; under the ship rule (kp <= base) this run does NOT clear the pack to ship",
-    "experiment": "docs/experiments/sui-compile-pass/"
+    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009).",
+    "experiment": "docs/experiments/sui-compile-pass-2/"
   }
 }

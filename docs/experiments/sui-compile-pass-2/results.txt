@@ -1,0 +1,10 @@
+PASS CLEAN docs/experiments/sui-compile-pass-2/answers/base/task-1/
+FAIL - docs/experiments/sui-compile-pass-2/answers/base/task-2/
+PASS WARN1 docs/experiments/sui-compile-pass-2/answers/base/task-3/
+PASS WARN1 docs/experiments/sui-compile-pass-2/answers/base/task-4/
+PASS CLEAN docs/experiments/sui-compile-pass-2/answers/base/task-5/
+PASS CLEAN docs/experiments/sui-compile-pass-2/answers/kp/task-1/
+FAIL - docs/experiments/sui-compile-pass-2/answers/kp/task-2/
+PASS CLEAN docs/experiments/sui-compile-pass-2/answers/kp/task-3/
+PASS CLEAN docs/experiments/sui-compile-pass-2/answers/kp/task-4/
+PASS WARN3 docs/experiments/sui-compile-pass-2/answers/kp/task-5/

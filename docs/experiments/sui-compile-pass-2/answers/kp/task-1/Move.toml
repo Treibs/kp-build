@@ -1,0 +1,6 @@
+[package]
+name = "kp_1"
+edition = "2024"
+
+[addresses]
+flash_loan = "0x0"

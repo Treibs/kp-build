@@ -1,0 +1,6 @@
+[package]
+name = "kp_5"
+edition = "2024"
+
+[addresses]
+kiosk_trade = "0x0"
