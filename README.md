@@ -59,7 +59,7 @@ Crossref, and OpenAlex APIs (no keys, no cost).
 
 ## Quickstart — run the shipped examples
 
-`examples/` ships seven real packages with their inputs, so you can run the engine end-to-end on a clean
+`examples/` ships seven real citation packages with their inputs, so you can run the engine end-to-end on a clean
 clone (no Claude Code needed). Start with **`agent-memory`** — an AI-frontier topic ("how should my agent
 remember across sessions?") where the unaided model fabricates most of its citations. The engine's input is
 a `research.json` (papers, claims, open problems, debates):
@@ -154,7 +154,7 @@ assemble, ground, lint, score. Two hard gates run at build time:
 
 ## The example packages
 
-`examples/` ships seven real packages built end-to-end (also kept as regression fixtures). Start with the
+`examples/` ships seven real citation packages built end-to-end (also kept as regression fixtures). Start with the
 first two — **AI-frontier topics** (agent memory, coding agents) where the unaided model fabricates most of
 its citations; the rest map what the probe and falsification check discriminate, and show kp-build works
 **beyond arXiv** (journal papers verified via Crossref/DOI):

@@ -49,8 +49,9 @@ direction is a lie the whole tool is built to avoid.
   passage grounding returns `None` when the passage is too short (or the text too large) to
   fuzzy-scan; `helped()` returns `None` when either side has nothing checkable. `None` is excluded
   from denominators — a rate-limit burst must neither inflate nor deflate precision.
-- **Exit codes carry the tri-state.** `probe` and `refresh` exit **0 / 1 / 3** (build-or-fresh /
-  skip-or-stale / INCONCLUSIVE), with **2 reserved for usage and IO errors** — a missing answer file
+- **Exit codes carry the tri-state.** `probe`, `falsify`, and `refresh` exit **0 / 1 / 3**
+  (build-or-helps-or-fresh / skip-or-did-not-help-or-stale / INCONCLUSIVE), with **2 reserved for
+  usage and IO errors** — a missing answer file
   is exit 2, never dressed up as an inconclusive verdict, and malformed input never surfaces as a raw
   traceback. Scripts can branch on the verdict without parsing prose.
 - **Transient ≠ fabrication.** A citation the index couldn't resolve after retries is *unresolved*,

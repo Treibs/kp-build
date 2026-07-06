@@ -109,6 +109,15 @@ def test_passage_digit_grouping_collapse_does_not_rescue_a_tamper():
     assert passage_in_text(quote.format(n="1,500"), quote.format(n="1,000") + " overall") is None
 
 
+def test_degrouping_must_not_synthesize_a_run_from_adjacent_numbers():
+    # 'figure 1' next to '500' is TWO numbers — collapsing the space between them would synthesize a
+    # '1500' run and launder exactly the tamper the guard exists to catch. Only raw COMMA grouping
+    # collapses; a passage claiming 1500 against a text that says '... figure 1 500 ...' abstains.
+    prefix = "the benchmark evaluates retrieval and reranking quality across scientific abstracts totaling"
+    assert passage_in_text(f"{prefix} 1500 documents",
+                           f"{prefix} per figure 1 500 documents") is None
+
+
 # ── fetch ────────────────────────────────────────────────────────────────────────
 
 def test_arxiv_abstract_parses_summary():

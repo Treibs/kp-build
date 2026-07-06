@@ -2,11 +2,12 @@
 
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
-Seven **citation** packages (the table below) map what the `probe` pre-screen and the falsification gate
-discriminate (one drove a blind-spot fix), show kp-build works **beyond arXiv** (Crossref/DOI), and include
-the **flagship** — an everyday-health topic anyone can use, with the evidence separated from the hype.
-Alongside them, five packages exercise the other verifier kinds: `hf-kpmodel/` and `mesh-kpmodel/`
-(**execution**), `http-semantics-grounding/` and `vwt-grounding/` (**doc-grounding**), and
+Seven falsified **citation** packages (the table below) map what the `probe` pre-screen and the
+falsification gate discriminate (one drove a blind-spot fix), show kp-build works **beyond arXiv**
+(Crossref/DOI), and include the **flagship** — an everyday-health topic anyone can use, with the evidence
+separated from the hype. Alongside them, five more packages exercise the rest of the verifier seam:
+`hf-kpmodel/` (**execution**), `mesh-kpmodel/` (**citation** + the KP-model goals/KPI spine),
+`http-semantics-grounding/` and `vwt-grounding/` (**doc-grounding**), and
 [`hf-creative-direction/`](hf-creative-direction/) (**judgment** — the blind-panel example).
 
 Each row is one package. **`probe`** is kp-build's cheap up-front guess at whether building will help (BUILD

@@ -481,6 +481,13 @@ def _cmd_falsify(args) -> int:
             print(f"error: --emit-judge-prompts needs N >= 1 (got {args.emit_judge_prompts}); "
                   f"N is clamped up to an even panel of >= 2", file=sys.stderr)
             return 2
+        if args.judge_rounds:
+            # the two flags are opposite ends of the same loop (emit prompts -> run panel -> replay
+            # rounds); combining them would silently DISCARD the recorded rounds — refuse loudly
+            print("error: --emit-judge-prompts and --judge-rounds don't combine — emit the prompts "
+                  "first, run the panel, then replay with --judge-rounds on a separate falsify run",
+                  file=sys.stderr)
+            return 2
         # emit the blind quality-panel prompts (the non-circular axis) and exit — no scoring, no manifest.
         # Each prompt goes to a FRESH judge; its one-word verdict is a SLOT winner, recorded in order.
         ps = judge_prompts(args.question, Path(args.base).read_text(encoding="utf-8"),
@@ -620,9 +627,12 @@ def _cmd_refresh(args) -> int:
     print(f"  -> {r['reason']}")
     if args.json:
         print(json.dumps(r, indent=2))
-    print("  next: re-probe the topic (the report's 'reprobe_prompt', or `kp-build probe --emit-prompt` "
-          "with --as-of), verify + fold the candidates in via the expand path, bump the version.",
-          file=sys.stderr)
+    if r["decision"] != "inconclusive":
+        # an inconclusive run's next step is in its reason (fix the manifest / re-run) — the
+        # refresh-workflow hint would point at the wrong door
+        print("  next: re-probe the topic (the report's 'reprobe_prompt', or `kp-build probe --emit-prompt` "
+              "with --as-of), verify + fold the candidates in via the expand path, bump the version.",
+              file=sys.stderr)
     return {"fresh": 0, "stale": 1, "inconclusive": 3}[r["decision"]]
 
 

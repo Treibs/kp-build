@@ -160,14 +160,26 @@ def test_unparseable_built_is_inconclusive_never_fresh(tmp_path):
     # built missing/garbled -> NEITHER staleness signal can run: the age test can never fire and no
     # candidate can ever count as post-build, so 'fresh' here would be fail-OPEN — a package with a
     # broken 'built' field would read fresh forever. The honest verdict is INCONCLUSIVE (exit 3 at
-    # the CLI), and every candidate is reported unjudgeable, dated or not.
+    # the CLI); the reason reports ALL candidates unjudgeable, and a DATED candidate stays out of
+    # undated_candidates (it carries a date — the build side is what's broken).
     out = _pkg(tmp_path, built="unknown")
     get = _get([{"title": "Dated", "year": 2026, "arxiv_id": "2603.00042"}])
     rep = refresh(out, as_of="2026-07", get=get)
     assert rep["age_months"] is None and rep["new_since_build"] == 0
     assert rep["decision"] == "inconclusive"
     assert "built" in rep["reason"] and "re-run" in rep["reason"]
-    assert rep["undated_candidates"] == rep["total_candidates"] == 1
+    assert rep["undated_candidates"] == 0 and rep["total_candidates"] == 1
+
+
+def test_future_built_is_inconclusive_never_fresh(tmp_path):
+    # a FUTURE 'built' (typo, clock skew) is the same fail-open one door over: age can never exceed
+    # the threshold and no candidate can post-date the build, so 'fresh' would again be forever.
+    out = _pkg(tmp_path, built="2027-01-15")
+    get = _get([{"title": "Dated", "year": 2026, "arxiv_id": "2603.00042"}])
+    rep = refresh(out, as_of="2026-07", get=get)
+    assert rep["decision"] == "inconclusive"
+    assert rep["age_months"] == -6 and rep["new_since_build"] == 0
+    assert "future" in rep["reason"]
 
 
 def test_missing_built_key_is_inconclusive_even_with_zero_candidates(tmp_path):
@@ -200,6 +212,19 @@ def test_cli_refresh_exit_codes(monkeypatch, capsys):
     monkeypatch.setattr(R, "refresh", lambda *a, **k: _cli_result("inconclusive"))
     assert main(["refresh", "/pkg"]) == 3       # distinct from usage/IO errors (2)
     assert "INCONCLUSIVE" in capsys.readouterr().out
+
+
+def test_cli_refresh_inconclusive_skips_the_refresh_workflow_hint(monkeypatch, capsys):
+    # an inconclusive run's next step is in its reason (fix the manifest / re-run) — printing the
+    # "re-probe + fold candidates in" workflow hint there would point at the wrong door
+    import kp_build.refresh as R
+    from kp_build.cli import main
+    monkeypatch.setattr(R, "refresh", lambda *a, **k: _cli_result("inconclusive"))
+    main(["refresh", "/pkg"])
+    assert "next:" not in capsys.readouterr().err
+    monkeypatch.setattr(R, "refresh", lambda *a, **k: _cli_result("fresh"))
+    main(["refresh", "/pkg"])
+    assert "next: re-probe" in capsys.readouterr().err
 
 
 def test_cli_refresh_passes_flags_and_defaults_the_clock(monkeypatch):

@@ -233,6 +233,21 @@ def test_cli_falsify_emit_judge_prompts_zero_is_usage_error_not_a_full_run(tmp_p
     assert (pkg / "wikillm.json").read_bytes() == before                # manifest never touched
 
 
+def test_cli_falsify_emit_prompts_plus_judge_rounds_is_a_usage_error(tmp_path, monkeypatch, capsys):
+    # the two flags are opposite ends of the same loop — combining them would silently DISCARD the
+    # recorded rounds (emit mode returns before replay); refuse loudly instead
+    import kp_build.falsify as F
+    pkg, base, kp = _falsify_pkg(tmp_path, monkeypatch)
+    def boom(*a, **k):
+        raise AssertionError("a rejected flag combination must not score answers")
+    monkeypatch.setattr(F, "score_answer", boom)
+    before = (pkg / "wikillm.json").read_bytes()
+    assert _run(pkg, base, kp, "--emit-judge-prompts", "4", "--judge-rounds", "a,b") == 2
+    err = capsys.readouterr().err
+    assert "don't combine" in err
+    assert (pkg / "wikillm.json").read_bytes() == before                # manifest never touched
+
+
 def test_cli_falsify_judge_rounds_validated_before_any_scoring(tmp_path, monkeypatch):
     # a malformed panel is a statically checkable usage error — it must not first spend the two
     # (paid, throttled) citation-scoring passes

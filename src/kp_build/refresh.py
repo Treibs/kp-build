@@ -21,9 +21,10 @@ required and caller-supplied, so a refresh report is deterministic and replayabl
 today; a test passes anything). Second, the verdict mirrors the probe's tri-state: a zero-candidate
 expansion is INCONCLUSIVE, not fresh — expand() degrades silently per-seed, so a zero total cannot
 distinguish a quiet field from an unreachable index, and we abstain rather than guess. The same rule
-covers a manifest whose ``built`` date is missing or unparseable: with no build date, neither age nor
-"post-dates the build" is computable, so the verdict is INCONCLUSIVE — never a default "fresh" that
-would let a rotting package pass forever on a broken field.
+covers a manifest whose ``built`` date is missing, unparseable, or in the FUTURE of ``as_of``: in
+every one of those states neither age nor "post-dates the build" is computable/meaningful, so the
+verdict is INCONCLUSIVE — never a default "fresh" that would let a rotting package pass forever on a
+broken field.
 """
 
 from __future__ import annotations
@@ -84,32 +85,31 @@ def refresh(package_dir: str | Path, *, as_of: str, get=_http_get, recency_month
     new_since_build: list[dict] = []
     undated = 0
     for c in cands:
-        if built_m is None:
-            # no build month to compare against — EVERY candidate is unjudgeable, dated or not
-            # (counting a dated candidate as merely 'undated' here would mislabel the failure)
-            undated += 1
-            continue
         ym = _arxiv_ym(c.get("arxiv_id") or "")
-        if ym is not None:
+        if ym is None and not isinstance(c.get("year"), int):
+            # no dating signal at all (no arXiv YYMM, no year) — reported, never silently dropped
+            undated += 1
+        elif built_m is None:
+            # dated, but no build month to compare against — the decision branch below reports ALL
+            # candidates unjudgeable; counting it as 'undated' here would mislabel the failure
+            continue
+        elif ym is not None:
             # month-resolution: the arXiv YYMM prefix post-dates the build's month index
             if ym > built_m:
                 new_since_build.append(c)
-        elif isinstance(c.get("year"), int):
+        else:
             # year-only candidates (DOI/S2 metadata) are judged COARSELY: strict '>' because a
             # same-year paper may still pre-date the build month — the asymmetry undercounts
             # (a false 'fresh' beat a false 'stale' here; the arXiv path has real resolution)
             if c["year"] > built_year:
                 new_since_build.append(c)
-        else:
-            # no dating signal at all (no arXiv YYMM, no year) — reported, never silently dropped
-            undated += 1
 
     fields = ("title", "year", "arxiv_id", "doi", "via")
     new_list = [{k: c.get(k) for k in fields} for c in new_since_build]
 
     stale_by_age = age_months is not None and age_months > recency_months
-    age_str = (f"~{age_months} month(s) old at {as_of}" if age_months is not None
-               else "of unknown age (built date missing/unparseable — the age signal abstains)")
+    # only the stale/fresh branches render age_str, and they are reachable only with a real age
+    age_str = f"~{age_months} month(s) old at {as_of}"
     if built_m is None:
         # fail-CLOSED: with no build date, neither staleness signal can run — a package with a broken
         # 'built' field must not read as fresh forever (the age test can never fire and no candidate
@@ -118,6 +118,14 @@ def refresh(package_dir: str | Path, *, as_of: str, get=_http_get, recency_month
         reason = (f"the manifest's built date is missing/unparseable ({built!r}) — neither age nor "
                   f"'post-dates the build' can be computed, so none of the {len(cands)} expansion "
                   f"candidate(s) can be judged; fix the manifest's 'built' field and re-run")
+    elif age_months < 0:
+        # the SAME fail-open, one door over: a future-dated 'built' (typo, clock skew) also disables
+        # both signals — age can never exceed the threshold and nothing can post-date the build
+        decision = "inconclusive"
+        reason = (f"the manifest says built {built} but as_of is {as_of} — a build date in the future "
+                  f"disables both staleness signals (age can never exceed the threshold and no "
+                  f"candidate can post-date the build); fix the manifest's 'built' field or pass a "
+                  f"later --as-of")
     elif stale_by_age or new_list:
         decision = "stale"
         if new_list and stale_by_age:
