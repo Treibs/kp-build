@@ -111,7 +111,10 @@ class ExecutionVerifier:
     (timeout/crash). A runner that declares a ``gate_code`` keyword (or ``**kwargs``) additionally
     receives the claim's asserted gate, so a mode-sensitive runner (sui RED/GREEN) can cross-check the
     claim-side expectation against fixture-side state and FIRE the gate on a mismatch instead of
-    failing open; a plain two-arg runner is called exactly as before. Statuses:
+    failing open; a plain two-arg runner is called exactly as before. CAUTION: a runner that
+    accepts the gate (including via ``**kwargs``) MUST act on it or fail closed — accepting and
+    ignoring ``gate_code`` silently reverts mode-sensitive gates to the fail-open behavior this
+    threading exists to prevent. Statuses:
 
       verified        — ran clean AND the asserted gate is ABSENT (the mechanical fundamental holds)
       output-mismatch — ran clean but the gate FIRED (the artifact violates what it claims)

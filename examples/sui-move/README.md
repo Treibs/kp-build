@@ -29,7 +29,7 @@ Ask an AI for a Sui contract today and it may well write last year's Sui. The co
 
 ## The RED/GREEN two-sided gate
 
-Each rule carries a GREEN fixture (must compile); 12 of 16 rules also carry a RED fixture (must FAIL with a pinned error fragment in `expected_error.txt`). The refresh mechanic: Sui ships a new mainnet toolchain every ~2 weeks (the full re-verify loop is specified in [CONTEXT.md](CONTEXT.md)). This is the first pack whose staleness check is fully mechanical in both directions.
+Each rule carries a GREEN fixture (must compile); 12 of 16 rules also carry a RED fixture (must FAIL with a pinned error fragment in `expected_error.txt`). The refresh mechanic: Sui ships a new mainnet toolchain every ~2 weeks (the full re-verify loop is specified in [CONTEXT.md](CONTEXT.md)). This is the first pack whose staleness check is mechanical in both directions — with one disclosed exception: the test-scenario beat's `#[test]` body is not compiled by the plain-build gate (see [claims/test-scenario-green.md](claims/test-scenario-green.md)).
 
 ## Falsification
 

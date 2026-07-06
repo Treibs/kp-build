@@ -112,4 +112,4 @@
 - **Grounding sources** (committed under `examples/corpus/`):
   - `MystenLabs/sui` @ `d9f4797dbdcc9c5ec019fa190b432ea0e1bc39c1` — framework docs Apache-2.0; concept docs CC-BY-4.0
   - `MystenLabs/move-book` @ `8ce4dcb9a23bef62d4d7ffe5c36e7002845d4897` — Apache-2.0
-- **Re-verify loop:** Sui ships a new mainnet toolchain every ~2 weeks. Bump the toolchain pin, re-run the fixture gates (`--execute`): any RED fixture that now compiles means the compiler weakness healed and the claim retires; any GREEN fixture that breaks means the idiom moved. Both staleness signals are fully mechanical.
+- **Re-verify loop:** Sui ships a new mainnet toolchain every ~2 weeks. Bump the toolchain pin, re-run the fixture gates (`--execute`): any RED fixture that now compiles means the compiler weakness healed and the claim retires; any GREEN fixture that breaks means the idiom moved. Both staleness signals are mechanical, with one disclosed exception: the test-scenario beat's `#[test]` body is not compiled by the plain-build gate (see `claims/test-scenario-green.md`).
