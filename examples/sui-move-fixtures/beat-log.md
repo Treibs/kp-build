@@ -23,7 +23,7 @@ grounding-only (green + doc-grounding claim).
 | macros-2024 | pre-2024 rebinding of a local declared without `mut` | exit 1, `error[E04024]: invalid usage of immutable variable` (x2, one per variable) | RED/GREEN pair | `Invalid assignment of immutable variable` |
 | object-new | fabricated `object::uid_from_bytes(b"1234")` | exit 1, `error[E03003]: unbound module member` | RED/GREEN pair | `Unbound function 'uid_from_bytes' in module 'sui::object'` |
 | ownership-transfer | `transfer::public_transfer` on a `key`-only struct (no `store`) | exit 1, `error[E05001]: ability constraint not satisfied` | RED/GREEN pair | `The type 'ownership_transfer_red::item::Item' does not have the ability 'store'` |
-| entry-vs-public | `public entry fun` | exit 0, `warning[Lint W99010]: unnecessary 'entry' on a 'public' function` — warning only, as expected | grounding-only (green kept) | — |
+| entry-vs-public | `public entry fun` (red candidate built in /tmp scratch, not committed) | exit 0, `warning[Lint W99010]: unnecessary 'entry' on a 'public' function` — warning only, as expected; the committed green is plain `public fun` | grounding-only (green kept) | — |
 | otw-init | `init(value: u64, ctx: &mut TxContext)` — first param not a one-time witness | exit 1, `error[Sui E02003]: invalid 'init' function` (init signature IS checked at build time) | RED/GREEN pair | `Invalid parameter 'value' of type 'u64'. Expected a one-time witness type` |
 | capability | auth via `assert!(ctx.sender() == @0xCAFE)` hardcoded sender check | exit 0, no warnings — compiles clean, as expected (design rule, not a compiler rule) | grounding-only (green kept) | — |
 | coin-currency | fabricated `coin::mint_new(witness, 9, b"MYC", ctx)` | exit 1, `error[E03003]: unbound module member` | RED/GREEN pair | `Unbound function 'mint_new' in module 'sui::coin'` |
@@ -83,7 +83,7 @@ not committed) to *prove* they compile — classification is observed, not assum
 ## Move.lock decision
 
 `Move.lock` files are committed for all 16 green fixtures: the file header itself says
-"This file should be checked in", each is ~4KB, and they pin the exact framework source
+"This file should be checked in", each is ~1KB, and they pin the exact framework source
 (git rev `b1245677...`) per environment — they ARE the reproducibility pins. Red fixtures
 have no `Move.lock`: the CLI only writes it on successful builds, and red builds fail by
 design. `build/` output dirs are gitignored (`examples/sui-move-fixtures/**/build/`).
