@@ -46,9 +46,13 @@ A package only adds value where the model is WEAK; on topics it already knows, f
 you'd burn ~0.5–1.5M tokens for nothing. So gate the build BEFORE spending — it's the cheapest gate and
 it guards the largest cost:
 1. Get the probe task: `kp-build probe --emit-prompt --question "<the research area>"`.
-2. Dispatch ONE unaided agent with it (no package); save its answer to `base.txt`.
-3. Score it: `kp-build probe --answer base.txt` → **BUILD / SKIP / INCONCLUSIVE** (exit 0 / 1 / 3; a
-   usage or file error is exit 2).
+2. Dispatch 2–3 INDEPENDENT unaided agents with it (no package, no shared context); save each answer
+   (`base1.txt`, `base2.txt`, …). One sample is high-variance exactly where the decision matters — the
+   sleep example's false SKIP came from one clean-looking sample.
+3. Score them: `kp-build probe --answer base1.txt --answer base2.txt` → **BUILD / SKIP / INCONCLUSIVE**
+   (exit 0 / 1 / 3; a usage or file error is exit 2). Aggregation is asymmetric by design, at the
+   decision level: any sample the screen decides is BUILD decides the aggregate (observed weakness can't
+   be un-observed by a luckier draw); SKIP requires every sample's decision to be skip.
    - **BUILD** — the unaided model is weak here: it fabricates/mislabels citations, **HEDGES** (writes
      placeholder ids like `arXiv:2510.xxxxx` for work it can't recall — proof it knows of a frontier it
      can't name), or is too thin → proceed to step 1.
@@ -150,11 +154,24 @@ Then score and RECORD the verdict into the manifest:
 kp-build falsify <out_dir> --question "<area>" --base base_answer.txt --kp kp_answer.txt
 ```
 This scores both answers on **precision** (cited papers that actually exist — checked live) and
-**recall** (fraction of the package's verified spine the answer used), reports an f1 verdict, and
-writes it into `wikillm.json`. **If the KP answer does not beat base on f1 — especially if base's
+**recall** (spine adoption — fraction of the package's verified spine the answer used), reports an f1
+verdict, and writes it into `wikillm.json` (atomically; pass `--no-record` to experiment without
+touching a committed package). **If the KP answer does not beat base on f1 — especially if base's
 hallucination rate is already ~0 because the model knows the topic — the package is not adding value;
 say so and either pick a more model-weak topic or deepen the survey.** A `kp-build falsify` run is
 also exposed via `eval/falsify.py` for convenience.
+
+**Add the blind quality panel (recommended — it is the non-circular axis).** The two mechanical axes
+favor the KP side by construction (the KP agent was *told* to cite the spine it is graded on), so a
+mechanical win certifies base weakness + package adoption, not answer quality. To measure quality:
+```
+kp-build falsify <out_dir> --question "<area>" --base base_answer.txt --kp kp_answer.txt \
+  --emit-judge-prompts 6
+```
+Give each printed prompt to a **fresh** judge subagent (no shared context — a judge that saw a previous
+round can de-anonymize the slots), collect the six one-word verdicts (A/B/TIE) *in order*, then re-run
+the falsify command with `--judge-rounds a,b,tie,...`. A panel that prefers the base answer **vetoes**
+the mechanical win (exit 1); a panel that prefers KP is recorded but never manufactures a win.
 
 ### 7 — Deliver
 **Falsify BEFORE you report — always.** Step 6 is a prerequisite for the human report: `kp-build

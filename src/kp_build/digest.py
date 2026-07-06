@@ -44,14 +44,14 @@ def _claim_line(c, verified) -> str:
     elif grounded == "ungrounded":
         conf, note = "low", " (⚠ passage not found in the paper)"              # grounding failure -> capped
     elif c.claim_type == "result" and c.confidence == "high" and not corr:
-        conf, note = "medium", " (single-source)"           # FMT-2: unearned 'high' is capped on display
+        conf, note = "medium", " (single-source)"           # unearned 'high' is capped on display
     elif corr:
         note = f" (corroborated by {len(corr)})"
     if grounded == "grounded":
         note += " ✓grounded"                                # passage machine-confirmed in the source
     src = f"[{c.paper}]" if c.paper else f"[{c.verified.via or c.verified.kind}]"   # exec claim: cite its verdict
     line = f"- _{c.claim_type}_ — {_data(c.statement)} *({src}, {conf}{note})*"
-    if not flagged and c.confidence == "high" and c.supporting_passage:        # FMT-1: carry evidence
+    if not flagged and c.confidence == "high" and c.supporting_passage:        # carry the evidence
         line += f"\n    > {_data(c.supporting_passage)[:240]}"                  # (not for a flagged claim)
     return line
 
@@ -83,7 +83,7 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
     # The verification basis stated to the loading agent must match how the pack was actually checked.
     # A citation pack has a paper spine; an execution/grounding pack has none. And under --no-verify nothing
     # was checked (verdicts carry via="(unchecked)") — claiming "verified"/"confirmed verbatim" then is the
-    # overclaim the project's brand forbids (review M1). So each branch states only what actually ran.
+    # overclaim the project's brand forbids. So each branch states only what actually ran.
     exec_claims = [c for c in pkg.claims if getattr(c, "execution", None)]
     grnd_claims = [c for c in pkg.claims if getattr(c, "grounding", None)]
     judg_claims = [c for c in pkg.claims if getattr(c, "judgment", None)]
@@ -178,7 +178,7 @@ def build_context(pkg: Package, *, built: str, max_tokens: int = 6000) -> str:
     kept_nodes = (set(verified) | {c.id for c in pkg.claims if claim_ships(c, verified)}
                   | {op.id for op in probs} | {b.id for b in benches}
                   | {d.id for d in pkg.debates if any(k in verified for pos in d.positions for k in pos.papers)})
-    # M7: source/target/type/kpis are attacker-controlled — sanitize EVERY field that lands in CONTEXT.md
+    # source/target/type/kpis are attacker-controlled — sanitize EVERY field that lands in CONTEXT.md
     conn_items = [f"- **[{_data(r.source)}] —{_data(r.type)}→ [{_data(r.target)}]** "
                   f"({', '.join(_data(k) for k in r.kpis)}) — {_data(r.description)}"
                   for r in pkg.relations if r.source in kept_nodes and r.target in kept_nodes]

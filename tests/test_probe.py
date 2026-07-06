@@ -66,7 +66,7 @@ def test_inconclusive_when_index_unreachable():
 
 
 def test_partial_transient_does_not_force_a_spurious_build(monkeypatch):
-    # MUST-FIX: 2 real confirmed + 2 unreachable. Visible real=2 < min_real, but real+unresolved=4 >=
+    # 2 real confirmed + 2 unreachable. Visible real=2 < min_real, but real+unresolved=4 >=
     # min_real, so the low count is a TRANSIENT artifact, not 'too thin' -> INCONCLUSIVE, never BUILD.
     import kp_build.falsify as F
     monkeypatch.setattr(F, "score_citations", lambda a, get=None, **kw: {
@@ -108,7 +108,7 @@ def test_count_hedges_no_false_positives():
     assert count_hedges("a 2.8x speedup, 2-3x faster, 100x throughput") == 0
     assert count_hedges("the xxxx is a free variable; xx and XXX appear too") == 0
     assert count_hedges("arXiv:2507.17746 | Real Paper, and DOI 10.1234/abcd.efgh") == 0
-    # bare 4-digit-dot-x must NOT match unless it is a VALID arXiv YYMM (month 01-12) — the must-fix
+    # bare 4-digit-dot-x must NOT match unless it is a VALID arXiv YYMM (month 01-12)
     assert count_hedges("trained 5000.xx steps; batch 1024.xxxx; the 2024.xx and 2048.xx splits") == 0
     assert count_hedges("arXiv: na, and the rna pathway, and banana") == 0      # n/a needs the slash
 
@@ -174,8 +174,11 @@ def test_arxiv_ym_extracts_year_month():
 def test_as_of_months_validates_month():
     from kp_build.falsify import _as_of_months
     assert _as_of_months("2026-06") == 2026 * 12 + 6
+    assert _as_of_months("2026-06-15") == 2026 * 12 + 6                            # day part accepted, ignored
     assert _as_of_months("2026-13") is None and _as_of_months("2026-00") is None   # bad month abstains, no shift
     assert _as_of_months("") is None and _as_of_months(None) is None
+    # anchored: trailing garbage must abstain, not silently parse as a valid month
+    assert _as_of_months("2026-071") is None and _as_of_months("2026-07x") is None
 
 
 def test_newest_real_ym_from_versioned_block_cite():
@@ -254,6 +257,14 @@ def test_cli_probe_emit_prompt(capsys):
     assert "diffusion language models" in capsys.readouterr().out
 
 
+def test_cli_probe_emit_prompt_plus_answer_is_a_usage_error(tmp_path, capsys):
+    # same doctrine as falsify's --emit-judge-prompts/--judge-rounds: the two modes are opposite
+    # ends of the loop — combining them would silently ignore the supplied answers
+    ans = tmp_path / "a.txt"; ans.write_text("x", encoding="utf-8")
+    assert main(["probe", "--emit-prompt", "--answer", str(ans)]) == 2
+    assert "don't combine" in capsys.readouterr().err
+
+
 def test_cli_probe_exit_codes(tmp_path, monkeypatch):
     import kp_build.falsify as F
     ans = tmp_path / "a.txt"; ans.write_text("x", encoding="utf-8")
@@ -300,3 +311,91 @@ def test_cli_probe_missing_file_is_exit_2_not_3(capsys):
     # a missing answer file is a usage/IO error (exit 2) — must be distinguishable from INCONCLUSIVE (3)
     assert main(["probe", "--answer", "/no/such/probe-answer.txt"]) == 2
     assert "not found" in capsys.readouterr().err
+
+
+# ── multi-sample aggregation (probe_verdict_multi): weakness observed ONCE is real ──────────────────
+
+CLEAN = ("## Citations\n2211.17192 | Fast Inference\n2310.16834 | Score Entropy Discrete Diffusion\n"
+         "1706.03762 | Attention Is All You Need\n")                    # 3 real, 0 fake -> skip
+FAB = ("## Citations\n2211.17192 | Fast Inference\n2499.99998 | Fabricated One\n"
+       "2499.99999 | Fabricated Two\n2310.16834 | Score Entropy Discrete Diffusion\n")  # 50% fake -> build
+
+
+def test_probe_multi_any_build_wins():
+    # asymmetric BY DESIGN: a fabrication in ANY sample is observed weakness — one lucky clean
+    # sample must not un-observe it (the sleep pilot's false SKIP in miniature)
+    from kp_build.falsify import probe_verdict_multi
+    v = probe_verdict_multi([CLEAN, FAB], get=_get_real)
+    assert v["decision"] == "build" and v["n"] == 2
+    assert [s["decision"] for s in v["samples"]] == ["skip", "build"]
+    assert "2-sample probe" in v["reason"] and "sample 2 decided" in v["reason"]
+
+
+def test_probe_multi_skip_requires_every_sample_clean():
+    from kp_build.falsify import probe_verdict_multi
+    v = probe_verdict_multi([CLEAN, CLEAN], get=_get_real)
+    assert v["decision"] == "skip" and all(s["decision"] == "skip" for s in v["samples"])
+
+
+def test_probe_multi_inconclusive_beats_skip_but_not_build():
+    from kp_build.falsify import probe_verdict_multi
+    def flaky(u):                                        # one id's lookups time out (transient)
+        if "9999.11111" in u:
+            raise TimeoutError("index down")
+        return _get_real(u)
+    unreachable = "## Citations\n9999.11111 | Some Paper\n"     # checked==0 -> inconclusive
+    v = probe_verdict_multi([CLEAN, unreachable], get=flaky)
+    assert v["decision"] == "inconclusive"               # a transient can't be laundered into a SKIP
+    v = probe_verdict_multi([unreachable, FAB], get=flaky)
+    assert v["decision"] == "build"                      # ...but observed fabrication still decides
+
+
+def test_probe_multi_single_sample_matches_probe_verdict():
+    from kp_build.falsify import probe_verdict_multi
+    v = probe_verdict_multi([FAB], get=_get_real)
+    single = probe_verdict(FAB, get=_get_real)
+    assert v["decision"] == single["decision"] and v["reason"] == single["reason"]  # no [N-sample] suffix
+    assert v["n"] == 1
+
+
+def test_probe_multi_empty_raises():
+    import pytest
+    from kp_build.falsify import probe_verdict_multi
+    with pytest.raises(ValueError):
+        probe_verdict_multi([])
+
+
+def test_cli_probe_multi_answer_prints_per_sample_lines(tmp_path, monkeypatch, capsys):
+    import kp_build.falsify as F
+    a1 = tmp_path / "a1.txt"; a1.write_text("clean sample", encoding="utf-8")
+    a2 = tmp_path / "a2.txt"; a2.write_text("weak sample", encoding="utf-8")
+    def fake_probe(ans, **kw):
+        weak = "weak" in ans
+        return {"cited": 4, "checked": 4, "real": 2 if weak else 4, "fake": 2 if weak else 0,
+                "hedged": 0, "hallucination_rate": 0.5 if weak else 0.0,
+                "decision": "build" if weak else "skip",
+                "reason": "fabricates" if weak else "knows it"}
+    monkeypatch.setattr(F, "probe_verdict", fake_probe)
+    assert main(["probe", "--answer", str(a1), "--answer", str(a2)]) == 0   # any build -> build -> 0
+    out = capsys.readouterr().out
+    assert "sample 1: SKIP" in out and "sample 2: BUILD" in out
+    assert "2-sample probe" in out
+
+
+def test_cli_probe_duplicate_answer_files_warn_on_stderr(tmp_path, monkeypatch, capsys):
+    # the multi-sample screen assumes INDEPENDENT samples — the same file passed twice adds no
+    # information and makes the aggregate look better-sampled than it is; warn, don't change the call
+    import kp_build.falsify as F
+    a1 = tmp_path / "a1.txt"; a1.write_text("clean sample", encoding="utf-8")
+    a2 = tmp_path / "a2.txt"; a2.write_text("clean sample", encoding="utf-8")   # same CONTENT
+    def fake_probe(ans, **kw):
+        return {"cited": 4, "checked": 4, "real": 4, "fake": 0, "hedged": 0,
+                "hallucination_rate": 0.0, "decision": "skip", "reason": "knows it"}
+    monkeypatch.setattr(F, "probe_verdict", fake_probe)
+    assert main(["probe", "--answer", str(a1), "--answer", str(a2)]) == 1       # skip -> exit 1, unchanged
+    err = capsys.readouterr().err
+    assert "duplicate" in err and "independence" in err
+    # distinct samples stay silent
+    a2.write_text("a different sample", encoding="utf-8")
+    assert main(["probe", "--answer", str(a1), "--answer", str(a2)]) == 1
+    assert "duplicate" not in capsys.readouterr().err

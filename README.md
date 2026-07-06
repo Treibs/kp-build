@@ -44,7 +44,7 @@ manager for knowledge; see [*Sharing a package through KPM*](#sharing-a-package-
 
 ## Install
 
-Two ways to use it: **run the five shipped example packages** (Quickstart) or **author a new one** with the
+Two ways to use it: **run the twelve shipped example packages** (Quickstart) or **author a new one** with the
 `/kp-build` skill (Build your own). Either way, start with the engine:
 
 ```bash
@@ -59,7 +59,7 @@ Crossref, and OpenAlex APIs (no keys, no cost).
 
 ## Quickstart — run the shipped examples
 
-`examples/` ships seven real packages with their inputs, so you can run the engine end-to-end on a clean
+`examples/` ships seven real citation packages with their inputs, so you can run the engine end-to-end on a clean
 clone (no Claude Code needed). Start with **`agent-memory`** — an AI-frontier topic ("how should my agent
 remember across sessions?") where the unaided model fabricates most of its citations. The engine's input is
 a `research.json` (papers, claims, open problems, debates):
@@ -72,7 +72,8 @@ kp-build build -i examples/agent-memory.research.json -o /tmp/pkg               
 # `falsify` and `report` run on a built package directory — examples/ ships pre-built ones:
 
 # did the package help? score an unaided agent vs a package-loaded one (answers shipped in examples/)
-kp-build falsify examples/agent-memory \
+# (--no-record: score without rewriting the shipped package's manifest)
+kp-build falsify examples/agent-memory --no-record \
   --question "Memory for LLM agents — persistent / long-term memory architectures for autonomous agents (2023-2026)" \
   --base examples/agent-memory.base-answer.txt \
   --kp   examples/agent-memory.kp-answer.txt
@@ -123,20 +124,37 @@ assemble, ground, lint, score. Two hard gates run at build time:
   (arXiv's HTML rendering), marking each claim `grounded`, `unconfirmed`, or `ungrounded`
   (fulltext-checked and absent → flagged).
 
-### Two honesty checks: one before, one after
+### Honesty checks: before, after, and later
 
-- **`probe` — *should we even build this?*** (before) Scores one unaided answer from the model. If it
+- **`probe` — *should we even build this?*** (before) Scores unaided answers from the model. If it
   fabricates, **hedges** (writes placeholder ids like `arXiv:2510.xxxxx` for work it can't recall), or is
   too thin → **BUILD** (the model is weak here, so a package will help). If it already cites cleanly →
-  **SKIP** (don't spend the compute).
+  **SKIP** (don't spend the compute). One sample is noisy exactly where the decision matters, so pass
+  `--answer` 2–3 times with independent samples — any sample the screen decides is BUILD decides the
+  aggregate (observed weakness can't be un-observed by a luckier draw), while SKIP must hold in every one.
 - **`falsify` — *did it actually help?*** (after) Tries to *disprove* the package's value: it scores a
   package-loaded agent against an unaided one on a held-out task, on **precision** (cites that exist and
-  match) and **recall** (coverage of the verified spine). Survive that, and it's a real, recorded win;
-  fail, and it says so.
+  match) and **spine adoption** (recall of the verified paper set). Survive that, and it's a recorded win;
+  fail, and it says so. **Honest limit:** those two axes are stacked toward the package side — the KP
+  agent is *instructed* to cite the spine it was handed, so its precision ≈ 1.0 is instruction-following,
+  and recall is measured against the package's own paper set. A mechanical "helps" therefore certifies
+  *base weakness + package adoption*, not answer quality. The non-circular axis is the optional **blind
+  quality panel**: `--emit-judge-prompts N` prints anonymized A/B prompts (slot-alternated so position
+  bias and lazy uniform votes cancel), each given to a fresh judge; feed the recorded verdicts back via
+  `--judge-rounds a,b,...`. A panel that prefers the *base* answer **vetoes** the mechanical win; a
+  panel that prefers KP never manufactures one. Without a panel, the verdict says so explicitly.
+  The panel has already earned its keep: against a **search-armed** baseline (an agent with live web
+  search instead of unaided recall), the mechanical axes still said "helps 0.42 → 1.00" while the blind
+  panel preferred the search answer 6–0 — and the veto flipped the verdict to *did not help*. See
+  [`docs/experiments/search-baseline/`](docs/experiments/search-baseline/) for the full run.
+- **`refresh` — *is it still fresh?*** (later) A package rots the day its field moves. `kp-build refresh
+  <pkg>` reports the package's age plus post-build citation-graph candidates (papers the citation graph
+  links to the verified spine — mostly new work citing it — that didn't exist at build time) and emits a
+  re-probe prompt — exit 0 fresh / 1 stale / 3 inconclusive.
 
 ## The example packages
 
-`examples/` ships seven real packages built end-to-end (also kept as regression fixtures). Start with the
+`examples/` ships seven real citation packages built end-to-end (also kept as regression fixtures). Start with the
 first two — **AI-frontier topics** (agent memory, coding agents) where the unaided model fabricates most of
 its citations; the rest map what the probe and falsification check discriminate, and show kp-build works
 **beyond arXiv** (journal papers verified via Crossref/DOI):
@@ -152,7 +170,9 @@ its citations; the rest map what the probe and falsification check discriminate,
 | `glp1-incretin-obesity` | **biomedical** (non-arXiv, verified by DOI) | skip (model looks fine) | helped on **coverage** — recall 0.26 → 0.95 |
 
 *Scores are 0–1, higher is better. **precision** = of the papers it cited, how many are real and correctly
-labeled; **coverage** (recall) = how much of the verified paper set it found; **f1** = the two combined.*
+labeled; **coverage** (recall) = how much of the verified paper set it found — measured against the
+package's own spine, so the KP side is graded on an answer key it was handed (see the honest limit above);
+**f1** = the two combined.*
 
 \* `pre-screen` is the cheap up-front guess at whether a package will help; `falsify` is the after-the-fact
 measurement. **They can disagree — that's the point of the ⭐ row.** On sleep the cheap check guessed *skip*
@@ -171,15 +191,22 @@ example exposed, and drove a fix for, a blind spot in the probe.
 
 The seven packages above all use the **citation** verifier. The engine now has a **pluggable verifier seam** —
 a claim's "is this real?" check can be **citation** (does the paper resolve?), **doc-grounding** (does the
-quoted passage appear in a pinned source?), or **execution** (does running the artifact through a tool gate
-clear?) — and a package can carry **goals + KPIs** and first-class **KPI-anchored connections**, not just a
-flat claim list. All three verifiers are **build-enforced**, one example pack each:
+quoted passage appear in a pinned source?), **execution** (does running the artifact through a tool gate
+clear?), or **judgment** (does a blind, slot-alternated judge panel prefer it over a fair baseline? —
+recorded rounds, replayed deterministically) — and a package can carry **goals + KPIs** and first-class
+**KPI-anchored connections**, not just a flat claim list. All four verifiers are **build-enforced**, one
+example pack each:
 [`examples/mesh-kpmodel/`](examples/mesh-kpmodel/) (material-science, **citation**),
-[`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution** — `--execute`), and
+[`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution** — `--execute`),
 [`examples/http-semantics-grounding/`](examples/http-semantics-grounding/) +
-[`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline). Honest
-scope: execution verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding proves *provenance*
-(the clause is verbatim in a pinned source), not *soundness*. See
+[`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline), and
+[`examples/hf-creative-direction/`](examples/hf-creative-direction/) (**judgment** — a recorded blind
+panel). Honest scope: execution verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding
+proves *provenance* (the clause is verbatim in a pinned source), not *soundness*; judgment measures
+*relative preference* against a fair baseline, never absolute quality. The execution gate runs a **pinned**
+`hyperframes` version through `npx` and checks the package's npm `dist.integrity` (sha512) once per process
+before trusting its verdicts; set `KP_BUILD_HYPERFRAMES_BIN` to a pre-audited local binary to skip both
+the download and the check. See
 [`examples/README.md`](examples/README.md#kp-model-packs-v2-a--pluggable-verifiers).
 
 ## Sharing a package through KPM
@@ -202,7 +229,7 @@ kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — 
 ```
 src/kp_build/      the engine (scope→survey→extract→verify→ground→assemble→falsify→report)
 skill/SKILL.md     the /kp-build orchestration spec (drives the research subagents)
-examples/          five real built packages + their research.json inputs and falsification evidence
+examples/          twelve real built packages + their inputs (falsification evidence on the seven citation ones)
 docs/              explainer / metrics / orchestration (HTML)
 SPEC.md            the package format + pipeline, in full
 ```
@@ -214,7 +241,9 @@ SPEC.md            the package format + pipeline, in full
 - **Coverage is scope-relative** and can be too shallow; citation-graph expansion (following papers'
   references and citations to catch what keyword search misses) mitigates it, and the manifest records
   what was searched so the gap stays honest.
-- A package is stale the day its field moves; the manifest carries its `built` date, and a re-run is a diff.
+- A package is stale the day its field moves; the manifest carries its `built` date, and
+  `kp-build refresh <pkg>` turns that into a report — age, post-build citation-graph candidates, and a
+  re-probe prompt.
 
 See [`SPEC.md`](SPEC.md) for the complete package format, schema, and pipeline.
 

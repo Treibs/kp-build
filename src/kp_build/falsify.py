@@ -1,20 +1,27 @@
-"""Falsification harness — does the package actually help, or is it ceremony?
+"""Falsification harness — what it measures, and what it honestly cannot.
 
-It compares a BASE agent (no package) against a KP-LOADED agent on a held-out task and scores each
-answer on TWO axes, not one:
+It compares a BASE agent (no package) against a KP-LOADED agent on a held-out task, on up to THREE
+axes:
 
-- **precision / citation integrity** — what fraction of the cited papers actually exist AND are the
-  paper the answer names. A resolvable arXiv id / DOI is real ONLY if its canonical title strictly
-  matches the claimed title (so a real id bearing the WRONG paper's title — a mislabel — counts as a
-  hallucination, mirroring the build-time citation gate). An id cited with no title falls back to
-  existence (nothing to match); a title-only cite must strictly match a real work. This is the
-  anti-hallucination metric.
-- **recall / coverage** — what fraction of the package's verified spine the answer actually used. A
-  base agent that knows the field may cite real papers (high precision) but miss the spine (low
-  recall); a KP-loaded agent should do both.
+- **precision / citation integrity** (mechanical) — what fraction of the cited papers actually exist
+  AND are the paper the answer names. A resolvable arXiv id / DOI is real ONLY if its canonical title
+  strictly matches the claimed title (so a real id bearing the WRONG paper's title — a mislabel —
+  counts as a hallucination, mirroring the build-time citation gate). An id cited with no title falls
+  back to existence (nothing to match); a title-only cite must strictly match a real work.
+- **spine adoption** (mechanical; reported under the ``recall`` key) — what fraction of the package's
+  verified spine the answer actually used.
+- **blind quality panel** (judgment; OPTIONAL, via ``judge_prompts``/``judge_replay``) — the
+  JudgeVerifier's slot-alternated blind panel comparing the two answers directly on the held-out task.
 
-f1 of the two is the headline. The objective core is still that a base agent's *fabricated* papers
-show up as precision < 1, while a KP-loaded agent that stays on the verified spine scores precision 1.
+HONEST LIMIT — the mechanical axes are structurally stacked toward the KP side, by construction:
+the KP prompt hands the agent the spine and instructs it to use only those papers (so KP precision
+~1.0 is instruction-following, not a finding), and spine adoption is measured against that same spine
+(the treatment is the answer key, so KP recall ~1.0 too). What the mechanical axes genuinely measure
+is (a) the BASE side — how much an unaided model fabricates/mislabels/misses, a real model-weakness
+measurement — and (b) that the package was correctly assembled and adopted by the loaded agent. They
+CANNOT show the package made the answer *better*. That is what the quality panel is for: it is the
+only non-circular axis here, and in the combined verdict it acts as a VETO — a panel that prefers the
+base answer overturns a mechanical "helps", but a panel win never manufactures one (fail-closed).
 """
 
 from __future__ import annotations
@@ -227,10 +234,12 @@ def _spine_handles(spine: list[dict]) -> list[set]:
 
 def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get,
                  throttle: float = 0.0, sleep=time.sleep) -> dict:
-    """Full score: precision (integrity) + recall (coverage of the verified spine) + f1.
+    """Full score: precision (integrity) + spine-adoption recall + f1.
 
-    *spine* is a list of the package's VERIFIED papers as {arxiv_id, doi, cite_key}. recall = fraction
-    of spine papers the answer cited. f1 balances not-hallucinating with actually-using-the-field.
+    *spine* is a list of the package's VERIFIED papers as {arxiv_id, doi, cite_key}. recall = the
+    fraction of spine papers the answer cited — ADOPTION of the package's own paper set (the treatment
+    is the answer key; see the module docstring's circularity note), not coverage of the field. f1
+    balances not-hallucinating with actually-adopting-the-spine.
     """
     base = score_citations(answer, get=get, throttle=throttle, sleep=sleep)
     cited_handles = {_norm_handle(h) for h, _ in parse_citations(answer)}
@@ -248,7 +257,8 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get,
 def _as_of_months(s) -> "int | None":
     """Absolute month index for a YYYY-MM[-DD] reference date, else None (recency signal abstains). Validates the
     month (01-12) and abstains on a bad one — mirrors _arxiv_ym, so a typo'd --as-of can't shift the reference."""
-    m = re.match(r"\s*(\d{4})-(\d{2})", s or "")
+    # anchored: trailing garbage ('2026-071', '2026-07x') must abstain, not parse as July
+    m = re.match(r"\s*(\d{4})-(\d{2})(?:-\d{2})?\s*$", s or "")
     if not m:
         return None
     mm = int(m.group(2))
@@ -315,23 +325,154 @@ def probe_verdict(base_answer: str, *, get=_http_get, threshold: float = 0.25, m
             "threshold": threshold, "min_real": min_real}
 
 
-def verdict(base_report: dict, kp_report: dict) -> str:
-    """One-line comparison. Prefers f1 (precision+recall) when available, else precision."""
+def probe_verdict_multi(answers: list, **kw) -> dict:
+    """Aggregate the pre-screen over SEVERAL independently sampled unaided answers (2-3 recommended).
+
+    A single sampled answer is high-variance exactly where the decision matters (near the fabrication
+    threshold / min_real boundary) — the sleep pilot's false SKIP came from one clean-looking sample
+    that the full falsification then contradicted. Aggregation is asymmetric BY DESIGN, at the
+    DECISION level: any sample whose screen decides BUILD decides the aggregate (weakness that clears
+    the screen's bar in one sample can't be un-observed by a luckier draw), while "knows the field
+    cleanly" must hold in EVERY sample to SKIP. So:
+    any BUILD -> build; else any INCONCLUSIVE -> inconclusive; else skip. The false-SKIP rate can only
+    go down with more samples; the price is a higher build rate, which `falsify` still gates after the
+    build. Returns the DECIDING sample's report plus {samples: [per-sample verdicts], n}."""
+    if not answers:
+        raise ValueError("probe_verdict_multi needs at least one answer")
+    per = [probe_verdict(a, **kw) for a in answers]
+    pick = (next((v for v in per if v["decision"] == "build"), None)
+            or next((v for v in per if v["decision"] == "inconclusive"), None)
+            or per[0])
+    agg = {**pick, "samples": per, "n": len(per)}
+    if len(per) > 1:
+        counts = ", ".join(f"{sum(1 for v in per if v['decision'] == d)} {d}"
+                           for d in ("build", "skip", "inconclusive")
+                           if any(v["decision"] == d for v in per))
+        agg["reason"] = (f"{pick['reason']} [{len(per)}-sample probe: {counts}; "
+                         f"sample {per.index(pick) + 1} decided]")
+    return agg
+
+
+_JUDGE_PROMPT = (
+    "You are ONE judge on a blind quality panel. Below are two ANONYMOUS answers (A and B) to the "
+    "same task. You do not know which system produced which, and you must not try to guess.\n\n"
+    "The task both answered:\n{task}\n"
+    "Judge which answer would serve a researcher better on: correct framing of the field, specific "
+    "and checkable citations, and genuinely useful open problems. Ignore length, formatting polish, "
+    "and confidence of tone.\n\n"
+    "=== ANSWER A ===\n{a}\n=== END ANSWER A ===\n\n"
+    "=== ANSWER B ===\n{b}\n=== END ANSWER B ===\n\n"
+    "Reply with EXACTLY one word: A, B, or TIE."
+)
+
+
+def judge_prompts(question: str, base_answer: str, kp_answer: str, rounds: int = 6) -> list[str]:
+    """Blind-panel prompts for the falsification's QUALITY axis — the non-circular one.
+
+    Round i puts the KP answer in slot A iff i is even — this MUST mirror JudgeVerifier's
+    ``ans_is_a = (i % 2 == 0)`` because :func:`judge_replay` re-tallies the recorded slot winners
+    through that same alternation; a drift here would silently invert half the panel. Give each prompt
+    to a FRESH judge (no shared context — a judge that saw a previous round can de-anonymize the
+    slots), record each one-word verdict as a SLOT winner ('a'/'b'/'tie') in order, and feed the list
+    to ``kp-build falsify --judge-rounds``. Rounds are clamped even (>=2), same as the verifier."""
+    n = max(2, rounds - (rounds % 2))
+    task = _TASK.format(question=question)
+    out = []
+    for i in range(n):
+        kp_is_a = (i % 2 == 0)
+        a, b = (kp_answer, base_answer) if kp_is_a else (base_answer, kp_answer)
+        out.append(_JUDGE_PROMPT.format(task=task, a=a, b=b))
+    return out
+
+
+def judge_replay(recorded: list) -> dict:
+    """Re-tally recorded blind-panel slot winners through the SAME JudgeVerifier the build uses.
+
+    ``recorded`` is the ordered list of slot verdicts ('a'/'b'/'tie') from the panel that judged the
+    :func:`judge_prompts` comparisons. Running them through JudgeVerifier (answer = the KP answer,
+    baseline = base) keeps ONE implementation of the alternation math and inherits its anti-fraud
+    property: a lazy uniform fake ('a' every round) nets to a tie. The even-length >=2 gate is
+    enforced here too — an odd panel can launder a one-sided vote into a verdict (same defense as
+    verify_judgment_claims). Returns {status, kp_wins, base_wins, ties, rounds}."""
+    from types import SimpleNamespace
+    from .verifier import JudgeVerifier
+    rounds = [str(r).strip().lower() for r in recorded]
+    bad = sorted({r for r in rounds if r not in ("a", "b", "tie")})
+    if bad:
+        # repr, so an EMPTY item (e.g. a doubled comma in --judge-rounds) is visible in the message
+        raise ValueError(f"judge rounds must each be 'a', 'b', or 'tie' — got: "
+                         f"{', '.join(repr(r) for r in bad)}")
+    if len(rounds) < 2 or len(rounds) % 2 != 0:
+        raise ValueError("judge rounds must be an EVEN number of recorded comparisons (>=2) — the KP "
+                         "answer must occupy slot a and slot b equally for position bias (and a lazy "
+                         "uniform fake) to cancel")
+    seq = iter(rounds)
+    replay = lambda task, a, b: {"winner": next(seq, "tie")}
+    v = JudgeVerifier(replay, rounds=len(rounds)).verify(
+        SimpleNamespace(task="held-out falsification task", answer="kp", baseline="base"))
+    m = re.match(r"panel (\d+)-(\d+)-(\d+)", v.evidence)     # JudgeVerifier's own tally is the source of truth
+    kp_w, base_w, ties = (int(x) for x in m.groups())
+    return {"status": v.status, "kp_wins": kp_w, "base_wins": base_w, "ties": ties, "rounds": rounds}
+
+
+def helped(base_report: dict, kp_report: dict, judge: "dict | None" = None) -> "bool | None":
+    """The single helps / not / inconclusive(None) rule — shared by :func:`verdict` and the CLI exit
+    code so the sentence and the exit status can never drift (one rule, two renderers).
+
+    The quality panel is a VETO only: judged-worse overturns a mechanical "helps" (the package made
+    the answer worse, whatever the spine numbers say), but judged-better never manufactures one — the
+    mechanical axes are stacked toward the KP side (see module docstring), so a helps verdict must
+    clear the axis that CAN fail and must not rest on the one that can't."""
+    if kp_report.get("cited", 0) == 0:
+        return None
+    if base_report.get("checked") == 0 or kp_report.get("checked") == 0:
+        return None
+    if judge and judge.get("status") == "judged-worse":
+        return False
+    if base_report.get("f1") is not None and kp_report.get("f1") is not None:
+        # when both sides were scored against the spine, f1 IS the metric — a cleaner
+        # hallucination rate must not overrule a worse f1 (the sentence prints the f1s)
+        return kp_report["f1"] > base_report["f1"]
+    return kp_report["hallucination_rate"] < base_report["hallucination_rate"]
+
+
+def verdict(base_report: dict, kp_report: dict, judge: "dict | None" = None) -> str:
+    """One-line comparison. Prefers f1 (precision+spine adoption) when available, else precision.
+    *judge* is an optional :func:`judge_replay` result — the blind quality axis; without it the
+    sentence says so explicitly, because a purely mechanical verdict mostly certifies base weakness
+    plus package adoption (see module docstring), not answer quality."""
     if kp_report.get("cited", 0) == 0:
         return "INCONCLUSIVE — the KP answer cited nothing; check the task ran."
     if base_report.get("checked") == 0 or kp_report.get("checked") == 0:
         # every cited id was unreachable (index outage) — precision/f1 here is 0-by-default, not earned
         return "INCONCLUSIVE — citations could not be verified (citation index unreachable); re-run."
+    if judge:
+        tally = f"{judge['kp_wins']}-{judge['base_wins']}-{judge['ties']} (kp-base-tie)"
+        q = {"judged-better": f" Blind quality panel: the KP answer was PREFERRED, {tally}.",
+             "judged-worse": (f" Blind quality panel: the BASE answer was preferred, {tally} — the "
+                              f"package did not improve the answer, whatever the spine numbers say."),
+             "judged-tie": f" Blind quality panel: split, {tally} — no quality difference shown."
+             }.get(judge["status"], f" Blind quality panel: {judge['status']}, {tally}.")
+    else:
+        q = (" (No blind quality panel was run — this verdict certifies citation integrity + spine "
+             "adoption, which the KP side nearly satisfies by construction; add --judge-rounds for "
+             "the non-circular quality axis.)")
+    h = helped(base_report, kp_report, judge)
     if base_report.get("f1") is not None and kp_report.get("f1") is not None:
         b, k = base_report["f1"], kp_report["f1"]
-        verb = "HELPS" if k > b else ("TIES" if k == b else "DID NOT HELP")
+        verb = "HELPS" if h else ("TIES" if (k == b and not (judge and judge.get("status") == "judged-worse"))
+                                  else "DID NOT HELP")
         return (f"KP {verb} — f1 {b:.2f} (base) → {k:.2f} (KP). "
                 f"precision {base_report['precision']:.2f}→{kp_report['precision']:.2f}, "
-                f"recall {base_report.get('recall',0):.2f}→{kp_report.get('recall',0):.2f}, "
-                f"{base_report['fake']} fake cites in base vs {kp_report['fake']} in KP.")
+                f"spine adoption {base_report.get('recall',0):.2f}→{kp_report.get('recall',0):.2f}, "
+                f"{base_report['fake']} fabricated/mislabeled cites in base vs {kp_report['fake']} in KP."
+                + q)
     b, k = base_report["hallucination_rate"], kp_report["hallucination_rate"]
-    if k < b:
-        return f"KP HELPS on integrity — hallucination {b:.0%} (base) → {k:.0%} (KP); {base_report['fake']} fakes avoided."
+    if h:
+        return (f"KP HELPS on integrity — hallucination {b:.0%} (base) → {k:.0%} (KP); "
+                f"{base_report['fake']} fabricated/mislabeled cites avoided." + q)
+    if judge and judge.get("status") == "judged-worse":
+        return f"KP DID NOT HELP — integrity {b:.0%} → {k:.0%}." + q
     if k == b == 0:
-        return "TIE on citation integrity (both clean) — compare recall/coverage and open-problem quality."
-    return f"KP DID NOT HELP on integrity ({b:.0%} → {k:.0%}) — deepen the survey or rethink."
+        return "TIE on citation integrity (both clean) — compare spine adoption and open-problem quality." + q
+    return f"KP DID NOT HELP on integrity ({b:.0%} → {k:.0%}) — deepen the survey or rethink." + q

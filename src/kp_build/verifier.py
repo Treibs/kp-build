@@ -7,7 +7,8 @@ deterministic and offline-testable with a fake transport.
 
 This module is intentionally a NARROW lift: ``CitationVerifier`` delegates to the existing, well-tested
 ``citations.verify_paper`` so its verdicts are byte-identical to the legacy path — the seam adds an
-abstraction boundary, not new behavior. ``DocGroundingVerifier`` / ``ExecutionVerifier`` plug in here.
+abstraction boundary, not new behavior. ``DocGroundingVerifier`` / ``ExecutionVerifier`` /
+``JudgeVerifier`` plug in here.
 """
 
 from __future__ import annotations
@@ -66,7 +67,8 @@ class DocGroundingVerifier:
       unsure  (None)  -> ``unconfirmed``        (passage too short / corpus text too large to fuzzy-scan)
 
     A source MISSING from the corpus -> ``ungrounded-unreachable``: a COVERAGE DEBT (an oracle exists in
-    principle, we just don't hold the text), NEVER laundered into ``verified`` (the review's two-stamp scheme).
+    principle, we just don't hold the text), NEVER laundered into ``verified`` — couldn't-check and
+    checked-and-absent carry distinct stamps.
     Operates on a **Claim** (or a directive namespace) — grounding its ``supporting_passage`` against
     ``corpus[source]``, where ``source`` is the claim's ``paper`` (cite_key) or its grounding directive's
     ``source`` key.
@@ -154,10 +156,10 @@ class ExecutionVerifier:
 
 
 class JudgeVerifier:
-    """The v2-b aesthetic/quality verifier — judges an answer RELATIVE to a baseline, blind (V2-b §judge).
+    """The aesthetic/quality verifier — judges an answer RELATIVE to a baseline, blind.
 
-    Quality and taste are not mechanically checkable, so this is deliberately NOT an absolute score: the
-    design review's keystone is that a taste verdict is non-reproducible and tautological unless it is
+    Quality and taste are not mechanically checkable, so this is deliberately NOT an absolute score: a
+    taste verdict is non-reproducible and tautological unless it is
     *relative* (does a pack-loaded answer beat the unaided one?). So ``verify`` needs a ``baseline`` and a
     panel of blind comparisons. The JUDGE is injected (like ``get`` / ``runner`` / ``corpus``) so this is
     pure logic, offline-testable with a fake. Judge contract:
@@ -187,7 +189,7 @@ class JudgeVerifier:
             return Verification(kind="judgment", exists=False, status="unverifiable", via="judge-panel",  # gate,
                                 evidence="judgment is relative — needs a non-empty answer AND baseline",   # and an
                                 checked=self._today)                                                       # empty
-            # ^ an empty answer can never "win" against a baseline (review should-fix #3 — close the fail-open)
+            # ^ an empty answer can never "win" against a baseline — abstain rather than fail open
         answer_wins = baseline_wins = ties = 0
         for i in range(self._rounds):
             ans_is_a = (i % 2 == 0)                       # alternate slots to cancel position bias
@@ -213,15 +215,56 @@ class JudgeVerifier:
                                      f"over {self._rounds} rounds", checked=self._today)
 
 
+# Supply-chain pin (TOFU): recorded via `npm view hyperframes@0.6.91 dist.integrity` on 2026-07-06.
+# Raises the bar against the registry later swapping the artifact under the same version pin — not
+# airtight; see the honest-scope note in hyperframes_runner's docstring.
+_HYPERFRAMES_PKG = "hyperframes@0.6.91"
+_HYPERFRAMES_INTEGRITY = "sha512-bxszvDkf+lzui09tf5WQUxtKd9OGo0DtuSpCR8LNY+bM1qqs0yJVaQ7iJyQwfqH9TrRDHob7PEeqtUayTbWe2A=="
+# Per-process cache: a multi-gate build queries `npm view` once, not per claim. Module-level and
+# explicit so tests can reset it (a mismatch never sets it — only a confirmed pin is remembered).
+_hyperframes_integrity_ok = False
+
+
 def hyperframes_runner(artifact, tool, *, _run=None):
     """The default ExecutionVerifier runner — shells to the hyperframes CLI and extracts the gate codes.
     Returns ``{"codes": [...]}``, or ``None`` if no parseable result; raises on timeout/crash (→ ``error``).
-    ``_run`` (a ``subprocess.run``-shaped callable) is injectable so the parse/extraction is unit-testable."""
+    ``_run`` (a ``subprocess.run``-shaped callable) is injectable so the parse/extraction is unit-testable;
+    it covers BOTH the ``npm view`` integrity check and the tool invocation, so both stay offline-testable.
+
+    Supply-chain threat model (honest scope): ``npx`` fetches from the registry at build time, so before
+    the first tool run in a process the registry's ``dist.integrity`` for the pinned version is compared
+    against ``_HYPERFRAMES_INTEGRITY`` (trust-on-first-use, recorded 2026-07-06). This catches the
+    registry later serving a different artifact for the same version — and a hijacked re-publish at the
+    pinned version ONLY if its integrity differs. Honest scope, stated plainly: the check and ``npx``'s
+    own metadata+tarball fetch are two SEPARATE registry requests (a classic check/fetch gap), so a
+    registry that answers them differently — clean metadata to the check, self-consistent poisoned
+    metadata+tarball to npx — defeats it, and whatever npx fetched persists in its cache. It raises the
+    bar against a lazy swap; it is not tamper-proof, and it does NOT protect against a compromise that
+    predates the pin. A mismatch (or no answer — npm offline looks the same) RAISES; ExecutionVerifier
+    maps a raising runner to status ``error``, never a pass. The airtight path is
+    ``KP_BUILD_HYPERFRAMES_BIN``: that binary is run directly and the registry check is SKIPPED —
+    nothing is fetched, so there is no registry to distrust; supplying an audited binary is the
+    operator's explicit trust decision, not the engine's."""
+    import os
     import subprocess
     import json as _json
+    global _hyperframes_integrity_ok
     run = _run or subprocess.run
-    p = run(["npx", "--yes", "hyperframes@0.6.91", tool, "--json", str(artifact)],
-            capture_output=True, text=True, timeout=180)
+    audited_bin = os.environ.get("KP_BUILD_HYPERFRAMES_BIN")
+    if audited_bin:
+        cmd = [audited_bin, tool, "--json", str(artifact)]
+    else:
+        if not _hyperframes_integrity_ok:
+            iv = run(["npm", "view", _HYPERFRAMES_PKG, "dist.integrity"],
+                     capture_output=True, text=True, timeout=180)
+            if (getattr(iv, "stdout", "") or "").strip() != _HYPERFRAMES_INTEGRITY:
+                raise RuntimeError(
+                    f"supply-chain check failed for {_HYPERFRAMES_PKG}: could not confirm the recorded "
+                    "dist.integrity (registry serves a different artifact, or npm gave no answer) — "
+                    "refusing to fetch/execute it")
+            _hyperframes_integrity_ok = True
+        cmd = ["npx", "--yes", _HYPERFRAMES_PKG, tool, "--json", str(artifact)]
+    p = run(cmd, capture_output=True, text=True, timeout=180)
     stdout, stderr = (p.stdout or ""), (getattr(p, "stderr", "") or "")
     out = stdout.strip()
     i = out.find("{")
@@ -250,7 +293,7 @@ def verify_execution_claims(pkg, *, runner, today: str = "", base_dir=None) -> d
     """Build step: run the ExecutionVerifier (injected ``runner``) on every claim carrying an ``execution``
     directive, setting its per-claim ``verified``. Citation/academic claims are untouched. Returns a summary.
 
-    M5: relative artifacts are resolved under ``base_dir`` (the pack root) and an artifact that escapes the
+    Relative artifacts are resolved under ``base_dir`` (the pack root) and an artifact that escapes the
     base is refused (``error``), so a crafted directive can't make the runner read a file outside the pack."""
     from types import SimpleNamespace
     from pathlib import Path as _Path

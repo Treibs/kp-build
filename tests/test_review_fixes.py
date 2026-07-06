@@ -1,4 +1,6 @@
-"""Regression tests for the Phase-1 code-review findings (must-fix + should-fix)."""
+"""Regression tests pinning hardening fixes: transient-vs-fabrication scoring, path-safe cite keys,
+spine-id normalization, HTML-escaped reports, clean CLI failure modes on bad input, f1-based verdicts
+(incl. the total-outage INCONCLUSIVE), and assemble() input immutability."""
 
 import json
 import urllib.error
@@ -35,7 +37,7 @@ def _write(tmp, obj):
     p = tmp / "r.json"; p.write_text(json.dumps(obj), encoding="utf-8"); return str(p)
 
 
-# ── M1: a transient API error must NOT be scored as a fabrication ────────────────────
+# ── a transient API error must NOT be scored as a fabrication ────────────────────────
 
 def test_is_real_transient_returns_none():
     def boom(u): raise urllib.error.HTTPError(u, 429, "rate", {}, None)
@@ -51,7 +53,7 @@ def test_score_citations_excludes_unreachable(monkeypatch):
     assert rep["real"] == 1 and rep["fake"] == 0 and rep["precision"] == 1.0   # not deflated by the 429
 
 
-# ── M2: a cite_key with path-unsafe chars is a clean error, not a FileNotFoundError ──
+# ── a cite_key with path-unsafe chars is a clean error, not a FileNotFoundError ──────
 
 def test_cite_key_with_slash_is_clean_error(tmp_path):
     with pytest.raises(ResearchInputError) as e:
@@ -65,7 +67,7 @@ def test_build_with_unsafe_cite_key_exits_clean(tmp_path):
     assert rc == 2 and not (tmp_path / "o").exists()
 
 
-# ── M3 / S7: a spine arxiv_id with an 'arXiv:' prefix still counts toward recall ─────
+# ── a spine arxiv_id with an 'arXiv:' prefix still counts toward recall ──────────────
 
 def test_prefixed_spine_id_is_covered():
     spine = [{"arxiv_id": "arXiv:2211.17192", "cite_key": "a"}]
@@ -74,11 +76,11 @@ def test_prefixed_spine_id_is_covered():
         seen["url"] = u
         return "<feed><entry><title>X</title></entry></feed>"
     rep = score_answer("## Citations\n2211.17192 | X\n", spine=spine, get=g)
-    assert "2211.17192" in seen["url"]                       # N3: the id actually hit the URL
+    assert "2211.17192" in seen["url"]                       # the normalized id actually hit the URL
     assert rep["spine_covered"] == 1 and rep["recall"] == 1.0
 
 
-# ── M4: manifest-derived values are HTML-escaped in the report ───────────────────────
+# ── manifest-derived values are HTML-escaped in the report ───────────────────────────
 
 def test_report_escapes_manifest_stat_and_scorecard_values(tmp_path):
     out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
@@ -93,21 +95,21 @@ def test_report_escapes_manifest_stat_and_scorecard_values(tmp_path):
     assert "&lt;script&gt;alert(1)&lt;/script&gt;" in html
 
 
-# ── S1: an ordered-list arXiv citation is a single, titled entry (not double-counted) ─
+# ── an ordered-list arXiv citation is a single, titled entry (not double-counted) ────
 
 def test_ordered_list_arxiv_cite_single_entry():
     cites = parse_citations("## Citations\n1. 1706.03762 | Attention Is All You Need\n")
     assert cites == [("1706.03762", "Attention Is All You Need")]
 
 
-# ── S2: passing a file where a package dir is expected exits cleanly ─────────────────
+# ── passing a file where a package dir is expected exits cleanly ─────────────────────
 
 def test_report_on_nondir_exits_clean(tmp_path):
     f = tmp_path / "pkg.json"; f.write_text("{}", encoding="utf-8")
     assert main(["report", str(f)]) == 2          # NotADirectoryError caught by the backstop
 
 
-# ── S3: a bad --name fails fast, before the slow verify/assemble ─────────────────────
+# ── a bad --name fails fast, before the slow verify/assemble ─────────────────────────
 
 def test_bad_name_fails_before_build(tmp_path):
     inp = _write(tmp_path, {"topic": "T", "papers": [{"cite_key": "a", "title": "A", "arxiv_id": "1.1"}]})
@@ -115,7 +117,7 @@ def test_bad_name_fails_before_build(tmp_path):
     assert rc == 2 and not (tmp_path / "o").exists()
 
 
-# ── S4: validate flags a path-unsafe files glob in knowledge.json ───────────────────
+# ── validate flags a path-unsafe files glob in knowledge.json ────────────────────────
 
 def test_validate_flags_unsafe_files_glob(tmp_path):
     out = assemble(_pkg(), tmp_path / "kp", built="2026-06-14")
@@ -126,7 +128,7 @@ def test_validate_flags_unsafe_files_glob(tmp_path):
     assert not r.ok and any("safe relative path" in e for e in r.errors)
 
 
-# ── S5: verdict() uses the f1 branch when f1 values are present ──────────────────────
+# ── verdict() uses the f1 branch when f1 values are present ──────────────────────────
 
 def test_verdict_f1_branch():
     base = {"cited": 8, "f1": 0.37, "precision": 0.62, "recall": 0.26, "fake": 3, "hallucination_rate": 0.375}
@@ -136,7 +138,7 @@ def test_verdict_f1_branch():
     assert "DID NOT HELP" in verdict(base, {**kp, "f1": 0.20})
 
 
-# ── round-2: a version-suffixed DOI must normalize identically on both sides ─────────
+# ── a version-suffixed DOI must normalize identically on both sides ──────────────────
 
 def test_norm_handle_keeps_doi_strips_only_arxiv_version():
     from kp_build.falsify import _norm_handle
@@ -151,7 +153,7 @@ def test_doi_version_suffix_still_covers_spine():
     assert rep["spine_covered"] == 1 and rep["recall"] == 1.0
 
 
-# ── round-2: total index outage -> inconclusive verdict, not a deflated "TIE" ─────────
+# ── total index outage -> inconclusive verdict, not a deflated "TIE" ─────────────────
 
 def test_verdict_inconclusive_when_nothing_checkable():
     base = {"cited": 3, "checked": 0, "precision": 0.0, "hallucination_rate": 0.0, "f1": None, "recall": 1.0}
@@ -159,7 +161,7 @@ def test_verdict_inconclusive_when_nothing_checkable():
     assert "INCONCLUSIVE" in verdict(base, kp)
 
 
-# ── S6: assemble() must not mutate the caller's input dataclasses ────────────────────
+# ── assemble() must not mutate the caller's input dataclasses ────────────────────────
 
 def test_assemble_does_not_mutate_input(tmp_path):
     pkg = _pkg()

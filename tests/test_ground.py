@@ -69,6 +69,65 @@ def test_passage_empty_inputs_are_none():
     assert passage_in_text("", "anything") is None and passage_in_text("a long enough passage here", "") is None
 
 
+def test_passage_fuzzy_tampered_number_at_end_is_none():
+    # a long quote with ONE tampered number near the end still clears 60% contiguity (the tamper sits
+    # outside the longest block) — previously True; the digit guard must abstain -> None, not False
+    assert passage_in_text("the method improves decoding throughput across all evaluated model sizes in 2019",
+                           "the method improves decoding throughput across all evaluated model sizes in 2016 experiments") is None
+
+
+def test_passage_exact_substring_with_numbers_still_true():
+    # the digit guard is fuzzy-path-only: an exact normalized substring containing numbers stays True
+    assert passage_in_text("the model reaches 87.5 percent accuracy on imagenet",
+                           "in our tests the model reaches 87.5 percent accuracy on imagenet overall") is True
+
+
+def test_passage_fuzzy_all_numbers_present_still_true():
+    # a trailing-word fuzzy diff whose numbers ALL appear in the text still grounds
+    assert passage_in_text("we observe a 2.8x speedup in decoding on the benchmark suite",
+                           "we observe a 2.8x speedup in decoding on the evaluation suite overall") is True
+
+
+def test_passage_fuzzy_no_numbers_unchanged_true():
+    # a number-free passage never triggers the digit guard — fuzzy acceptance behaves exactly as before
+    assert passage_in_text("the approach generalizes across model families without extra tuning steps",
+                           "the approach generalizes across model families without any manual effort") is True
+
+
+def test_passage_digit_grouping_variants_do_not_trip_the_guard():
+    # '1,000' (passage) vs '1000' (text) is the SAME number in a different grouping — _norm turns the
+    # comma into a space so the naive runs {'1','000'} vs {'1000'} would falsely abstain a legitimate
+    # verbatim quote; the guard now matches runs against the grouping-collapsed form too, both directions
+    quote = "the benchmark evaluates retrieval and reranking quality across scientific abstracts totaling {n} documents"
+    assert passage_in_text(quote.format(n="1,000"), quote.format(n="1000") + " overall") is True
+    assert passage_in_text(quote.format(n="1000"), quote.format(n="1,000") + " overall") is True
+
+
+def test_passage_digit_grouping_collapse_does_not_rescue_a_tamper():
+    # degrouping must not launder a genuinely different number: 1,000 tampered to 1,500 still abstains
+    quote = "the benchmark evaluates retrieval and reranking quality across scientific abstracts totaling {n} documents"
+    assert passage_in_text(quote.format(n="1,500"), quote.format(n="1,000") + " overall") is None
+
+
+def test_prepended_comma_group_cannot_launder_a_tamper():
+    # the degrouped passage runs are AUTHORITATIVE: if the naive comma fragments were accepted as an
+    # alternative, an author could opt into the weaker check by writing the comma — '1,500' fragments
+    # to {'1','500'}, and both collide with near-universal runs ('figure 1', the untampered '500'),
+    # grounding an inflated number for free
+    prefix = "the benchmark evaluates retrieval and reranking quality across scientific abstracts totaling"
+    assert passage_in_text(f"{prefix} 1,500 documents",
+                           f"{prefix} 500 documents as shown in figure 1") is None
+
+
+def test_degrouping_must_not_synthesize_a_run_from_adjacent_numbers():
+    # 'figure 1' next to '500' is TWO numbers — collapsing the space between them would synthesize a
+    # '1500' run and launder exactly the tamper the guard exists to catch. Only raw COMMA grouping
+    # collapses; a passage claiming 1500 against a text that says '... figure 1 500 ...' abstains.
+    prefix = "the benchmark evaluates retrieval and reranking quality across scientific abstracts totaling"
+    assert passage_in_text(f"{prefix} 1500 documents",
+                           f"{prefix} per figure 1 500 documents") is None
+
+
 # ── fetch ────────────────────────────────────────────────────────────────────────
 
 def test_arxiv_abstract_parses_summary():

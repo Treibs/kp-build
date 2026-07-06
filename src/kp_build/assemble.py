@@ -8,6 +8,7 @@ or unverified reference. Everything dropped is counted and reported (never silen
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import replace, asdict
 from pathlib import Path
 
@@ -53,10 +54,10 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
     for p in pkg.papers:
         (out / "papers" / f"{p.cite_key}.md").write_text(paper_to_md(p), encoding="utf-8")
 
-    # prune unverified refs into COPIES — never mutate the caller's input dataclasses (ASSM-1)
+    # prune unverified refs into COPIES — never mutate the caller's input dataclasses
     claims = []
     for c in pkg.claims:
-        # M2: a claim's OWN verdict is authoritative (a mechanical disproof outranks a citation) — the ONE
+        # a claim's OWN verdict is authoritative (a mechanical disproof outranks a citation) — the ONE
         # ship rule lives in schema.claim_ships, shared with digest so they can't drift.
         if claim_ships(c, verified):
             c2 = replace(c, corroborated_by=[k for k in c.corroborated_by if k in verified])
@@ -145,7 +146,12 @@ def assemble(pkg: Package, out_dir: str | Path, *, built: str, falsification: di
         "coverage": pkg.coverage or {"note": "not recorded — coverage completeness is unverified"},
         "falsification": falsification or {"run": False},
     }
-    (out / "wikillm.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    # write-then-rename, same as falsify's manifest rewrite: the manifest is the package's record
+    # (including any prior falsification verdict on a rebuild) — a crash mid-write must truncate a
+    # temp file, never the record itself
+    tmp = out / "wikillm.json.tmp"
+    tmp.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, out / "wikillm.json")
 
     # the 0xLT/kpm distribution envelope — makes this a valid, installable kpm package
     knowledge = build_knowledge_json(pkg, name=name, version=version, license=license)

@@ -2,9 +2,13 @@
 
 Real packages built by `kp-build`, kept as reference output and regression fixtures.
 
-Five packages — three show what the `probe` pre-screen and the falsification gate discriminate (and the
-blind spot one drove a fix for); the fourth shows kp-build works **beyond arXiv** (Crossref/DOI); the fifth
-is the **flagship** — an everyday-health topic anyone can use, with the evidence separated from the hype.
+Seven falsified **citation** packages (the table below) map what the `probe` pre-screen and the
+falsification gate discriminate (one drove a blind-spot fix), show kp-build works **beyond arXiv**
+(Crossref/DOI), and include the **everyday-health showcase** — a topic anyone can use, with the evidence
+separated from the hype. Alongside them, five more packages exercise the rest of the verifier seam:
+`hf-kpmodel/` (**execution**), `mesh-kpmodel/` (**citation** + the KP-model goals/KPI spine),
+`http-semantics-grounding/` and `vwt-grounding/` (**doc-grounding**), and
+[`hf-creative-direction/`](hf-creative-direction/) (**judgment** — the blind-panel example).
 
 Each row is one package. **`probe`** is kp-build's cheap up-front guess at whether building will help (BUILD
 vs SKIP); the **after-build test** is the real, measured falsification verdict. **KP** = the knowledge
@@ -13,7 +17,7 @@ package; the **spine** = the package's set of verified, real papers.
 | package | what kind of topic | `probe` | did the package help? (after-build test) |
 |---|---|---|---|
 | [`agent-memory/`](#agent-memory) ⭐ | **LLM agent memory** — AI frontier | BUILD | **helps** — base **fabricated/mislabeled 10 of 16 cites**; precision 0.38 → 1.00, coverage 0.71 → 1.00, f1 0.49 → 1.00 |
-| [`coding-agents/`](#coding-agents) | **autonomous AI coding agents** — SWE-bench frontier | BUILD | **helps** — base **fabricated 14 of 25 cites**; precision 0.44 → 1.00, f1 0.48 → 1.00 |
+| [`coding-agents/`](#coding-agents) | **autonomous AI coding agents** — SWE-bench frontier | BUILD | **helps** — base **fabricated/mislabeled 14 of 25 cites**; precision 0.44 → 1.00, f1 0.48 → 1.00 |
 | [`discrete-diffusion-llms/`](#discrete-diffusion-llms) | recent ML — model **gets cites wrong** | BUILD | **helps** — wins on *precision* (kills mislabeled cites) **and** coverage |
 | [`speculative-decoding-llms/`](#speculative-decoding-llms) | ML the model **knows cold** | SKIP | **helps on coverage only** — precision was already 1.0 |
 | [`rubric-based-rl-nonverifiable/`](#rubric-based-rl-nonverifiable) | a 2026 topic the model **can't name** (post-cutoff) | BUILD† | **helps** — coverage 0.07 → 1.00 |
@@ -21,7 +25,9 @@ package; the **spine** = the package's set of verified, real papers.
 | [`sleep-insomnia-evidence/`](#sleep-insomnia-evidence) | **everyday health** (evidence vs hype) | SKIP | **helps** — base *fabricated* a study + missed ¾ of the evidence; precision 0.90 → 1.00, recall 0.26 → 0.74, f1 0.40 → 0.85 |
 
 *Scores are 0–1, higher is better. **precision** = of the papers it cited, how many are real and correctly
-labeled; **coverage** (recall) = how much of the verified spine it found; **f1** = the two combined.*
+labeled; **coverage** (recall) = how much of the verified spine it adopted — graded against the package's
+own paper set, which the KP side nearly satisfies by construction (see the main README's honest limit);
+**f1** = the two combined.*
 
 † **This package exposed a probe blind spot and drove a fix.** The probe was originally *precision-only* — it
 greenlit a build only when the unaided model *fabricated* citations above a threshold rate (a single stray
@@ -339,8 +345,9 @@ kp-build falsify examples/glp1-incretin-obesity \
 
 ## `sleep-insomnia-evidence/`
 
-The **flagship** — a knowledge package on **evidence-based interventions to improve sleep and treat
-insomnia in adults**: not a niche research topic but the kind of everyday question millions ask their AI.
+The **everyday-health showcase** — a knowledge package on **evidence-based interventions to improve sleep
+and treat insomnia in adults**: not a niche research topic but the kind of everyday question millions ask
+their AI.
 Every claim is a real, Crossref-verified study, and the package's heart is a **5-way evidence-vs-hype
 debate map**: melatonin (low physiologic vs high dose), blue-light-blocking glasses (benefit vs none),
 sleep trackers (useful vs orthosomnia), behavioral-vs-medication first-line, and mouth-taping (aid vs
@@ -369,7 +376,7 @@ KP-loaded agent cited **zero fabrications** and covered the full evidence map, h
 everyday demonstration: your AI sounds confident about sleep, but it invents citations and misses most of
 the evidence — the verified pack makes it trustworthy *and* complete.
 
-> Building this flagship also surfaced + fixed a real soundness-gate bug: Crossref often stores a paper's
+> Building this showcase also surfaced + fixed a real soundness-gate bug: Crossref often stores a paper's
 > **short title** (no subtitle), and the build gate only matched `claimed ⊇ canonical`, so it wrongly
 > rejected the famous Trauer CBT-I meta-analysis. The gate now matches in **either direction** (as the
 > falsify gate already did), tolerating Crossref-truncated titles without weakening the strict-match floor.
@@ -394,7 +401,7 @@ first-class **KPI-anchored connections** in `CONTEXT.md`); the rest are focused 
 | package | verifier | what it proves | honest tail |
 |---|---|---|---|
 | [`mesh-kpmodel/`](mesh-kpmodel/) | **citation** | lacrosse-mesh material composition — **33/41 sources verified (33/34 = 97% of DOI-bearing)** + 8 KPIs + 4 tradeoff connections | **citation-existence only** (not doc-grounded); the 7 non-DOI sources (ISO standards, rulebooks, a TDS, a patent) have no engine oracle — the `ungrounded-unreachable` verdict class, stored as `not-found` in the pack; the lone DOI rejection is **ASTM G155** (`id-title-mismatch` — a real Crossref miss) |
-| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **14/14 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the pack encodes only gate-checkable fundamentals (so it builds `dropped.claims: 0`); motion/aesthetic qualities are **verifier-blind** here — they belong to the **judgment** pack below, not a mechanical gate |
+| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **16/16 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the pack encodes only gate-checkable fundamentals (so it builds `dropped.claims: 0`); motion/aesthetic qualities are **verifier-blind** here — they belong to the **judgment** pack below, not a mechanical gate |
 | [`http-semantics-grounding/`](http-semantics-grounding/) | **doc-grounding** | RFC 9110 HTTP method semantics — **6/7 passages verified verbatim** against the pinned spec text (`--ground-verify`, offline + deterministic) | the held-out 7th is a **fabricated** "PATCH is safe and idempotent" clause (PATCH isn't in RFC 9110's method list) — stamped `ungrounded`, `dropped.claims: 1`; grounding proves **provenance** (the clause is verbatim in the source), **not soundness** |
 | [`vwt-grounding/`](vwt-grounding/) | **doc-grounding** | a frontier paper's abstract (arXiv:2606.18246, published 2026-06-16 — past a typical cutoff, so model-weak) — **3/4 passages verified verbatim** | the held-out 4th **inflates the numbers** (40%/35% vs the real 22%/15%) and flips the direction (widening vs narrowing) — `ungrounded`, dropped. A *true paraphrase* would drop too: this is a provenance gate, not a truth gate |
 | [`hf-creative-direction/`](hf-creative-direction/) | **judgment** | HyperFrames creative direction (the aesthetic layer no gate can check) — **3/4 craft principles ship on a blind, position-bias-cancelled judge panel** (each beat a *fair* baseline, offline + deterministic replay) | the held-out 4th — "bounce on **every** entrance is livelier" — is the **trap**: the recorded panel judged it **worse** (0–6 vs a restrained-easing baseline), so it's **dropped** (`dropped.claims: 1`). These are **relative preference judgments, not facts**; the seam guarantees **deterministic replay + position-bias cancellation**, *not* tamper-resistance — the build does no provenance check on `rounds` (see honest limits below) |
@@ -404,8 +411,8 @@ executes local files):
 
 ```bash
 kp-build build -i examples/hf-kpmodel.research.json -o /tmp/hf-kpmodel --execute
-#   → executing 14 claim gate(s) via hyperframes ...
-#       execution: 14/14 gate(s) verified
+#   → executing 16 claim gate(s) via hyperframes ...
+#       execution: 16/16 gate(s) verified
 #       validation: OK
 ```
 
