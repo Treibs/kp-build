@@ -1,6 +1,13 @@
-# sui-move-2024 — design spec
+# sui-move — design spec
 
-**Date:** 2026-07-06 · **Status:** draft for review · **Target:** `examples/sui-move-2024/` + `examples/sui-move-fixtures/`
+**Date:** 2026-07-06 · **Status:** draft for review · **Target:** `examples/sui-move/` + `examples/sui-move-fixtures/`
+
+**Naming/versioning:** package name is `sui-move` (no year — "Move 2024" is the language
+*edition*, and a year in the name reads as staleness). The package **version is the pinned
+toolchain version** (`sui-move@1.74.1`), so "which compiler is this verified against?" is
+answered by the version string itself; the README headline carries the snapshot date
+("verified against `sui` mainnet-v1.74.1 · snapshot 2026-07-06"). A re-verify against a newer
+toolchain bumps the version mechanically.
 
 ## 1. What this pack is
 
@@ -139,7 +146,7 @@ from the pinned source file), claim entry with `execution:` + `grounding:` block
 
 ## 8. Deliverables
 
-1. `examples/sui-move-2024/` — the package (claims, relations, CONTEXT.md, README.md)
+1. `examples/sui-move/` — the package (claims, relations, CONTEXT.md, README.md)
 2. `examples/sui-move-fixtures/` — RED/GREEN Move packages per claim + vendored pinned
    grounding sources
 3. Verifier seam change: `sui-move-build` execution tool + tests (RED/GREEN two-sided gate,
