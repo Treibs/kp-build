@@ -81,6 +81,12 @@ def test_version_pin_mismatch_raises_never_passes(tmp_path):
         sui_move_runner(_green(tmp_path), "sui-move-build", _run=_fake_run(version="sui 1.99.0-abc"))
 
 
+def test_version_pin_rejects_later_patch_prefix_collision(tmp_path):
+    # startswith("sui 1.74.1") would false-accept 1.74.10 — the pin must not
+    with pytest.raises(RuntimeError, match="toolchain pin"):
+        sui_move_runner(_green(tmp_path), "sui-move-build", _run=_fake_run(version="sui 1.74.10-abc"))
+
+
 def test_version_checked_once_per_process(tmp_path):
     run = _fake_run(returncode=0)
     sui_move_runner(_green(tmp_path), "sui-move-build", _run=run)

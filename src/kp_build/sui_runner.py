@@ -43,7 +43,7 @@ def sui_move_runner(artifact, tool, *, _run=None):
     if not _sui_version_ok:
         v = run([binary, "--version"], capture_output=True, text=True, timeout=60)
         ver = (getattr(v, "stdout", "") or "").strip()
-        if not ver.startswith(f"sui {SUI_PINNED_VERSION}"):
+        if ver != f"sui {SUI_PINNED_VERSION}" and not ver.startswith(f"sui {SUI_PINNED_VERSION}-"):
             raise RuntimeError(
                 f"sui toolchain pin failed: need 'sui {SUI_PINNED_VERSION}', got {ver!r} — "
                 "a claim verified on a different compiler is not the claim we shipped; "
