@@ -9,7 +9,7 @@ separated from the hype. Alongside them, six more packages exercise the rest of 
 `hf-kpmodel/` (**execution**), `mesh-kpmodel/` (**citation** + the KP-model goals/KPI spine),
 `http-semantics-grounding/` and `vwt-grounding/` (**doc-grounding**),
 [`hf-creative-direction/`](hf-creative-direction/) (**judgment** — the blind-panel example), and
-[`sui-move/`](sui-move/) (**execution** + **doc-grounding** — the second two-verifier pack, with a RED/GREEN compiler gate).
+[`sui-move/`](sui-move/) (**execution** + **doc-grounding** — the first two-verifier pack, with a RED/GREEN compiler gate).
 
 Each row is one package. **`probe`** is kp-build's cheap up-front guess at whether building will help (BUILD
 vs SKIP); the **after-build test** is the real, measured falsification verdict. **KP** = the knowledge

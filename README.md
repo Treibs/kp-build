@@ -202,9 +202,9 @@ example pack each:
 [`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline),
 [`examples/hf-creative-direction/`](examples/hf-creative-direction/) (**judgment** — a recorded blind
 panel), and [`examples/sui-move/`](examples/sui-move/) (**execution** + **doc-grounding** — the Sui Move
-2024-edition pack, verified against `sui mainnet-v1.74.1`; RED fixtures must FAIL with a pinned error
-fragment, GREEN fixtures must compile exit 0; a RED that starts compiling on a toolchain bump = healed
-weakness = staleness signal). Honest scope: execution verifies *mechanical fundamentals*, not aesthetic
+2024-edition pack, verified against `sui mainnet-v1.74.1`; a sui runner drives `sui move build` against
+that pinned mainnet toolchain — RED fixtures must FAIL with a pinned error fragment, GREEN fixtures must
+compile exit 0; a RED that starts compiling on a toolchain bump = healed weakness = staleness signal). Honest scope: execution verifies *mechanical fundamentals*, not aesthetic
 quality; doc-grounding proves *provenance* (the clause is verbatim in a pinned source), not *soundness*;
 judgment measures *relative preference* against a fair baseline, never absolute quality. The execution gate
 runs a **pinned** `hyperframes` version through `npx` and checks the package's npm `dist.integrity` (sha512)
