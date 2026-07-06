@@ -174,8 +174,11 @@ def test_arxiv_ym_extracts_year_month():
 def test_as_of_months_validates_month():
     from kp_build.falsify import _as_of_months
     assert _as_of_months("2026-06") == 2026 * 12 + 6
+    assert _as_of_months("2026-06-15") == 2026 * 12 + 6                            # day part accepted, ignored
     assert _as_of_months("2026-13") is None and _as_of_months("2026-00") is None   # bad month abstains, no shift
     assert _as_of_months("") is None and _as_of_months(None) is None
+    # anchored: trailing garbage must abstain, not silently parse as a valid month
+    assert _as_of_months("2026-071") is None and _as_of_months("2026-07x") is None
 
 
 def test_newest_real_ym_from_versioned_block_cite():
@@ -252,6 +255,14 @@ def test_recency_abstains_when_no_dated_cites(monkeypatch):
 def test_cli_probe_emit_prompt(capsys):
     assert main(["probe", "--emit-prompt", "--question", "diffusion language models"]) == 0
     assert "diffusion language models" in capsys.readouterr().out
+
+
+def test_cli_probe_emit_prompt_plus_answer_is_a_usage_error(tmp_path, capsys):
+    # same doctrine as falsify's --emit-judge-prompts/--judge-rounds: the two modes are opposite
+    # ends of the loop — combining them would silently ignore the supplied answers
+    ans = tmp_path / "a.txt"; ans.write_text("x", encoding="utf-8")
+    assert main(["probe", "--emit-prompt", "--answer", str(ans)]) == 2
+    assert "don't combine" in capsys.readouterr().err
 
 
 def test_cli_probe_exit_codes(tmp_path, monkeypatch):

@@ -104,15 +104,18 @@ def passage_in_text(passage: str, text: str, *, contiguity: float = _CONTIGUITY)
     # the text. Honest scope: this checks presence ANYWHERE in the text — a tampered number that happens
     # to collide with any other run in the source (a page number, a year) still passes, so the guard
     # NARROWS the seam, it does not close it. Digit-grouping variants ('1,000' vs '1000') must not trip
-    # it on a legitimate verbatim quote, so runs are also matched with COMMA grouping collapsed — on the
+    # it on a legitimate verbatim quote, so runs are matched with COMMA grouping collapsed — on the
     # RAW strings, before _norm turns commas into spaces: collapsing post-_norm spaces instead would
     # synthesize a run from two adjacent distinct numbers ('figure 1 500 subjects' -> '1500') and
-    # launder exactly the tamper the guard exists to catch. Spelled-out numbers ('five' vs '5') are the
-    # variance that remains, which is why a miss abstains (None/unconfirmed), never hard-False.
+    # launder exactly the tamper the guard exists to catch. The DEGROUPED passage runs are the only
+    # authoritative form: accepting the naive fragments as an alternative would let an author OPT INTO
+    # the weaker check by writing the comma ('1,500' fragments to {'1','500'}, both near-universal in
+    # any paper, so a tampered leading group would ground for free). Spelled-out numbers ('five' vs
+    # '5') are the variance that remains, which is why a miss abstains (None/unconfirmed), never
+    # hard-False.
     _degroup = lambda s: _norm(re.sub(r"(?<=\d),(?=\d{3}\b)", "", s))
     runs = set(_NUM.findall(t)) | set(_NUM.findall(_degroup(text)))
-    if (any(n not in runs for n in _NUM.findall(p))
-            and any(n not in runs for n in _NUM.findall(_degroup(passage)))):
+    if any(n not in runs for n in _NUM.findall(_degroup(passage))):
         return None
     return True
 

@@ -4,7 +4,7 @@ Real packages built by `kp-build`, kept as reference output and regression fixtu
 
 Seven falsified **citation** packages (the table below) map what the `probe` pre-screen and the
 falsification gate discriminate (one drove a blind-spot fix), show kp-build works **beyond arXiv**
-(Crossref/DOI), and include the **flagship** — an everyday-health topic anyone can use, with the evidence
+(Crossref/DOI), and include the **everyday-health showcase** — a topic anyone can use, with the evidence
 separated from the hype. Alongside them, five more packages exercise the rest of the verifier seam:
 `hf-kpmodel/` (**execution**), `mesh-kpmodel/` (**citation** + the KP-model goals/KPI spine),
 `http-semantics-grounding/` and `vwt-grounding/` (**doc-grounding**), and
@@ -400,7 +400,7 @@ first-class **KPI-anchored connections** in `CONTEXT.md`); the rest are focused 
 | package | verifier | what it proves | honest tail |
 |---|---|---|---|
 | [`mesh-kpmodel/`](mesh-kpmodel/) | **citation** | lacrosse-mesh material composition — **33/41 sources verified (33/34 = 97% of DOI-bearing)** + 8 KPIs + 4 tradeoff connections | **citation-existence only** (not doc-grounded); the 7 non-DOI sources (ISO standards, rulebooks, a TDS, a patent) have no engine oracle — the `ungrounded-unreachable` verdict class, stored as `not-found` in the pack; the lone DOI rejection is **ASTM G155** (`id-title-mismatch` — a real Crossref miss) |
-| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **14/14 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the pack encodes only gate-checkable fundamentals (so it builds `dropped.claims: 0`); motion/aesthetic qualities are **verifier-blind** here — they belong to the **judgment** pack below, not a mechanical gate |
+| [`hf-kpmodel/`](hf-kpmodel/) | **execution** | hyperframes composition fundamentals — **16/16 claims ship on their own `ExecutionVerifier` verdict** (the gate clears) + 5 KPIs + 4 connections | the pack encodes only gate-checkable fundamentals (so it builds `dropped.claims: 0`); motion/aesthetic qualities are **verifier-blind** here — they belong to the **judgment** pack below, not a mechanical gate |
 | [`http-semantics-grounding/`](http-semantics-grounding/) | **doc-grounding** | RFC 9110 HTTP method semantics — **6/7 passages verified verbatim** against the pinned spec text (`--ground-verify`, offline + deterministic) | the held-out 7th is a **fabricated** "PATCH is safe and idempotent" clause (PATCH isn't in RFC 9110's method list) — stamped `ungrounded`, `dropped.claims: 1`; grounding proves **provenance** (the clause is verbatim in the source), **not soundness** |
 | [`vwt-grounding/`](vwt-grounding/) | **doc-grounding** | a frontier paper's abstract (arXiv:2606.18246, published 2026-06-16 — past a typical cutoff, so model-weak) — **3/4 passages verified verbatim** | the held-out 4th **inflates the numbers** (40%/35% vs the real 22%/15%) and flips the direction (widening vs narrowing) — `ungrounded`, dropped. A *true paraphrase* would drop too: this is a provenance gate, not a truth gate |
 | [`hf-creative-direction/`](hf-creative-direction/) | **judgment** | HyperFrames creative direction (the aesthetic layer no gate can check) — **3/4 craft principles ship on a blind, position-bias-cancelled judge panel** (each beat a *fair* baseline, offline + deterministic replay) | the held-out 4th — "bounce on **every** entrance is livelier" — is the **trap**: the recorded panel judged it **worse** (0–6 vs a restrained-easing baseline), so it's **dropped** (`dropped.claims: 1`). These are **relative preference judgments, not facts**; the seam guarantees **deterministic replay + position-bias cancellation**, *not* tamper-resistance — the build does no provenance check on `rounds` (see honest limits below) |
@@ -410,8 +410,8 @@ executes local files):
 
 ```bash
 kp-build build -i examples/hf-kpmodel.research.json -o /tmp/hf-kpmodel --execute
-#   → executing 14 claim gate(s) via hyperframes ...
-#       execution: 14/14 gate(s) verified
+#   → executing 16 claim gate(s) via hyperframes ...
+#       execution: 16/16 gate(s) verified
 #       validation: OK
 ```
 

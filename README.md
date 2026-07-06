@@ -191,15 +191,19 @@ example exposed, and drove a fix for, a blind spot in the probe.
 
 The seven packages above all use the **citation** verifier. The engine now has a **pluggable verifier seam** —
 a claim's "is this real?" check can be **citation** (does the paper resolve?), **doc-grounding** (does the
-quoted passage appear in a pinned source?), or **execution** (does running the artifact through a tool gate
-clear?) — and a package can carry **goals + KPIs** and first-class **KPI-anchored connections**, not just a
-flat claim list. All three verifiers are **build-enforced**, one example pack each:
+quoted passage appear in a pinned source?), **execution** (does running the artifact through a tool gate
+clear?), or **judgment** (does a blind, slot-alternated judge panel prefer it over a fair baseline? —
+recorded rounds, replayed deterministically) — and a package can carry **goals + KPIs** and first-class
+**KPI-anchored connections**, not just a flat claim list. All four verifiers are **build-enforced**, one
+example pack each:
 [`examples/mesh-kpmodel/`](examples/mesh-kpmodel/) (material-science, **citation**),
-[`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution** — `--execute`), and
+[`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution** — `--execute`),
 [`examples/http-semantics-grounding/`](examples/http-semantics-grounding/) +
-[`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline). Honest
-scope: execution verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding proves *provenance*
-(the clause is verbatim in a pinned source), not *soundness*. The execution gate runs a **pinned**
+[`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline), and
+[`examples/hf-creative-direction/`](examples/hf-creative-direction/) (**judgment** — a recorded blind
+panel). Honest scope: execution verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding
+proves *provenance* (the clause is verbatim in a pinned source), not *soundness*; judgment measures
+*relative preference* against a fair baseline, never absolute quality. The execution gate runs a **pinned**
 `hyperframes` version through `npx` and checks the package's npm `dist.integrity` (sha512) once per process
 before trusting its verdicts; set `KP_BUILD_HYPERFRAMES_BIN` to a pre-audited local binary to skip both
 the download and the check. See

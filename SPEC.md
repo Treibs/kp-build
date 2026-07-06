@@ -31,9 +31,11 @@ digest plus a machine index). It is a reusable knowledge *asset*, not a report.
    body), or `ungrounded` (checked the fulltext, not there → capped + flagged). Confidence stays
    corpus-relative. Fuzzy matching accepts on the single longest contiguous block covering ≥60% of the
    passage — which alone would let a long quote with one tampered number (year/percentage/measurement)
-   near an end still verify. A digit guard closes this: on the fuzzy path every number token in the
-   passage must also appear in the text, else the verdict downgrades to `unconfirmed` (abstain, not
-   `ungrounded` — number formatting legitimately varies). Exact substring matches are exempt.*
+   near an end still verify. A digit guard narrows this: on the fuzzy path every number token in the
+   passage must also appear SOMEWHERE in the text (presence-anywhere — a tampered number that collides
+   with any other number in the source, a page number or a year, still passes), else the verdict
+   downgrades to `unconfirmed` (abstain, not `ungrounded` — number formatting legitimately varies).
+   Exact substring matches are exempt.*
 5. **Concepts** — definition/taxonomy scaffolding (least valuable; the model mostly has this).
 
 ## Package schema (v1) — a portable directory (and a valid 0xLT/kpm package)

@@ -1,11 +1,16 @@
 """kp-build CLI — turn an orchestrator's research JSON into a verified wikillm package.
 
-    kp-build build    --input research.json --out <dir> [--no-verify]
-    kp-build verify   --input research.json            # citation check only, report
-    kp-build validate <package_dir>                    # lint an assembled package
+    kp-build build    --input research.json --out <dir>   # verify + assemble (+ --ground-verify/--execute)
+    kp-build verify   --input research.json               # citation check only, report
+    kp-build validate <package_dir>                       # lint an assembled package
+    kp-build probe    --question '...' --answer f.md      # pre-build weakness screen (exit 0/1/3)
+    kp-build falsify  <package_dir> ...                   # post-build measurement (exit 0/1/3)
+    kp-build refresh  <package_dir>                       # staleness report (exit 0/1/3)
+    kp-build deepen / report                              # expansion candidates / human-readable report
 
 The research JSON is what the /kp-build skill (Claude + subagents) produces; this engine does the
-mechanical, deterministic part: verify every citation, assemble, and lint.
+mechanical, deterministic part: verify every citation, assemble, lint — then probe/falsify/refresh
+keep the package honest before, after, and long after the build.
 """
 
 from __future__ import annotations
@@ -544,6 +549,12 @@ def _cmd_probe(args) -> int:
     answer and returns build / skip / inconclusive (exit 0 / 1 / 3; usage/IO errors exit 2)."""
     from .falsify import probe_prompt, probe_verdict, probe_verdict_multi
     if args.emit_prompt:
+        if args.answer:
+            # same doctrine as falsify's --emit-judge-prompts/--judge-rounds: the two modes are
+            # opposite ends of the loop — combining them would silently ignore the supplied answers
+            print("error: --emit-prompt and --answer don't combine — emit the prompt first, collect "
+                  "the answer(s), then score them with --answer on a separate probe run", file=sys.stderr)
+            return 2
         print(probe_prompt(args.question or "<the research area>"))
         return 0
     files = args.answer or []

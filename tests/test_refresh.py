@@ -172,13 +172,17 @@ def test_unparseable_built_is_inconclusive_never_fresh(tmp_path):
 
 
 def test_future_built_is_inconclusive_never_fresh(tmp_path):
-    # a FUTURE 'built' (typo, clock skew) is the same fail-open one door over: age can never exceed
-    # the threshold and no candidate can post-date the build, so 'fresh' would again be forever.
+    # a FUTURE 'built' (typo, clock skew) is the same fail-open hazard one door over: age can never
+    # exceed the threshold and no candidate can post-date the build, so 'fresh' would again be
+    # forever. And NO candidate — even one post-dating the bogus future date — may be judged against
+    # a date the verdict itself rejects (the report's counts must not contradict its reason).
     out = _pkg(tmp_path, built="2027-01-15")
-    get = _get([{"title": "Dated", "year": 2026, "arxiv_id": "2603.00042"}])
+    get = _get([{"title": "Dated", "year": 2026, "arxiv_id": "2603.00042"},
+                {"title": "Past The Bogus Date", "year": 2027, "arxiv_id": "2703.00001"}])
     rep = refresh(out, as_of="2026-07", get=get)
     assert rep["decision"] == "inconclusive"
     assert rep["age_months"] == -6 and rep["new_since_build"] == 0
+    assert rep["candidates"] == [] and rep["undated_candidates"] == 0
     assert "future" in rep["reason"]
 
 

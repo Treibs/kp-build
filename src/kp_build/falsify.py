@@ -257,7 +257,8 @@ def score_answer(answer: str, *, spine: list[dict] | None = None, get=_http_get,
 def _as_of_months(s) -> "int | None":
     """Absolute month index for a YYYY-MM[-DD] reference date, else None (recency signal abstains). Validates the
     month (01-12) and abstains on a bad one — mirrors _arxiv_ym, so a typo'd --as-of can't shift the reference."""
-    m = re.match(r"\s*(\d{4})-(\d{2})", s or "")
+    # anchored: trailing garbage ('2026-071', '2026-07x') must abstain, not parse as July
+    m = re.match(r"\s*(\d{4})-(\d{2})(?:-\d{2})?\s*$", s or "")
     if not m:
         return None
     mm = int(m.group(2))

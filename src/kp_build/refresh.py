@@ -89,9 +89,11 @@ def refresh(package_dir: str | Path, *, as_of: str, get=_http_get, recency_month
         if ym is None and not isinstance(c.get("year"), int):
             # no dating signal at all (no arXiv YYMM, no year) — reported, never silently dropped
             undated += 1
-        elif built_m is None:
-            # dated, but no build month to compare against — the decision branch below reports ALL
-            # candidates unjudgeable; counting it as 'undated' here would mislabel the failure
+        elif built_m is None or age_months < 0:
+            # dated, but the build date is missing/unparseable or in the FUTURE — the decision branch
+            # below reports ALL candidates unjudgeable; judging against a date the verdict itself
+            # rejects would put contradictory counts in the report (counting it as 'undated' here
+            # would likewise mislabel the failure)
             continue
         elif ym is not None:
             # month-resolution: the arXiv YYMM prefix post-dates the build's month index
@@ -119,7 +121,8 @@ def refresh(package_dir: str | Path, *, as_of: str, get=_http_get, recency_month
                   f"'post-dates the build' can be computed, so none of the {len(cands)} expansion "
                   f"candidate(s) can be judged; fix the manifest's 'built' field and re-run")
     elif age_months < 0:
-        # the SAME fail-open, one door over: a future-dated 'built' (typo, clock skew) also disables
+        # the SAME fail-open hazard, one door over (closed the same way): a future-dated 'built'
+        # (typo, clock skew) also disables
         # both signals — age can never exceed the threshold and nothing can post-date the build
         decision = "inconclusive"
         reason = (f"the manifest says built {built} but as_of is {as_of} — a build date in the future "

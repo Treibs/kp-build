@@ -7,7 +7,8 @@ deterministic and offline-testable with a fake transport.
 
 This module is intentionally a NARROW lift: ``CitationVerifier`` delegates to the existing, well-tested
 ``citations.verify_paper`` so its verdicts are byte-identical to the legacy path — the seam adds an
-abstraction boundary, not new behavior. ``DocGroundingVerifier`` / ``ExecutionVerifier`` plug in here.
+abstraction boundary, not new behavior. ``DocGroundingVerifier`` / ``ExecutionVerifier`` /
+``JudgeVerifier`` plug in here.
 """
 
 from __future__ import annotations
