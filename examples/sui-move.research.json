@@ -85,7 +85,7 @@
     },
     {
       "id": "implicit-imports-doc",
-      "statement": "Framework staples like `sui::transfer` are implicitly imported in every package that depends on the Sui Framework and need no `use` statement. The legacy `use sui::object::{Self, UID}; use sui::transfer; use sui::tx_context::TxContext;` block still compiles silently on sui 1.74.1 (no warning), but it is dead weight — omit it.",
+      "statement": "Framework staples like `sui::transfer` are implicitly imported in every package that depends on the Sui Framework and need no `use` statement. The legacy `use sui::object::{Self, UID}; use sui::transfer; use sui::tx_context::TxContext;` block still compiles silently on sui 1.74.1 (no warning), but it is dead weight — omit it (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md).",
       "supporting_passage": "The module that defines main storage operations is `sui::transfer`. It is implicitly imported in all\npackages that depend on the [Sui Framework](./../programmability/sui-framework), so, like other\nimplicitly imported modules (e.g. `std::option` or `std::vector`), it does not require adding a use\nstatement.",
       "claim_type": "method",
       "confidence": "high",
@@ -178,7 +178,7 @@
     },
     {
       "id": "object-new-red",
-      "statement": "There is no API to mint a UID from raw bytes: the fabricated `object::uid_from_bytes(b\"1234\")` does not exist, and sui 1.74.1 fails with error[E03003] unbound module member — \"Unbound function 'uid_from_bytes' in module 'sui::object'\".",
+      "statement": "The probed `object::uid_from_bytes` does not exist (Unbound function 'uid_from_bytes' in module 'sui::object'): sui 1.74.1 fails with error[E03003] unbound module member. `UID`s are created with `object::new(ctx)`.",
       "supporting_passage": "sui 1.74.1 rejects a call to the nonexistent `object::uid_from_bytes` with exit 1, error[E03003]: unbound module member.",
       "claim_type": "finding",
       "confidence": "high",
@@ -190,7 +190,7 @@
     },
     {
       "id": "object-new-doc",
-      "statement": "A new UID is created with the `object::new` function, which takes a mutable reference to `TxContext` and returns a new `UID`; there is no way to fabricate one from raw bytes.",
+      "statement": "A new UID is created with the `object::new` function, which takes a mutable reference to `TxContext` and returns a new `UID`; the probed `object::uid_from_bytes` does not exist (Unbound function 'uid_from_bytes' in module 'sui::object').",
       "supporting_passage": "New UID is created with the `object::new` function. It takes a mutable reference to `TxContext`, and\nreturns a new `UID`.",
       "claim_type": "method",
       "confidence": "high",
@@ -236,7 +236,7 @@
     },
     {
       "id": "entry-vs-public-green",
-      "statement": "Plain `public fun` is directly callable from programmable transaction blocks (PTBs) on Sui; no `entry` modifier is needed: `public fun create(ctx: &mut TxContext)` compiles and is PTB-callable as-is.",
+      "statement": "Plain `public fun` needs no `entry` modifier: `public fun create(ctx: &mut TxContext)` builds clean on sui 1.74.1; the docs (see entry-vs-public-doc) state a public function needs no `entry` to be callable in a transaction.",
       "supporting_passage": "sui 1.74.1 builds a module exposing plain `public fun` entry points (no `entry` modifier) with exit 0 and no warnings.",
       "claim_type": "method",
       "confidence": "high",
@@ -248,7 +248,7 @@
     },
     {
       "id": "entry-vs-public-doc",
-      "statement": "Never write `public entry fun`: PTBs can call any `public` function, so there is no reason to add `entry` to a `public` function — sui 1.74.1 flags it with lint W99010 (unnecessary 'entry' on a 'public' function). Reserve `entry` for non-public functions that should be PTB-callable but not callable from other packages.",
+      "statement": "Never write `public entry fun`: PTBs can call any `public` function, so there is no reason to add `entry` to a `public` function — sui 1.74.1 flags it with lint W99010 (unnecessary 'entry' on a 'public' function) (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md). Reserve `entry` for non-public functions that should be PTB-callable but not callable from other packages.",
       "supporting_passage": "PTBs can call any `public` function and any `entry` function, whether private (`entry fun f()`), or `public(package)` (`public(package) entry fun f()`). Non-entry private and `public(package)` functions cannot be called from PTBs. Note that in this way, there is no reason to add `entry` to a `public` function.",
       "claim_type": "method",
       "confidence": "high",
@@ -306,7 +306,7 @@
     },
     {
       "id": "capability-doc",
-      "statement": "Capabilities are objects: a function taking `&AdminCap` can only be called by whoever owns that object, and strict typing guarantees only the correct capability satisfies the parameter. This is a design rule, not a compiler rule — a naive hardcoded sender check like `assert!(ctx.sender() == @0xCAFE)` compiles clean on sui 1.74.1, so prefer the capability pattern for access control.",
+      "statement": "Capabilities are objects: a function taking `&AdminCap` can only be called by whoever owns that object, and strict typing guarantees only the correct capability satisfies the parameter. This is a design rule, not a compiler rule — a naive hardcoded sender check like `assert!(ctx.sender() == @0xCAFE)` compiles clean on sui 1.74.1 (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md), so prefer the capability pattern for access control.",
       "supporting_passage": "In the [Sui Object Model](./../object/), capabilities are represented as objects. An owner of an\nobject can pass this object to a function to prove that they have the right to perform a specific\naction. Due to strict typing, the function taking a capability as an argument can only be called\nwith the correct capability.",
       "claim_type": "method",
       "confidence": "high",
@@ -364,7 +364,7 @@
     },
     {
       "id": "dynamic-fields-red",
-      "statement": "There is no dynamic-field API on `sui::object`: the fabricated `object::add_field(&mut container.id, name, value)` fails on sui 1.74.1 with error[E03003] unbound module member — \"Unbound function 'add_field' in module 'sui::object'\".",
+      "statement": "The commonly hallucinated `object::add_field` does not exist (Unbound function 'add_field' in module 'sui::object'): sui 1.74.1 fails with error[E03003] unbound module member. Dynamic fields live in `sui::dynamic_field`.",
       "supporting_passage": "sui 1.74.1 rejects a call to the nonexistent `object::add_field` with exit 1, error[E03003]: unbound module member.",
       "claim_type": "finding",
       "confidence": "high",
@@ -434,7 +434,7 @@
     },
     {
       "id": "clock-red",
-      "statement": "`TxContext` has no clock: the fabricated `tx_context::now_ms(ctx)` fails on sui 1.74.1 with error[E03003] unbound module member — \"Unbound function 'now_ms' in module 'sui::tx_context'\". Time must come from a `&Clock` parameter.",
+      "statement": "`tx_context::now_ms` does not exist (Unbound function 'now_ms' in module 'sui::tx_context'): sui 1.74.1 fails with error[E03003] unbound module member. On-chain time comes from the `Clock` object.",
       "supporting_passage": "sui 1.74.1 rejects a call to the nonexistent `tx_context::now_ms` with exit 1, error[E03003]: unbound module member.",
       "claim_type": "finding",
       "confidence": "high",
@@ -469,7 +469,7 @@
     },
     {
       "id": "test-scenario-doc",
-      "statement": "In test_scenario tests, shared objects are accessed with `take_shared` and must be returned with `return_shared` before the scenario ends. The compiler only enforces this discipline under `sui move build --test` (leaked take_shared values fail there with E06001 unused value without 'drop'); plain `sui move build` does not compile `#[test]` code at all.",
+      "statement": "In test_scenario tests, shared objects are accessed with `take_shared` and must be returned with `return_shared` before the scenario ends. The compiler only enforces this discipline under `sui move build --test` (leaked take_shared values fail there with E06001 unused value without 'drop'); plain `sui move build` does not compile `#[test]` code at all (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md).",
       "supporting_passage": "[Shared objects](./../object/ownership.md#shared-state) are accessed using `take_shared` and must be\nreturned with `return_shared`:",
       "claim_type": "method",
       "confidence": "high",
