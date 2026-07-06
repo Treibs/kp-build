@@ -7,7 +7,7 @@ from kp_build import sui_runner
 from kp_build.sui_runner import sui_move_runner, SUI_PINNED_VERSION
 
 
-def _fake_run(version="sui 1.74.1-8fc60f1fa966", returncode=0, output=""):
+def _fake_run(version="sui 1.74.1-8fc60f1fa966", returncode=0, output="", stderr=""):
     """A subprocess.run-shaped fake: answers `sui --version` then the build call."""
     calls = []
 
@@ -19,7 +19,7 @@ def _fake_run(version="sui 1.74.1-8fc60f1fa966", returncode=0, output=""):
         if "--version" in cmd:
             p.returncode, p.stdout, p.stderr = 0, version, ""
         else:
-            p.returncode, p.stdout, p.stderr = returncode, output, ""
+            p.returncode, p.stdout, p.stderr = returncode, output, stderr
         return p
 
     run.calls = calls
@@ -120,3 +120,88 @@ def test_build_runs_in_fixture_dir(tmp_path):
     build_calls = [(c, kw) for c, kw in run.calls if "--version" not in c]
     assert build_calls[0][0][-2:] == ["move", "build"]
     assert build_calls[0][1].get("cwd") == str(g)
+
+
+# ── fail-closed RED/GREEN gate hardening (F1/F2): the claim's gate_code reaches the runner ────────
+# Reviewer-demonstrated fail-OPENs: mode was inferred SOLELY from the fixture-side marker file, so
+# deleting/dropping `expected_error.txt` flipped the mode and a broken claim verified vacuously.
+
+
+def test_red_gated_claim_with_no_marker_fails_closed(tmp_path):
+    """F1: delete expected_error.txt from a RED fixture — the runner must NOT run GREEN mode and
+    return codes the red_violation gate can't see; it must fire the claim's own gate (fail closed)."""
+    r = sui_move_runner(_green(tmp_path), "sui-move-build",
+                        gate_code="red_violation", _run=_fake_run(returncode=1))
+    assert "red_violation" in r["codes"]
+    assert "red_green_mode_mismatch" in r["codes"]
+
+
+def test_green_gated_claim_with_marker_fails_closed(tmp_path):
+    """F1 symmetric: drop a marker into a GREEN fixture — the fixture says RED, the claim says
+    GREEN; the claim's build_error gate must fire, never flip to RED mode and pass."""
+    r = sui_move_runner(_red(tmp_path), "sui-move-build",
+                        gate_code="build_error", _run=_fake_run(returncode=1, output="err"))
+    assert "build_error" in r["codes"]
+    assert "red_green_mode_mismatch" in r["codes"]
+
+
+@pytest.mark.parametrize("content", ["", "   \n\t\n"])
+def test_red_gated_claim_with_empty_marker_fails_closed(tmp_path, content):
+    """F2: empty/whitespace marker must NOT degrade RED to 'passes on any nonzero exit'."""
+    d = _red(tmp_path)
+    (d / "expected_error.txt").write_text(content)
+    r = sui_move_runner(d, "sui-move-build", gate_code="red_violation",
+                        _run=_fake_run(returncode=1, output="some unrelated error"))
+    assert "red_violation" in r["codes"]
+    assert "red_gate_unverifiable" in r["codes"]
+
+
+def test_empty_marker_fails_closed_even_without_gate_code(tmp_path):
+    """Legacy 2-arg call path: an empty marker is unverifiable regardless of threading."""
+    d = _red(tmp_path)
+    (d / "expected_error.txt").write_text("  \n")
+    r = sui_move_runner(d, "sui-move-build", _run=_fake_run(returncode=1, output="anything"))
+    assert "red_violation" in r["codes"]
+    assert "red_gate_unverifiable" in r["codes"]
+
+
+def test_red_fragment_on_stderr_only_still_verifies(tmp_path):
+    """The real compiler emits errors on STDERR; every other fake here uses stdout, so this is the
+    regression guard for the stdout+stderr concat at the build-output read."""
+    run = _fake_run(returncode=1, output="",
+                    stderr="error[E04001]: Visibility annotations are required on struct declarations")
+    r = sui_move_runner(_red(tmp_path), "sui-move-build", gate_code="red_violation", _run=run)
+    assert r == {"codes": []}
+
+
+def test_execution_verifier_threads_gate_code_to_gate_aware_runner(tmp_path):
+    """End-to-end through the seam: ExecutionVerifier must hand the claim's gate_code to a runner
+    that accepts it, so the marker-deletion attack lands output-mismatch, never verified."""
+    from types import SimpleNamespace
+    from kp_build.verifier import ExecutionVerifier
+
+    def runner(artifact, tool, *, gate_code=None):
+        return sui_move_runner(artifact, tool, gate_code=gate_code, _run=_fake_run(returncode=1))
+
+    v = ExecutionVerifier(runner).verify(SimpleNamespace(
+        artifact=str(_green(tmp_path)), tool="sui-move-build",
+        gate_code="red_violation", aesthetic=False))
+    assert v.exists is False
+    assert v.status == "output-mismatch"
+
+
+def test_execution_verifier_still_calls_legacy_two_arg_runner():
+    """Contract stability: a gate-unaware (artifact, tool) runner keeps working unchanged."""
+    from types import SimpleNamespace
+    from kp_build.verifier import ExecutionVerifier
+    v = ExecutionVerifier(lambda a, t: {"codes": []}).verify(SimpleNamespace(
+        artifact="x", tool="lint", gate_code="non_deterministic_code", aesthetic=False))
+    assert v.exists is True and v.status == "verified"
+
+
+def test_default_runner_forwards_gate_code_to_sui(tmp_path):
+    """The build dispatch must thread the gate through, or the CLI path stays fail-open."""
+    from kp_build.verifier import default_runner
+    r = default_runner(str(_green(tmp_path)), "sui-move-build",
+                       gate_code="red_violation", _run=_fake_run(returncode=1))
+    assert "red_green_mode_mismatch" in r["codes"]

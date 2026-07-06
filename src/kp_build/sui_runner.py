@@ -29,15 +29,32 @@ _TIMEOUT = 300
 _sui_version_ok = False
 
 
-def sui_move_runner(artifact, tool, *, _run=None):
+def sui_move_runner(artifact, tool, *, gate_code=None, _run=None):
     """Runner contract: ``{"codes": [...]}`` on a run, ``None`` if artifact/tool can't produce a
-    result, RAISES on timeout/crash/pin-failure. See module docstring for the RED/GREEN table."""
+    result, RAISES on timeout/crash/pin-failure. See module docstring for the RED/GREEN table.
+
+    Fail-closed cross-check (the F1/F2 hardening): mode used to be inferred SOLELY from the
+    fixture-side marker file, so deleting (or planting) ``expected_error.txt`` flipped the mode and
+    a broken claim verified vacuously against codes its gate could never see. When the caller
+    threads the claim's ``gate_code`` through (ExecutionVerifier does), the claim-side expectation
+    (``red_violation`` ⇒ RED) is cross-checked against the fixture-side marker BEFORE any compile:
+    a mismatch returns the claim's own gate plus ``red_green_mode_mismatch`` so the gate FIRES.
+    An empty/whitespace marker in RED mode is unverifiable — its fragment check would be vacuous —
+    and fires ``red_violation`` + ``red_gate_unverifiable`` (gate_code or not). ``gate_code=None``
+    (a legacy two-arg caller) skips only the claim-side cross-check, nothing else."""
     global _sui_version_ok
     if tool != "sui-move-build" or artifact is None:
         return None
     d = Path(artifact)
     if not (d / "Move.toml").is_file():
         return None
+    marker = d / "expected_error.txt"
+    is_red = marker.is_file()
+    frag = marker.read_text(encoding="utf-8").strip() if is_red else ""
+    if gate_code is not None and (gate_code == "red_violation") != is_red:
+        return {"codes": [gate_code, "red_green_mode_mismatch"]}
+    if is_red and not frag:
+        return {"codes": ["red_violation", "red_gate_unverifiable"]}
     run = _run or subprocess.run
     binary = os.environ.get("KP_BUILD_SUI_BIN") or "sui"
     if not _sui_version_ok:
@@ -50,14 +67,12 @@ def sui_move_runner(artifact, tool, *, _run=None):
                 "point KP_BUILD_SUI_BIN at the pinned release binary")
         _sui_version_ok = True
     p = run([binary, "move", "build"], cwd=str(d), capture_output=True, text=True, timeout=_TIMEOUT)
-    out = (p.stdout or "") + (getattr(p, "stderr", "") or "")
+    out = (p.stdout or "") + (getattr(p, "stderr", "") or "")   # real compiler errors land on STDERR
     failed = p.returncode != 0
-    marker = d / "expected_error.txt"
-    if marker.is_file():                       # RED: must fail, with the documented fragment
-        frag = marker.read_text(encoding="utf-8").strip()
+    if is_red:                                 # RED: must fail, with the documented fragment
         if not failed:
             return {"codes": ["red_violation", "red_compiled"]}
-        if frag and frag not in out:
+        if frag not in out:                    # frag is non-empty here (empty short-circuits above)
             return {"codes": ["red_violation", "red_wrong_error"]}
         return {"codes": []}
     return {"codes": (["build_error"] if failed else [])}

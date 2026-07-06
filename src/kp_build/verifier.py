@@ -108,7 +108,10 @@ class ExecutionVerifier:
     offline-testable with a fake runner; no sandbox here (lint/inspect ship v2-a, render is v2-b).
     Runner contract: ``runner(artifact, tool) -> {"codes": [gate codes present]}`` on a successful run,
     or ``None`` if the artifact/tool could not produce a result; it RAISES on a real run failure
-    (timeout/crash). Statuses:
+    (timeout/crash). A runner that declares a ``gate_code`` keyword (or ``**kwargs``) additionally
+    receives the claim's asserted gate, so a mode-sensitive runner (sui RED/GREEN) can cross-check the
+    claim-side expectation against fixture-side state and FIRE the gate on a mismatch instead of
+    failing open; a plain two-arg runner is called exactly as before. Statuses:
 
       verified        — ran clean AND the asserted gate is ABSENT (the mechanical fundamental holds)
       output-mismatch — ran clean but the gate FIRED (the artifact violates what it claims)
@@ -124,6 +127,13 @@ class ExecutionVerifier:
     def __init__(self, runner, *, today: str = "") -> None:
         self._runner = runner
         self._today = today
+        import inspect
+        try:                                        # capability check ONCE: does the runner take the gate?
+            params = inspect.signature(runner).parameters.values()
+            self._gate_aware = any(p.name == "gate_code" or p.kind is inspect.Parameter.VAR_KEYWORD
+                                   for p in params)
+        except (TypeError, ValueError):             # builtins / C callables — treat as legacy two-arg
+            self._gate_aware = False
 
     def verify(self, item) -> Verification:
         gate = getattr(item, "gate_code", "")
@@ -132,7 +142,10 @@ class ExecutionVerifier:
                                 evidence="no mechanical oracle (aesthetic / no gate)", checked=self._today)
         tool = getattr(item, "tool", "") or "execution"
         try:
-            result = self._runner(getattr(item, "artifact", None), getattr(item, "tool", ""))
+            result = (self._runner(getattr(item, "artifact", None), getattr(item, "tool", ""),
+                                   gate_code=gate)
+                      if self._gate_aware else
+                      self._runner(getattr(item, "artifact", None), getattr(item, "tool", "")))
         except Exception as e:                      # timeout / crash -> UNKNOWN, never trusted
             return Verification(kind="execution", exists=False, status="error", via=tool,
                                 evidence=f"run failed: {type(e).__name__}", checked=self._today)
@@ -289,15 +302,17 @@ def hyperframes_runner(artifact, tool, *, _run=None):
     return None
 
 
-def default_runner(artifact, tool, *, _run=None):
+def default_runner(artifact, tool, *, gate_code=None, _run=None):
     """The build's execution runner: routes a directive's ``tool`` to its family's runner.
 
     Tool names are namespaced by convention — ``sui-move-build`` is the Sui compiler gate;
     everything else is a hyperframes CLI tool (lint/inspect/validate), the pre-dispatch default,
-    so existing packs' verdicts are byte-identical."""
+    so existing packs' verdicts are byte-identical. ``gate_code`` (threaded in by ExecutionVerifier)
+    is forwarded to the sui runner for its claim-vs-fixture RED/GREEN cross-check; the hyperframes
+    tools are mode-free, so it is not forwarded there."""
     if tool == "sui-move-build":
         from .sui_runner import sui_move_runner
-        return sui_move_runner(artifact, tool, _run=_run)
+        return sui_move_runner(artifact, tool, gate_code=gate_code, _run=_run)
     return hyperframes_runner(artifact, tool, _run=_run)
 
 
