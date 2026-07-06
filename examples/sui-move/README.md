@@ -25,11 +25,11 @@ Confidence is corpus-relative (conditional on the cited sources). Built 2026-07-
 
 ## The plain-terms story
 
-Ask an AI for a Sui contract today and it writes last year's Sui. The counter-contract proof: an unaided model writing a plain counter contract from parametric memory produced pre-2024-edition Move — `struct Counter` — which fails to compile on sui mainnet-v1.74.1 (visibility annotations are mandatory in the 2024 edition). One mechanical fix (`public struct`) and the same contract builds green. The pack is a receipt-backed cheat sheet: every rule already ran through the real compiler, and every rule ships with the broken form the model would otherwise write.
+Ask an AI for a Sui contract today and it may well write last year's Sui. The counter-contract proof: an unaided model writing a plain counter contract from parametric memory produced pre-2024-edition Move — `struct Counter` — which fails to compile on sui mainnet-v1.74.1 (visibility annotations are mandatory in the 2024 edition). One mechanical fix (`public struct`) and the same contract builds green. The pack is a receipt-backed cheat sheet: every rule already ran through the real compiler, and every rule ships with the broken form the model would otherwise write.
 
 ## The RED/GREEN two-sided gate
 
-Each claim carries a GREEN fixture (must compile) and most carry a RED fixture (must FAIL with a pinned error fragment in `expected_error.txt`). The refresh mechanic: Sui ships a new mainnet toolchain every ~2 weeks. Re-verify loop = bump the pin → re-run all RED/GREEN gates → any RED that now compiles means the weakness healed and the claim retires; any GREEN that breaks means the idiom moved. This is the first pack whose staleness check is fully mechanical in both directions.
+Each rule carries a GREEN fixture (must compile); 12 of 16 rules also carry a RED fixture (must FAIL with a pinned error fragment in `expected_error.txt`). The refresh mechanic: Sui ships a new mainnet toolchain every ~2 weeks. Re-verify loop = bump the pin → re-run all RED/GREEN gates → any RED that now compiles means the weakness healed and the claim retires; any GREEN that breaks means the idiom moved. This is the first pack whose staleness check is fully mechanical in both directions.
 
 ## Falsification
 

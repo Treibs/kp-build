@@ -406,7 +406,7 @@ first-class **KPI-anchored connections** in `CONTEXT.md`); the rest are focused 
 | [`http-semantics-grounding/`](http-semantics-grounding/) | **doc-grounding** | RFC 9110 HTTP method semantics — **6/7 passages verified verbatim** against the pinned spec text (`--ground-verify`, offline + deterministic) | the held-out 7th is a **fabricated** "PATCH is safe and idempotent" clause (PATCH isn't in RFC 9110's method list) — stamped `ungrounded`, `dropped.claims: 1`; grounding proves **provenance** (the clause is verbatim in the source), **not soundness** |
 | [`vwt-grounding/`](vwt-grounding/) | **doc-grounding** | a frontier paper's abstract (arXiv:2606.18246, published 2026-06-16 — past a typical cutoff, so model-weak) — **3/4 passages verified verbatim** | the held-out 4th **inflates the numbers** (40%/35% vs the real 22%/15%) and flips the direction (widening vs narrowing) — `ungrounded`, dropped. A *true paraphrase* would drop too: this is a provenance gate, not a truth gate |
 | [`hf-creative-direction/`](hf-creative-direction/) | **judgment** | HyperFrames creative direction (the aesthetic layer no gate can check) — **3/4 craft principles ship on a blind, position-bias-cancelled judge panel** (each beat a *fair* baseline, offline + deterministic replay) | the held-out 4th — "bounce on **every** entrance is livelier" — is the **trap**: the recorded panel judged it **worse** (0–6 vs a restrained-easing baseline), so it's **dropped** (`dropped.claims: 1`). These are **relative preference judgments, not facts**; the seam guarantees **deterministic replay + position-bias cancellation**, *not* tamper-resistance — the build does no provenance check on `rounds` (see honest limits below) |
-| [`sui-move/`](sui-move/) | **execution** + **doc-grounding** | Sui Move 2024-edition contract authoring — **44/44 claims ship on RED/GREEN compiler fixtures** (verified against sui mainnet-v1.74.1) + 2 doc-grounding sources pinned at commit; the first pack to run two claim-level verifiers (execution + doc-grounding) | RED fixtures FAIL with pinned error fragments; GREEN fixtures compile exit 0. Re-verify loop: bump the toolchain pin → rerun `--execute` → any RED that now compiles = healed weakness (retire the claim); any GREEN that breaks = idiom moved. Staleness check is fully mechanical in both directions. Honest gap: `transfer::receive`/`Receiving<T>` is not covered; both experiment arms failed it identically (Sui E02009) |
+| [`sui-move/`](sui-move/) | **execution** + **doc-grounding** | Sui Move 2024-edition contract authoring — **44/44 claims ship — 28 on RED/GREEN compiler fixtures + 16 doc-grounded verbatim** (verified against sui mainnet-v1.74.1) + 4 corpus sources from 2 commit-pinned repos; the first pack to run two claim-level verifiers (execution + doc-grounding) | RED fixtures FAIL with pinned error fragments; GREEN fixtures compile exit 0. Re-verify loop: bump the toolchain pin → rerun `--execute` → any RED that now compiles = healed weakness (retire the claim); any GREEN that breaks = idiom moved. Staleness check is fully mechanical in both directions. Honest gap: `transfer::receive`/`Receiving<T>` is not covered; both experiment arms failed it identically (Sui E02009) |
 
 **Reproduce the execution pack** (runs the real hyperframes CLI on the committed fixtures — opt-in, since it
 executes local files):
@@ -461,17 +461,18 @@ tamper-resistance: the build performs **no provenance check** on `rounds`, so a 
 honestly produced (a real blind panel, as here) — exactly as a citation pack rests on the cite handles being
 real. The verdict ships only if the answer beat the baseline across the alternation.
 
-**Reproduce the sui-move pack** (requires `sui` 1.74.1 on PATH; the runner invokes the real compiler on each fixture):
+**Reproduce the sui-move pack** (requires `sui` mainnet-v1.74.1; set `export KP_BUILD_SUI_BIN=/path/to/sui-mainnet-v1.74.1/sui` or place it on `PATH`; the runner invokes the real compiler on each fixture):
 
 ```bash
 kp-build build -i examples/sui-move.research.json -o /tmp/sui-move --execute --ground-verify
-#   → executing 44 claim gate(s) via sui runner ...
-#       execution: 44/44 gate(s) verified (RED fixtures failed as expected; GREEN fixtures exit 0)
-#       grounding: all doc-corpus passages verified
-#       validation: OK
+#   executing 28 claim gate(s) (artifacts resolved under …/examples) ...
+#     execution: 28/28 gate(s) verified
+#   grounding 16 claim passage(s) against the pinned corpus (4 source(s) held) ...
+#     grounding: 16/16 passage(s) verified
+#   validation       : OK
 ```
 
-`--execute` invokes `sui move build` on each fixture and checks the compiler's exit code and error text against the pinned `expected_error.txt` for RED gates. `--ground-verify` checks doc-grounding passages against the committed corpus. The RED/GREEN two-sided gate is the staleness signal: re-run after a toolchain bump — any RED that now exits 0 means the compiler weakness healed (retire the claim); any GREEN that now exits 1 means the idiom moved. Both signals are mechanical.
+`--execute` invokes `sui move build` on each fixture and checks the compiler's exit code and error text against the pinned `expected_error.txt` for RED gates. `--ground-verify` checks doc-grounding passages against the committed corpus.
 
 **Honestly in scope now, and honestly out:** all four verifiers — citation, execution, doc-grounding,
 judgment — are build-enforced. Three honest limits remain. (1) Doc-grounding proves **provenance** (the quoted
