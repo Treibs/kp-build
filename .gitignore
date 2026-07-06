@@ -25,3 +25,5 @@ docs/_demo.html
 /.demoframes/
 .demo-check.png
 examples/sui-move-fixtures/**/build/
+docs/experiments/sui-compile-pass/answers/**/build/
+docs/experiments/sui-compile-pass/answers/**/Move.lock

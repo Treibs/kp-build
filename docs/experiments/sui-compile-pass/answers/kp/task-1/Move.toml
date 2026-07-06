@@ -1,0 +1,6 @@
+[package]
+name = "task_1"
+edition = "2024"
+
+[addresses]
+shared_counter = "0x0"

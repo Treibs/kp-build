@@ -1,0 +1,10 @@
+PASS docs/experiments/sui-compile-pass/answers/base/task-1/
+PASS docs/experiments/sui-compile-pass/answers/base/task-2/
+PASS docs/experiments/sui-compile-pass/answers/base/task-3/
+PASS docs/experiments/sui-compile-pass/answers/base/task-4/
+PASS docs/experiments/sui-compile-pass/answers/base/task-5/
+PASS docs/experiments/sui-compile-pass/answers/kp/task-1/
+PASS docs/experiments/sui-compile-pass/answers/kp/task-2/
+PASS docs/experiments/sui-compile-pass/answers/kp/task-3/
+PASS docs/experiments/sui-compile-pass/answers/kp/task-4/
+PASS docs/experiments/sui-compile-pass/answers/kp/task-5/

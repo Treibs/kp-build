@@ -1,0 +1,6 @@
+[package]
+name = "task_3"
+edition = "2024"
+
+[addresses]
+soulbound_badge = "0x0"
