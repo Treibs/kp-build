@@ -44,7 +44,7 @@ manager for knowledge; see [*Sharing a package through KPM*](#sharing-a-package-
 
 ## Install
 
-Two ways to use it: **run the twelve shipped example packages** (Quickstart) or **author a new one** with the
+Two ways to use it: **run the thirteen shipped example packages** (Quickstart) or **author a new one** with the
 `/kp-build` skill (Build your own). Either way, start with the engine:
 
 ```bash
@@ -199,14 +199,17 @@ example pack each:
 [`examples/mesh-kpmodel/`](examples/mesh-kpmodel/) (material-science, **citation**),
 [`examples/hf-kpmodel/`](examples/hf-kpmodel/) (procedural, **execution** — `--execute`),
 [`examples/http-semantics-grounding/`](examples/http-semantics-grounding/) +
-[`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline), and
+[`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline),
 [`examples/hf-creative-direction/`](examples/hf-creative-direction/) (**judgment** — a recorded blind
-panel). Honest scope: execution verifies *mechanical fundamentals*, not aesthetic quality; doc-grounding
-proves *provenance* (the clause is verbatim in a pinned source), not *soundness*; judgment measures
-*relative preference* against a fair baseline, never absolute quality. The execution gate runs a **pinned**
-`hyperframes` version through `npx` and checks the package's npm `dist.integrity` (sha512) once per process
-before trusting its verdicts; set `KP_BUILD_HYPERFRAMES_BIN` to a pre-audited local binary to skip both
-the download and the check. See
+panel), and [`examples/sui-move/`](examples/sui-move/) (**execution** + **doc-grounding** — the Sui Move
+2024-edition pack, verified against `sui mainnet-v1.74.1`; RED fixtures must FAIL with a pinned error
+fragment, GREEN fixtures must compile exit 0; a RED that starts compiling on a toolchain bump = healed
+weakness = staleness signal). Honest scope: execution verifies *mechanical fundamentals*, not aesthetic
+quality; doc-grounding proves *provenance* (the clause is verbatim in a pinned source), not *soundness*;
+judgment measures *relative preference* against a fair baseline, never absolute quality. The execution gate
+runs a **pinned** `hyperframes` version through `npx` and checks the package's npm `dist.integrity` (sha512)
+once per process before trusting its verdicts; set `KP_BUILD_HYPERFRAMES_BIN` to a pre-audited local binary
+to skip both the download and the check. See
 [`examples/README.md`](examples/README.md#kp-model-packs-v2-a--pluggable-verifiers).
 
 ## Sharing a package through KPM
@@ -229,7 +232,7 @@ kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — 
 ```
 src/kp_build/      the engine (scope→survey→extract→verify→ground→assemble→falsify→report)
 skill/SKILL.md     the /kp-build orchestration spec (drives the research subagents)
-examples/          twelve real built packages + their inputs (falsification evidence on the seven citation ones)
+examples/          thirteen real built packages + their inputs (falsification evidence on the seven citation ones)
 docs/              explainer / metrics / orchestration (HTML)
 SPEC.md            the package format + pipeline, in full
 ```

@@ -104,3 +104,12 @@
     > sui 1.74.1 builds a module whose `#[test_only]` helpers are called only from `#[test]` code with exit 0.
 - _method_ — Code marked `#[test_only]` is compiled only in test mode and is for test utilities, helpers, or imports that must not exist in production code — production code can never call it. *([doc-corpus], high)*
     > Code marked with `#[test_only]` is compiled only in test mode. Use it for test utilities, helper functions, or imports that shouldn't exist in production code.
+
+## Toolchain + source pins
+
+- **Toolchain:** `sui mainnet-v1.74.1` (version string `sui 1.74.1-8fc60f1fa966`), release binary sha256 `61aafc28e83a8501947a7f0acb97245b8bdb922672895afef504f60c2422d6b3` (operator-checked; the runner verifies the version string, not the hash).
+- **Snapshot date:** 2026-07-06.
+- **Grounding sources** (committed under `examples/corpus/`):
+  - `MystenLabs/sui` @ `d9f4797dbdcc9c5ec019fa190b432ea0e1bc39c1` — framework docs Apache-2.0; concept docs CC-BY-4.0
+  - `MystenLabs/move-book` @ `8ce4dcb9a23bef62d4d7ffe5c36e7002845d4897` — Apache-2.0
+- **Re-verify loop:** Sui ships a new mainnet toolchain every ~2 weeks. Bump the toolchain pin, re-run the fixture gates (`--execute`): any RED fixture that now compiles means the compiler weakness healed and the claim retires; any GREEN fixture that breaks means the idiom moved. Both staleness signals are fully mechanical.
