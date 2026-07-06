@@ -345,8 +345,9 @@ kp-build falsify examples/glp1-incretin-obesity \
 
 ## `sleep-insomnia-evidence/`
 
-The **flagship** — a knowledge package on **evidence-based interventions to improve sleep and treat
-insomnia in adults**: not a niche research topic but the kind of everyday question millions ask their AI.
+The **everyday-health showcase** — a knowledge package on **evidence-based interventions to improve sleep
+and treat insomnia in adults**: not a niche research topic but the kind of everyday question millions ask
+their AI.
 Every claim is a real, Crossref-verified study, and the package's heart is a **5-way evidence-vs-hype
 debate map**: melatonin (low physiologic vs high dose), blue-light-blocking glasses (benefit vs none),
 sleep trackers (useful vs orthosomnia), behavioral-vs-medication first-line, and mouth-taping (aid vs
@@ -375,7 +376,7 @@ KP-loaded agent cited **zero fabrications** and covered the full evidence map, h
 everyday demonstration: your AI sounds confident about sleep, but it invents citations and misses most of
 the evidence — the verified pack makes it trustworthy *and* complete.
 
-> Building this flagship also surfaced + fixed a real soundness-gate bug: Crossref often stores a paper's
+> Building this showcase also surfaced + fixed a real soundness-gate bug: Crossref often stores a paper's
 > **short title** (no subtitle), and the build gate only matched `claimed ⊇ canonical`, so it wrongly
 > rejected the famous Trauer CBT-I meta-analysis. The gate now matches in **either direction** (as the
 > falsify gate already did), tolerating Crossref-truncated titles without weakening the strict-match floor.

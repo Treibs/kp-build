@@ -6,7 +6,7 @@
     kp-build probe    --question '...' --answer f.md      # pre-build weakness screen (exit 0/1/3)
     kp-build falsify  <package_dir> ...                   # post-build measurement (exit 0/1/3)
     kp-build refresh  <package_dir>                       # staleness report (exit 0/1/3)
-    kp-build deepen / report                              # expansion candidates / human-readable report
+    kp-build expand / report                              # expansion candidates / human-readable report
 
 The research JSON is what the /kp-build skill (Claude + subagents) produces; this engine does the
 mechanical, deterministic part: verify every citation, assemble, lint — then probe/falsify/refresh
