@@ -1,0 +1,37 @@
+```python
+from manim import *
+
+
+class ThreeBoxZoom(MovingCameraScene):
+    def construct(self):
+        box_a = Rectangle(width=2, height=1.5, color=BLUE)
+        label_a = Text("Box A", font_size=28).move_to(box_a)
+        group_a = VGroup(box_a, label_a).move_to(LEFT * 4)
+
+        box_b = Rectangle(width=2, height=1.5, color=GREEN)
+        label_b = Text("Box B", font_size=28).move_to(box_b)
+        group_b = VGroup(box_b, label_b).move_to(ORIGIN)
+
+        box_c = Rectangle(width=2, height=1.5, color=RED)
+        label_c = Text("Box C", font_size=28).move_to(box_c)
+        group_c = VGroup(box_c, label_c).move_to(RIGHT * 4)
+
+        self.add(group_a, group_b, group_c)
+        self.wait(0.5)
+
+        self.camera.frame.save_state()
+
+        # Zoom into each box in sequence
+        self.play(self.camera.frame.animate.scale(0.5).move_to(group_a), run_time=1.5)
+        self.wait(0.8)
+
+        self.play(self.camera.frame.animate.move_to(group_b), run_time=1.5)
+        self.wait(0.8)
+
+        self.play(self.camera.frame.animate.move_to(group_c), run_time=1.5)
+        self.wait(0.8)
+
+        # Zoom back out to the full layout
+        self.play(Restore(self.camera.frame), run_time=1.5)
+        self.wait(0.5)
+```

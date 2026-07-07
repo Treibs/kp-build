@@ -1,0 +1,20 @@
+task1 / base / haiku / FAIL exit=1 / TypeError: Code.__init__() got an unexpected keyword argument 'code'
+task2 / base / haiku / FAIL / render_timeout (300s)
+task3 / base / haiku / FAIL exit=1 / AttributeError: 'Camera' object has no attribute 'frame'
+task4 / base / haiku / PASS
+task5 / base / haiku / PASS
+task1 / base / sonnet / FAIL exit=1 / TypeError: Code.__init__() got an unexpected keyword argument 'code'
+task2 / base / sonnet / PASS
+task3 / base / sonnet / PASS
+task4 / base / sonnet / PASS
+task5 / base / sonnet / PASS
+task1 / kp / haiku / FAIL exit=1 / TypeError: Code.__init__() got an unexpected keyword argument 'font_size'
+task2 / kp / haiku / PASS
+task3 / kp / haiku / PASS
+task4 / kp / haiku / PASS
+task5 / kp / haiku / FAIL exit=1 / TypeError: sequence item 0: expected str instance, Text found
+task1 / kp / sonnet / FAIL exit=1 / TypeError: Code.__init__() got an unexpected keyword argument 'font_size'
+task2 / kp / sonnet / PASS
+task3 / kp / sonnet / PASS
+task4 / kp / sonnet / PASS
+task5 / kp / sonnet / PASS

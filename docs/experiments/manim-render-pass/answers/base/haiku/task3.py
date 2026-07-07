@@ -1,0 +1,28 @@
+from manim import *
+
+class BoxZoomSequence(Scene):
+    def construct(self):
+        # Create three labeled boxes
+        boxes = []
+        positions = [LEFT * 4, ORIGIN, RIGHT * 4]
+        
+        for i, pos in enumerate(positions):
+            box = Rectangle(width=2, height=2, color=BLUE, stroke_width=2)
+            label = Text(f"Box {i+1}", font_size=24)
+            group = VGroup(box, label)
+            group.move_to(pos)
+            boxes.append(group)
+            self.add(group)
+        
+        # Zoom into each box sequentially
+        for box in boxes:
+            self.play(
+                self.camera.frame.animate.set_width(3).move_to(box)
+            )
+            self.wait(0.5)
+        
+        # Zoom back out to full layout
+        self.play(
+            self.camera.frame.animate.set_width(14).move_to(ORIGIN)
+        )
+        self.wait()

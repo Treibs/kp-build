@@ -1,0 +1,52 @@
+from manim import *
+
+
+class PinnedTitleSurface(ThreeDScene):
+    def construct(self):
+        axes = ThreeDAxes(
+            x_range=[-PI, PI, PI / 2],
+            y_range=[-PI, PI, PI / 2],
+            z_range=[-1.5, 1.5, 0.5],
+            x_length=7,
+            y_length=7,
+            z_length=4,
+        )
+
+        surface = Surface(
+            lambda u, v: axes.c2p(u, v, np.sin(u) * np.cos(v)),
+            u_range=[-PI, PI],
+            v_range=[-PI, PI],
+            resolution=(32, 32),
+        )
+        surface.set_style(fill_opacity=0.85, stroke_width=0.25, stroke_color=WHITE)
+        surface.set_fill_by_value(
+            axes=axes,
+            colors=[
+                (BLUE_E,  -1.0),
+                (TEAL_C,  -0.4),
+                (GREEN_C,  0.0),
+                (YELLOW,   0.5),
+                (RED_C,    1.0),
+            ],
+            axis=2,
+        )
+
+        title = Text("z = sin(x) · cos(y)", font_size=44)
+        subtitle = Text(
+            "ambient camera orbit  •  Manim CE",
+            font_size=22,
+            color=GREY_A,
+        )
+        label = VGroup(title, subtitle).arrange(DOWN, aligned_edge=LEFT, buff=0.14)
+        label.to_corner(UL, buff=0.35)
+
+        self.set_camera_orientation(phi=68 * DEGREES, theta=-50 * DEGREES)
+        self.add(axes, surface)
+
+        # add_fixed_in_frame_mobjects pins 2-D objects to screen space so they
+        # don't follow the 3-D camera transformation.
+        self.add_fixed_in_frame_mobjects(label)
+
+        self.begin_ambient_camera_rotation(rate=0.22)
+        self.wait(12)
+        self.stop_ambient_camera_rotation()

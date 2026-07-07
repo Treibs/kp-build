@@ -1,0 +1,40 @@
+from manim import *
+import numpy as np
+
+class SurfaceWithFixedTitle(ThreeDScene):
+    def construct(self):
+        # Create 3D axes
+        axes = ThreeDAxes(
+            x_range=[-3, 3, 1],
+            y_range=[-3, 3, 1],
+            z_range=[0, 3, 1],
+        )
+        
+        # Define surface function
+        def surface_func(u, v):
+            return np.array([u, v, 0.5 * np.sin(u) * np.cos(v) + 1.5])
+        
+        # Create the 3D surface
+        surface = Surface(
+            surface_func,
+            u_range=[-3, 3],
+            v_range=[-3, 3],
+            color=BLUE_E,
+        )
+        
+        # Add 3D elements to scene
+        self.add(axes, surface)
+        
+        # Set initial camera orientation
+        self.set_camera_orientation(phi=75*DEGREES, theta=45*DEGREES)
+        
+        # Create title text pinned to screen corner
+        title = Text("3D Surface", font_size=48, color=WHITE)
+        title.to_corner(UP + LEFT)
+        
+        # Add text as fixed in frame (stays in place during camera rotation)
+        self.add_fixed_in_frame_mobjects(title)
+        
+        # Animate camera orbiting around surface
+        self.begin_ambient_camera_rotation(rate=0.5)
+        self.wait(6)

@@ -40,6 +40,19 @@ The weakness is real but *localized* — this is not a blanket "models can't wri
 
 For strong models on common scene types, render-pass is near ceiling; the pack's measured value is (a) weaker/cheaper models and (b) the four territories above, for all models. The falsification protocol tests exactly that claim, not a broader one.
 
+## Falsification (pre-registered, dual model)
+
+Five held-out tasks in the weakness territories (none a pack fixture), pre-registered with an explicit ship rule at `a8bb596` **before any answer was collected** — protocol, answers, and raw render log in [`docs/experiments/manim-render-pass/`](../../docs/experiments/manim-render-pass/). Metric: render-pass in the pinned container, 300 s timeout = FAIL.
+
+| | base | kp |
+|---|---|---|
+| claude-haiku-4-5 (primary) | 2/5 | **3/5** |
+| claude-sonnet-4-6 (secondary) | 4/5 | 4/5 |
+
+**Before/after, primary model:** without the pack, haiku wrote the pre-0.19 `Code(code=...)`, zoomed a plain `Scene`'s camera (`AttributeError`), and — on the live-gauges task — animated the carrier of a digit-count-changing updater, hitting the pack's documented post-traceback writer-thread hang *in the wild* (300 s timeout). With the pack loaded, the camera task and the live-gauges task both pass (`MovingCameraScene`, `always_redraw`). Verdict under the pre-registered rule: branch 1 (haiku kp > base) → ships.
+
+Honest gaps recorded (not patched post-hoc): both kp arms fixed `Code(code=)` → `code_string=` and then failed on `Code(font_size=)` — a kwarg-surface gap; kp-haiku over-applied labels-are-mobjects to `Table` *data cells* (they must be strings). Sonnet ties at ceiling, as the honest-scope section predicted.
+
 ## The RED/GREEN two-sided gate
 
 24 execution claims (15 GREEN + 9 RED), each gated by a real render inside the digest-pinned container (`manim -ql --disable_caching`, container-lifecycle timeout — detached run, bounded wait, unconditional remove). A GREEN fixture must render clean; a RED fixture must FAIL with the pinned fragment in `expected_error.txt`. Refresh = bump the digest pin and re-run: a RED that starts rendering means the weakness healed and the claim retires; a GREEN that breaks means the idiom moved — both staleness signals mechanical, and the digest pin keeps the old verification environment reconstructible forever. 18 grounding claims anchor the rules to verbatim passages from the docs pinned at the same tag (`--ground-verify`, offline).

@@ -1,0 +1,45 @@
+from manim import *
+
+class ZoomIntoBoxes(MovingCameraScene):
+    def construct(self):
+        # Create three labeled boxes spread across the frame
+        box1 = Rectangle(width=2, height=2, color=BLUE)
+        box1.shift(LEFT * 3)
+        label1 = Text("Box 1", font_size=24).next_to(box1, DOWN)
+        
+        box2 = Rectangle(width=2, height=2, color=GREEN)
+        label2 = Text("Box 2", font_size=24).next_to(box2, DOWN)
+        
+        box3 = Rectangle(width=2, height=2, color=RED)
+        box3.shift(RIGHT * 3)
+        label3 = Text("Box 3", font_size=24).next_to(box3, DOWN)
+        
+        # Add all to scene
+        self.add(box1, label1, box2, label2, box3, label3)
+        
+        # Save initial camera state
+        self.camera.frame.save_state()
+        
+        # Zoom into box 1
+        self.play(
+            self.camera.frame.animate.scale(0.5).move_to(box1)
+        )
+        self.wait(1)
+        
+        # Move to and zoom into box 2
+        self.play(
+            self.camera.frame.animate.move_to(box2)
+        )
+        self.wait(1)
+        
+        # Move to and zoom into box 3
+        self.play(
+            self.camera.frame.animate.move_to(box3)
+        )
+        self.wait(1)
+        
+        # Zoom back out to full layout
+        self.play(
+            self.camera.frame.animate.restore()
+        )
+        self.wait(1)
