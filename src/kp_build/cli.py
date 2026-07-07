@@ -141,8 +141,8 @@ def _load(path: str) -> Package:
                 errs.append(f"claims[{i}]: missing {fld}")
         exec_d = c.get("execution") or {}
         if exec_d and not exec_d.get("aesthetic"):   # V2-a execution directive (instead of a citation paper)
-            if exec_d.get("tool") not in ("lint", "inspect", "validate", "sui-move-build"):
-                errs.append(f"claims[{i}].execution: tool must be lint|inspect|validate|sui-move-build")
+            if exec_d.get("tool") not in ("lint", "inspect", "validate", "sui-move-build", "manim-render"):
+                errs.append(f"claims[{i}].execution: tool must be lint|inspect|validate|sui-move-build|manim-render")
             if not exec_d.get("gate_code"):
                 errs.append(f"claims[{i}].execution: needs a gate_code (or aesthetic:true)")
             art = exec_d.get("artifact", "")
@@ -690,7 +690,7 @@ def main(argv=None) -> int:
     b.add_argument("--reuse-verification", action="store_true", help="keep prior verdicts in <out> and re-check only the errored/unverified papers (cheap retry)")
     b.add_argument("--ground", action="store_true", help="confirm each claim's passage appears in its paper (abstract-level, free)")
     b.add_argument("--ground-fulltext", action="store_true", help="ground against ar5iv FULLTEXT (slower; enables the 'ungrounded' verdict)")
-    b.add_argument("--execute", action="store_true", help="runs the claim's tool gate (hyperframes CLI / pinned sui CLI) on local files")
+    b.add_argument("--execute", action="store_true", help="runs the claim's tool gate (hyperframes CLI / pinned sui CLI / pinned manim container) on local files")
     b.add_argument("--ground-verify", action="store_true", help="hard ship-gate: check each grounding-claim passage against committed corpus/<source>.txt (offline + deterministic; a source with no committed file is ungrounded-unreachable). Distinct from the advisory --ground.")
     b.add_argument("--name", default="", help="kpm package name (default @kp/<topic-slug>); publisher may re-tag")
     b.add_argument("--version", default="0.1.0", help="package semver (default 0.1.0)")

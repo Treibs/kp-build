@@ -1,0 +1,52 @@
+{
+  "schema": "wikillm/1",
+  "topic": "Manim CE scene authoring (v0.20.1, community edition)",
+  "scope": "",
+  "built": "2026-07-06",
+  "stats": {
+    "papers_verified": 0,
+    "papers_total": 0,
+    "claims": 42,
+    "open_problems": 0,
+    "debates": 0,
+    "benchmarks": 0,
+    "relations": 0,
+    "dropped": {
+      "claims": 0,
+      "open_problems": 0,
+      "debates": 0,
+      "benchmarks": 0,
+      "positions": 0,
+      "relations": 0
+    }
+  },
+  "goals": {},
+  "goal_metrics": [],
+  "source_span": {
+    "oldest": null,
+    "newest": null,
+    "latest_checked": "2026-07-06"
+  },
+  "coverage": {
+    "note": "not recorded \u2014 coverage completeness is unverified"
+  },
+  "falsification": {
+    "run": true,
+    "question": "Held-out Manim CE scene tasks - does the pack raise render-pass in the pinned container (manimcommunity/manim v0.20.1 by digest)?",
+    "experiment_1": {
+      "metrics": "render-pass in the pinned container, 300s timeout = FAIL; dual model (claude-haiku-4-5 primary, claude-sonnet-4-6 secondary); pre-registered before answers at commit a8bb596",
+      "base": {
+        "haiku_render_pass": "2/5",
+        "sonnet_render_pass": "4/5"
+      },
+      "kp": {
+        "haiku_render_pass": "3/5",
+        "sonnet_render_pass": "4/5"
+      },
+      "verdict": "primary (haiku) kp 3/5 > base 2/5 -> ships under pre-registered rule branch 1; secondary ties at ceiling",
+      "path": "docs/experiments/manim-render-pass/"
+    },
+    "verdict": "pack raises render-pass for the small model (haiku 3/5 vs 2/5), fixing a manimgl camera bleed and the animate-live-updater hang (which occurred in the wild in the base arm, 300s timeout); it does NOT raise render-pass for claude-sonnet-4-6 (tie 4/5). Known gaps: Code() kwarg surface beyond code_string (both kp arms failed on font_size=), and Table data cells must stay strings (kp-haiku over-generalized the label beat).",
+    "experiment": "docs/experiments/manim-render-pass/"
+  }
+}

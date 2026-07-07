@@ -1,0 +1,30 @@
+from manim import *
+
+class SurfacePlotWithFixedTitle(ThreeDScene):
+    def construct(self):
+        # Define the surface: z = sin(x) * cos(y)
+        def surface_func(u, v):
+            return np.array([u, v, np.sin(u) * np.cos(v)])
+        
+        # Create the surface
+        surface = Surface(
+            surface_func,
+            u_range=[-PI, PI],
+            v_range=[-PI, PI],
+        )
+        
+        # Add the surface to the scene
+        self.add(surface)
+        
+        # Set camera orientation
+        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+        
+        # Create title
+        title = Text("3D Surface: z = sin(x)cos(y)", font_size=32)
+        
+        # Pin title to screen (stays fixed as camera orbits)
+        self.add_fixed_in_frame_mobjects(title)
+        
+        # Rotate camera around the surface
+        self.begin_ambient_camera_rotation(rate=0.3)
+        self.wait(6)

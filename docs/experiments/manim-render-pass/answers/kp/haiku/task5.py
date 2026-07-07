@@ -1,0 +1,35 @@
+from manim import *
+
+class AlgorithmComparison(Scene):
+    def construct(self):
+        # Table data - rows are criteria, columns are algorithms
+        data = [
+            [Text("0.95"), Text("0.87")],      # Accuracy
+            [Text("0.2s"), Text("0.15s")],     # Speed
+            [Text("512MB"), Text("256MB")]     # Memory
+        ]
+        
+        row_labels = [Text("Accuracy"), Text("Speed"), Text("Memory")]
+        col_labels = [Text("Algorithm A"), Text("Algorithm B")]
+        
+        table = Table(
+            data,
+            row_labels=row_labels,
+            col_labels=col_labels
+        )
+        
+        self.add(table)
+        self.wait(0.5)
+        
+        # Highlight winning cell in each row, one at a time
+        # Accuracy: Algorithm A wins (0.95 > 0.87)
+        self.play(table.get_cell((1, 1)).animate.set_fill(YELLOW, opacity=0.5))
+        self.wait(1)
+        
+        # Speed: Algorithm B wins (0.15s < 0.2s)
+        self.play(table.get_cell((2, 2)).animate.set_fill(YELLOW, opacity=0.5))
+        self.wait(1)
+        
+        # Memory: Algorithm B wins (256MB < 512MB)
+        self.play(table.get_cell((3, 2)).animate.set_fill(YELLOW, opacity=0.5))
+        self.wait(1)

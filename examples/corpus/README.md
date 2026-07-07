@@ -12,6 +12,9 @@ named `<source>.txt`, where `<source>` is the `grounding.source` key in a claim'
 | `sui-framework-docs.txt` | Sui framework module docs (`sui::coin`) | © Mysten Labs, Apache-2.0 (repo `LICENSE`). Excerpted from [MystenLabs/sui](https://github.com/MystenLabs/sui) @ `d9f4797dbdcc9c5ec019fa190b432ea0e1bc39c1`. |
 | `sui-move-book.txt` | *The Move Book* excerpts (`book/`) | © Mysten Labs, Apache-2.0. Excerpted from [MystenLabs/move-book](https://github.com/MystenLabs/move-book) @ `8ce4dcb9a23bef62d4d7ffe5c36e7002845d4897`. |
 | `sui-move-reference.txt` | The Move Reference excerpts (`reference/`) | © Mysten Labs, Apache-2.0. Excerpted from [MystenLabs/move-book](https://github.com/MystenLabs/move-book) @ `8ce4dcb9a23bef62d4d7ffe5c36e7002845d4897`. |
+| `manim-api-docs.txt` | Manim CE API docstrings (`manim/mobject/`, `manim/scene/`, `manim/animation/`, `manim/_config/`) | © Manim Community Developers, MIT (repo `LICENSE` / `LICENSE.community`). Excerpted from [ManimCommunity/manim](https://github.com/ManimCommunity/manim) @ `1157b746c37130685e0a02d8aa0871d1f164d5f4` (tag `v0.20.1`). |
+| `manim-changelog.txt` | Manim CE changelog (`docs/source/changelog/0.19.0-changelog.rst`, `0.20.0-changelog.md`) | © Manim Community Developers, MIT (repo `LICENSE` / `LICENSE.community`). Excerpted from [ManimCommunity/manim](https://github.com/ManimCommunity/manim) @ `1157b746c37130685e0a02d8aa0871d1f164d5f4` (tag `v0.20.1`). |
+| `manim-tutorials.txt` | Manim CE tutorials (`docs/source/tutorials/quickstart.rst`, `building_blocks.rst`, `output_and_config.rst`) | © Manim Community Developers, MIT (repo `LICENSE` / `LICENSE.community`). Excerpted from [ManimCommunity/manim](https://github.com/ManimCommunity/manim) @ `1157b746c37130685e0a02d8aa0871d1f164d5f4` (tag `v0.20.1`). |
 
 These excerpts are used only to demonstrate provenance grounding (is a quoted clause verbatim in the
 source?). They are not redistributed as standalone works; each carries its origin above.

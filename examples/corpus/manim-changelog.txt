@@ -1,0 +1,103 @@
+# Source: ManimCommunity/manim @ 1157b746c37130685e0a02d8aa0871d1f164d5f4 (tag v0.20.1) — MIT. Excerpts for offline doc-grounding verification.
+
+## FILE: docs/source/changelog/0.19.0-changelog.rst (lines 1–12)
+
+*******
+v0.19.0
+*******
+
+:Date: January 20, 2025
+
+Major Changes
+=============
+
+With the release of Manim v0.19.0, we've made lots of progress with making
+Manim easier to install!
+
+
+## FILE: docs/source/changelog/0.19.0-changelog.rst (lines 141–181)
+
+Breaking changes
+----------------
+
+* :pr:`3797`: Replaced ``Code.styles_list`` with :meth:`.Code.get_styles_list`
+   The ``styles_list`` attribute of the :class:`.Code` class has been replaced with
+   a class method :meth:`.Code.get_styles_list`. This method returns a list of all
+   available values for the ``formatter_style`` argument of :class:`.Code`.
+
+
+* :pr:`3884`: Renamed parameters and variables conflicting with builtin functions
+   To avoid having keyword arguments named after builtin functions, the following
+   two changes were made to user-facing functions:
+
+   - ``ManimColor.from_hex(hex=...)`` is now  ``ManimColor.from_hex(hex_str=...)``
+   - ``Scene.next_section(type=...)`` is now ``Scene.next_section(section_type=...)``
+
+
+* :pr:`3922`: Removed ``inner_radius`` and ``outer_radius`` from :class:`.Sector` constructor
+   To construct a :class:`.Sector`, you now need to specify a ``radius`` (and an ``angle``).
+   In particular, :class:`.AnnularSector` still accepts both ``inner_radius`` and ``outer_radius``
+   arguments.
+
+
+* :pr:`3964`: Allow :class:`.SurroundingRectangle` to accept multiple Mobjects
+   This changes the signature of :class:`.SurroundingRectangle` to accept
+   a sequence of Mobjects instead of a single Mobject. As a consequence, other
+   arguments that could be specified as positional ones before now need to be
+   specified as keyword arguments::
+
+      SurroundingRectangle(some_mobject, RED, 0.3)  # raises error now
+      SurroundingRectangle(some_mobject, color=RED, buff=0.3)  # correct usage
+
+
+* :pr:`4115`: Completely rewrite the implementation of the :class:`.Code` mobject
+   This includes several breaking changes to the interface of the class to make it
+   more consistent. See the documentation of :class:`.Code` for a detailed description
+   of the new interface, and the description of the pull request :pr:`4115` for
+   an overview of changes to the old keyword arguments.
+
+
+New features
+
+## FILE: docs/source/changelog/0.20.0-changelog.md (lines 1–40)
+
+---
+short-title: v0.20.0
+description: Changelog for v0.20.0
+---
+
+# v0.20.0
+
+Date
+: February 20, 2026
+
+
+## What's Changed
+### Breaking Changes 🚨
+* Fix `ImageMobject` 3D rotation/flipping and remove resampling algorithms `lanczos` (`antialias`), `box` and `hamming` by {user}`chopan050` in {pr}`4266`
+* Fix `YELLOW_C` and add `PURE_CYAN`, `PURE_MAGENTA` and `PURE_YELLOW` by {user}`chopan050` in {pr}`4562`
+
+### Highlights 🌟
+* Rewrite MathTex to make it more robust regarding splitting by {user}`henrikmidtiby` in {pr}`4515`
+
+  The MathTex implementation has been updated to make it more robust and fix a number of issues.
+  A beneficial side effect is that named groups in svg files can now be accessed through SVGMobject.
+
+* Add new Animation Builder `Mobject.always` by {user}`JasonGrace2282` in {pr}`4594`
+
+  This new feature is a convenience wrapper around `add_updater` that allows adding
+  updaters to a mobject in an intuitive and easy-to-read way. Example usage in a scene:
+  ```python
+  d = Dot()
+  s = Square()
+  d.always.next_to(s, UP)
+  self.add(s, d)
+  self.play(s.animate.to_edge(LEFT))
+  ```
+
+
+### New Features ✨
+* Add a `seed` config option + `--seed` CLI option for reproducible randomness in rendered scenes by {user}`arnaud-ma` in {pr}`4532`
+
+### Enhancements 🚀
+* Enable `strict=True` for `zip()` where safe  by {user}`Oll-iver` in {pr}`4547`

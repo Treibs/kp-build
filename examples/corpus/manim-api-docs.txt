@@ -1,0 +1,847 @@
+# Source: ManimCommunity/manim @ 1157b746c37130685e0a02d8aa0871d1f164d5f4 (tag v0.20.1) — MIT. Excerpts for offline doc-grounding verification.
+
+## FILE: manim/mobject/text/code_mobject.py (lines 28–136)
+
+class Code(VMobject, metaclass=ConvertToOpenGL):
+    """A highlighted source code listing.
+
+    Examples
+    --------
+
+    Normal usage::
+
+        listing = Code(
+            "helloworldcpp.cpp",
+            tab_width=4,
+            formatter_style="emacs",
+            background="window",
+            language="cpp",
+            background_config={"stroke_color": WHITE},
+            paragraph_config={"font": "Noto Sans Mono"},
+        )
+
+    We can also render code passed as a string. As the automatic language
+    detection can be a bit flaky, it is recommended to specify the language
+    explicitly:
+
+    .. manim:: CodeFromString
+        :save_last_frame:
+
+        class CodeFromString(Scene):
+            def construct(self):
+                code = '''from manim import Scene, Square
+
+        class FadeInSquare(Scene):
+            def construct(self):
+                s = Square()
+                self.play(FadeIn(s))
+                self.play(s.animate.scale(2))
+                self.wait()'''
+
+                rendered_code = Code(
+                    code_string=code,
+                    language="python",
+                    background="window",
+                    background_config={"stroke_color": "maroon"},
+                )
+                self.add(rendered_code)
+
+    Parameters
+    ----------
+    code_file
+        The path to the code file to display.
+    code_string
+        Alternatively, the code string to display.
+    language
+        The programming language of the code. If not specified, it will be
+        guessed from the file extension or the code itself.
+    formatter_style
+        The style to use for the code highlighting. Defaults to ``"vim"``.
+        A list of all available styles can be obtained by calling
+        :meth:`.Code.get_styles_list`.
+    tab_width
+        The width of a tab character in spaces. Defaults to 4.
+    add_line_numbers
+        Whether to display line numbers. Defaults to ``True``.
+    line_numbers_from
+        The first line number to display. Defaults to 1.
+    background
+        The type of background to use. Can be either ``"rectangle"`` (the
+        default) or ``"window"``.
+    background_config
+        Keyword arguments passed to the background constructor. Default
+        settings are stored in the class attribute
+        :attr:`.default_background_config` (which can also be modified
+        directly).
+    paragraph_config
+        Keyword arguments passed to the constructor of the
+        :class:`.Paragraph` objects holding the code, and the line
+        numbers. Default settings are stored in the class attribute
+        :attr:`.default_paragraph_config` (which can also be modified
+        directly).
+    """
+
+    _styles_list_cache: list[str] | None = None
+    default_background_config: dict[str, Any] = {
+        "buff": 0.3,
+        "fill_color": ManimColor("#222"),
+        "stroke_color": WHITE,
+        "corner_radius": 0.2,
+        "stroke_width": 1,
+        "fill_opacity": 1,
+    }
+    default_paragraph_config: dict[str, Any] = {
+        "font": "Monospace",
+        "font_size": 24,
+        "line_spacing": 0.5,
+        "disable_ligatures": True,
+    }
+    code: VMobject
+
+    def __init__(
+        self,
+        code_file: StrPath | None = None,
+        code_string: str | None = None,
+        language: str | None = None,
+        formatter_style: str = "vim",
+        tab_width: int = 4,
+        add_line_numbers: bool = True,
+        line_numbers_from: int = 1,
+        background: Literal["rectangle", "window"] = "rectangle",
+        background_config: dict[str, Any] | None = None,
+        paragraph_config: dict[str, Any] | None = None,
+    ):
+
+## FILE: manim/mobject/graphing/coordinate_systems.py (lines 1876–1940)
+
+class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
+    """Creates a set of axes.
+
+    Parameters
+    ----------
+    x_range
+        The ``(x_min, x_max, x_step)`` values of the x-axis.
+    y_range
+        The ``(y_min, y_max, y_step)`` values of the y-axis.
+    x_length
+        The length of the x-axis.
+    y_length
+        The length of the y-axis.
+    axis_config
+        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
+    x_axis_config
+        Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
+    y_axis_config
+        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    tips
+        Whether or not to include the tips on both axes.
+    kwargs
+        Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
+
+    Examples
+    --------
+    .. manim:: LogScalingExample
+        :save_last_frame:
+
+        class LogScalingExample(Scene):
+            def construct(self):
+                ax = Axes(
+                    x_range=[0, 10, 1],
+                    y_range=[-2, 6, 1],
+                    tips=False,
+                    axis_config={"include_numbers": True},
+                    y_axis_config={"scaling": LogBase(custom_labels=True)},
+                )
+
+                # x_min must be > 0 because log is undefined at 0.
+                graph = ax.plot(lambda x: x ** 2, x_range=[0.001, 10], use_smoothing=False)
+                self.add(ax, graph)
+
+    Styling arguments can be passed to the underlying :class:`.NumberLine`
+    mobjects that represent the axes:
+
+    .. manim:: AxesWithDifferentTips
+        :save_last_frame:
+
+        class AxesWithDifferentTips(Scene):
+            def construct(self):
+                ax = Axes(axis_config={'tip_shape': StealthTip})
+                self.add(ax)
+    """
+
+    def __init__(
+        self,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
+        x_length: float | None = round(config.frame_width) - 2,
+        y_length: float | None = round(config.frame_height) - 2,
+        axis_config: dict | None = None,
+        x_axis_config: dict | None = None,
+        y_axis_config: dict | None = None,
+        tips: bool = True,
+
+## FILE: manim/mobject/table.py (lines 86–150)
+
+class Table(VGroup):
+    r"""A mobject that displays a table on the screen.
+
+    Parameters
+    ----------
+    table
+        A 2D array or list of lists. Content of the table has to be a valid input
+        for the callable set in ``element_to_mobject``.
+    row_labels
+        List of :class:`~.VMobject` representing the labels of each row.
+    col_labels
+        List of :class:`~.VMobject` representing the labels of each column.
+    top_left_entry
+        The top-left entry of the table, can only be specified if row and
+        column labels are given.
+    v_buff
+        Vertical buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 0.8.
+    h_buff
+        Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
+    include_outer_lines
+        ``True`` if the table should include outer lines, by default False.
+    add_background_rectangles_to_entries
+        ``True`` if background rectangles should be added to entries, by default ``False``.
+    entries_background_color
+        Background color of entries if ``add_background_rectangles_to_entries`` is ``True``.
+    include_background_rectangle
+        ``True`` if the table should have a background rectangle, by default ``False``.
+    background_rectangle_color
+        Background color of table if ``include_background_rectangle`` is ``True``.
+    element_to_mobject
+        The :class:`~.Mobject` class applied to the table entries. by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`/:mod:`~.tex_mobject`.
+    element_to_mobject_config
+        Custom configuration passed to :attr:`element_to_mobject`, by default {}.
+    arrange_in_grid_config
+        Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
+    line_config
+        Dict passed to :class:`~.Line`, customizes the lines of the table.
+    kwargs
+        Additional arguments to be passed to :class:`~.VGroup`.
+
+    Examples
+    --------
+
+    .. manim:: TableExamples
+        :save_last_frame:
+
+        class TableExamples(Scene):
+            def construct(self):
+                t0 = Table(
+                    [["This", "is a"],
+                    ["simple", "Table in \\n Manim."]])
+                t1 = Table(
+                    [["This", "is a"],
+                    ["simple", "Table."]],
+                    row_labels=[Text("R1"), Text("R2")],
+                    col_labels=[Text("C1"), Text("C2")])
+                t1.add_highlighted_cell((2,2), color=YELLOW)
+                t2 = Table(
+                    [["This", "is a"],
+                    ["simple", "Table."]],
+                    row_labels=[Text("R1"), Text("R2")],
+                    col_labels=[Text("C1"), Text("C2")],
+                    top_left_entry=Star().scale(0.3),
+                    include_outer_lines=True,
+                    arrange_in_grid_config={"cell_alignment": RIGHT})
+
+## FILE: manim/mobject/graphing/probability.py (lines 220–252)
+
+class BarChart(Axes):
+    """Creates a bar chart. Inherits from :class:`~.Axes`, so it shares its methods
+    and attributes. Each axis inherits from :class:`~.NumberLine`, so pass in ``x_axis_config``/``y_axis_config``
+    to control their attributes.
+
+    Parameters
+    ----------
+    values
+        A sequence of values that determines the height of each bar. Accepts negative values.
+    bar_names
+        A sequence of names for each bar. Does not have to match the length of ``values``.
+    y_range
+        The y_axis range of values. If ``None``, the range will be calculated based on the
+        min/max of ``values`` and the step will be calculated based on ``y_length``.
+    x_length
+        The length of the x-axis. If ``None``, it is automatically calculated based on
+        the number of values and the width of the screen.
+    y_length
+        The length of the y-axis.
+    bar_colors
+        The color for the bars. Accepts a sequence of colors (can contain just one item).
+        If the length of``bar_colors`` does not match that of ``values``,
+        intermediate colors will be automatically determined.
+    bar_width
+        The length of a bar. Must be between 0 and 1.
+    bar_fill_opacity
+        The fill opacity of the bars.
+    bar_stroke_width
+        The stroke width of the bars.
+
+    Examples
+    --------
+    .. manim:: BarChartExample
+
+## FILE: manim/mobject/graphing/probability.py (lines 484–515)
+
+    def change_bar_values(
+        self, values: Iterable[float], update_colors: bool = True
+    ) -> None:
+        """Updates the height of the bars of the chart.
+
+        Parameters
+        ----------
+        values
+            The values that will be used to update the height of the bars.
+            Does not have to match the number of bars.
+        update_colors
+            Whether to re-initalize the colors of the bars based on ``self.bar_colors``.
+
+        Examples
+        --------
+        .. manim:: ChangeBarValuesExample
+            :save_last_frame:
+
+            class ChangeBarValuesExample(Scene):
+                def construct(self):
+                    values=[-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+
+                    chart = BarChart(
+                        values,
+                        y_range=[-10, 10, 2],
+                        y_axis_config={"font_size": 24},
+                    )
+                    self.add(chart)
+
+                    chart.change_bar_values(list(reversed(values)))
+                    self.add(chart.get_bar_labels(font_size=24))
+        """
+
+## FILE: manim/scene/three_d_scene.py (lines 357–377)
+
+    def add_fixed_in_frame_mobjects(self, *mobjects: Mobject):
+        """
+        This method is used to prevent the rotation and movement
+        of mobjects as the camera moves around. The mobject is
+        essentially overlaid, and is not impacted by the camera's
+        movement in any way.
+
+        Parameters
+        ----------
+        *mobjects
+            The Mobjects whose orientation must be fixed.
+        """
+        if config.renderer == RendererType.CAIRO:
+            self.add(*mobjects)
+            self.camera: ThreeDCamera
+            self.camera.add_fixed_in_frame_mobjects(*mobjects)
+        elif config.renderer == RendererType.OPENGL:
+            for mob in mobjects:
+                mob: OpenGLMobject
+                mob.fix_in_frame()
+                self.add(mob)
+
+## FILE: manim/scene/moving_camera_scene.py (lines 1–34)
+
+"""A scene whose camera can be moved around.
+
+.. SEEALSO::
+
+    :mod:`.moving_camera`
+
+
+Examples
+--------
+
+.. manim:: ChangingCameraWidthAndRestore
+
+    class ChangingCameraWidthAndRestore(MovingCameraScene):
+        def construct(self):
+            text = Text("Hello World").set_color(BLUE)
+            self.add(text)
+            self.camera.frame.save_state()
+            self.play(self.camera.frame.animate.set(width=text.width * 1.2))
+            self.wait(0.3)
+            self.play(Restore(self.camera.frame))
+
+
+.. manim:: MovingCameraCenter
+
+    class MovingCameraCenter(MovingCameraScene):
+        def construct(self):
+            s = Square(color=RED, fill_opacity=0.5).move_to(2 * LEFT)
+            t = Triangle(color=GREEN, fill_opacity=0.5).move_to(2 * RIGHT)
+            self.wait(0.3)
+            self.add(s, t)
+            self.play(self.camera.frame.animate.move_to(s))
+            self.wait(0.3)
+            self.play(self.camera.frame.animate.move_to(t))
+
+
+## FILE: manim/mobject/mobject.py (lines 1003–1110)
+
+    def add_updater(
+        self,
+        update_function: Updater,
+        index: int | None = None,
+        call_updater: bool = False,
+    ) -> Self:
+        """Add an update function to this mobject.
+
+        Update functions, or updaters in short, are functions that are applied to the
+        Mobject in every frame.
+
+        Parameters
+        ----------
+        update_function
+            The update function to be added.
+            Whenever :meth:`update` is called, this update function gets called using
+            ``self`` as the first parameter.
+            The updater can have a second parameter ``dt``. If it uses this parameter,
+            it gets called using a second value ``dt``, usually representing the time
+            in seconds since the last call of :meth:`update`.
+        index
+            The index at which the new updater should be added in ``self.updaters``.
+            In case ``index`` is ``None`` the updater will be added at the end.
+        call_updater
+            Whether or not to call the updater initially. If ``True``, the updater will
+            be called using ``dt=0``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        .. manim:: NextToUpdater
+
+            class NextToUpdater(Scene):
+                def construct(self):
+                    def update_label(mobject):
+                        mobject.set_value(dot.get_center()[0])
+                        mobject.next_to(dot)
+
+                    dot = Dot(RIGHT*3)
+                    label = DecimalNumber()
+                    label.add_updater(update_label)
+                    self.add(dot, label)
+
+                    self.play(Rotating(dot, angle=TAU, about_point=ORIGIN, run_time=TAU, rate_func=linear))
+
+        .. manim:: DtUpdater
+
+            class DtUpdater(Scene):
+                def construct(self):
+                    square = Square()
+
+                    #Let the square rotate 90° per second
+                    square.add_updater(lambda mobject, dt: mobject.rotate(dt*90*DEGREES))
+                    self.add(square)
+                    self.wait(2)
+
+        See also
+        --------
+        :meth:`get_updaters`
+        :meth:`remove_updater`
+        :class:`~.UpdateFromFunc`
+        :class:`~.Rotating`
+        :meth:`rotate`
+        :attr:`~.Mobject.animate`
+        """
+        if index is None:
+            self.updaters.append(update_function)
+        else:
+            self.updaters.insert(index, update_function)
+        if call_updater:
+            parameters = inspect.signature(update_function).parameters
+            if "dt" in parameters:
+                update_function(self, 0)
+            else:
+                update_function(self)
+        return self
+
+    def remove_updater(self, update_function: Updater) -> Self:
+        """Remove an updater.
+
+        If the same updater is applied multiple times, every instance gets removed.
+
+        Parameters
+        ----------
+        update_function
+            The update function to be removed.
+
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`clear_updaters`
+        :meth:`add_updater`
+        :meth:`get_updaters`
+
+        """
+        while update_function in self.updaters:
+            self.updaters.remove(update_function)
+        return self
+
+
+## FILE: manim/animation/updaters/mobject_update_utils.py (lines 64–107)
+
+def always_redraw(func: Callable[[], Mobject]) -> Mobject:
+    """Redraw the mobject constructed by a function every frame.
+
+    This function returns a mobject with an attached updater that
+    continuously regenerates the mobject according to the
+    specified function.
+
+    Parameters
+    ----------
+    func
+        A function without (required) input arguments that returns
+        a mobject.
+
+    Examples
+    --------
+
+    .. manim:: TangentAnimation
+
+        class TangentAnimation(Scene):
+            def construct(self):
+                ax = Axes()
+                sine = ax.plot(np.sin, color=RED)
+                alpha = ValueTracker(0)
+                point = always_redraw(
+                    lambda: Dot(
+                        sine.point_from_proportion(alpha.get_value()),
+                        color=BLUE
+                    )
+                )
+                tangent = always_redraw(
+                    lambda: TangentLine(
+                        sine,
+                        alpha=alpha.get_value(),
+                        color=YELLOW,
+                        length=4
+                    )
+                )
+                self.add(ax, sine, point, tangent)
+                self.play(alpha.animate.set_value(1), rate_func=linear, run_time=2)
+    """
+    mob = func()
+    mob.add_updater(lambda _: mob.become(func()))
+    return mob
+
+
+## FILE: manim/mobject/value_tracker.py (lines 21–92)
+
+class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
+    """A mobject that can be used for tracking (real-valued) parameters.
+    Useful for animating parameter changes.
+
+    Not meant to be displayed.  Instead the position encodes some
+    number, often one which another animation or continual_animation
+    uses for its update function, and by treating it as a mobject it can
+    still be animated and manipulated just like anything else.
+
+    This value changes continuously when animated using the :attr:`animate` syntax.
+
+    Examples
+    --------
+    .. manim:: ValueTrackerExample
+
+        class ValueTrackerExample(Scene):
+            def construct(self):
+                number_line = NumberLine()
+                pointer = Vector(DOWN)
+                label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
+
+                tracker = ValueTracker(0)
+                pointer.add_updater(
+                    lambda m: m.next_to(
+                                number_line.n2p(tracker.get_value()),
+                                UP
+                            )
+                )
+                self.add(number_line, pointer,label)
+                tracker += 1.5
+                self.wait(1)
+                tracker -= 4
+                self.wait(0.5)
+                self.play(tracker.animate.set_value(5))
+                self.wait(0.5)
+                self.play(tracker.animate.set_value(3))
+                self.play(tracker.animate.increment_value(-2))
+                self.wait(0.5)
+
+    .. note::
+
+        You can also link ValueTrackers to updaters. In this case, you have to make sure that the
+        ValueTracker is added to the scene by ``add``
+
+    .. manim:: ValueTrackerExample
+
+        class ValueTrackerExample(Scene):
+            def construct(self):
+                tracker = ValueTracker(0)
+                label = Dot(radius=3).add_updater(lambda x : x.set_x(tracker.get_value()))
+                self.add(label)
+                self.add(tracker)
+                tracker.add_updater(lambda mobject, dt: mobject.increment_value(dt))
+                self.wait(2)
+
+    """
+
+    def __init__(self, value: float = 0, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.set(points=np.zeros((1, 3)))
+        self.set_value(value)
+
+    def get_value(self) -> float:
+        """Get the current value of this ValueTracker."""
+        value: float = self.points[0, 0]
+        return value
+
+    def set_value(self, value: float) -> Self:
+        """Sets a new scalar value to the ValueTracker."""
+        self.points[0, 0] = value
+        return self
+
+
+## FILE: manim/animation/creation.py (lines 140–165)
+
+class Create(ShowPartial):
+    """Incrementally show a VMobject.
+
+    Parameters
+    ----------
+    mobject
+        The VMobject to animate.
+
+    Raises
+    ------
+    :class:`TypeError`
+        If ``mobject`` is not an instance of :class:`~.VMobject`.
+
+    Examples
+    --------
+    .. manim:: CreateScene
+
+        class CreateScene(Scene):
+            def construct(self):
+                self.play(Create(Square()))
+
+    See Also
+    --------
+    :class:`~.ShowPassingFlash`
+
+    """
+
+## FILE: manim/mobject/text/tex_mobject.py (lines 227–290)
+
+class MathTex(SingleStringMathTex):
+    r"""A string compiled with LaTeX in math mode.
+
+    Examples
+    --------
+    .. manim:: Formula
+        :save_last_frame:
+
+        class Formula(Scene):
+            def construct(self):
+                t = MathTex(r"\int_a^b f'(x) dx = f(b)- f(a)")
+                self.add(t)
+
+    Notes
+    -----
+    Double-brace notation ``{{ ... }}`` can be used to split a single
+    string argument into multiple submobjects without having to pass
+    separate strings::
+
+        MathTex(r"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}")
+
+    Each ``{{ ... }}`` group and every piece of text between groups
+    becomes its own submobject, which is useful for
+    :class:`~.TransformMatchingTex` animations.
+
+    For ``{{`` to be recognised as a group opener it must appear either
+    at the very start of the string or be immediately preceded by a
+    whitespace character.  ``{{`` that follows non-whitespace — such as
+    in ``\frac{{{n}}}{k}`` or ``a^{{2}}`` — is left untouched, so
+    ordinary nested-brace LaTeX is not accidentally split.  To prevent
+    an unintentional split, insert a space between the two braces:
+    ``{{ ... }}`` → ``{ { ... } }``.
+
+    Tests
+    -----
+    Check that creating a :class:`~.MathTex` works::
+
+        >>> MathTex('a^2 + b^2 = c^2') # doctest: +SKIP
+        MathTex('a^2 + b^2 = c^2')
+
+    Check that double brace group splitting works correctly::
+
+        >>> t1 = MathTex('{{ a }} + {{ b }} = {{ c }}') # doctest: +SKIP
+        >>> len(t1.submobjects) # doctest: +SKIP
+        5
+        >>> t2 = MathTex(r"\frac{1}{a+b\sqrt{2}}") # doctest: +SKIP
+        >>> len(t2.submobjects) # doctest: +SKIP
+        1
+
+    """
+
+    def __init__(
+        self,
+        *tex_strings: str,
+        arg_separator: str = " ",
+        substrings_to_isolate: Iterable[str] | None = None,
+        tex_to_color_map: dict[str, ParsableManimColor] | None = None,
+        tex_environment: str | None = "align*",
+        **kwargs: Any,
+    ):
+        self.tex_template = kwargs.pop("tex_template", config["tex_template"])
+        self.arg_separator = arg_separator
+        self.substrings_to_isolate = (
+            [] if substrings_to_isolate is None else list(substrings_to_isolate)
+
+## FILE: manim/mobject/text/text_mobject.py (lines 299–333)
+
+class Text(SVGMobject):
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_.
+
+    Text objects behave like a :class:`.VGroup`-like iterable of all characters
+    in the given text. In particular, slicing is possible.
+
+    Parameters
+    ----------
+    text
+        The text that needs to be created as a mobject.
+    font
+        The font family to be used to render the text. This is either a system font or
+        one loaded with `register_font()`. Note that font family names may be different
+        across operating systems.
+    warn_missing_font
+        If True (default), Manim will issue a warning if the font does not exist in the
+        (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
+
+    Returns
+    -------
+    :class:`Text`
+        The mobject-like :class:`.VGroup`.
+
+    Examples
+    ---------
+
+    .. manim:: Example1Text
+        :save_last_frame:
+
+        class Example1Text(Scene):
+            def construct(self):
+                text = Text('Hello world').scale(3)
+                self.add(text)
+
+    .. manim:: TextColorExample
+
+## FILE: manim/mobject/text/text_mobject.py (lines 838–912)
+
+class MarkupText(SVGMobject):
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_.
+
+    Text objects behave like a :class:`.VGroup`-like iterable of all characters
+    in the given text. In particular, slicing is possible.
+
+    **What is PangoMarkup?**
+
+    PangoMarkup is a small markup language like html and it helps you avoid using
+    "range of characters" while coloring or styling a piece a Text. You can use
+    this language with :class:`~.MarkupText`.
+
+    A simple example of a marked-up string might be::
+
+        <span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!"
+
+    and it can be used with :class:`~.MarkupText` as
+
+    .. manim:: MarkupExample
+        :save_last_frame:
+
+        class MarkupExample(Scene):
+            def construct(self):
+                text = MarkupText('<span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!"')
+                self.add(text)
+
+    A more elaborate example would be:
+
+    .. manim:: MarkupElaborateExample
+        :save_last_frame:
+
+        class MarkupElaborateExample(Scene):
+            def construct(self):
+                text = MarkupText(
+                    '<span foreground="purple">ا</span><span foreground="red">َ</span>'
+                    'ل<span foreground="blue">ْ</span>ع<span foreground="red">َ</span>ر'
+                    '<span foreground="red">َ</span>ب<span foreground="red">ِ</span>ي'
+                    '<span foreground="green">ّ</span><span foreground="red">َ</span>ة'
+                    '<span foreground="blue">ُ</span>'
+                )
+                self.add(text)
+
+    PangoMarkup can also contain XML features such as numeric character
+    entities such as ``&#169;`` for © can be used too.
+
+    The most general markup tag is ``<span>``, then there are some
+    convenience tags.
+
+    Here is a list of supported tags:
+
+    - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
+    - ``<u>underline</u>`` and ``<s>strike through</s>``
+    - ``<tt>typewriter font</tt>``
+    - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
+    - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
+    - ``<span underline="double" underline_color="green">double underline</span>``
+    - ``<span underline="error">error underline</span>``
+    - ``<span overline="single" overline_color="green">overline</span>``
+    - ``<span strikethrough="true" strikethrough_color="red">strikethrough</span>``
+    - ``<span font_family="sans">temporary change of font</span>``
+    - ``<span foreground="red">temporary change of color</span>``
+    - ``<span fgcolor="red">temporary change of color</span>``
+    - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``
+
+    For ``<span>`` markup, colors can be specified either as
+    hex triples like ``#aabbcc`` or as named CSS colors like
+    ``AliceBlue``.
+    The ``<gradient>`` tag is handled by Manim rather than
+    Pango, and supports hex triplets or Manim constants like
+    ``RED`` or ``RED_A``.
+    If you want to use Manim constants like ``RED_A`` together
+    with ``<span>``, you will need to use Python's f-String
+    syntax as follows::
+
+        MarkupText(f'<span foreground="{RED_A}">here you go</span>')
+
+## FILE: manim/_config/utils.py (lines 1124–1141)
+
+    @property
+    def frame_height(self) -> float:
+        """Frame height in logical units (no flag)."""
+        return self._d["frame_height"]
+
+    @frame_height.setter
+    def frame_height(self, value: float) -> None:
+        self._d.__setitem__("frame_height", value)
+
+    @property
+    def frame_width(self) -> float:
+        """Frame width in logical units (no flag)."""
+        return self._d["frame_width"]
+
+    @frame_width.setter
+    def frame_width(self, value: float) -> None:
+        self._d.__setitem__("frame_width", value)
+

@@ -11,7 +11,7 @@ against a newer toolchain bumps the version mechanically.
 ## 1. What this pack is
 
 A verified knowledge package that makes an agent write Manim CE scenes that **render on the
-current toolchain** and stay inside the current (post-0.19) API. It is the third two-verifier
+current toolchain** and stay inside the current (post-0.19) API. It is the second two-verifier
 pack, pairing **execution** (every mechanical claim gated by a real render inside a
 digest-pinned Docker image) with **doc-grounding** (every rule anchored to a verbatim passage
 from pinned official docs). It is the first **Docker-pinned** execution pack: the oracle is

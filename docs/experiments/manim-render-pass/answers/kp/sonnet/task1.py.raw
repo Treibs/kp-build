@@ -1,0 +1,32 @@
+```python
+from manim import *
+
+
+class CodeHighlightScene(Scene):
+    def construct(self):
+        code_obj = Code(
+            code_string=(
+                "def fibonacci(n):\n"
+                "    if n <= 1:\n"
+                "        return n\n"
+                "    return fibonacci(n-1) + fibonacci(n-2)"
+            ),
+            language="python",
+            font_size=24,
+        )
+        self.play(FadeIn(code_obj))
+        self.wait(0.5)
+
+        # Highlight the base-case line
+        rect1 = SurroundingRectangle(code_obj.code[1], color=YELLOW, buff=0.05)
+        self.play(Create(rect1))
+        self.wait(1)
+
+        # Move highlight to the recursive return line
+        rect2 = SurroundingRectangle(code_obj.code[3], color=GREEN, buff=0.05)
+        self.play(ReplacementTransform(rect1, rect2))
+        self.wait(1)
+
+        self.play(FadeOut(rect2), FadeOut(code_obj))
+        self.wait(0.3)
+```

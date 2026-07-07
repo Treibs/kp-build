@@ -1,0 +1,70 @@
+```python
+from manim import *
+import numpy as np
+
+
+class CounterBars(Scene):
+    def construct(self):
+        targets = [100, 250, 75]
+        colors = [BLUE_C, GREEN_C, RED_C]
+        labels = ["Alpha", "Beta", "Gamma"]
+
+        MAX_W = 5.5
+        BAR_H = 0.5
+        LEFT_X = -2.0
+        max_val = max(targets)
+
+        trackers = [ValueTracker(0) for _ in range(3)]
+        all_mobs = []
+
+        for i in range(3):
+            tr = trackers[i]
+            tgt = targets[i]
+            col = colors[i]
+            y = 1.5 - i * 1.5
+
+            row_label = Text(labels[i], font_size=28)
+            row_label.move_to(np.array([LEFT_X - 1.5, y, 0]))
+
+            bg_bar = Rectangle(
+                width=MAX_W,
+                height=BAR_H,
+                fill_color=GREY_D,
+                fill_opacity=0.4,
+                stroke_color=GREY,
+                stroke_width=1,
+            )
+            bg_bar.move_to(np.array([LEFT_X + MAX_W / 2, y, 0]))
+
+            def make_fg(t=tr, c=col, _y=y):
+                frac = t.get_value() / max_val
+                w = max(1e-6, frac * MAX_W)
+                rect = Rectangle(
+                    width=w,
+                    height=BAR_H,
+                    fill_color=c,
+                    fill_opacity=0.85,
+                    stroke_width=0,
+                )
+                rect.move_to(np.array([LEFT_X + w / 2, _y, 0]))
+                return rect
+
+            fg_bar = always_redraw(make_fg)
+
+            counter = DecimalNumber(0, num_decimal_places=0, font_size=46, color=col)
+            counter.move_to(np.array([LEFT_X + MAX_W + 0.85, y, 0]))
+            counter.add_updater(lambda m, t=tr: m.set_value(t.get_value()))
+
+            target_label = Text(f"/ {tgt}", font_size=22, color=GREY_C)
+            target_label.move_to(np.array([LEFT_X + MAX_W + 2.05, y, 0]))
+
+            all_mobs.extend([row_label, bg_bar, fg_bar, counter, target_label])
+
+        self.add(*all_mobs)
+        self.play(
+            *[trackers[i].animate.set_value(targets[i]) for i in range(3)],
+            run_time=5,
+            rate_func=linear,
+        )
+        self.wait(1)
+```

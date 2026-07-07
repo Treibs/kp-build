@@ -1,0 +1,204 @@
+# Source: ManimCommunity/manim @ 1157b746c37130685e0a02d8aa0871d1f164d5f4 (tag v0.20.1) — MIT. Excerpts for offline doc-grounding verification.
+
+## FILE: docs/source/tutorials/quickstart.rst (lines 55–145)
+
+   .. code-block:: python
+
+     from manim import *
+
+
+     class CreateCircle(Scene):
+         def construct(self):
+             circle = Circle()  # create a circle
+             circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
+             self.play(Create(circle))  # show the circle on screen
+
+
+2. Open the command line, navigate to your project folder, and execute
+   the following command:
+
+   .. code-block:: bash
+
+     manim -pql main.py CreateCircle
+
+Manim will output rendering information, then create an MP4 file.
+Your default movie player will play the MP4 file, displaying the following animation.
+
+.. manim:: CreateCircle
+   :hide_source:
+
+   class CreateCircle(Scene):
+       def construct(self):
+           circle = Circle()                   # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
+           self.play(Create(circle))     # show the circle on screen
+
+If you see an animation of a pink circle being drawn, congratulations!
+You just wrote your first Manim scene from scratch.
+
+If you get an error
+message instead, you do not see a video, or if the video output does not
+look like the preceding animation, it is likely that Manim has not been
+installed correctly. Please refer to our :doc:`FAQ section </faq/index>`
+for help with the most common issues.
+
+
+***********
+Explanation
+***********
+
+Let's go over the script you just executed line by line to see how Manim was
+able to draw the circle.
+
+The first line imports all of the contents of the library:
+
+.. code-block:: python
+
+   from manim import *
+
+This is the recommended way of using Manim, as a single script often uses
+multiple names from the Manim namespace. In your script, you imported and used
+``Scene``, ``Circle``, ``PINK`` and ``Create``.
+
+Now let's look at the next two lines:
+
+.. code-block:: python
+
+   class CreateCircle(Scene):
+       def construct(self):
+           [...]
+
+Most of the time, the code for scripting an animation is entirely contained within
+the :meth:`~.Scene.construct` method of a :class:`.Scene` class.
+Inside :meth:`~.Scene.construct`, you can create objects, display them on screen, and animate them.
+
+The next two lines create a circle and set its color and opacity:
+
+.. code-block:: python
+
+           circle = Circle()  # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
+
+Finally, the last line uses the animation :class:`.Create` to display the
+circle on your screen:
+
+.. code-block:: python
+
+           self.play(Create(circle))  # show the circle on screen
+
+.. tip:: All animations must reside within the :meth:`~.Scene.construct` method of a
+         class derived from :class:`.Scene`.  Other code, such as auxiliary
+         or mathematical functions, may reside outside the class.
+
+
+Transforming a square into a circle
+***********************************
+
+## FILE: docs/source/tutorials/building_blocks.rst (lines 52–72)
+
+Creating and displaying mobjects
+================================
+
+As explained in :doc:`quickstart`, usually all of the code in a manim
+script is put inside the :meth:`.construct` method of a :class:`.Scene` class.
+To display a mobject on the screen, call the :meth:`~.Scene.add` method of the
+containing :class:`.Scene`.  This is the principal way of displaying a mobject
+on the screen when it is not being animated.  To remove a mobject from the
+screen, simply call the :meth:`~.Scene.remove` method from the containing
+:class:`.Scene`.
+
+.. manim:: CreatingMobjects
+
+    class CreatingMobjects(Scene):
+        def construct(self):
+            circle = Circle()
+            self.add(circle)
+            self.wait(1)
+            self.remove(circle)
+            self.wait(1)
+
+
+## FILE: docs/source/tutorials/building_blocks.rst (lines 218–248)
+
+
+**********
+Animations
+**********
+
+At the heart of manim is animation.  Generally, you can add an animation to
+your scene by calling the :meth:`~.Scene.play` method.
+
+.. manim:: SomeAnimations
+
+    class SomeAnimations(Scene):
+        def construct(self):
+            square = Square()
+
+            # some animations display mobjects, ...
+            self.play(FadeIn(square))
+
+            # ... some move or rotate mobjects around...
+            self.play(Rotate(square, PI/4))
+
+            # some animations remove mobjects from the screen
+            self.play(FadeOut(square))
+
+            self.wait(1)
+
+Put simply, animations are procedures that interpolate between two mobjects.
+For example, :code:`FadeIn(square)` starts with a fully transparent version of
+:code:`square` and ends with a fully opaque version, interpolating between them
+by gradually increasing the opacity.  :class:`.FadeOut` works in the opposite
+way: it interpolates from fully opaque to fully transparent.  As another
+example, :class:`.Rotate` starts with the mobject passed to it as argument, and
+
+## FILE: docs/source/tutorials/output_and_config.rst (lines 12–26)
+
+
+At this point, you have just executed the following command.
+
+.. code-block:: bash
+
+   manim -pql scene.py SquareToCircle
+
+Let's dissect what just happened step by step.  First, this command executes
+manim on the file ``scene.py``, which contains our animation code.  Further,
+this command tells manim exactly which ``Scene`` is to be rendered, in this case,
+it is ``SquareToCircle``.  This is necessary because a single scene file may
+contain more than one scene.  Next, the flag `-p` tells manim to play the scene
+once it's rendered, and the `-ql` flag tells manim to render the scene in low
+quality.
+
+
+## FILE: docs/source/tutorials/output_and_config.rst (lines 269–298)
+
+
+Some command line flags
+***********************
+
+When executing the command
+
+.. code-block:: bash
+
+   manim -pql scene.py SquareToCircle
+
+it specifies the scene to render.  This is not necessary now.  When a single
+file contains only one ``Scene`` class, it will just render the ``Scene``
+class.  When a single file contains more than one ``Scene`` class, manim will
+let you choose a ``Scene`` class. If your file contains multiple ``Scene``
+classes, and you want to render them all, you can use the ``-a`` flag.
+
+As discussed previously, the ``-ql`` specifies low render quality (854x480
+15FPS).  This does not look very good, but is very useful for rapid
+prototyping and testing. The other options that specify render quality are
+``-qm``, ``-qh``, ``-qp`` and ``-qk`` for medium (1280x720 30FPS), high
+(1920x1080 60FPS), 2k (2560x1440 60FPS) and 4k quality (3840x2160 60FPS),
+respectively.
+
+The ``-p`` flag plays the animation once it is rendered.  If you want to open
+the file browser at the location of the animation instead of playing it, you
+can use the ``-f`` flag.  You can also omit these two flags.
+
+Finally, by default manim will output .mp4 files.  If you want your animations
+in .gif format instead, use the ``--format gif`` flag.  The output files will
+be in the same folder as the .mp4 files, and with the same name, but a

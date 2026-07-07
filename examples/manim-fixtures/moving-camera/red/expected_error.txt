@@ -1,0 +1,1 @@
+AttributeError: 'CameraFrameZoom' object has no attribute 'camera_frame'

@@ -44,7 +44,7 @@ manager for knowledge; see [*Sharing a package through KPM*](#sharing-a-package-
 
 ## Install
 
-Two ways to use it: **run the thirteen shipped example packages** (Quickstart) or **author a new one** with the
+Two ways to use it: **run the fourteen shipped example packages** (Quickstart) or **author a new one** with the
 `/kp-build` skill (Build your own). Either way, start with the engine:
 
 ```bash
@@ -201,10 +201,15 @@ example pack each:
 [`examples/http-semantics-grounding/`](examples/http-semantics-grounding/) +
 [`examples/vwt-grounding/`](examples/vwt-grounding/) (**doc-grounding** — `--ground-verify`, offline),
 [`examples/hf-creative-direction/`](examples/hf-creative-direction/) (**judgment** — a recorded blind
-panel), and [`examples/sui-move/`](examples/sui-move/) (**execution** + **doc-grounding** — the Sui Move
+panel), and two **execution + doc-grounding** two-verifier packs:
+[`examples/sui-move/`](examples/sui-move/) (the Sui Move
 2024-edition pack, verified against `sui mainnet-v1.74.1`; a sui runner drives `sui move build` against
 that pinned mainnet toolchain — RED fixtures must FAIL with a pinned error fragment, GREEN fixtures must
-compile exit 0; a RED that starts compiling on a toolchain bump = healed weakness = staleness signal).
+compile exit 0; a RED that starts compiling on a toolchain bump = healed weakness = staleness signal) and
+[`examples/manim/`](examples/manim/) (Manim CE scene authoring — the first **Docker-digest-pinned** oracle:
+a manim runner renders every fixture inside `manimcommunity/manim@sha256:f18f53f2…` (tag v0.20.1) with a
+container-lifecycle timeout, so the verification environment is reconstructible byte-for-byte forever; its
+pre-registered dual-model falsification cleared ship-rule branch 1 — haiku render-pass 3/5 vs 2/5 base).
 Honest scope: execution verifies *mechanical fundamentals*, not aesthetic
 quality; doc-grounding proves *provenance* (the clause is verbatim in a pinned source), not *soundness*;
 judgment measures *relative preference* against a fair baseline, never absolute quality. The execution gate
@@ -233,7 +238,7 @@ kpm add github:<owner>/<repo>#v0.1.0 && kpm compose   # inherits CONTEXT.md — 
 ```
 src/kp_build/      the engine (scope→survey→extract→verify→ground→assemble→falsify→report)
 skill/SKILL.md     the /kp-build orchestration spec (drives the research subagents)
-examples/          thirteen real built packages + their inputs (falsification evidence on the seven citation ones)
+examples/          fourteen real built packages + their inputs (falsification evidence on the seven citation ones)
 docs/              explainer / metrics / orchestration (HTML)
 SPEC.md            the package format + pipeline, in full
 ```
