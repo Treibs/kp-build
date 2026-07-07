@@ -81,3 +81,19 @@ greens gate `render_error`, reds gate `red_violation`). No scene code changed fr
 candidates; no hangs — both reds crash before `file_writer.begin_animation`, so the containers
 exited within the bounded wait. class-shadowing/red re-proven after the verbatim-paste update.
 Full fixture census: **24** (15 green + 9 red).
+
+## Part V — falsification revision beats (proven 2026-07-07)
+
+Both beats were queued from the pre-registered falsification run (docs/experiments/manim-render-pass/):
+the pack moved models past one error and into a new gap (code-fontsize), and one beat was
+over-applied past its boundary (table-data-cells). Same oracle, same runner, same discipline.
+
+| beat | red result: exit + fragment observed | green: exit | notes |
+|---|---|---|---|
+| code-fontsize | exit 1; `TypeError: Code.__init__() got an unexpected keyword argument 'font_size'` | 0 | The 0.19 rewrite narrowed the constructor: text styling moved into `paragraph_config` (a dict passed to the underlying Paragraph; `font_size` is a documented `default_paragraph_config` key). Both kp arms in the falsification hit exactly this. |
+| table-data-cells | exit 1; `TypeError: sequence item 0: expected str instance, Text found` | 0 | Data cells feed `element_to_mobject` (default Paragraph) — mobjects in DATA cells crash inside Paragraph's `"\n".join`. The mobject-cell form is `MobjectTable`. Boundary beat for table-labels (labels ARE mobjects). kp-haiku failed this in the falsification. |
+
+All 4 Part V fixtures proved OK through the real runner in one batch (greens gate
+`render_error`, reds gate `red_violation`, all `{"codes": []}`). Fragments pasted from the
+observed container output. No hangs — both reds crash before `file_writer.begin_animation`.
+Full fixture census: **28** (17 green + 11 red).
