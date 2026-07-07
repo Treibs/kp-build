@@ -1,0 +1,1 @@
+Only values of type VMobject can be added as submobjects of VGroup
