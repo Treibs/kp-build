@@ -66,3 +66,18 @@ exit 0, 1 m 08 s wall-clock; the two updated AttributeError fragments re-proven 
 verbatim-paste update). Scene code changed from the plan candidates only for
 animate-live-updater/red (the try/except/sentinel restructure above); fragments updated from
 candidates for fixed-frame and moving-camera (observed text wins).
+
+## Part IV — spine (proven 2026-07-06)
+
+| beat | red result: exit + fragment observed | green: exit | notes |
+|---|---|---|---|
+| scene-anatomy | (no red — the beat's value is the `construct`/`add`/`play`/`wait` anatomy itself) | 0 | GREEN only. |
+| class-shadowing | exit 1; `TypeError: Scene.__init__() got an unexpected keyword argument 'font_size'` | 0 | `class Text(Scene)` shadows `manim.Text` under `from manim import *`; the inner `Text("hello", font_size=40)` recursively constructs the Scene subclass. Candidate fragment was generic; observed line is deterministic (`'font_size'` is the first kwarg Text passes that Scene rejects), pasted verbatim and re-proven. |
+| mathtex | exit 1; `LaTeX compilation error` (then `ValueError: latex error converting to dvi`) | 0 | `$` delimiters inside `MathTex` break LaTeX — MathTex is already math mode. Fragment matched the harness-check-proven candidate verbatim. |
+| config-surface | (no red — pinned by experiment: `config.frame_width` is readable inside a scene) | 0 | GREEN only. |
+
+All 6 Part IV fixtures proved OK through the real runner in one batch (proving script exit 0;
+greens gate `render_error`, reds gate `red_violation`). No scene code changed from the plan
+candidates; no hangs — both reds crash before `file_writer.begin_animation`, so the containers
+exited within the bounded wait. class-shadowing/red re-proven after the verbatim-paste update.
+Full fixture census: **24** (15 green + 9 red).
