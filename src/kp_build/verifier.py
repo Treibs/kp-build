@@ -308,7 +308,8 @@ def hyperframes_runner(artifact, tool, *, _run=None):
 def default_runner(artifact, tool, *, gate_code=None, _run=None):
     """The build's execution runner: routes a directive's ``tool`` to its family's runner.
 
-    Tool names are namespaced by convention — ``sui-move-build`` is the Sui compiler gate;
+    Tool names are namespaced by convention — ``sui-move-build`` is the Sui compiler gate,
+    ``manim-render`` is the pinned-manim-container gate;
     everything else is a hyperframes CLI tool (lint/inspect/validate), the pre-dispatch default,
     so existing packs' verdicts are byte-identical. ``gate_code`` (threaded in by ExecutionVerifier)
     is forwarded to the sui runner for its claim-vs-fixture RED/GREEN cross-check; the hyperframes
@@ -316,6 +317,9 @@ def default_runner(artifact, tool, *, gate_code=None, _run=None):
     if tool == "sui-move-build":
         from .sui_runner import sui_move_runner
         return sui_move_runner(artifact, tool, gate_code=gate_code, _run=_run)
+    if tool == "manim-render":
+        from .manim_runner import manim_render_runner
+        return manim_render_runner(artifact, tool, gate_code=gate_code, _run=_run)
     return hyperframes_runner(artifact, tool, _run=_run)
 
 

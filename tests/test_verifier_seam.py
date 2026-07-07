@@ -1214,3 +1214,14 @@ def test_default_runner_routes_everything_else_to_hyperframes(monkeypatch):
     monkeypatch.setattr(verifier, "hyperframes_runner", fake_hf)
     assert verifier.default_runner("a.json", "lint") == {"codes": ["x"]}
     assert seen["call"] == ("a.json", "lint")
+
+
+def test_default_runner_routes_manim_tool_to_manim_runner(tmp_path, monkeypatch):
+    from kp_build.verifier import default_runner
+    seen = {}
+    def fake_manim(artifact, tool, *, gate_code=None, _run=None):
+        seen["call"] = (artifact, tool, gate_code)
+        return {"codes": []}
+    monkeypatch.setattr("kp_build.manim_runner.manim_render_runner", fake_manim)
+    assert default_runner("fixture-dir", "manim-render", gate_code="red_violation") == {"codes": []}
+    assert seen["call"] == ("fixture-dir", "manim-render", "red_violation")
