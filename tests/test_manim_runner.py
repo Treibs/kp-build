@@ -219,6 +219,22 @@ def test_logs_combine_stdout_and_stderr(tmp_path):
     assert manim_render_runner(d, "manim-render", _run=run) == {"codes": []}
 
 
+def test_wait_command_failure_raises_never_passes(tmp_path):
+    # docker wait itself failing (daemon lost the container) must fail closed, not read as exit 0
+    def run(cmd, **kw):
+        p = types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        if "--version" in cmd:
+            p.stdout = "Manim Community v0.20.1\n"
+        elif cmd[1] == "run":
+            p.stdout = "abc\n"
+        elif cmd[1] == "wait":
+            p.returncode, p.stderr = 1, "No such container: abc"
+        return p
+
+    with pytest.raises(RuntimeError, match="docker wait failed"):
+        manim_render_runner(_green(tmp_path), "manim-render", _run=run)
+
+
 def test_docker_run_start_failure_raises(tmp_path):
     def run(cmd, **kw):
         p = types.SimpleNamespace(returncode=0, stdout="", stderr="")

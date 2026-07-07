@@ -92,7 +92,12 @@ def manim_render_runner(artifact, tool, *, gate_code=None, _run=None):
             raise RuntimeError(
                 f"manim render_timeout after {_TIMEOUT}s — container {cid[:12]} force-removed; "
                 "a render that never finishes is a failure, never a pass") from None
-        code = int((getattr(w, "stdout", "") or "").strip() or "0")
+        exit_str = (getattr(w, "stdout", "") or "").strip()
+        if not exit_str and getattr(w, "returncode", 0) != 0:
+            raise RuntimeError(
+                f"docker wait failed (returncode={w.returncode}): "
+                f"{getattr(w, 'stderr', '')!r} — a lost container is a failure, never a pass")
+        code = int(exit_str or "0")
         lg = run([docker, "logs", cid], capture_output=True, text=True, timeout=60)
         out = (getattr(lg, "stdout", "") or "") + (getattr(lg, "stderr", "") or "")
     finally:
