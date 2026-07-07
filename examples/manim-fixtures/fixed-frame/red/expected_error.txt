@@ -1,0 +1,1 @@
+AttributeError: Text object has no attribute 'fix_in_frame'
