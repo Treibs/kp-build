@@ -1,0 +1,13 @@
+{
+  "name": "@kp/manim-ce-scene-authoring-v0-20-1-community",
+  "version": "0.1.0",
+  "description": "Manim CE scene authoring (v0.20.1, community edition)",
+  "license": "CC-BY-4.0",
+  "type": "knowledge-package",
+  "files": [
+    "**/*.md",
+    "wikillm.json",
+    "index.json"
+  ],
+  "entrypoint": "README.md"
+}

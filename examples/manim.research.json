@@ -1,0 +1,491 @@
+{
+  "topic": "Manim CE scene authoring (v0.20.1, community edition)",
+  "claims": [
+    {
+      "id": "code-api-green",
+      "statement": "Construct a syntax-highlighted code block with `Code(code_string=..., language=...)` — the 0.19 rewrite renamed the source kwarg to `code_string` (a file path goes in `code_file`).",
+      "supporting_passage": "manim 0.20.1 renders a scene constructing Code(code_string=..., language=\"python\") with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/code-api/green"
+      }
+    },
+    {
+      "id": "code-api-red",
+      "statement": "`Code(code=...)` — the pre-0.19 signature both probe models write from memory — is rejected by the current toolchain: manim 0.20.1 fails with TypeError: Code.__init__() got an unexpected keyword argument 'code'. The kwarg is `code_string` now.",
+      "supporting_passage": "manim 0.20.1 fails the render with: Code.__init__() got an unexpected keyword argument 'code'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/code-api/red"
+      }
+    },
+    {
+      "id": "code-api-doc",
+      "statement": "The current Code constructor takes the source as `code_string` (the code string to display) or `code_file` (a path) — plus `language` for the highlighter.",
+      "supporting_passage": "    code_file\n        The path to the code file to display.\n    code_string\n        Alternatively, the code string to display.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    code_file\n        The path to the code file to display.\n    code_string\n        Alternatively, the code string to display."
+      }
+    },
+    {
+      "id": "code-rewrite-doc",
+      "statement": "The 0.19 release completely rewrote the implementation of the Code mobject, with several breaking changes to the class's interface.",
+      "supporting_passage": "Completely rewrite the implementation of the :class:`.Code` mobject\n   This includes several breaking changes to the interface of the class to make it\n   more consistent.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-changelog",
+        "supporting_passage": "Completely rewrite the implementation of the :class:`.Code` mobject\n   This includes several breaking changes to the interface of the class to make it\n   more consistent."
+      }
+    },
+    {
+      "id": "axes-length-green",
+      "statement": "Size coordinate systems with `x_length=`/`y_length=`: `Axes(x_range=[-3, 3, 1], y_range=[-2, 2, 1], x_length=6, y_length=4, tips=False)`, then plot with `axes.plot(lambda x: ..., color=BLUE)`.",
+      "supporting_passage": "manim 0.20.1 renders Axes(x_range=..., y_range=..., x_length=6, y_length=4) plus axes.plot(...) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/axes-length/green"
+      }
+    },
+    {
+      "id": "axes-length-red",
+      "statement": "`Axes(width=6, height=4)` — the sizing kwargs both probe models pass from memory — does not render: the kwargs fall through to Mobject and manim 0.20.1 fails with TypeError: Mobject.__init__() got an unexpected keyword argument 'width' (which of width/height is named varies with kwargs-dict order; the pinned fragment is kept generic). Use `x_length`/`y_length`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: TypeError: Mobject.__init__() got an unexpected keyword argument 'width' — the fixture pins the dict-order-stable prefix Mobject.__init__() got an unexpected keyword argument.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/axes-length/red"
+      }
+    },
+    {
+      "id": "axes-length-doc",
+      "statement": "Axes is sized with `x_length` (the length of the x-axis) and `y_length` (the length of the y-axis) — there are no width/height constructor kwargs.",
+      "supporting_passage": "    x_length\n        The length of the x-axis.\n    y_length\n        The length of the y-axis.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    x_length\n        The length of the x-axis.\n    y_length\n        The length of the y-axis."
+      }
+    },
+    {
+      "id": "table-labels-green",
+      "statement": "Table row/column labels are mobjects, not strings: `Table([[\"1\", \"2\"], [\"3\", \"4\"]], row_labels=[Text(\"R1\"), Text(\"R2\")], col_labels=[Text(\"C1\"), Text(\"C2\")])`.",
+      "supporting_passage": "manim 0.20.1 renders Table(..., row_labels=[Text(...), ...], col_labels=[Text(...), ...]) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/table-labels/green"
+      }
+    },
+    {
+      "id": "table-labels-red",
+      "statement": "`Table(row_labels=[\"R1\", \"R2\"], col_labels=[\"C1\", \"C2\"])` with plain strings — the naive form a probe model wrote — does not render: manim 0.20.1 fails with TypeError: Only values of type VMobject can be added as submobjects of VGroup. Wrap labels in `Text(...)`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: Only values of type VMobject can be added as submobjects of VGroup.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/table-labels/red"
+      }
+    },
+    {
+      "id": "table-labels-doc",
+      "statement": "Table's `row_labels` and `col_labels` are lists of VMobjects representing the labels of each row and column — not strings.",
+      "supporting_passage": "    row_labels\n        List of :class:`~.VMobject` representing the labels of each row.\n    col_labels\n        List of :class:`~.VMobject` representing the labels of each column.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    row_labels\n        List of :class:`~.VMobject` representing the labels of each row.\n    col_labels\n        List of :class:`~.VMobject` representing the labels of each column."
+      }
+    },
+    {
+      "id": "barchart-update-green",
+      "statement": "Update an existing BarChart in place with `chart.animate.change_bar_values([...])` — no need to rebuild the chart to change bar heights.",
+      "supporting_passage": "manim 0.20.1 renders BarChart(values=[2, 4, 3], ...) animated via chart.animate.change_bar_values([5, 1, 4]) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/barchart-update/green"
+      }
+    },
+    {
+      "id": "barchart-update-doc",
+      "statement": "`BarChart.change_bar_values` updates the height of the bars of the chart from a list of values, which does not have to match the number of bars.",
+      "supporting_passage": "Updates the height of the bars of the chart.\n\n        Parameters\n        ----------\n        values\n            The values that will be used to update the height of the bars.\n            Does not have to match the number of bars.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "Updates the height of the bars of the chart.\n\n        Parameters\n        ----------\n        values\n            The values that will be used to update the height of the bars.\n            Does not have to match the number of bars."
+      }
+    },
+    {
+      "id": "fixed-frame-green",
+      "statement": "In a `ThreeDScene`, pin a screen-space overlay with `self.add_fixed_in_frame_mobjects(title)` (after `self.set_camera_orientation(...)`) so camera movement does not affect it.",
+      "supporting_passage": "manim 0.20.1 renders a ThreeDScene using self.add_fixed_in_frame_mobjects(title) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/fixed-frame/green"
+      }
+    },
+    {
+      "id": "fixed-frame-red",
+      "statement": "`title.fix_in_frame()` is manimgl, not Manim CE — manim 0.20.1 fails with AttributeError: Text object has no attribute 'fix_in_frame'. The CE mechanism is the scene method `self.add_fixed_in_frame_mobjects(...)`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: AttributeError: Text object has no attribute 'fix_in_frame'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/fixed-frame/red"
+      }
+    },
+    {
+      "id": "fixed-frame-doc",
+      "statement": "`ThreeDScene.add_fixed_in_frame_mobjects` prevents the rotation and movement of mobjects as the camera moves around — the mobject is overlaid, unaffected by camera movement.",
+      "supporting_passage": "This method is used to prevent the rotation and movement\n        of mobjects as the camera moves around. The mobject is\n        essentially overlaid, and is not impacted by the camera's\n        movement in any way.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "This method is used to prevent the rotation and movement\n        of mobjects as the camera moves around. The mobject is\n        essentially overlaid, and is not impacted by the camera's\n        movement in any way."
+      }
+    },
+    {
+      "id": "moving-camera-green",
+      "statement": "To move the camera in 2D, subclass `MovingCameraScene` and animate `self.camera.frame`: `self.play(self.camera.frame.animate.scale(0.5).move_to(dot))`.",
+      "supporting_passage": "manim 0.20.1 renders a MovingCameraScene animating self.camera.frame with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/moving-camera/green"
+      }
+    },
+    {
+      "id": "moving-camera-red",
+      "statement": "`self.camera_frame` (manimgl) does not exist on a plain `Scene`: manim 0.20.1 fails with AttributeError: 'CameraFrameZoom' object has no attribute 'camera_frame'. CE camera movement is `MovingCameraScene` + `self.camera.frame`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: AttributeError: 'CameraFrameZoom' object has no attribute 'camera_frame'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/moving-camera/red"
+      }
+    },
+    {
+      "id": "moving-camera-doc",
+      "statement": "`MovingCameraScene` is the scene class whose camera can be moved; its documented usage animates `self.camera.frame` (e.g. `self.play(self.camera.frame.animate.set(width=...))`).",
+      "supporting_passage": "class ChangingCameraWidthAndRestore(MovingCameraScene):\n        def construct(self):\n            text = Text(\"Hello World\").set_color(BLUE)\n            self.add(text)\n            self.camera.frame.save_state()\n            self.play(self.camera.frame.animate.set(width=text.width * 1.2))",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "class ChangingCameraWidthAndRestore(MovingCameraScene):\n        def construct(self):\n            text = Text(\"Hello World\").set_color(BLUE)\n            self.add(text)\n            self.camera.frame.save_state()\n            self.play(self.camera.frame.animate.set(width=text.width * 1.2))"
+      }
+    },
+    {
+      "id": "create-rename-green",
+      "statement": "Draw a VMobject's outline with `Create`: `self.play(Create(circle))` — the CE name for the drawing-on animation.",
+      "supporting_passage": "manim 0.20.1 renders self.play(Create(circle)) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/create-rename/green"
+      }
+    },
+    {
+      "id": "create-rename-red",
+      "statement": "`ShowCreation` — the manimgl name for the drawing-on animation — is not defined under `from manim import *`: manim 0.20.1 fails with NameError: name 'ShowCreation' is not defined. The CE animation is `Create`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: name 'ShowCreation' is not defined.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/create-rename/red"
+      }
+    },
+    {
+      "id": "create-rename-doc",
+      "statement": "`Create` is the CE animation class that incrementally shows a VMobject (draws it on screen).",
+      "supporting_passage": "class Create(ShowPartial):\n    \"\"\"Incrementally show a VMobject.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "class Create(ShowPartial):\n    \"\"\"Incrementally show a VMobject."
+      }
+    },
+    {
+      "id": "import-discipline-doc",
+      "statement": "CE scripts import with `from manim import *` — the recommended way of using Manim, since a script typically uses many names from the Manim namespace (Scene, Circle, PINK, Create). The CE-vs-manimgl boundary itself is proven mechanically by the create-rename exec pair.",
+      "supporting_passage": "This is the recommended way of using Manim, as a single script often uses\nmultiple names from the Manim namespace. In your script, you imported and used\n``Scene``, ``Circle``, ``PINK`` and ``Create``.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-tutorials",
+        "supporting_passage": "This is the recommended way of using Manim, as a single script often uses\nmultiple names from the Manim namespace. In your script, you imported and used\n``Scene``, ``Circle``, ``PINK`` and ``Create``."
+      }
+    },
+    {
+      "id": "animate-live-updater-red",
+      "statement": "Never animate a mobject that carries a live structure-changing updater: `self.play(counter.animate.shift(...), tracker.animate.set_value(100))`, where counter's updater changes the DecimalNumber's digit count, crashes mid-interpolation on manim 0.20.1 with ValueError: zip() argument 2 is longer than argument 1 — and on 0.20.1 this crash additionally strands the SceneFileWriter's non-daemon writer thread, so a bare render of the naive form hangs forever after the traceback instead of exiting. Detach the updater first (updater-detach) or rebuild per frame with always_redraw.",
+      "supporting_passage": "manim 0.20.1 fails the render with: ValueError: zip() argument 2 is longer than argument 1. The committed fixture releases the stranded writer thread with the writer's own sentinel and re-raises so the container exits 1 in bounded time; a bare render of the naive form prints the same traceback and then hangs (non-daemon writer_thread blocked on queue.get).",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/animate-live-updater/red"
+      }
+    },
+    {
+      "id": "updater-detach-green",
+      "statement": "Drive the ValueTracker, not the carrier: `self.play(tracker.animate.set_value(100))` while the updater is live, then `counter.remove_updater(live)` BEFORE animating the counter itself.",
+      "supporting_passage": "manim 0.20.1 renders tracker-driven updates followed by remove_updater then counter.animate with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/updater-detach/green"
+      }
+    },
+    {
+      "id": "always-redraw-green",
+      "statement": "`always_redraw(lambda: ...)` rebuilds the mobject every frame — the safe pattern for live labels: `label = always_redraw(lambda: DecimalNumber(tracker.get_value(), num_decimal_places=1).next_to(dot, UP))`.",
+      "supporting_passage": "manim 0.20.1 renders always_redraw-built dot and label driven by a ValueTracker with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/always-redraw/green"
+      }
+    },
+    {
+      "id": "always-redraw-doc",
+      "statement": "`always_redraw` redraws the mobject constructed by a function every frame: it returns a mobject with an attached updater that continuously regenerates it from the function.",
+      "supporting_passage": "Redraw the mobject constructed by a function every frame.\n\n    This function returns a mobject with an attached updater that\n    continuously regenerates the mobject according to the\n    specified function.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "Redraw the mobject constructed by a function every frame.\n\n    This function returns a mobject with an attached updater that\n    continuously regenerates the mobject according to the\n    specified function."
+      }
+    },
+    {
+      "id": "updater-lifecycle-green",
+      "statement": "dt-updater lifecycle: `square.add_updater(spin)` where `spin(mob, dt)` uses the frame delta, `self.wait(...)` to run it, then `square.remove_updater(spin)` before `self.play(square.animate...)`.",
+      "supporting_passage": "manim 0.20.1 renders add_updater(dt updater) -> wait -> remove_updater -> animate with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/updater-lifecycle/green"
+      }
+    },
+    {
+      "id": "updater-lifecycle-doc",
+      "statement": "Updaters are functions applied to the mobject in every frame — added with `add_updater` (optionally taking a `dt` second parameter) and removed with `remove_updater`.",
+      "supporting_passage": "Update functions, or updaters in short, are functions that are applied to the\n        Mobject in every frame.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "Update functions, or updaters in short, are functions that are applied to the\n        Mobject in every frame."
+      }
+    },
+    {
+      "id": "value-tracker-green",
+      "statement": "`ValueTracker` + `.animate.set_value` is the canonical animation driver: `self.play(tracker.animate.set_value(PI / 2))` with dependent mobjects rebuilt via always_redraw.",
+      "supporting_passage": "manim 0.20.1 renders a ValueTracker-driven always_redraw line animated via tracker.animate.set_value with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/value-tracker/green"
+      }
+    },
+    {
+      "id": "value-tracker-doc",
+      "statement": "`ValueTracker` tracks real-valued parameters for animating parameter changes; it is not meant to be displayed, and its value changes continuously when animated using the `.animate` syntax.",
+      "supporting_passage": "A mobject that can be used for tracking (real-valued) parameters.\n    Useful for animating parameter changes.\n\n    Not meant to be displayed.  Instead the position encodes some\n    number, often one which another animation or continual_animation\n    uses for its update function, and by treating it as a mobject it can\n    still be animated and manipulated just like anything else.\n\n    This value changes continuously when animated using the :attr:`animate` syntax.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "A mobject that can be used for tracking (real-valued) parameters.\n    Useful for animating parameter changes.\n\n    Not meant to be displayed.  Instead the position encodes some\n    number, often one which another animation or continual_animation\n    uses for its update function, and by treating it as a mobject it can\n    still be animated and manipulated just like anything else.\n\n    This value changes continuously when animated using the :attr:`animate` syntax."
+      }
+    },
+    {
+      "id": "scene-anatomy-green",
+      "statement": "Scene anatomy: one `Scene` subclass with a single `construct` method; `self.add` displays without animating, `self.play(mobject.animate...)` animates, `self.wait(...)` holds the frame.",
+      "supporting_passage": "manim 0.20.1 renders a single-construct Scene using add/play/wait with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/scene-anatomy/green"
+      }
+    },
+    {
+      "id": "scene-anatomy-doc",
+      "statement": "All animations must reside within the `construct` method of a class derived from `Scene`; other code, such as auxiliary or mathematical functions, may reside outside the class.",
+      "supporting_passage": "All animations must reside within the :meth:`~.Scene.construct` method of a\n         class derived from :class:`.Scene`.  Other code, such as auxiliary\n         or mathematical functions, may reside outside the class.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-tutorials",
+        "supporting_passage": "All animations must reside within the :meth:`~.Scene.construct` method of a\n         class derived from :class:`.Scene`.  Other code, such as auxiliary\n         or mathematical functions, may reside outside the class."
+      }
+    },
+    {
+      "id": "class-shadowing-green",
+      "statement": "Name Scene subclasses after the content (`class GreetingScene(Scene)`), never after a manim class — `from manim import *` makes name collisions fatal at first use.",
+      "supporting_passage": "manim 0.20.1 renders a content-named Scene subclass constructing Text(...) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/class-shadowing/green"
+      }
+    },
+    {
+      "id": "class-shadowing-red",
+      "statement": "`class Text(Scene)` shadows `manim.Text` under `from manim import *`, so the inner `Text(\"hello\", font_size=40)` recursively constructs the Scene subclass: manim 0.20.1 fails with TypeError: Scene.__init__() got an unexpected keyword argument 'font_size'. A strong probe model made exactly this mistake (naming its scene MarkupText).",
+      "supporting_passage": "manim 0.20.1 fails the render with: TypeError: Scene.__init__() got an unexpected keyword argument 'font_size'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/class-shadowing/red"
+      }
+    },
+    {
+      "id": "mathtex-green",
+      "statement": "`MathTex(r\"e^{i\\pi} + 1 = 0\")` is already LaTeX math mode — no `$` delimiters; pair it with `Text(...)` (Pango, no LaTeX) for plain captions.",
+      "supporting_passage": "manim 0.20.1 renders MathTex(r\"e^{i\\pi} + 1 = 0\") beside a Text caption with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/mathtex/green"
+      }
+    },
+    {
+      "id": "mathtex-red",
+      "statement": "`MathTex(r\"$e^{i\\pi} + 1 = 0$\")` — wrapping the string in `$` delimiters as if it were text mode — breaks LaTeX: manim 0.20.1 fails with LaTeX compilation error (followed by ValueError: latex error converting to dvi). MathTex is already math mode.",
+      "supporting_passage": "manim 0.20.1 fails the render with: LaTeX compilation error (then ValueError: latex error converting to dvi).",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/mathtex/red"
+      }
+    },
+    {
+      "id": "mathtex-doc",
+      "statement": "`MathTex` is a string compiled with LaTeX in math mode — dollar-sign delimiters are neither needed nor valid inside it.",
+      "supporting_passage": "A string compiled with LaTeX in math mode.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "A string compiled with LaTeX in math mode."
+      }
+    },
+    {
+      "id": "text-pango-doc",
+      "statement": "`Text` displays non-LaTeX text rendered using Pango — plain captions need no LaTeX at all.",
+      "supporting_passage": "class Text(SVGMobject):\n    r\"\"\"Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "class Text(SVGMobject):\n    r\"\"\"Display (non-LaTeX) text rendered using `Pango <https://pango.org/>`_."
+      }
+    },
+    {
+      "id": "markuptext-doc",
+      "statement": "`MarkupText` renders non-LaTeX text styled with PangoMarkup, a small html-like markup language for coloring or styling pieces of a Text.",
+      "supporting_passage": "PangoMarkup is a small markup language like html and it helps you avoid using\n    \"range of characters\" while coloring or styling a piece a Text. You can use\n    this language with :class:`~.MarkupText`.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "PangoMarkup is a small markup language like html and it helps you avoid using\n    \"range of characters\" while coloring or styling a piece a Text. You can use\n    this language with :class:`~.MarkupText`."
+      }
+    },
+    {
+      "id": "render-cli-doc",
+      "statement": "The `-ql` CLI flag renders at low quality (854x480 15FPS) — useful for rapid prototyping and testing; `-qm`/`-qh` step up to medium/high. Doc-only beat: the quality flags are the harness's own gate command (self-demonstrating, no fixture).",
+      "supporting_passage": "As discussed previously, the ``-ql`` specifies low render quality (854x480\n15FPS).  This does not look very good, but is very useful for rapid\nprototyping and testing.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-tutorials",
+        "supporting_passage": "As discussed previously, the ``-ql`` specifies low render quality (854x480\n15FPS).  This does not look very good, but is very useful for rapid\nprototyping and testing."
+      }
+    },
+    {
+      "id": "config-surface-green",
+      "statement": "Read global frame geometry from `config` inside a scene: `Rectangle(width=config.frame_width - 1, ...)` renders clean — `config.frame_width` is readable at construct time.",
+      "supporting_passage": "manim 0.20.1 renders Rectangle(width=config.frame_width - 1, height=0.5) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/config-surface/green"
+      }
+    },
+    {
+      "id": "config-surface-doc",
+      "statement": "Global frame geometry lives on `config`: `config.frame_width` is the frame width in logical units.",
+      "supporting_passage": "@property\n    def frame_width(self) -> float:\n        \"\"\"Frame width in logical units (no flag).\"\"\"",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "@property\n    def frame_width(self) -> float:\n        \"\"\"Frame width in logical units (no flag).\"\"\""
+      }
+    }
+  ]
+}
