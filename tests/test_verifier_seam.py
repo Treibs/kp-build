@@ -1225,3 +1225,14 @@ def test_default_runner_routes_manim_tool_to_manim_runner(tmp_path, monkeypatch)
     monkeypatch.setattr("kp_build.manim_runner.manim_render_runner", fake_manim)
     assert default_runner("fixture-dir", "manim-render", gate_code="red_violation") == {"codes": []}
     assert seen["call"] == ("fixture-dir", "manim-render", "red_violation")
+
+
+def test_load_accepts_manim_render_execution_tool(tmp_path):
+    from kp_build.cli import _load
+    rj = {"topic": "manim", "scope": "s", "claims": [
+        {"id": "m1", "statement": "scene renders", "supporting_passage": "render passes",
+         "execution": {"tool": "manim-render", "gate_code": "render_error", "artifact": "some-dir"}}]}
+    pkg = _load(_write(tmp_path, rj))
+    assert pkg.claims[0].execution["tool"] == "manim-render"
+    assert pkg.claims[0].execution["gate_code"] == "render_error"
+    assert pkg.claims[0].paper == ""
