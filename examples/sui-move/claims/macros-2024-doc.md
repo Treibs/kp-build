@@ -24,7 +24,7 @@ verified:
     will emit an error if you
 
     > try to reassign a variable without the `mut` keyword.'
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: sui-move-reference

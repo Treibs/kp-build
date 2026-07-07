@@ -1,0 +1,1 @@
+sequence item 0: expected str instance, Text found

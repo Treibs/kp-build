@@ -7,7 +7,7 @@
 **Scope:** 
 
 - 0/0 citations verified (arXiv/Crossref); source years n/a
-- 42 claims · 0 open problems · 0 debates · 0 benchmarks
+- 48 claims · 0 open problems · 0 debates · 0 benchmarks
 - dropped (unverified-anchored): {'claims': 0, 'open_problems': 0, 'debates': 0, 'benchmarks': 0, 'positions': 0, 'relations': 0}
 
 **Load `CONTEXT.md` into your agent** to inherit this field without re-running the research. `index.json` is the machine-readable graph (nodes + edges); the subdirectories hold the notes.
@@ -21,7 +21,7 @@ kpm add github:<owner>/<repo>#v0.1.0
 kpm compose            # composes into a vault; load CONTEXT.md into your agent
 ```
 
-Confidence is corpus-relative (conditional on the cited sources). Built 2026-07-06.
+Confidence is corpus-relative (conditional on the cited sources). Built 2026-07-06; revision beats added 2026-07-07.
 
 ## The plain-terms story
 
@@ -53,6 +53,8 @@ Five held-out tasks in the weakness territories (none a pack fixture), pre-regis
 
 Honest gaps recorded (not patched post-hoc): both kp arms fixed `Code(code=)` → `code_string=` and then failed on `Code(font_size=)` — a kwarg-surface gap; kp-haiku over-applied labels-are-mobjects to `Table` *data cells* (they must be strings). Sonnet ties at ceiling, as the honest-scope section predicted.
 
+**Revision beats (2026-07-07).** Both gaps are now closed by fixture-proven beats, added *after* the falsification and clearly separated from it (the 3/5-vs-2/5 result above was measured on the 42-claim pack): `code-fontsize` (text styling goes in `paragraph_config`, not the `Code` constructor — RED: `TypeError: … unexpected keyword argument 'font_size'`) and `table-data-cells` (data cells stay strings for the default `element_to_mobject`; mobject cells belong in `MobjectTable` — RED: `TypeError: sequence item 0: expected str instance, Text found`). Provenance in [`examples/manim-fixtures/beat-log.md`](../manim-fixtures/beat-log.md), Part V.
+
 ## The RED/GREEN two-sided gate
 
-24 execution claims (15 GREEN + 9 RED), each gated by a real render inside the digest-pinned container (`manim -ql --disable_caching`, container-lifecycle timeout — detached run, bounded wait, unconditional remove). A GREEN fixture must render clean; a RED fixture must FAIL with the pinned fragment in `expected_error.txt`. Refresh = bump the digest pin and re-run: a RED that starts rendering means the weakness healed and the claim retires; a GREEN that breaks means the idiom moved — both staleness signals mechanical, and the digest pin keeps the old verification environment reconstructible forever. 18 grounding claims anchor the rules to verbatim passages from the docs pinned at the same tag (`--ground-verify`, offline).
+28 execution claims (17 GREEN + 11 RED), each gated by a real render inside the digest-pinned container (`manim -ql --disable_caching`, container-lifecycle timeout — detached run, bounded wait, unconditional remove). A GREEN fixture must render clean; a RED fixture must FAIL with the pinned fragment in `expected_error.txt`. Refresh = bump the digest pin and re-run: a RED that starts rendering means the weakness healed and the claim retires; a GREEN that breaks means the idiom moved — both staleness signals mechanical, and the digest pin keeps the old verification environment reconstructible forever. 20 grounding claims anchor the rules to verbatim passages from the docs pinned at the same tag (`--ground-verify`, offline).

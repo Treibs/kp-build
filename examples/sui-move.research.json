@@ -235,6 +235,41 @@
       }
     },
     {
+      "id": "receiving-green",
+      "statement": "Receive an object that was sent to another object with `transfer::public_receive(&mut parent.id, ticket)`, where the ticket parameter has type `transfer::Receiving<T>` and `T has key + store`: `public fun redeem(mailbox: &mut Mailbox, ticket: transfer::Receiving<Parcel>): Parcel { transfer::public_receive(&mut mailbox.id, ticket) }`.",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module that unwraps a transfer::Receiving<Parcel> ticket via transfer::public_receive(&mut mailbox.id, ticket) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/receiving-green"
+      }
+    },
+    {
+      "id": "receiving-red",
+      "statement": "The internal `transfer::receive` cannot unwrap a `Receiving<T>` when `T` is defined in a different module: sui 1.74.1 fails with error[Sui E02009] invalid private transfer call — \"The function 'sui::transfer::receive' is restricted to being called in the object's module\". Outside the defining module, use `public_receive` (which requires `store`).",
+      "supporting_passage": "sui 1.74.1 rejects a cross-module transfer::receive with exit 1, error[Sui E02009]: invalid private transfer call — the function is restricted to being called in the object's module.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/receiving-red"
+      }
+    },
+    {
+      "id": "receiving-doc",
+      "statement": "An object sent to another object arrives in a transaction as `sui::transfer::Receiving<T>`, not as `T`: the wrapper indicates the object is owned by another object rather than the sender, and `sui::transfer::receive` is called with the parent object to unwrap it and prove ownership.",
+      "supporting_passage": "Object inputs have the type `T` of the underlying object. `ObjectArg::Receiving` inputs are the exception and have type `sui::transfer::Receiving<T>`. This wrapper indicates the object is owned by another object, not the sender. Call `sui::transfer::receive` with the parent object to unwrap it and prove ownership.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-docs-concepts",
+        "supporting_passage": "Object inputs have the type `T` of the underlying object. `ObjectArg::Receiving` inputs are the exception and have type `sui::transfer::Receiving<T>`. This wrapper indicates the object is owned by another object, not the sender. Call `sui::transfer::receive` with the parent object to unwrap it and prove ownership."
+      }
+    },
+    {
       "id": "entry-vs-public-green",
       "statement": "Plain `public fun` needs no `entry` modifier: `public fun create(ctx: &mut TxContext)` builds clean on sui 1.74.1; the docs (see entry-vs-public-doc) state a public function needs no `entry` to be callable in a transaction.",
       "supporting_passage": "sui 1.74.1 builds a module exposing plain `public fun` entry points (no `entry` modifier) with exit 0 and no warnings.",

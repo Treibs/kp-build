@@ -1,0 +1,1 @@
+The function 'sui::transfer::receive' is restricted to being called in the object's module

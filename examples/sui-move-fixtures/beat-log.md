@@ -87,3 +87,23 @@ not committed) to *prove* they compile — classification is observed, not assum
 (git rev `b1245677...`) per environment — they ARE the reproducibility pins. Red fixtures
 have no `Move.lock`: the CLI only writes it on successful builds, and red builds fail by
 design. `build/` output dirs are gitignored (`examples/sui-move-fixtures/**/build/`).
+
+## Revision beat — receiving (proven 2026-07-07)
+
+Queued from the pack-revision pass (the transfer-to-object pattern was a probe weakness left
+uncovered at ship time). Same pinned binary (`sui 1.74.1-8fc60f1fa966`), same plain-build gate.
+
+| beat | red form tried | observed (exit + key output) | classification | fragment (expected_error.txt) |
+|---|---|---|---|---|
+| receiving | `transfer::receive` on a type defined in a *different* module (internal rule) | exit 1, `error[Sui E02009]: invalid private transfer call` — "restricted to being called in the object's module" | RED/GREEN pair | `The function 'sui::transfer::receive' is restricted to being called in the object's module` |
+
+Triage notes (scratch candidates in `/tmp/sui-triage2/`, not committed):
+- **red-a candidate** (`public_receive` on a `key`-only type) also fails — `error[E05001]`,
+  `'store' constraint not satisifed` — but that duplicates the ownership-transfer red's error
+  class. Dropped in favour of the receive-specific internal-rule error.
+- **red-b (shipped)** is a new error class for the pack (Sui E02009), specific to the private
+  transfer rules; the green's `public_receive` (`T: key + store`) is the cross-module escape,
+  mirroring `transfer` vs `public_transfer`.
+- green builds clean; `Move.lock` pins the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
+
+**Totals:** 17 green fixtures, 13 red fixtures (4 beats grounding-only, unchanged).

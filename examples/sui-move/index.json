@@ -143,6 +143,27 @@
       "corroborated_by": []
     },
     {
+      "id": "receiving-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "receiving-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "receiving-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
       "id": "entry-vs-public-green",
       "paper": "",
       "type": "method",

@@ -2,11 +2,11 @@
   "schema": "wikillm/1",
   "topic": "Sui Move contract authoring (Move 2024 edition, mainnet toolchain)",
   "scope": "",
-  "built": "2026-07-06",
+  "built": "2026-07-07",
   "stats": {
     "papers_verified": 0,
     "papers_total": 0,
-    "claims": 44,
+    "claims": 47,
     "open_problems": 0,
     "debates": 0,
     "benchmarks": 0,
@@ -25,7 +25,7 @@
   "source_span": {
     "oldest": null,
     "newest": null,
-    "latest_checked": "2026-07-06"
+    "latest_checked": "2026-07-07"
   },
   "coverage": {
     "note": "not recorded \u2014 coverage completeness is unverified"
@@ -53,7 +53,7 @@
       "verdict": "primary tie, secondary kp wins -> ships under pre-registered rule branch 2",
       "path": "docs/experiments/sui-compile-pass-2/"
     },
-    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009).",
+    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap at falsification time: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009). Gap closed 2026-07-07 by the fixture-proven receiving beat added AFTER the experiment; the recorded numbers were measured on the 44-claim pack.",
     "experiment": "docs/experiments/sui-compile-pass-2/"
   }
 }

@@ -37,6 +37,41 @@
       }
     },
     {
+      "id": "code-fontsize-green",
+      "statement": "Size the text of a Code block through `paragraph_config`: `Code(code_string=..., language=..., paragraph_config={\"font_size\": 18})` — text styling kwargs go to the underlying Paragraph objects, not the Code constructor.",
+      "supporting_passage": "manim 0.20.1 renders a scene constructing Code(code_string=..., language=\"python\", paragraph_config={\"font_size\": 18}) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/code-fontsize/green"
+      }
+    },
+    {
+      "id": "code-fontsize-red",
+      "statement": "`Code(font_size=...)` is not part of the current constructor — the 0.19 rewrite narrowed the surface, and manim 0.20.1 fails with TypeError: Code.__init__() got an unexpected keyword argument 'font_size'. Text styling moved into `paragraph_config`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: Code.__init__() got an unexpected keyword argument 'font_size'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/code-fontsize/red"
+      }
+    },
+    {
+      "id": "code-fontsize-doc",
+      "statement": "Code's text styling lives in the class attribute `default_paragraph_config` — a dict whose keys include `font`, `font_size`, `line_spacing` and `disable_ligatures` — overridden per instance via the `paragraph_config` argument.",
+      "supporting_passage": "    default_paragraph_config: dict[str, Any] = {\n        \"font\": \"Monospace\",\n        \"font_size\": 24,\n        \"line_spacing\": 0.5,\n        \"disable_ligatures\": True,\n    }",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    default_paragraph_config: dict[str, Any] = {\n        \"font\": \"Monospace\",\n        \"font_size\": 24,\n        \"line_spacing\": 0.5,\n        \"disable_ligatures\": True,\n    }"
+      }
+    },
+    {
       "id": "code-rewrite-doc",
       "statement": "The 0.19 release completely rewrote the implementation of the Code mobject, with several breaking changes to the class's interface.",
       "supporting_passage": "Completely rewrite the implementation of the :class:`.Code` mobject\n   This includes several breaking changes to the interface of the class to make it\n   more consistent.",
@@ -115,6 +150,41 @@
       "grounding": {
         "source": "manim-api-docs",
         "supporting_passage": "    row_labels\n        List of :class:`~.VMobject` representing the labels of each row.\n    col_labels\n        List of :class:`~.VMobject` representing the labels of each column."
+      }
+    },
+    {
+      "id": "table-data-cells-green",
+      "statement": "Mobject cells belong in `MobjectTable`: `MobjectTable([[Text(\"1\"), Text(\"2\")], [Text(\"3\"), Text(\"4\")]], row_labels=[Text(\"R1\"), Text(\"R2\")], col_labels=[Text(\"C1\"), Text(\"C2\")])` renders — plain `Table` data cells stay strings.",
+      "supporting_passage": "manim 0.20.1 renders MobjectTable([[Text(...), ...], ...], row_labels=[Text(...), ...], col_labels=[Text(...), ...]) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/table-data-cells/green"
+      }
+    },
+    {
+      "id": "table-data-cells-red",
+      "statement": "`Table` with `Text(...)` mobjects in the DATA cells — over-applying the labels-are-mobjects rule — does not render: manim 0.20.1 fails with TypeError: sequence item 0: expected str instance, Text found (the default `element_to_mobject`, Paragraph, joins cell content as strings). Labels are mobjects; data cells are strings.",
+      "supporting_passage": "manim 0.20.1 fails the render with: sequence item 0: expected str instance, Text found.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/table-data-cells/red"
+      }
+    },
+    {
+      "id": "table-data-cells-doc",
+      "statement": "Table's `table` parameter is a 2D array or list of lists whose content must be a valid input for the callable set in `element_to_mobject` — the entries are converted by that callable, not placed as mobjects.",
+      "supporting_passage": "    table\n        A 2D array or list of lists. Content of the table has to be a valid input\n        for the callable set in ``element_to_mobject``.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    table\n        A 2D array or list of lists. Content of the table has to be a valid input\n        for the callable set in ``element_to_mobject``."
       }
     },
     {

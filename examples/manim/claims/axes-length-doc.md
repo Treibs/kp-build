@@ -19,7 +19,7 @@ verified:
   match_score: 0.0
   evidence: "    x_length\n        The length of the x-axis.\n    y_length\n     \
     \   The length of the y-axis."
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: manim-api-docs
