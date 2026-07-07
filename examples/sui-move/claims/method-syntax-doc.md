@@ -23,7 +23,7 @@ verified:
     the `public(package)`
 
     visibility modifier to make functions visible to other modules in t'
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: sui-move-reference

@@ -33,7 +33,7 @@ verified:
     as objects. An owner of an
 
     object can pass this object to a function to prove that they ha'
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: sui-move-book

@@ -25,7 +25,7 @@ verified:
   evidence: "A mobject that can be used for tracking (real-valued) parameters.\n \
     \   Useful for animating parameter changes.\n\n    Not meant to be displayed.\
     \  Instead the posit"
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: manim-api-docs

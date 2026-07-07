@@ -26,7 +26,7 @@ verified:
   evidence: PTBs can call any `public` function and any `entry` function, whether
     private (`entry fun f()`), or `public(package)` (`public(package) entry fun f()`).
     Non-ent
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: sui-docs-concepts

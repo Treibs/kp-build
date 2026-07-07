@@ -19,7 +19,7 @@ verified:
   match_score: 0.0
   evidence: "@property\n    def frame_width(self) -> float:\n        \"\"\"Frame width\
     \ in logical units (no flag).\"\"\""
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: manim-api-docs

@@ -19,7 +19,7 @@ verified:
   match_score: 0.0
   evidence: '<b>public</b> <b>native</b> <b>fun</b> <a href="../sui/event.md#sui_event_emit">emit</a>&lt;T:
     <b>copy</b> + drop&gt;(<a href="../sui/event.md#sui_event">event<'
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: sui-framework-docs

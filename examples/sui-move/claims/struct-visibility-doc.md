@@ -24,7 +24,7 @@ verified:
     available visibility modifier
 
     is `public`.'
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: sui-move-reference

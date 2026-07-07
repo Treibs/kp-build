@@ -21,7 +21,7 @@ verified:
   evidence: "    row_labels\n        List of :class:`~.VMobject` representing the\
     \ labels of each row.\n    col_labels\n        List of :class:`~.VMobject` representing\
     \ the labe"
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: manim-api-docs

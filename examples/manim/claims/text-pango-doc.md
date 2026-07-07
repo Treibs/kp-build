@@ -19,7 +19,7 @@ verified:
   match_score: 0.0
   evidence: "class Text(SVGMobject):\n    r\"\"\"Display (non-LaTeX) text rendered\
     \ using `Pango <https://pango.org/>`_."
-  checked: '2026-07-06'
+  checked: '2026-07-07'
 execution: {}
 grounding:
   source: manim-api-docs

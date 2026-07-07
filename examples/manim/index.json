@@ -24,6 +24,27 @@
       "corroborated_by": []
     },
     {
+      "id": "code-fontsize-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "code-fontsize-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "code-fontsize-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
       "id": "code-rewrite-doc",
       "paper": "",
       "type": "finding",
@@ -67,6 +88,27 @@
     },
     {
       "id": "table-labels-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "table-data-cells-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "table-data-cells-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "table-data-cells-doc",
       "paper": "",
       "type": "method",
       "confidence": "high",
