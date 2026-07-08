@@ -1,6 +1,6 @@
 # Round-2 triage
 
-Probe topline: **haiku-4-5 7/15 compile-pass (8 FAIL), sonnet-4-6 15/15 (warnings only)** —
+Probe topline: **haiku-4-5 7/15 compile-pass (8 FAIL), sonnet-4-6 15/15 (no errors; 5 of 15 logs carry warnings)** —
 the same shape as round 1. Full per-error census below uses the subsequent-error counting
 convention from experiment 3 (every `error[...]` in a log is classified, not just the first).
 
@@ -30,7 +30,7 @@ convention from experiment 3 (every `error[...]` in a log is classified, not jus
 | territory | outcome |
 |---|---|
 | 1 module-address-form | **confirmed** — fired exactly when naming was left free (modform-3); 2 of 3 modform tasks still compiled, so the defect is probabilistic, not universal |
-| 2 Option-field `drop` | **confirmed, dominant** — the overwrite shape fired in all 3 tasks (3 hits, 3 answers); the *ignore/destructure* shape from exp-3 did **not** fire here (0 hits) — the taught fix (`option::fill` / extract-first) covers both, doc claim notes the sibling shape |
+| 2 Option-field `drop` | **confirmed, dominant** — the overwrite shape fired in all 3 tasks (3 hits, 3 answers); the *ignore/destructure* shape from exp-3 did **not** fire here (0 hits) — the taught fix (`option::fill` / extract-first) addresses the overwrite shape; the sibling shape is recorded in this ledger only (no pack claim covers it) |
 | 3 `let mut` borrow shape (E04024) | **did not reproduce** — 0 hits in 6 letmut runs; both models now write `let mut` + `&mut` correctly (the pack's let-mut beats appear to hold). letmut-2/3 failed on *different*, previously unrecorded classes — a finding, not a wasted territory |
 | 4 Coin/Balance + composability | **half-confirmed** — W99001 is pervasive (15 hits, both models: the single largest cleanliness lever); W99003 Balance-vs-Coin did **not** reproduce (0 hits — models used `Balance<SUI>` fields unprompted) |
 | 5 `vector::empty` deprecation | **confirmed** — 4 hits, haiku only |

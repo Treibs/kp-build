@@ -18,7 +18,7 @@ buildlogs ANSI-stripped and home-directory-redacted).
 | modform-3 | FAIL E02004 (bare `module fee_splitter {`) | **PASS CLEAN** | no |
 | optiondrop-1 | FAIL E05001 (Option-field overwrite ×1; generic transfer bound ×2) | FAIL E03006 (`create(...): Shop<T>` with no `T` on the function — generic-scoping slip) + E05001 (`public_transfer` on `T: store` without `key` — the recorded `generic-transfer-key-bound` deferral, **2nd occurrence**) | **no** — the answer uses the taught `option::fill` / extract-first idiom throughout; both residual errors are different classes |
 | optiondrop-2 | FAIL E03003 (`use …::{self}`) + E05001 (Option overwrite) | **PASS CLEAN** | no |
-| optiondrop-3 | FAIL E05001 (Option-field overwrite) | FAIL E05001 — but the **destructure-ignore sibling shape** (`gift: _` unpacking a non-`drop` `Option` field), not the taught overwrite; the answer uses `option::fill`/`extract` correctly everywhere else | **no** — taught shape gone; the sibling shape the doc claim mentions (but no fixture teaches) fired |
+| optiondrop-3 | FAIL E05001 (Option-field overwrite) | FAIL E05001 — but the **destructure-ignore sibling shape** (`gift: _` unpacking a non-`drop` `Option` field), not the taught overwrite; the answer uses `option::fill`/`extract` correctly everywhere else | **no** — taught shape gone; the sibling shape recorded at triage (no pack claim or fixture teaches it) fired |
 | letmut-2 | FAIL E03006 (`String::utf8` path form) + E04003 ×4 (`+` on String) | **PASS CLEAN** | no |
 | letmut-3 | FAIL E01002 ×2 (missing `;` after braced `if`/`while` mid-sequence) | **PASS WARN1** (W09004 unnecessary *trailing* semicolon — over-correction untidiness, exit 0) | no |
 | coinlint-1 | FAIL Sui E02009 (`transfer::transfer` on foreign `Coin<SUI>`) | **PASS WARN2** (Lint W99001 + Lint W99003) | no |
@@ -35,8 +35,8 @@ buildlogs ANSI-stripped and home-directory-redacted).
   not just the codes.
 - **Both residual failures were already in the ledger as deferrals/siblings:**
   `generic-transfer-key-bound` (deferred at triage with 1 answer; now ×2 — promoted to the
-  top round-3 candidate) and the Option **destructure-ignore** shape (the exp-3 sibling the
-  round-2 doc claim notes but no fixture teaches — second round-3 candidate). One new one-off:
+  top round-3 candidate) and the Option **destructure-ignore** shape (the exp-3 sibling,
+  recorded in the round ledgers only — no pack claim teaches it; second round-3 candidate). One new one-off:
   the optiondrop-1 generic-scoping slip (E03006, ×1, carelessness-adjacent).
 - **Warning-tier beats are grounding-only and it shows:** Lint W99001 still fires in 2 of 8
   logs (probe: 6 of 15 haiku logs) and W99003 appeared once despite not reproducing in the
