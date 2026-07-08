@@ -79,13 +79,15 @@ measured failures, that move the primary metric.
 | epoch-vesting/kp47 | E02004 invalid 'module' declaration | `module linear_vesting {` — same missing-address form |
 | crowdfund/kp47 | E03003 unbound module member | `use sui::coin::{self, Coin}` — lowercase `self` in a group import: **the exact corner the round-1 `use-self` beat taught.** kp61 passed this task |
 
-**E02004 counterfactual (checked, not part of the gate):** adding the bare module name to
-`[addresses]` in the scaffold's Move.toml does NOT make `module atomic_swap {` compile — E02004
-persists. The failure is the model's declaration form, not a scaffold artifact. The scaffold
+**E02004 counterfactual (checked, not part of the gate — recorded output in
+[`e02004-counterfactual.buildlog`](e02004-counterfactual.buildlog)):** adding the bare module
+name to `[addresses]` in the scaffold's Move.toml does NOT make `module atomic_swap {`
+compile — E02004 persists. The failure is the model's declaration form, not a scaffold artifact. The scaffold
 rule was pre-declared and applied identically to all arms. The pack (either size) does not
 currently teach the module-declaration address form; E02004 appeared only in pack arms here
 (kp47 ×2, kp61 ×1, base ×0) and is recorded as a round-2 beat candidate, prominently, since it
-is the deepened pack's largest residual failure class in this run.
+is the only failure class in this run that appears exclusively in pack arms (by raw error
+count the Option-`drop` family in candidate 2 is larger).
 
 **Taught-beat error-class check (pre-registered):** of the 5 round-1 beats, exactly one taught
 class appears in this run's failures — `use-self` (E03003 lowercase-`self` group import) —
@@ -115,9 +117,14 @@ tied, they are the natural targets if a cleanliness headline is ever wanted.
 ## Round-2 candidates surfaced by this run
 
 1. **module-declaration address form** (E02004, 3 hits, pack arms only) — top priority.
-2. **Option-field mutation requires `drop`** (E05001 shape: assign via `option::fill`/`swap` or
-   extract first; 3 hits across arms — escrow-swap/kp61, escrow-swap/kp47 [subsequent error],
-   english-auction/base — tying E02004's count).
+2. **Option-field `drop` family** — the mutation shape ("Invalid mutation. Mutation requires
+   the 'drop' ability", 3 hits: escrow-swap/kp61, escrow-swap/kp47 [subsequent error],
+   english-auction/base) plus its sibling ignore shape ("Cannot ignore values without the
+   'drop' ability", 4 subsequent-error hits across escrow-swap/base and escrow-swap/kp47).
+   Taken as one family (fix: `option::fill`/`swap` or extract first, never overwrite/discard),
+   it totals 7 errors across 4 logs — more raw occurrences than E02004, though concentrated in
+   fewer answers. The ignore shape is the same class round-1's remeasure already recorded as
+   the "`drop` on discard" residual (`docs/deepening/round-1/remeasure.md`, ownership-2 row).
 3. **W99003 Balance-vs-Coin field idiom** and **W99001 transfer composability** (lint tier).
 
 ## Combined falsification record (experiments 1–3)
