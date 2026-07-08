@@ -77,7 +77,7 @@ measured failures, that move the primary metric.
 | loyalty-points/base | Sui E01001 invalid object construction | constructed a `key` object without a fresh `object::new(ctx)` UID |
 | epoch-vesting/base | E01003 invalid modifier | `struct VestingWallet has key` — missing `public`; the pack's flagship struct-visibility corner, hit by the unaided arm |
 | epoch-vesting/kp47 | E02004 invalid 'module' declaration | `module linear_vesting {` — same missing-address form |
-| crowdfund/kp47 | E03003 unbound module member | `use sui::coin::{self, Coin}` — lowercase `self` in a group import: **the exact corner the round-1 `use-self` beat taught.** kp61 passed this task |
+| crowdfund/kp47 | E03003 unbound module member | `use sui::coin::{self, Coin}` — lowercase `self` in a group import: **the exact corner the round-1 `use-self` beat taught.** (The broken import then cascades into 12 E03006 "unexpected name in this position" follow-on errors in the same log.) kp61 passed this task |
 
 **E02004 counterfactual (checked, not part of the gate — recorded output in
 [`e02004-counterfactual.buildlog`](e02004-counterfactual.buildlog)):** adding the bare module
@@ -86,8 +86,9 @@ compile — E02004 persists. The failure is the model's declaration form, not a 
 rule was pre-declared and applied identically to all arms. The pack (either size) does not
 currently teach the module-declaration address form; E02004 appeared only in pack arms here
 (kp47 ×2, kp61 ×1, base ×0) and is recorded as a round-2 beat candidate, prominently, since it
-is the only failure class in this run that appears exclusively in pack arms (by raw error
-count the Option-`drop` family in candidate 2 is larger).
+is the only failure class in this run that appears in BOTH pack arms and never in base — four
+other classes also never appear in base (E03003, E03006, E04010, E04024) but each is confined
+to kp47 (by raw error count the Option-`drop` family in candidate 2 is larger).
 
 **Taught-beat error-class check (pre-registered):** of the 5 round-1 beats, exactly one taught
 class appears in this run's failures — `use-self` (E03003 lowercase-`self` group import) —
