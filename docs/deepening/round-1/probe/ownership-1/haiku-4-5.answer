@@ -1,0 +1,22 @@
+```move
+module escrow::locker {
+    public struct Locker<T: store> has key, store {
+        id: UID,
+        item: T,
+    }
+
+    public fun lock<T: store>(item: T, ctx: &mut TxContext) {
+        let locker = Locker {
+            id: object::new(ctx),
+            item,
+        };
+        transfer::public_transfer(locker, ctx.sender());
+    }
+
+    public fun unlock<T: store>(locker: Locker<T>, ctx: &mut TxContext) {
+        let Locker { id, item } = locker;
+        object::delete(id);
+        transfer::public_transfer(item, ctx.sender());
+    }
+}
+```

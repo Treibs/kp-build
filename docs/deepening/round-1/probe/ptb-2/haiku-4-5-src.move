@@ -1,0 +1,21 @@
+module merge::merger {
+    use sui::coin::{self, Coin};
+    use sui::sui::SUI;
+
+    const EEmptyVector: u64 = 0;
+
+    public fun merge_and_transfer(
+        coins: vector<Coin<SUI>>,
+        recipient: address,
+    ) {
+        assert!(!coins.is_empty(), EEmptyVector);
+        
+        let mut merged = coins.pop_back();
+        while (!coins.is_empty()) {
+            coin::join(&mut merged, coins.pop_back());
+        };
+        vector::destroy_empty(coins);
+        
+        transfer::public_transfer(merged, recipient);
+    }
+}

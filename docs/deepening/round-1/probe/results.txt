@@ -1,0 +1,30 @@
+dynfields-1    haiku-4-5    PASS CLEAN
+dynfields-1    sonnet-4-6   PASS CLEAN
+dynfields-2    haiku-4-5    PASS CLEAN
+dynfields-2    sonnet-4-6   PASS CLEAN
+dynfields-3    haiku-4-5    FAIL error[E03003]: unbound module member
+dynfields-3    sonnet-4-6   PASS WARN3
+ownership-1    haiku-4-5    FAIL error[E05001]: ability constraint not satisfied
+ownership-1    sonnet-4-6   PASS CLEAN
+ownership-2    haiku-4-5    FAIL error[E05001]: ability constraint not satisfied
+ownership-2    sonnet-4-6   PASS WARN2
+ownership-3    haiku-4-5    PASS WARN1
+ownership-3    sonnet-4-6   PASS CLEAN
+ptb-1          haiku-4-5    PASS CLEAN
+ptb-1          sonnet-4-6   PASS CLEAN
+ptb-2          haiku-4-5    FAIL error[E03003]: unbound module member
+ptb-2          sonnet-4-6   PASS WARN1
+ptb-3          haiku-4-5    FAIL error[E03003]: unbound module member
+ptb-3          sonnet-4-6   PASS WARN1
+security-1     haiku-4-5    FAIL error[E04007]: incompatible types
+security-1     sonnet-4-6   PASS WARN2
+security-2     haiku-4-5    PASS CLEAN
+security-2     sonnet-4-6   PASS WARN1
+security-3     haiku-4-5    PASS WARN1
+security-3     sonnet-4-6   PASS CLEAN
+upgrades-1     haiku-4-5    PASS CLEAN
+upgrades-1     sonnet-4-6   PASS CLEAN
+upgrades-2     haiku-4-5    FAIL error[E03003]: unbound module member
+upgrades-2     sonnet-4-6   PASS WARN1
+upgrades-3     haiku-4-5    FAIL error[E04007]: incompatible types
+upgrades-3     sonnet-4-6   PASS WARN1

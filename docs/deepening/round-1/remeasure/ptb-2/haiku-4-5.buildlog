@@ -1,0 +1,25 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03006]: unexpected name in this position
+  ┌─ ./sources/module.move:7:32
+  │
+2 │     use sui::coin::{Self, Coin};
+  │                           ---- Similarly named defintion found here
+  ·
+7 │         mut coins: vector<Coin<SUI>>,
+  │                                ^^^
+  │                                │
+  │                                Could not resolve the name 'SUI'
+  │                                Did you mean: 'Coin'
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:17:9
+   │
+17 │         transfer::public_transfer(merged, recipient);
+   │         ^^^^^^^^
+   │         │
+   │         Unexpected 'transfer'
+   │         Expected ';'
+
+Failed to build Move modules: Compilation error.

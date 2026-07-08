@@ -1,0 +1,37 @@
+module board::board;
+
+public struct Post has store, drop {
+    text: vector<u8>,
+}
+
+public struct Board has key {
+    id: UID,
+    posts: vector<Post>,
+}
+
+public struct ModCap has key, store {
+    id: UID,
+    board_id: ID,
+}
+
+public fun create(ctx: &mut TxContext) {
+    let board = Board {
+        id: object::new(ctx),
+        posts: vector::empty(),
+    };
+    let cap = ModCap {
+        id: object::new(ctx),
+        board_id: object::id(&board),
+    };
+    transfer::transfer(cap, ctx.sender());
+    transfer::share_object(board);
+}
+
+public fun post(board: &mut Board, text: vector<u8>) {
+    board.posts.push_back(Post { text });
+}
+
+public fun remove_post(cap: &ModCap, board: &mut Board, i: u64) {
+    assert!(cap.board_id == object::id(board));
+    board.posts.remove(i);
+}

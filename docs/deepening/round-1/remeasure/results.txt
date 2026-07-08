@@ -1,0 +1,8 @@
+dynfields-3    haiku-4-5    FAIL error[E04006]: invalid subtype
+ptb-2          haiku-4-5    FAIL error[E03006]: unexpected name in this position
+ptb-3          haiku-4-5    PASS CLEAN
+upgrades-2     haiku-4-5    FAIL error[E04016]: too few arguments
+upgrades-3     haiku-4-5    PASS WARN1
+security-1     haiku-4-5    PASS CLEAN
+ownership-1    haiku-4-5    PASS WARN1
+ownership-2    haiku-4-5    FAIL error[E05001]: ability constraint not satisfied

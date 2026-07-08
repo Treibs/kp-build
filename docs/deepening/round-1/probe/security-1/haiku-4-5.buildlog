@@ -1,0 +1,62 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:21:36
+   │
+21 │         let type_name = type_name::get<T>();
+   │                                    ^^^ The function 'std::type_name::get' is deprecated: Renamed to `with_defining_ids` for clarity.
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:22:18
+    │
+  8 │         registered_types: VecSet<String>,
+    │                                  ------ Expected: 'std::string::String'
+    ·
+ 22 │         assert!(!vec_set::contains(&reg.registered_types, &type_name), EAlreadyRegistered);
+    │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::vec_set::contains'. Invalid argument for parameter 'key'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/type_name.move:172:22
+    │
+172 │ public fun get<T>(): TypeName {
+    │                      -------- Given: 'std::type_name::TypeName'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:23:9
+    │
+  8 │         registered_types: VecSet<String>,
+    │                                  ------ Expected: 'std::string::String'
+    ·
+ 23 │         vec_set::insert(&mut reg.registered_types, type_name);
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::vec_set::insert'. Invalid argument for parameter 'key'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/type_name.move:172:22
+    │
+172 │ public fun get<T>(): TypeName {
+    │                      -------- Given: 'std::type_name::TypeName'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:27:9
+    │
+  8 │         registered_types: VecSet<String>,
+    │                                  ------ Expected: 'std::string::String'
+    ·
+ 27 │         vec_set::contains(&reg.registered_types, &type_name::get<T>())
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::vec_set::contains'. Invalid argument for parameter 'key'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/type_name.move:172:22
+    │
+172 │ public fun get<T>(): TypeName {
+    │                      -------- Given: 'std::type_name::TypeName'
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:27:62
+   │
+27 │         vec_set::contains(&reg.registered_types, &type_name::get<T>())
+   │                                                              ^^^ The function 'std::type_name::get' is deprecated: Renamed to `with_defining_ids` for clarity.
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.

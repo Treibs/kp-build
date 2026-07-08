@@ -1,0 +1,34 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:12:9
+   │
+ 7 │     public fun lock<T: store>(item: T, ctx: &mut TxContext) {
+   │                ---- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+12 │         transfer::public_transfer(locker, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                                 │
+   │         │                                 Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:18:9
+   │
+15 │     public fun unlock<T: store>(locker: Locker<T>, ctx: &mut TxContext) {
+   │                       -                        - The type 'T' does not have the ability 'key'
+   │                       │                         
+   │                       To satisfy the constraint, the 'key' ability would need to be added here
+   ·
+18 │         transfer::public_transfer(item, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/transfer.move:63:31
+   │
+63 │ public fun public_transfer<T: key + store>(obj: T, recipient: address) {
+   │                               --- 'key' constraint declared here
+
+Failed to build Move modules: Compilation error.

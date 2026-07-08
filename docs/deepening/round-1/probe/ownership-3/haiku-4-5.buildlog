@@ -1,0 +1,17 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99002]: potentially unenforceable custom transfer/share/freeze policy
+   ┌─ ./sources/module.move:46:16
+   │
+46 │     public fun publish(config: Config, _cap: &AdminCap) {
+   │                ^^^^^^^ ------ An instance of a module-private type with a 'store' ability to be frozen coming from here
+   │                │        
+   │                Potential unintended implementation of a custom freeze function.
+47 │         transfer::freeze_object(config);
+   │                   ------------- Instances of a type with a 'store' ability can be frozen using the 'public_freeze_object' function which often negates the intent of enforcing a custom freeze policy
+   │
+   = A custom freeze policy for a given type is implemented through calling the private 'freeze_object' function variant in the module defining this type
+   = This warning can be suppressed with '#[allow(lint(custom_state_change))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io

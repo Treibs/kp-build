@@ -1,0 +1,10 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:17:28
+   │
+17 │             names: vector::empty(),
+   │                            ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')

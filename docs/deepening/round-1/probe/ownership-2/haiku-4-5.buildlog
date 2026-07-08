@@ -1,0 +1,36 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+  ┌─ ./sources/module.move:4:16
+  │
+4 │         posts: vector<Post>,
+  │                ^^^^^^^^^^^^
+  │                │      │
+  │                │      The type 'vector<board::board::Post>' can have the ability 'store' but the type argument 'board::board::Post' does not have the required ability 'store'
+  │                Invalid field type. The struct was declared with the ability 'key' so all fields require the ability 'store'
+  │                The type 'vector<board::board::Post>' does not have the ability 'store'
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:19:28
+   │
+19 │             posts: vector::empty(),
+   │                            ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:28:9
+   │
+16 │     public fun create(ctx: &mut TxContext) {
+   │                ------ Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+28 │         transfer::transfer(cap, tx_context::sender(ctx));
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                       │
+   │         │                       Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.
