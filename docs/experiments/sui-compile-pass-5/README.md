@@ -134,7 +134,8 @@ unprompted).
 
 The usage half of the mechanism is still visible in the census: pack arms referenced
 pre-registered surfaces base did not on hash-riddle (base none; kp86 event+balance; kp98
-event+clock) and milestone-contract (base and kp86 none; kp98 event) — but none of that extra
+event+clock), allowance-vault (both pack arms clock; base none — base reached for dynamic
+object fields instead), and milestone-contract (base and kp86 none; kp98 event) — but none of that extra
 surface was where the failures landed, and it did not cost length (mean lines: base 97, kp86
 102, kp98 95). Per the pre-registered method, this draw **does not support** the
 vocabulary-induction hypothesis; experiment 4's 3-of-6 post-hoc fit did not replicate under
@@ -159,7 +160,12 @@ Full census (line count + pre-registered surfaces referenced, per task × arm):
   this; the rule was loaded and ignored. In experiment 4 this lint was at 0 hits in all 18 logs.
 - `Lint W99003` (Coin field where Balance fits): 5 hits, all in failing logs (hash-riddle
   base/kp98, milestone-contract all three arms' failing rows) — no effect on the secondary.
-- `W04037` ×2 (allowance-vault/base), `W09002` unused-variable ×3 — failing logs only.
+- `W04037` ×2 (allowance-vault/base), `W09002` unused-variable ×3 — failing logs only. The
+  W04037 hits are the `exists_` → `exists` deprecation, the class the round-1
+  `dynamic-field-exists` grounding beat teaches, firing in the *no-pack* arm (both pack arms
+  avoided dynamic fields on this task entirely; the beat pins `dynamic_field`, this answer
+  used `dynamic_object_field`, so fixture-rule-scope credit is arguable — recorded, not
+  claimed).
 
 ## Round-4 candidates recorded by this experiment
 
@@ -198,7 +204,8 @@ Full census (line count + pre-registered surfaces referenced, per task × arm):
 The honest cumulative reading: the pack's held-out wins remain exp 2's cleanliness claim
 (sonnet) and exp 3's compile-pass doubling (haiku, round-1 delta). Since then, two rounds of
 growth (61 → 86 → 98 claims) have produced two consecutive no-headline experiments: held-out
-compile-pass for the pack arms has sat at 3/6 across three different draws, and the newest
+compile-pass for the pack arms has sat at 3/6 across two consecutive task draws (four
+pack-arm measurements over three pack versions: kp61, kp86 twice, kp98), and the newest
 round cost cleanliness through ignored loaded warnings. The failure mass has moved twice —
 exp 4 said it was import-path and API-existence slips; exp 5 says it is (a) rules the payload
 already contains being ignored at answer time, and (b) the untaught SUI-import and Rust-bleed
