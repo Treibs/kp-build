@@ -1,0 +1,76 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01003]: invalid modifier
+  ┌─ ./sources/module.move:9:5
+  │
+9 │     struct MilestoneContract has key {
+  │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+  │
+  = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:15:18
+   │
+15 │         balance: Coin<SUI>,
+   │                  ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:59:35
+   │
+15 │         balance: Coin<SUI>,
+   │                  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'copy'
+   ·
+59 │         transfer::public_transfer(contract.balance, contract.client);
+   │                                   ^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'balance' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:59:69
+   │
+ 9 │     struct MilestoneContract has key {
+   │            ----------------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+53 │         contract: MilestoneContract,
+   │         --------  ----------------- The type 'milestone_payments::contract::MilestoneContract' does not have the ability 'drop'
+   │         │          
+   │         The parameter 'contract' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+59 │         transfer::public_transfer(contract.balance, contract.client);
+   │                                                                     ^ Invalid return
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:69:35
+   │
+15 │         balance: Coin<SUI>,
+   │                  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'copy'
+   ·
+69 │         transfer::public_transfer(contract.balance, contract.client);
+   │                                   ^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'balance' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:69:69
+   │
+ 9 │     struct MilestoneContract has key {
+   │            ----------------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+63 │         contract: MilestoneContract,
+   │         --------  ----------------- The type 'milestone_payments::contract::MilestoneContract' does not have the ability 'drop'
+   │         │          
+   │         The parameter 'contract' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+69 │         transfer::public_transfer(contract.balance, contract.client);
+   │                                                                     ^ Invalid return
+
+Failed to build Move modules: Compilation error.

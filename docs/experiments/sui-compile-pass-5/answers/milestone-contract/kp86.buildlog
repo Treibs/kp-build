@@ -1,0 +1,54 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:21
+  │
+2 │     use sui::coin::{self, Coin};
+  │                     ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:5:23
+  │
+5 │     use sui::object::{self, UID};
+  │                       ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::object'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:5:13
+  │
+5 │ module sui::object;
+  │             ------ Module 'sui::object' declared here
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:14:16
+   │
+14 │         funds: Coin<SUI>,
+   │                ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:60:13
+   │
+60 │         let milestone_amount = *vector::borrow(&milestones, current_milestone);
+   │             ^^^^^^^^^^^^^^^^ Unused local variable 'milestone_amount'. Consider removing or prefixing with an underscore: '_milestone_amount'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:61:23
+   │
+ 2 │     use sui::coin::{self, Coin};
+   │                           ---- Similarly named defintion found here
+   ·
+61 │         let payment = coin::split(&mut funds, milestone_amount, ctx);
+   │                       ^^^^
+   │                       │
+   │                       Could not resolve the name 'coin'
+   │                       Did you mean: 'Coin'
+
+Failed to build Move modules: Compilation error.

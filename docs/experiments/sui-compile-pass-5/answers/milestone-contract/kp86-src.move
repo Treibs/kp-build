@@ -1,0 +1,93 @@
+module milestone::payment {
+    use sui::coin::{self, Coin};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::object::{self, UID};
+    use std::vector;
+
+    public struct MilestoneContract has key, store {
+        id: UID,
+        client: address,
+        worker: address,
+        milestones: vector<u64>,
+        current_milestone: u64,
+        funds: Coin<SUI>,
+    }
+
+    public fun create_contract(
+        worker: address,
+        milestones: vector<u64>,
+        funds: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): MilestoneContract {
+        let client = ctx.sender();
+        
+        let mut total = 0u64;
+        let mut i = 0;
+        while (i < vector::length(&milestones)) {
+            total = total + *vector::borrow(&milestones, i);
+            i = i + 1;
+        };
+        
+        assert!(funds.value() == total, 0);
+        
+        MilestoneContract {
+            id: object::new(ctx),
+            client,
+            worker,
+            milestones,
+            current_milestone: 0,
+            funds,
+        }
+    }
+
+    public fun approve_milestone(
+        contract: MilestoneContract,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == contract.client, 0);
+        assert!(contract.current_milestone < vector::length(&contract.milestones), 0);
+        
+        let MilestoneContract {
+            id,
+            client,
+            worker,
+            milestones,
+            current_milestone,
+            mut funds,
+        } = contract;
+        
+        let milestone_amount = *vector::borrow(&milestones, current_milestone);
+        let payment = coin::split(&mut funds, milestone_amount, ctx);
+        
+        transfer::public_transfer(payment, worker);
+        
+        let new_milestone = current_milestone + 1;
+        
+        if (new_milestone == vector::length(&milestones)) {
+            object::delete(id);
+        } else {
+            let updated = MilestoneContract {
+                id,
+                client,
+                worker,
+                milestones,
+                current_milestone: new_milestone,
+                funds,
+            };
+            transfer::public_transfer(updated, client);
+        }
+    }
+
+    public fun cancel_contract(
+        contract: MilestoneContract,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == contract.client, 0);
+        
+        let MilestoneContract { id, client, funds, .. } = contract;
+        
+        transfer::public_transfer(funds, client);
+        object::delete(id);
+    }
+}

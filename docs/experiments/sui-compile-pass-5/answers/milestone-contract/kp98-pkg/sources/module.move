@@ -1,0 +1,114 @@
+module milestone_payments::milestone {
+    use sui::coin::{Coin, split, value};
+    use sui::sui::SUI;
+    use sui::event;
+
+    public struct Contract has key, store {
+        id: UID,
+        client: address,
+        worker: address,
+        milestones: vector<u64>,
+        paid_balance: Coin<SUI>,
+        current_milestone_index: u64,
+    }
+
+    public struct MilestoneApproved has copy, drop {
+        milestone_index: u64,
+        amount: u64,
+    }
+
+    public struct ContractCancelled has copy, drop {
+        returned_amount: u64,
+    }
+
+    public struct ContractCompleted has copy, drop {
+    }
+
+    public fun create(
+        worker: address,
+        milestones: vector<u64>,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Contract {
+        let mut total_amount = 0u64;
+        let mut i = 0;
+        while (i < milestones.len()) {
+            total_amount = total_amount + *milestones.get(i);
+            i = i + 1;
+        };
+
+        assert!(value(&payment) == total_amount, 0);
+        assert!(milestones.len() > 0, 1);
+
+        Contract {
+            id: object::new(ctx),
+            client: ctx.sender(),
+            worker,
+            milestones,
+            paid_balance: payment,
+            current_milestone_index: 0,
+        }
+    }
+
+    public fun approve_milestone(
+        mut contract: Contract,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == contract.client, 2);
+        assert!(contract.current_milestone_index < contract.milestones.len(), 3);
+
+        let milestone_amount = *contract.milestones.get(contract.current_milestone_index);
+        let payment = split(&mut contract.paid_balance, milestone_amount, ctx);
+
+        transfer::public_transfer(payment, contract.worker);
+
+        let client_addr = contract.client;
+        contract.current_milestone_index = contract.current_milestone_index + 1;
+
+        event::emit(MilestoneApproved {
+            milestone_index: contract.current_milestone_index - 1,
+            amount: milestone_amount,
+        });
+
+        if (contract.current_milestone_index == contract.milestones.len()) {
+            let Contract {
+                id,
+                client: _,
+                worker: _,
+                milestones: _,
+                paid_balance,
+                current_milestone_index: _,
+            } = contract;
+
+            assert!(value(&paid_balance) == 0, 4);
+            transfer::public_transfer(paid_balance, client_addr);
+            object::delete(id);
+            event::emit(ContractCompleted {});
+        } else {
+            transfer::transfer(contract, client_addr);
+        };
+    }
+
+    public fun cancel(
+        contract: Contract,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == contract.client, 5);
+
+        let returned_amount = value(&contract.paid_balance);
+
+        let Contract {
+            id,
+            client,
+            worker: _,
+            milestones: _,
+            paid_balance,
+            current_milestone_index: _,
+        } = contract;
+
+        transfer::public_transfer(paid_balance, client);
+        object::delete(id);
+
+        event::emit(ContractCancelled { returned_amount });
+    }
+}

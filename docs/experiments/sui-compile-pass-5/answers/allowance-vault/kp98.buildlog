@@ -1,0 +1,76 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:23:26
+   │
+ 3 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+23 │         balance: Balance<SUI>,
+   │                          ^^^
+   │                          │
+   │                          Could not resolve the name 'SUI'
+   │                          Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:40:54
+   │
+ 3 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+40 │     public fun deposit(vault: &mut Vault, coin: Coin<SUI>) {
+   │                                                      ^^^
+   │                                                      │
+   │                                                      Could not resolve the name 'SUI'
+   │                                                      Did you mean: 'Coin'
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:60:17
+   │
+14 │     public struct Allowance has store {
+   │                   --------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+24 │         allowance: Option<Allowance>,
+   │                           --------- The type 'vault::vault::Allowance' does not have the ability 'drop'
+   ·
+60 │             let _ = option::extract(&mut vault.allowance);
+   │                 ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:67:17
+   │
+14 │     public struct Allowance has store {
+   │                   --------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+24 │         allowance: Option<Allowance>,
+   │                           --------- The type 'vault::vault::Allowance' does not have the ability 'drop'
+   ·
+67 │             let _ = option::extract(&mut vault.allowance);
+   │                 ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:76:13
+   │
+ 3 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+76 │     ): Coin<SUI> {
+   │             ^^^
+   │             │
+   │             Could not resolve the name 'SUI'
+   │             Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:86:13
+   │
+ 3 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+86 │     ): Coin<SUI> {
+   │             ^^^
+   │             │
+   │             Could not resolve the name 'SUI'
+   │             Did you mean: 'Coin'
+
+Failed to build Move modules: Compilation error.

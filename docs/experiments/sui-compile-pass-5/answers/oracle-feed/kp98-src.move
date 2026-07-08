@@ -1,0 +1,46 @@
+module price_feed::feed {
+    public struct PriceUpdate has copy, drop {
+        price: u128,
+        epoch: u64,
+    }
+
+    public struct Feed has key, store {
+        id: UID,
+        price: u128,
+        epoch: u64,
+    }
+
+    public struct PublisherCap has key, store {
+        id: UID,
+    }
+
+    public fun create(ctx: &mut TxContext) {
+        let feed = Feed {
+            id: object::new(ctx),
+            price: 0,
+            epoch: 0,
+        };
+        let cap = PublisherCap {
+            id: object::new(ctx),
+        };
+        
+        transfer::share_object(feed);
+        transfer::public_transfer(cap, sui::tx_context::sender(ctx));
+    }
+
+    public fun post_price(feed: &mut Feed, _cap: &PublisherCap, price: u128, epoch: u64) {
+        feed.price = price;
+        feed.epoch = epoch;
+        sui::event::emit(PriceUpdate { price, epoch });
+    }
+
+    public fun read_price(feed: &Feed, current_epoch: u64, max_age: u64): u128 {
+        let age = current_epoch - feed.epoch;
+        assert!(age <= max_age);
+        feed.price
+    }
+
+    public fun read_price_unchecked(feed: &Feed): (u128, u64) {
+        (feed.price, feed.epoch)
+    }
+}

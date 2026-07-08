@@ -1,0 +1,63 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:27
+  │
+3 │     use sui::coin::{Coin, SUI, Self};
+  │                           ^^^ Invalid 'use'. Unbound member 'SUI' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:13:24
+   │
+ 6 │     use sui::object::{Self, UID, ID};
+   │                                  -- Similarly named defintion found here
+   ·
+13 │         prize: Balance<SUI>,
+   │                        ^^^
+   │                        │
+   │                        Could not resolve the name 'SUI'
+   │                        Did you mean: 'ID'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:39:21
+   │
+ 6 │     use sui::object::{Self, UID, ID};
+   │                                  -- Similarly named defintion found here
+   ·
+39 │         prize: Coin<SUI>,
+   │                     ^^^
+   │                     │
+   │                     Could not resolve the name 'SUI'
+   │                     Did you mean: 'ID'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:70:13
+   │
+ 6 │     use sui::object::{Self, UID, ID};
+   │                                  -- Similarly named defintion found here
+   ·
+70 │     ): Coin<SUI> {
+   │             ^^^
+   │             │
+   │             Could not resolve the name 'SUI'
+   │             Did you mean: 'ID'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:101:13
+    │
+  6 │     use sui::object::{Self, UID, ID};
+    │                                  -- Similarly named defintion found here
+    ·
+101 │     ): Coin<SUI> {
+    │             ^^^
+    │             │
+    │             Could not resolve the name 'SUI'
+    │             Did you mean: 'ID'
+
+Failed to build Move modules: Compilation error.

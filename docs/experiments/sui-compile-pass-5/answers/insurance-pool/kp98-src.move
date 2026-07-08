@@ -1,0 +1,102 @@
+module insurance_pool::pool {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+
+    public struct InsurancePool has key {
+        id: UID,
+        reserves: Balance<SUI>,
+        min_premium: u64,
+        float_amount: u64,
+    }
+
+    public struct AdjusterCap has key, store {
+        id: UID,
+    }
+
+    public struct Policy has key, store {
+        id: UID,
+        holder: address,
+        coverage: u64,
+    }
+
+    public fun create_pool(
+        min_premium: u64,
+        float_amount: u64,
+        ctx: &mut TxContext,
+    ) {
+        let pool = InsurancePool {
+            id: object::new(ctx),
+            reserves: balance::zero(),
+            min_premium,
+            float_amount,
+        };
+        
+        let cap = AdjusterCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(pool);
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun buy_policy(
+        pool: &mut InsurancePool,
+        premium: Coin<SUI>,
+        coverage: u64,
+        ctx: &mut TxContext,
+    ): Policy {
+        let premium_value = coin::value(&premium);
+        assert!(premium_value >= pool.min_premium, 1);
+        
+        let premium_balance = coin::into_balance(premium);
+        balance::join(&mut pool.reserves, premium_balance);
+        
+        Policy {
+            id: object::new(ctx),
+            holder: ctx.sender(),
+            coverage,
+        }
+    }
+
+    public fun approve_claim(
+        pool: &mut InsurancePool,
+        policy: Policy,
+        payout_amount: u64,
+        _cap: &AdjusterCap,
+        ctx: &mut TxContext,
+    ) {
+        let Policy { id, holder, coverage } = policy;
+        object::delete(id);
+        
+        let actual_payout = if (payout_amount > coverage) { coverage } else { payout_amount };
+        let reserves_amount = balance::value(&pool.reserves);
+        assert!(actual_payout <= reserves_amount, 2);
+        
+        let payout_balance = balance::split(&mut pool.reserves, actual_payout);
+        let payout_coin = coin::from_balance(payout_balance, ctx);
+        transfer::public_transfer(payout_coin, holder);
+    }
+
+    public fun withdraw_reserves(
+        pool: &mut InsurancePool,
+        amount: u64,
+        _cap: &AdjusterCap,
+        ctx: &mut TxContext,
+    ) {
+        let reserves_amount = balance::value(&pool.reserves);
+        let available = if (reserves_amount > pool.float_amount) {
+            reserves_amount - pool.float_amount
+        } else {
+            0
+        };
+        assert!(amount <= available, 3);
+        
+        let withdrawal_balance = balance::split(&mut pool.reserves, amount);
+        let withdrawal_coin = coin::from_balance(withdrawal_balance, ctx);
+        transfer::public_transfer(withdrawal_coin, ctx.sender());
+    }
+}

@@ -1,0 +1,63 @@
+```move
+module price_feed::feed {
+    use sui::event;
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+
+    public struct PublisherCap has key {
+        id: UID,
+    }
+
+    public struct PriceFeed has key {
+        id: UID,
+        price: u64,
+        epoch: u64,
+    }
+
+    public struct PriceUpdated has copy, drop {
+        price: u64,
+        epoch: u64,
+    }
+
+    public fun create_feed(ctx: &mut TxContext) {
+        let feed = PriceFeed {
+            id: object::new(ctx),
+            price: 0,
+            epoch: 0,
+        };
+        
+        let cap = PublisherCap {
+            id: object::new(ctx),
+        };
+        
+        transfer::share_object(feed);
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public fun post_price(
+        feed: &mut PriceFeed,
+        _cap: &PublisherCap,
+        price: u64,
+        epoch: u64,
+    ) {
+        feed.price = price;
+        feed.epoch = epoch;
+        
+        event::emit(PriceUpdated { price, epoch });
+    }
+
+    public fun read_price(
+        feed: &PriceFeed,
+        max_age: u64,
+        current_epoch: u64,
+    ): u64 {
+        assert!(current_epoch - feed.epoch <= max_age, 1);
+        feed.price
+    }
+
+    public fun read_price_raw(feed: &PriceFeed): (u64, u64) {
+        (feed.price, feed.epoch)
+    }
+}
+```

@@ -1,0 +1,73 @@
+```move
+module milestone_payments::contract {
+    use sui::coin::{Coin, split};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use std::vector;
+    
+    struct MilestoneContract has key {
+        id: UID,
+        client: address,
+        worker: address,
+        milestones: vector<u64>,
+        current_milestone: u64,
+        balance: Coin<SUI>,
+    }
+    
+    public fun create_contract(
+        worker: address,
+        milestones: vector<u64>,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext
+    ) {
+        let client = tx_context::sender(ctx);
+        
+        let contract = MilestoneContract {
+            id: object::new(ctx),
+            client,
+            worker,
+            milestones,
+            current_milestone: 0,
+            balance: payment,
+        };
+        
+        transfer::transfer(contract, client);
+    }
+    
+    public fun approve_milestone(
+        contract: &mut MilestoneContract,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == contract.client, 1);
+        assert!(contract.current_milestone < vector::length(&contract.milestones), 2);
+        
+        let amount = *vector::borrow(&contract.milestones, contract.current_milestone);
+        let payment = split(&mut contract.balance, amount, ctx);
+        
+        transfer::public_transfer(payment, contract.worker);
+        contract.current_milestone = contract.current_milestone + 1;
+    }
+    
+    public fun finalize_contract(
+        contract: MilestoneContract,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == contract.client, 1);
+        assert!(contract.current_milestone == vector::length(&contract.milestones), 3);
+        
+        transfer::public_transfer(contract.balance, contract.client);
+    }
+    
+    public fun cancel_contract(
+        contract: MilestoneContract,
+        ctx: &mut TxContext
+    ) {
+        assert!(tx_context::sender(ctx) == contract.client, 1);
+        assert!(contract.current_milestone < vector::length(&contract.milestones), 4);
+        
+        transfer::public_transfer(contract.balance, contract.client);
+    }
+}
+```

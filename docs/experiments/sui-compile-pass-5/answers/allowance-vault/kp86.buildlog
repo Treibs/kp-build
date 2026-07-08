@@ -1,0 +1,78 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:28:29
+   │
+28 │     public fun create_vault(coin: Coin<SUI>, ctx: &mut TxContext) -> OwnerCap {
+   │                             ^^^^ Unused parameter 'coin'. Consider removing or prefixing with an underscore: '_coin'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:28:46
+   │
+28 │     public fun create_vault(coin: Coin<SUI>, ctx: &mut TxContext) -> OwnerCap {
+   │                                              ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:28:67
+   │
+28 │     public fun create_vault(coin: Coin<SUI>, ctx: &mut TxContext) -> OwnerCap {
+   │                                                                   ^^
+   │                                                                   │
+   │                                                                   Unexpected '->'
+   │                                                                   Expected '{'
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:42:5
+   │
+28 │     public fun create_vault(coin: Coin<SUI>, ctx: &mut TxContext) -> OwnerCap {
+   │                             ----  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'drop'
+   │                             │      
+   │                             The parameter 'coin' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+42 │     public fun set_allowance(
+   │     ^^^^^^ Invalid return
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'drop' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:56:9
+   │
+13 │         allowance: Option<Allowance>,
+   │                    -----------------
+   │                    │      │
+   │                    │      The type 'std::option::Option<0x0::vault::Allowance>' can have the ability 'drop' but the type argument '0x0::vault::Allowance' does not have the required ability 'drop'
+   │                    The type 'std::option::Option<0x0::vault::Allowance>' does not have the ability 'drop'
+   ·
+56 │         vault.allowance = option::some(allowance);
+   │         ^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:61:9
+   │
+13 │         allowance: Option<Allowance>,
+   │                    -----------------
+   │                    │      │
+   │                    │      The type 'std::option::Option<0x0::vault::Allowance>' can have the ability 'drop' but the type argument '0x0::vault::Allowance' does not have the required ability 'drop'
+   │                    The type 'std::option::Option<0x0::vault::Allowance>' does not have the ability 'drop'
+   ·
+61 │         vault.allowance = option::none();
+   │         ^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:79:9
+   │
+79 │         assert!(allowance.spent_this_epoch + amount <= allowance.per_epoch_limit);
+   │         ^^^^^^
+   │         │
+   │         Unexpected 'assert'
+   │         Expected ';'
+
+Failed to build Move modules: Compilation error.
