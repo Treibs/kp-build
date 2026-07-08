@@ -1,0 +1,113 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:56:35
+   │
+56 │         if (dynamic_object_field::exists_(&vault.id, 0u8)) {
+   │                                   ^^^^^^^ The function 'sui::dynamic_object_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:57:17
+   │
+20 │     public struct Allowance has store {
+   │                   --------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+57 │             let _: Allowance = dynamic_object_field::remove(&mut vault.id, 0u8);
+   │                 ^  --------- The type 'vault::delegated_vault::Allowance' does not have the ability 'drop'
+   │                 │   
+   │                 Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:57:32
+   │
+20 │     public struct Allowance has store {
+   │                   --------- To satisfy the constraint, the 'key' ability would need to be added here
+   ·
+57 │             let _: Allowance = dynamic_object_field::remove(&mut vault.id, 0u8);
+   │                    ---------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │                    │            
+   │                    The type 'vault::delegated_vault::Allowance' does not have the ability 'key'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move:59:53
+   │
+59 │ public fun remove<Name: copy + drop + store, Value: key + store>(
+   │                                                     --- 'key' constraint declared here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:60:9
+   │  
+20 │       public struct Allowance has store {
+   │                     --------- To satisfy the constraint, the 'key' ability would need to be added here
+   ·  
+49 │           let allowance = Allowance {
+   │ ╭─────────────────────────'
+50 │ │             spender,
+51 │ │             per_epoch_limit,
+52 │ │             current_epoch: epoch(ctx),
+53 │ │             spent_this_epoch: 0,
+54 │ │         };
+   │ ╰─────────' The type 'vault::delegated_vault::Allowance' does not have the ability 'key'
+   · │
+60 │           dynamic_object_field::add(&mut vault.id, 0u8, allowance);
+   │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │  
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move:26:50
+   │
+26 │ public fun add<Name: copy + drop + store, Value: key + store>(
+   │                                                  --- 'key' constraint declared here
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:69:35
+   │
+69 │         if (dynamic_object_field::exists_(&vault.id, 0u8)) {
+   │                                   ^^^^^^^ The function 'sui::dynamic_object_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:70:17
+   │
+20 │     public struct Allowance has store {
+   │                   --------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+70 │             let _: Allowance = dynamic_object_field::remove(&mut vault.id, 0u8);
+   │                 ^  --------- The type 'vault::delegated_vault::Allowance' does not have the ability 'drop'
+   │                 │   
+   │                 Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:70:32
+   │
+20 │     public struct Allowance has store {
+   │                   --------- To satisfy the constraint, the 'key' ability would need to be added here
+   ·
+70 │             let _: Allowance = dynamic_object_field::remove(&mut vault.id, 0u8);
+   │                    ---------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │                    │            
+   │                    The type 'vault::delegated_vault::Allowance' does not have the ability 'key'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move:59:53
+   │
+59 │ public fun remove<Name: copy + drop + store, Value: key + store>(
+   │                                                     --- 'key' constraint declared here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:79:41
+   │
+20 │     public struct Allowance has store {
+   │                   --------- To satisfy the constraint, the 'key' ability would need to be added here
+   ·
+79 │         let allowance: &mut Allowance = dynamic_object_field::borrow_mut(&mut vault.id, 0u8);
+   │                             ---------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │                             │            
+   │                             The type 'vault::delegated_vault::Allowance' does not have the ability 'key'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move:47:57
+   │
+47 │ public fun borrow_mut<Name: copy + drop + store, Value: key + store>(
+   │                                                         --- 'key' constraint declared here
+
+Failed to build Move modules: Compilation error.

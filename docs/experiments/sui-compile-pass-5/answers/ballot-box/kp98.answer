@@ -1,0 +1,93 @@
+```move
+module ballot::ballot {
+    use std::string::String;
+    use std::vector;
+    use sui::table::{Self, Table};
+    use sui::tx_context::TxContext;
+
+    public struct Ballot has key {
+        id: UID,
+        question: String,
+        options: vector<String>,
+        vote_counts: vector<u64>,
+        voters: Table<address, bool>,
+        closed: bool,
+    }
+
+    public struct BallotCloseCap has key, store {
+        id: UID,
+        ballot_id: ID,
+    }
+
+    public fun create_ballot(
+        question: String,
+        options: vector<String>,
+        ctx: &mut TxContext,
+    ): BallotCloseCap {
+        let ballot_id = object::new(ctx);
+        let ballot_id_copy = object::uid_to_inner(&ballot_id);
+        
+        let mut vote_counts = vector[];
+        let mut i = 0;
+        while (i < vector::length(&options)) {
+            vector::push_back(&mut vote_counts, 0u64);
+            i = i + 1;
+        };
+
+        let ballot = Ballot {
+            id: ballot_id,
+            question,
+            options,
+            vote_counts,
+            voters: table::new(ctx),
+            closed: false,
+        };
+
+        transfer::share_object(ballot);
+
+        BallotCloseCap {
+            id: object::new(ctx),
+            ballot_id: ballot_id_copy,
+        }
+    }
+
+    public fun vote(ballot: &mut Ballot, option_index: u64, ctx: &TxContext) {
+        assert!(!ballot.closed, 1);
+        assert!(option_index < vector::length(&ballot.options), 2);
+        
+        let voter = ctx.sender();
+        assert!(!table::contains(&ballot.voters, voter), 3);
+
+        table::add(&mut ballot.voters, voter, true);
+        let count = vector::borrow_mut(&mut ballot.vote_counts, option_index);
+        *count = *count + 1;
+    }
+
+    public fun get_vote_count(ballot: &Ballot, option_index: u64): u64 {
+        assert!(option_index < vector::length(&ballot.options), 2);
+        *vector::borrow(&ballot.vote_counts, option_index)
+    }
+
+    public fun get_leading_option(ballot: &Ballot): u64 {
+        let mut max_count = 0u64;
+        let mut max_index = 0u64;
+        let mut i = 0;
+        
+        while (i < vector::length(&ballot.vote_counts)) {
+            let count = *vector::borrow(&ballot.vote_counts, i);
+            if (count > max_count) {
+                max_count = count;
+                max_index = i;
+            };
+            i = i + 1;
+        };
+
+        max_index
+    }
+
+    public fun close_ballot(ballot: &mut Ballot, cap: &BallotCloseCap) {
+        assert!(cap.ballot_id == object::uid_to_inner(&ballot.id), 4);
+        ballot.closed = true;
+    }
+}
+```

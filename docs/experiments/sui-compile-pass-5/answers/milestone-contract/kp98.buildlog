@@ -1,0 +1,66 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:11:23
+   │
+11 │         paid_balance: Coin<SUI>,
+   │                       ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:35:20
+   │
+35 │         while (i < milestones.len()) {
+   │                    ^^^^^^^^^^^^^^^^
+   │                    │          │
+   │                    │          No local 'use fun' alias was found for 'vector<u64>.len', and no function 'len' was found in the defining module 'std::vector'
+   │                    Invalid method call. No known method 'len' on type 'vector<u64>'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:36:44
+   │
+36 │             total_amount = total_amount + *milestones.get(i);
+   │                                            ^^^^^^^^^^^^^^^^^
+   │                                            │          │
+   │                                            │          No local 'use fun' alias was found for 'vector<u64>.get', and no function 'get' was found in the defining module 'std::vector'
+   │                                            Invalid method call. No known method 'get' on type 'vector<u64>'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:41:17
+   │
+41 │         assert!(milestones.len() > 0, 1);
+   │                 ^^^^^^^^^^^^^^^^
+   │                 │          │
+   │                 │          No local 'use fun' alias was found for 'vector<u64>.len', and no function 'len' was found in the defining module 'std::vector'
+   │                 Invalid method call. No known method 'len' on type 'vector<u64>'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:58:52
+   │
+58 │         assert!(contract.current_milestone_index < contract.milestones.len(), 3);
+   │                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                                                    │                   │
+   │                                                    │                   No local 'use fun' alias was found for 'vector<u64>.len', and no function 'len' was found in the defining module 'std::vector'
+   │                                                    Invalid method call. No known method 'len' on type 'vector<u64>'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:60:33
+   │
+60 │         let milestone_amount = *contract.milestones.get(contract.current_milestone_index);
+   │                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                                 │                   │
+   │                                 │                   No local 'use fun' alias was found for 'vector<u64>.get', and no function 'get' was found in the defining module 'std::vector'
+   │                                 Invalid method call. No known method 'get' on type 'vector<u64>'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:73:49
+   │
+73 │         if (contract.current_milestone_index == contract.milestones.len()) {
+   │                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                                                 │                   │
+   │                                                 │                   No local 'use fun' alias was found for 'vector<u64>.len', and no function 'len' was found in the defining module 'std::vector'
+   │                                                 Invalid method call. No known method 'len' on type 'vector<u64>'
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,40 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:20:16
+   │
+20 │         prize: Coin<SUI>,
+   │                ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:42:27
+   │
+42 │         let answer_hash = hash::sha2_256(&answer);
+   │                           ^^^^^^^^^^^^^^^^^^^^^^^
+   │                           │              │
+   │                           │              Given: '&vector<u8>'
+   │                           Invalid call of 'std::hash::sha2_256'. Invalid argument for parameter 'data'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/hash.move:10:34
+   │
+10 │ public native fun sha2_256(data: vector<u8>): vector<u8>;
+   │                                  ---------- Expected: 'vector<u8>'
+
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:59:30
+   │
+59 │         let submitted_hash = hash::sha2_256(&submitted_answer);
+   │                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                              │              │
+   │                              │              Given: '&vector<u8>'
+   │                              Invalid call of 'std::hash::sha2_256'. Invalid argument for parameter 'data'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/hash.move:10:34
+   │
+10 │ public native fun sha2_256(data: vector<u8>): vector<u8>;
+   │                                  ---------- Expected: 'vector<u8>'
+
+Failed to build Move modules: Compilation error.
