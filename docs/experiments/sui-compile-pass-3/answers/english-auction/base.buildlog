@@ -1,0 +1,16 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:67:9
+   │
+20 │         highest_bid_coin: Option<Coin<SUI>>,
+   │                           -----------------
+   │                           │      │
+   │                           │      The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+   │                           The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+   ·
+67 │         auction.highest_bid_coin = option::some(coin);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+Failed to build Move modules: Compilation error.

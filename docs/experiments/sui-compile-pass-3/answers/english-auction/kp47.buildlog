@@ -1,0 +1,13 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:42:28
+   │
+39 │         let auction_id = object::new(ctx);
+   │             ---------- To use the variable mutably, it must be declared 'mut', e.g. 'mut auction_id'
+   ·
+42 │         dynamic_field::add(&mut auction_id, b"artifact", artifact);
+   │                            ^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'auction_id'
+
+Failed to build Move modules: Compilation error.

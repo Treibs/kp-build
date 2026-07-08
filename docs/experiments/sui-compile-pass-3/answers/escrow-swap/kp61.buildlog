@@ -1,0 +1,16 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:35:9
+   │
+11 │         item_b: Option<U>,
+   │                 --------- The type 'std::option::Option<U>' does not have the ability 'drop'
+   ·
+29 │         escrow: &mut Escrow<T, U>,
+   │                                - The type 'std::option::Option<U>' can have the ability 'drop' but the type argument 'U' does not have the required ability 'drop'
+   ·
+35 │         escrow.item_b = option::some(item_b);
+   │         ^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+Failed to build Move modules: Compilation error.

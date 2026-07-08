@@ -1,0 +1,110 @@
+```move
+module auction::auction {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::dynamic_field;
+    use sui::event;
+    use std::option::{Self, Option};
+
+    public struct Artifact has key, store {
+        id: UID,
+        name: vector<u8>,
+    }
+
+    public struct Auction has key {
+        id: UID,
+        seller: address,
+        min_bid: u64,
+        highest_bidder: Option<address>,
+        highest_bid: u64,
+        closed: bool,
+    }
+
+    public struct BidPlaced has copy, drop {
+        auction_id: ID,
+        bidder: address,
+        amount: u64,
+    }
+
+    public struct AuctionSettled has copy, drop {
+        auction_id: ID,
+        winner: Option<address>,
+        final_bid: u64,
+    }
+
+    public fun start_auction(
+        artifact: Artifact,
+        min_bid: u64,
+        ctx: &mut TxContext,
+    ) {
+        let mut auction = Auction {
+            id: object::new(ctx),
+            seller: ctx.sender(),
+            min_bid,
+            highest_bidder: option::none(),
+            highest_bid: 0,
+            closed: false,
+        };
+        
+        dynamic_field::add(&mut auction.id, b"artifact", artifact);
+        transfer::share_object(auction);
+    }
+
+    public fun place_bid(
+        auction: &mut Auction,
+        bid: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(!auction.closed, 1);
+        let bid_amount = coin::value(&bid);
+        assert!(bid_amount > auction.highest_bid, 2);
+        assert!(bid_amount >= auction.min_bid, 3);
+
+        if (dynamic_field::exists(&auction.id, b"bid_coin")) {
+            let prev_bid: Coin<SUI> = dynamic_field::remove(&mut auction.id, b"bid_coin");
+            let prev_bidder = *option::borrow(&auction.highest_bidder);
+            transfer::public_transfer(prev_bid, prev_bidder);
+        };
+
+        auction.highest_bidder = option::some(ctx.sender());
+        auction.highest_bid = bid_amount;
+        dynamic_field::add(&mut auction.id, b"bid_coin", bid);
+
+        event::emit(BidPlaced {
+            auction_id: object::uid_to_inner(&auction.id),
+            bidder: ctx.sender(),
+            amount: bid_amount,
+        });
+    }
+
+    public fun close_auction(auction: &mut Auction, ctx: &mut TxContext) {
+        assert!(ctx.sender() == auction.seller, 4);
+        auction.closed = true;
+    }
+
+    public fun settle(auction: &mut Auction, ctx: &mut TxContext) {
+        assert!(auction.closed || ctx.sender() == auction.seller, 5);
+
+        let artifact: Artifact = dynamic_field::remove(&mut auction.id, b"artifact");
+        let auction_id = object::uid_to_inner(&auction.id);
+
+        if (option::is_some(&auction.highest_bidder)) {
+            let winner_addr = *option::borrow(&auction.highest_bidder);
+            transfer::public_transfer(artifact, winner_addr);
+            
+            if (dynamic_field::exists(&auction.id, b"bid_coin")) {
+                let proceeds: Coin<SUI> = dynamic_field::remove(&mut auction.id, b"bid_coin");
+                transfer::public_transfer(proceeds, auction.seller);
+            };
+        } else {
+            transfer::public_transfer(artifact, auction.seller);
+        };
+
+        event::emit(AuctionSettled {
+            auction_id,
+            winner: auction.highest_bidder,
+            final_bid: auction.highest_bid,
+        });
+    }
+}
+```

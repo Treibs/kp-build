@@ -1,0 +1,89 @@
+```move
+module linear_vesting {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    public struct VestingWallet has key {
+        id: UID,
+        beneficiary: address,
+        start_epoch: u64,
+        duration_epochs: u64,
+        total_amount: u64,
+        claimed_amount: u64,
+        balance: Coin<SUI>,
+    }
+
+    public struct Claimed has copy, drop {
+        wallet: ID,
+        amount: u64,
+    }
+
+    public fun create(
+        beneficiary: address,
+        start_epoch: u64,
+        duration_epochs: u64,
+        coin: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): VestingWallet {
+        let amount = coin::value(&coin);
+        VestingWallet {
+            id: object::new(ctx),
+            beneficiary,
+            start_epoch,
+            duration_epochs,
+            total_amount: amount,
+            claimed_amount: 0,
+            balance: coin,
+        }
+    }
+
+    public fun claim(wallet: &mut VestingWallet, ctx: &mut TxContext): Coin<SUI> {
+        let current_epoch = tx_context::epoch(ctx);
+        let vested_amount = calculate_vested(wallet, current_epoch);
+        let claimable = vested_amount - wallet.claimed_amount;
+        
+        assert!(claimable > 0, 0);
+        
+        wallet.claimed_amount = wallet.claimed_amount + claimable;
+        
+        let claimed_coin = coin::split(&mut wallet.balance, claimable, ctx);
+        
+        sui::event::emit(Claimed {
+            wallet: object::id(wallet),
+            amount: claimable,
+        });
+        
+        claimed_coin
+    }
+
+    fun calculate_vested(wallet: &VestingWallet, current_epoch: u64): u64 {
+        if (current_epoch < wallet.start_epoch) {
+            0
+        } else if (current_epoch >= wallet.start_epoch + wallet.duration_epochs) {
+            wallet.total_amount
+        } else {
+            let elapsed = current_epoch - wallet.start_epoch;
+            (wallet.total_amount * elapsed) / wallet.duration_epochs
+        }
+    }
+
+    public fun vested_amount(wallet: &VestingWallet, current_epoch: u64): u64 {
+        calculate_vested(wallet, current_epoch)
+    }
+
+    public fun claimed_amount(wallet: &VestingWallet): u64 {
+        wallet.claimed_amount
+    }
+
+    public fun claimable_amount(wallet: &VestingWallet, current_epoch: u64): u64 {
+        let vested = calculate_vested(wallet, current_epoch);
+        if (vested > wallet.claimed_amount) {
+            vested - wallet.claimed_amount
+        } else {
+            0
+        }
+    }
+}
+```

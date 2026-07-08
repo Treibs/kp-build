@@ -1,0 +1,182 @@
+```move
+module crowdfunding::campaign {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+    use sui::clock::Clock;
+    use sui::balance::{Self, Balance};
+    use sui::event;
+
+    public struct Campaign has key {
+        id: UID,
+        creator: address,
+        goal: u64,
+        deadline_epoch: u64,
+        balance: Balance<SUI>,
+        contributions: Table<address, u64>,
+        claimed: bool,
+    }
+
+    public struct CampaignCreated has copy, drop {
+        campaign_id: ID,
+        creator: address,
+        goal: u64,
+        deadline_epoch: u64,
+    }
+
+    public struct ContributionMade has copy, drop {
+        campaign_id: ID,
+        contributor: address,
+        amount: u64,
+    }
+
+    public struct FundsClaimed has copy, drop {
+        campaign_id: ID,
+        creator: address,
+        amount: u64,
+    }
+
+    public struct RefundIssued has copy, drop {
+        campaign_id: ID,
+        contributor: address,
+        amount: u64,
+    }
+
+    public fun create(
+        goal: u64,
+        deadline_epoch: u64,
+        ctx: &mut TxContext,
+    ): ID {
+        let campaign = Campaign {
+            id: object::new(ctx),
+            creator: ctx.sender(),
+            goal,
+            deadline_epoch,
+            balance: balance::zero(),
+            contributions: table::new(ctx),
+            claimed: false,
+        };
+
+        let campaign_id = object::id(&campaign);
+        transfer::share_object(campaign);
+
+        event::emit(CampaignCreated {
+            campaign_id,
+            creator: ctx.sender(),
+            goal,
+            deadline_epoch,
+        });
+
+        campaign_id
+    }
+
+    public fun contribute(
+        campaign: &mut Campaign,
+        contribution: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let amount = contribution.value();
+        balance::join(&mut campaign.balance, coin::into_balance(contribution));
+
+        let contributor = ctx.sender();
+        if (table::contains(&campaign.contributions, contributor)) {
+            let current = table::borrow_mut(&mut campaign.contributions, contributor);
+            *current = *current + amount;
+        } else {
+            table::add(&mut campaign.contributions, contributor, amount);
+        };
+
+        event::emit(ContributionMade {
+            campaign_id: object::id(campaign),
+            contributor,
+            amount,
+        });
+    }
+
+    public fun claim_funds(
+        campaign: &mut Campaign,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == campaign.creator, 0);
+        assert!(!campaign.claimed, 1);
+        assert!(clock.timestamp_ms() / 1000 >= campaign.deadline_epoch, 2);
+
+        let total = balance::value(&campaign.balance);
+        assert!(total >= campaign.goal, 3);
+
+        campaign.claimed = true;
+        let funds = balance::withdraw_all(&mut campaign.balance);
+        let coin = coin::from_balance(funds, ctx);
+
+        transfer::public_transfer(coin, ctx.sender());
+
+        event::emit(FundsClaimed {
+            campaign_id: object::id(campaign),
+            creator: ctx.sender(),
+            amount: total,
+        });
+    }
+
+    public fun refund(
+        campaign: &mut Campaign,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(clock.timestamp_ms() / 1000 >= campaign.deadline_epoch, 0);
+        assert!(!campaign.claimed, 1);
+
+        let contributor = ctx.sender();
+        assert!(table::contains(&campaign.contributions, contributor), 2);
+
+        let amount = *table::borrow(&campaign.contributions, contributor);
+        let total = balance::value(&campaign.balance);
+
+        assert!(total < campaign.goal, 3);
+
+        table::remove(&mut campaign.contributions, contributor);
+        let refund_balance = balance::split(&mut campaign.balance, amount);
+        let refund_coin = coin::from_balance(refund_balance, ctx);
+
+        transfer::public_transfer(refund_coin, contributor);
+
+        event::emit(RefundIssued {
+            campaign_id: object::id(campaign),
+            contributor,
+            amount,
+        });
+    }
+
+    public fun total_raised(campaign: &Campaign): u64 {
+        balance::value(&campaign.balance)
+    }
+
+    public fun goal(campaign: &Campaign): u64 {
+        campaign.goal
+    }
+
+    public fun deadline_epoch(campaign: &Campaign): u64 {
+        campaign.deadline_epoch
+    }
+
+    public fun creator(campaign: &Campaign): address {
+        campaign.creator
+    }
+
+    public fun is_claimed(campaign: &Campaign): bool {
+        campaign.claimed
+    }
+
+    public fun has_contributed(campaign: &Campaign, contributor: address): bool {
+        table::contains(&campaign.contributions, contributor)
+    }
+
+    public fun contribution_amount(campaign: &Campaign, contributor: address): u64 {
+        if (table::contains(&campaign.contributions, contributor)) {
+            *table::borrow(&campaign.contributions, contributor)
+        } else {
+            0
+        }
+    }
+}
+```
