@@ -1,0 +1,5 @@
+[package]
+name = "key_field_store_green"
+edition = "2024"
+
+[dependencies]

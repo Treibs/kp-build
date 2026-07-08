@@ -1,0 +1,1 @@
+Invalid 'use'. Unbound member 'self' in module 'sui::coin'

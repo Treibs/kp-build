@@ -1,0 +1,5 @@
+[package]
+name = "use_self_green"
+edition = "2024"
+
+[dependencies]

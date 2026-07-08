@@ -107,3 +107,34 @@ Triage notes (scratch candidates in `/tmp/sui-triage2/`, not committed):
 - green builds clean; `Move.lock` pins the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
 
 **Totals:** 17 green fixtures, 13 red fixtures (4 beats grounding-only, unchanged).
+
+## Deepening round 1 — 5 beats (proven 2026-07-07)
+
+Source: the first /kp-deepen round (`docs/deepening/round-1/`) — probe of 5 unprobed
+territories, 15 tasks × 2 models with the current pack loaded, gated by the same pinned
+binary (`sui 1.74.1-8fc60f1fa966`, plain build). Every beat below traces to an observed
+probe failure (compile-tier) or a counted warning family (warning-tier); triage table in
+`docs/deepening/round-1/triage.md`.
+
+| beat | red form tried | observed (exit + key output) | classification | fragment (expected_error.txt) |
+|---|---|---|---|---|
+| use-self | Rust-style `use sui::coin::{self, Coin};` | exit 1, `error[E03003]: unbound module member` at the `use` line | RED/GREEN pair | `Invalid 'use'. Unbound member 'self' in module 'sui::coin'` |
+| type-name | `vector<std::string::String>` field receiving `type_name::with_defining_ids<T>()` | exit 1, `error[E04007]: incompatible types` | RED/GREEN pair | `Given: 'std::type_name::TypeName'` |
+| witness-naming | plain witness named `MINTER` (upper-case of module `minter`), constructed manually | exit 1, `error[Sui E02005]: invalid one-time witness usage` | RED/GREEN pair | `One-time witness types cannot be created manually` |
+| key-field-store | `key` struct with `posts: vector<Post>` where `Post` has no abilities | exit 1, `error[E05001]: ability constraint not satisfied` (field-type variant) | RED/GREEN pair | `The struct was declared with the ability 'key' so all fields require the ability 'store'` |
+| dynamic-field-exists | n/a — `exists_` still *compiles* (warns `W04037` deprecated: "Renamed to `exists`"), so a red cannot fail the plain-build gate | green (`dynamic_field::exists`) exit 0, zero warnings | grounding-only (green + doc) | — |
+
+Notes:
+- New error classes for the pack: `Sui E02005` and `E04007`; plus new message shapes under
+  E03003 (the "Invalid 'use'" variant) and E05001 (the field-type variant).
+- The type-name green also folds in the 1.74.1 deprecation of `std::type_name::get`
+  ("Renamed to `with_defining_ids`"), observed 6× across probe answers.
+- Triaged-out candidates this round (reasons in the round ledger): the generic
+  `unlock<T: store>` + `public_transfer` failure (rule already loaded —
+  ownership-transfer-green states `key + store` verbatim); `std::vector::empty`
+  deprecation (deferred, small edition-syntax corner); W99001/W99002 composability
+  lints (design-tier, no beat shape yet).
+- Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
+
+**Totals:** 22 green fixtures, 17 red fixtures (5 beats grounding-only: implicit-imports,
+entry-vs-public, capability, test-scenario, dynamic-field-exists).

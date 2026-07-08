@@ -1,0 +1,5 @@
+[package]
+name = "witness_naming_green"
+edition = "2024"
+
+[dependencies]
