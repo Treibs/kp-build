@@ -1,0 +1,3 @@
+Write a Sui Move module `math::fib` (edition 2024). Provide a public function
+`first_n(n: u64): vector<u64>` that returns the first `n` Fibonacci numbers starting 0, 1, 1, 2, …
+(an empty vector for `n = 0`).
