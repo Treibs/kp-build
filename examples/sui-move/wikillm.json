@@ -6,7 +6,7 @@
   "stats": {
     "papers_verified": 0,
     "papers_total": 0,
-    "claims": 47,
+    "claims": 61,
     "open_problems": 0,
     "debates": 0,
     "benchmarks": 0,
@@ -53,7 +53,7 @@
       "verdict": "primary tie, secondary kp wins -> ships under pre-registered rule branch 2",
       "path": "docs/experiments/sui-compile-pass-2/"
     },
-    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap at falsification time: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009). Gap closed 2026-07-07 by the fixture-proven receiving beat added AFTER the experiment; the recorded numbers were measured on the 44-claim pack.",
+    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap at falsification time: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009). Gap closed 2026-07-07 by the fixture-proven receiving beat added AFTER the experiment; the recorded numbers were measured on the 44-claim pack. Deepening round 1 (2026-07-07, docs/deepening/round-1/) added 14 more claims after these experiments; the same invariant applies - recorded falsification numbers were measured on the pre-deepening pack.",
     "experiment": "docs/experiments/sui-compile-pass-2/"
   }
 }

@@ -547,6 +547,169 @@
         "source": "sui-move-book",
         "supporting_passage": "Code marked with `#[test_only]` is compiled only in test mode. Use it for test utilities, helper\nfunctions, or imports that shouldn't exist in production code."
       }
+    },
+    {
+      "id": "use-self-green",
+      "statement": "In `use` group imports, the module itself is named with the capital `Self` keyword: `use sui::coin::{Self, Coin};` binds both the module alias `coin` and the type `Coin`.",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module importing `use sui::coin::{Self, Coin};` and calling `coin::value` with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/use-self-green"
+      }
+    },
+    {
+      "id": "use-self-red",
+      "statement": "Rust-style lowercase `self` in a group import does not exist in Move: `use sui::coin::{self, Coin};` fails on sui 1.74.1 with error[E03003] unbound module member — \"Invalid 'use'. Unbound member 'self' in module 'sui::coin'\" (and the module alias is then unresolvable). Use capital `Self`.",
+      "supporting_passage": "sui 1.74.1 rejects `use sui::coin::{self, Coin};` with exit 1, error[E03003]: Invalid 'use'. Unbound member 'self' in module 'sui::coin'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/use-self-red"
+      }
+    },
+    {
+      "id": "use-self-doc",
+      "statement": "To import members and the module itself in one group import, Move provides the `Self` keyword, which refers to the module itself.",
+      "supporting_passage": "To import members and the module itself in the group import, you can use the `Self` keyword. The\n`Self` keyword refers to the module itself and can be used to import the module and its members.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-book",
+        "supporting_passage": "To import members and the module itself in the group import, you can use the `Self` keyword. The\n`Self` keyword refers to the module itself and can be used to import the module and its members."
+      }
+    },
+    {
+      "id": "type-name-green",
+      "statement": "Runtime type reflection returns `TypeName` values, not strings: store them as `vector<TypeName>` or convert with `.into_string()`, which yields `std::ascii::String` (not `std::string::String`). On sui 1.74.1 use `type_name::with_defining_ids<T>()` — `type_name::get` is deprecated (\"Renamed to `with_defining_ids`\").",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module storing `type_name::with_defining_ids<T>()` in a `vector<TypeName>` and converting via `.into_string()` to `std::ascii::String` with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/type-name-green"
+      }
+    },
+    {
+      "id": "type-name-red",
+      "statement": "Type reflection does not return `std::string::String`: pushing `type_name::with_defining_ids<T>()` into a `vector<String>` fails on sui 1.74.1 with error[E04007] incompatible types — Expected: 'std::string::String', \"Given: 'std::type_name::TypeName'\".",
+      "supporting_passage": "sui 1.74.1 rejects storing a type_name reflection result in a vector<std::string::String> with exit 1, error[E04007]: incompatible types — Given: 'std::type_name::TypeName'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/type-name-red"
+      }
+    },
+    {
+      "id": "type-name-doc",
+      "statement": "The reflection function in `std::type_name` is native and returns a `TypeName` value: `public native fun get<T>(): TypeName`.",
+      "supporting_passage": "public native fun get<T>(): TypeName;",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-book",
+        "supporting_passage": "public native fun get<T>(): TypeName;"
+      }
+    },
+    {
+      "id": "witness-naming-green",
+      "statement": "A plain (reusable) witness must NOT be named the upper-case version of its module name: name it e.g. `MinterWitness has drop {}` so it can be constructed freely — the all-caps module name pattern is reserved for one-time witnesses.",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module `minter` whose witness struct `MinterWitness has drop {}` is constructed manually with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/witness-naming-green"
+      }
+    },
+    {
+      "id": "witness-naming-red",
+      "statement": "Naming a field-less `drop`-only struct the upper-case of its module name makes the compiler treat it as a one-time witness, so constructing it manually fails: sui 1.74.1 rejects `MINTER {}` in module `minter` with error[Sui E02005] invalid one-time witness usage — \"One-time witness types cannot be created manually\".",
+      "supporting_passage": "sui 1.74.1 rejects manual construction of a struct named the upper-case module name with exit 1, error[Sui E02005]: invalid one-time witness usage — One-time witness types cannot be created manually.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/witness-naming-red"
+      }
+    },
+    {
+      "id": "witness-naming-doc",
+      "statement": "The one-time witness cannot be manually created and is unique per module; the Sui Adapter treats a type as an OTW when it has only `drop`, has no fields, is not generic, and is named after the module with all uppercase letters.",
+      "supporting_passage": "The OTW is a special type of Witness that can be used only once. It cannot be manually created and\nit is guaranteed to be unique per module. Sui Adapter treats a type as an OTW if it follows these\nrules:\n\n1. Has only `drop` ability.\n2. Has no fields.\n3. Is not a generic type.\n4. Named after the module with all uppercase letters.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-book",
+        "supporting_passage": "The OTW is a special type of Witness that can be used only once. It cannot be manually created and\nit is guaranteed to be unique per module. Sui Adapter treats a type as an OTW if it follows these\nrules:\n\n1. Has only `drop` ability.\n2. Has no fields.\n3. Is not a generic type.\n4. Named after the module with all uppercase letters."
+      }
+    },
+    {
+      "id": "key-field-store-green",
+      "statement": "Every field of a `key` struct must have `store` — including the element type of a vector field: a plain struct stored inside an object must be declared `has store` (e.g. `public struct Post has store { … }` inside `public struct Board has key { id: UID, posts: vector<Post> }`).",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a `key` struct with a `vector<Post>` field where `Post has store` with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/key-field-store-green"
+      }
+    },
+    {
+      "id": "key-field-store-red",
+      "statement": "A `key` struct with a field whose type lacks `store` does not compile: sui 1.74.1 fails with error[E05001] ability constraint not satisfied — \"The struct was declared with the ability 'key' so all fields require the ability 'store'\" (here `posts: vector<Post>` with an ability-less `Post`).",
+      "supporting_passage": "sui 1.74.1 rejects a key struct holding vector<Post> where Post has no abilities with exit 1, error[E05001]: the struct was declared with the ability 'key' so all fields require the ability 'store'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/key-field-store-red"
+      }
+    },
+    {
+      "id": "key-field-store-doc",
+      "statement": "Struct ability declarations constrain field types: with `copy` all fields must have `copy`, with `drop` all fields must have `drop`, with `store` all fields must have `store`, and with `key` all fields must have `store`.",
+      "supporting_passage": "- `copy`, all fields must have `copy`.\n- `drop`, all fields must have `drop`.\n- `store`, all fields must have `store`.\n- `key`, all fields must have `store`.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "- `copy`, all fields must have `copy`.\n- `drop`, all fields must have `drop`.\n- `store`, all fields must have `store`.\n- `key`, all fields must have `store`."
+      }
+    },
+    {
+      "id": "dynamic-field-exists-green",
+      "statement": "Check for a dynamic field with `dynamic_field::exists(&obj.id, name)` — on sui 1.74.1 the old `exists_` still compiles but warns W04037 deprecated usage (\"Renamed to `exists`\"); `exists` builds clean.",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module calling `dynamic_field::exists(&profile.id, b\"bio\")` with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/dynamic-field-exists-green"
+      }
+    },
+    {
+      "id": "dynamic-field-exists-doc",
+      "statement": "`sui::dynamic_field` exposes `public fun exists<Name: copy + drop + store>(object: &UID, name: Name): bool` for checking whether a dynamic field with the given name is attached.",
+      "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/dynamic_field.md#sui_dynamic_field_exists\">exists</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href=\"../sui/object.md#sui_object\">object</a>: &<a href=\"../sui/object.md#sui_object_UID\">sui::object::UID</a>, name: Name): bool",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/dynamic_field.md#sui_dynamic_field_exists\">exists</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href=\"../sui/object.md#sui_object\">object</a>: &<a href=\"../sui/object.md#sui_object_UID\">sui::object::UID</a>, name: Name): bool"
+      }
     }
   ]
 }

@@ -42,6 +42,14 @@
     > sui 1.74.1 rejects a call to the nonexistent `tx_context::now_ms` with exit 1, error[E03003]: unbound module member.
 - _finding_ — Non-test code calling a `#[test_only]` function does not compile — test_only members are filtered out of non-test builds, so sui 1.74.1 reports a plain unbound-name error, error[E03005] — "Unbound function 'create_for_testing' in current scope" (not a dedicated test_only diagnostic). *([sui-move-build], high)*
     > sui 1.74.1 rejects a production `public fun` that calls a `#[test_only]` function with exit 1, error[E03005]: unbound unscoped name — the test_only member simply does not exist in the non-test build.
+- _finding_ — Rust-style lowercase `self` in a group import does not exist in Move: `use sui::coin::{self, Coin};` fails on sui 1.74.1 with error[E03003] unbound module member — "Invalid 'use'. Unbound member 'self' in module 'sui::coin'" (and the module alias is then unresolvable). Use capital `Self`. *([sui-move-build], high)*
+    > sui 1.74.1 rejects `use sui::coin::{self, Coin};` with exit 1, error[E03003]: Invalid 'use'. Unbound member 'self' in module 'sui::coin'.
+- _finding_ — Type reflection does not return `std::string::String`: pushing `type_name::with_defining_ids<T>()` into a `vector<String>` fails on sui 1.74.1 with error[E04007] incompatible types — Expected: 'std::string::String', "Given: 'std::type_name::TypeName'". *([sui-move-build], high)*
+    > sui 1.74.1 rejects storing a type_name reflection result in a vector<std::string::String> with exit 1, error[E04007]: incompatible types — Given: 'std::type_name::TypeName'.
+- _finding_ — Naming a field-less `drop`-only struct the upper-case of its module name makes the compiler treat it as a one-time witness, so constructing it manually fails: sui 1.74.1 rejects `MINTER {}` in module `minter` with error[Sui E02005] invalid one-time witness usage — "One-time witness types cannot be created manually". *([sui-move-build], high)*
+    > sui 1.74.1 rejects manual construction of a struct named the upper-case module name with exit 1, error[Sui E02005]: invalid one-time witness usage — One-time witness types cannot be created manually.
+- _finding_ — A `key` struct with a field whose type lacks `store` does not compile: sui 1.74.1 fails with error[E05001] ability constraint not satisfied — "The struct was declared with the ability 'key' so all fields require the ability 'store'" (here `posts: vector<Post>` with an ability-less `Post`). *([sui-move-build], high)*
+    > sui 1.74.1 rejects a key struct holding vector<Post> where Post has no abilities with exit 1, error[E05001]: the struct was declared with the ability 'key' so all fields require the ability 'store'.
 - _method_ — In Move 2024, declare structs with an explicit visibility modifier: `public struct Counter has key { id: UID, value: u64 }`. `public` is currently the only struct visibility modifier. *([sui-move-build], high)*
     > sui 1.74.1 (edition 2024) builds a module whose struct is declared `public struct Counter has key { id: UID, value: u64 }` with exit 0.
 - _method_ — Move 2024 adds a required visibility modifier to struct declarations; `public` is currently the only available struct visibility modifier, so every struct is written `public struct Name ...`. *([doc-corpus], high)*
@@ -106,10 +114,7 @@
     > sui 1.74.1 builds the package containing a test_scenario-based `#[test]` with exit 0; plain `sui move build` skips `#[test]` bodies (verified by planting a type error: plain build exit 0, `--test` build exit 1), and the committed test addit
 - _method_ — In test_scenario tests, shared objects are accessed with `take_shared` and must be returned with `return_shared` before the scenario ends. The compiler only enforces this discipline under `sui move build --test` (leaked take_shared values fail there with E06001 unused value without 'drop'); plain `sui move build` does not compile `#[test]` code at all (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md). *([doc-corpus], high)*
     > [Shared objects](./../object/ownership.md#shared-state) are accessed using `take_shared` and must be returned with `return_shared`:
-- _method_ — Mark test helpers with `#[test_only]` (e.g. `#[test_only] public fun create_for_testing(...)`); they are compiled only in test mode and are commonly `public` so tests in other modules can call them, without affecting the production API. *([sui-move-build], high)*
-    > sui 1.74.1 builds a module whose `#[test_only]` helpers are called only from `#[test]` code with exit 0.
-- _method_ — Code marked `#[test_only]` is compiled only in test mode and is for test utilities, helpers, or imports that must not exist in production code — production code can never call it. *([doc-corpus], high)*
-    > Code marked with `#[test_only]` is compiled only in test mode. Use it for test utilities, helper functions, or imports that shouldn't exist in production code.
+*(+12 more — see `claims/`)*
 
 ## Toolchain + source pins
 
