@@ -1,0 +1,1 @@
+AttributeError: 'ThreeDCamera' object has no attribute 'frame'

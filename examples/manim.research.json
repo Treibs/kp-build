@@ -556,6 +556,192 @@
         "source": "manim-api-docs",
         "supporting_passage": "@property\n    def frame_width(self) -> float:\n        \"\"\"Frame width in logical units (no flag).\"\"\""
       }
+    },
+    {
+      "id": "circle-surround-green",
+      "statement": "Put a ring around a mobject with `Circle().surround(square, buffer_factor=1.4)` — `buffer_factor` scales the ring multiplicatively relative to the mobject.",
+      "supporting_passage": "manim 0.20.1 renders Circle().surround(square, buffer_factor=1.4) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/circle-surround/green"
+      }
+    },
+    {
+      "id": "circle-surround-red",
+      "statement": "`Circle.surround()` has no additive `buff`/`buffer` parameter (the manimgl shape): manim 0.20.1 fails with TypeError: Circle.surround() got an unexpected keyword argument 'buffer'. The CE parameter is the multiplicative `buffer_factor`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: TypeError: Circle.surround() got an unexpected keyword argument 'buffer'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/circle-surround/red"
+      }
+    },
+    {
+      "id": "circle-surround-doc",
+      "statement": "The CE `Circle.surround` signature is `surround(mobject, dim_to_match=0, stretch=False, buffer_factor=1.2)` — sizing is controlled by the multiplicative `buffer_factor`, not an additive buffer.",
+      "supporting_passage": "    def surround(\n        self,\n        mobject: Mobject,\n        dim_to_match: int = 0,\n        stretch: bool = False,\n        buffer_factor: float = 1.2,\n    ) -> Self:\n        \"\"\"Modifies a circle so that it surrounds a given mobject.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    def surround(\n        self,\n        mobject: Mobject,\n        dim_to_match: int = 0,\n        stretch: bool = False,\n        buffer_factor: float = 1.2,\n    ) -> Self:\n        \"\"\"Modifies a circle so that it surrounds a given mobject."
+      }
+    },
+    {
+      "id": "cube-side-length-green",
+      "statement": "A cube's edge length is set with `side_length`: `Cube(side_length=1.5, fill_opacity=0.75)`.",
+      "supporting_passage": "manim 0.20.1 renders Cube(side_length=1.5, fill_opacity=0.75) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/cube-side-length/green"
+      }
+    },
+    {
+      "id": "cube-side-length-red",
+      "statement": "`Cube(size=…)` is not a CE parameter: the kwarg falls through to `Mobject.__init__` and manim 0.20.1 fails with TypeError: Mobject.__init__() got an unexpected keyword argument 'size'. The CE parameter is `side_length`.",
+      "supporting_passage": "manim 0.20.1 fails the render with: Mobject.__init__() got an unexpected keyword argument 'size'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/cube-side-length/red"
+      }
+    },
+    {
+      "id": "cube-side-length-doc",
+      "statement": "`Cube`'s documented size parameter is `side_length` — \"Length of each side of the Cube\".",
+      "supporting_passage": "    side_length\n        Length of each side of the :class:`Cube`.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    side_length\n        Length of each side of the :class:`Cube`."
+      }
+    },
+    {
+      "id": "threed-camera-frame-green",
+      "statement": "Zoom or move a `ThreeDScene` camera with `self.move_camera(zoom=2, run_time=…)` — the same parameter family as `set_camera_orientation`.",
+      "supporting_passage": "manim 0.20.1 renders self.move_camera(zoom=2) on a ThreeDScene with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/threed-camera-frame/green"
+      }
+    },
+    {
+      "id": "threed-camera-frame-red",
+      "statement": "`self.camera.frame` does not exist on a `ThreeDScene` (Cairo): manim 0.20.1 fails with AttributeError: 'ThreeDCamera' object has no attribute 'frame'. That idiom is manimgl / the 2D MovingCameraScene; in a CE 3D scene camera motion goes through move_camera / set_camera_orientation.",
+      "supporting_passage": "manim 0.20.1 fails the render with: AttributeError: 'ThreeDCamera' object has no attribute 'frame'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/threed-camera-frame/red"
+      }
+    },
+    {
+      "id": "threed-camera-frame-doc",
+      "statement": "The ThreeDScene camera-orientation API exposes `zoom` (\"The zoom factor of the scene.\"), `focal_distance`, and `gamma` as parameters of set_camera_orientation/move_camera — 3D camera motion is expressed through these method parameters.",
+      "supporting_passage": "        focal_distance\n            The focal_distance of the Camera.\n\n        gamma\n            The rotation of the camera about the vector from the ORIGIN to the Camera.\n\n        zoom\n            The zoom factor of the scene.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "        focal_distance\n            The focal_distance of the Camera.\n\n        gamma\n            The rotation of the camera about the vector from the ORIGIN to the Camera.\n\n        zoom\n            The zoom factor of the scene."
+      }
+    },
+    {
+      "id": "camera-phi-theta-green",
+      "statement": "Animate a top-down→side-on 3D view by moving the polar angle: open with `set_camera_orientation(phi=0, …)` (straight down), then `self.move_camera(phi=90 * DEGREES, run_time=…)`.",
+      "supporting_passage": "manim 0.20.1 renders set_camera_orientation(phi=0, ...) followed by move_camera(phi=90 * DEGREES) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/camera-phi-theta/green"
+      }
+    },
+    {
+      "id": "camera-phi-theta-doc",
+      "statement": "In CE 3D camera calls `phi` is the polar angle — the angle between the Z axis and the camera, so `phi=0` looks straight down and `phi=90°` is side-on — and `theta` is the azimuthal angle that spins the camera around the Z axis. To tilt the view, change `phi`, not `theta` (the math-convention swap silently leaves the view top-down).",
+      "supporting_passage": "        phi\n            The polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.\n\n        theta\n            The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "        phi\n            The polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.\n\n        theta\n            The azimuthal angle i.e the angle that spins the camera around the Z_AXIS."
+      }
+    },
+    {
+      "id": "camera-distance-kwarg-green",
+      "statement": "Set 3D camera distance and magnification with the CE names: `set_camera_orientation(phi=…, theta=…, focal_distance=8, zoom=1.2)`.",
+      "supporting_passage": "manim 0.20.1 renders set_camera_orientation(..., focal_distance=8, zoom=1.2) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/camera-distance-kwarg/green"
+      }
+    },
+    {
+      "id": "camera-distance-kwarg-silent",
+      "statement": "Passing manimgl-style `distance=` to `set_camera_orientation` raises NO error — manim 0.20.1 renders it with exit 0: the kwarg is absorbed by the signature's `**kwargs` and the camera call carries on without it. The failure is silent; the CE parameters are `focal_distance` and `zoom`.",
+      "supporting_passage": "manim 0.20.1 renders set_camera_orientation(..., distance=99) with exit 0 — the unknown kwarg is silently accepted.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/camera-distance-kwarg/silent"
+      }
+    },
+    {
+      "id": "camera-distance-kwarg-doc",
+      "statement": "`set_camera_orientation`'s signature is `(phi, theta, gamma, zoom, focal_distance, frame_center, **kwargs)` — there is no `distance` parameter; the CE distance controls are `focal_distance` and `zoom`, and an unrecognized kwarg like `distance=` lands in `**kwargs`.",
+      "supporting_passage": "    def set_camera_orientation(\n        self,\n        phi: float | None = None,\n        theta: float | None = None,\n        gamma: float | None = None,\n        zoom: float | None = None,\n        focal_distance: float | None = None,\n        frame_center: Mobject | Sequence[float] | None = None,\n        **kwargs,\n    ):",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    def set_camera_orientation(\n        self,\n        phi: float | None = None,\n        theta: float | None = None,\n        gamma: float | None = None,\n        zoom: float | None = None,\n        focal_distance: float | None = None,\n        frame_center: Mobject | Sequence[float] | None = None,\n        **kwargs,\n    ):"
+      }
+    },
+    {
+      "id": "lag-ratio-total-green",
+      "statement": "Stagger several animations inside one play with `AnimationGroup(*anims, lag_ratio=0.5)` — each next animation starts when the current one is 50% played.",
+      "supporting_passage": "manim 0.20.1 renders AnimationGroup(*fades, lag_ratio=0.5) with exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/lag-ratio-total/green"
+      }
+    },
+    {
+      "id": "lag-ratio-total-doc",
+      "statement": "`AnimationGroup`'s `lag_ratio` is a per-animation overlap fraction: `lag_ratio` n.nn starts the next animation when nnn% of the current one has played (0.0 = all together). It is not a fraction of the group's total duration — with uniform 1 s animations, lag_ratio 0.5 means starts every 0.5 s; giving the group an explicit run_time rescales the individual animations to fit instead.",
+      "supporting_passage": "    lag_ratio\n        Defines the delay after which the animation is applied to submobjects. A lag_ratio of\n        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.\n        Defaults to 0.0, meaning that all animations will be played together.\n\n        This does not influence the total runtime of the animation. Instead the runtime\n        of individual animations is adjusted so that the complete animation has the defined\n        run time.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "    lag_ratio\n        Defines the delay after which the animation is applied to submobjects. A lag_ratio of\n        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.\n        Defaults to 0.0, meaning that all animations will be played together.\n\n        This does not influence the total runtime of the animation. Instead the runtime\n        of individual animations is adjusted so that the complete animation has the defined\n        run time."
+      }
     }
   ]
 }

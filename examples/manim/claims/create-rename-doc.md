@@ -17,7 +17,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: "class Create(ShowPartial):\n    \"\"\"Incrementally show a VMobject."
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: manim-api-docs
