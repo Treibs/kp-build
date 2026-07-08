@@ -1,0 +1,5 @@
+[package]
+name = "module_address_form_red"
+edition = "2024"
+
+[dependencies]

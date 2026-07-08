@@ -15,7 +15,7 @@
     },
     {
       "id": "struct-visibility-red",
-      "statement": "The pre-2024 form `struct Counter has key { ... }` (bare `struct`, no visibility modifier) does not compile in edition 2024: sui 1.74.1 fails with error[E01003] invalid modifier — \"Visibility annotations are required on struct declarations\".",
+      "statement": "The pre-2024 form `struct Counter has key { ... }` (bare `struct`, no visibility modifier) does not compile in edition 2024: sui 1.74.1 fails with error[E01003] invalid modifier \u2014 \"Visibility annotations are required on struct declarations\".",
       "supporting_passage": "sui 1.74.1 rejects a bare `struct Counter has key` declaration with exit 1, error[E01003]: invalid modifier, noting that visibility annotations are required on struct declarations.",
       "claim_type": "finding",
       "confidence": "high",
@@ -50,7 +50,7 @@
     },
     {
       "id": "method-syntax-red",
-      "statement": "The legacy declaration `friend method_syntax_red::admin;` does not compile in edition 2024: sui 1.74.1 fails with error[E13002] feature is deprecated in specified edition — \"'friend's are deprecated. Remove and replace 'public(friend)' with 'public(package)'\".",
+      "statement": "The legacy declaration `friend method_syntax_red::admin;` does not compile in edition 2024: sui 1.74.1 fails with error[E13002] feature is deprecated in specified edition \u2014 \"'friend's are deprecated. Remove and replace 'public(friend)' with 'public(package)'\".",
       "supporting_passage": "sui 1.74.1 rejects a `friend` declaration with exit 1, error[E13002]: feature is deprecated in specified edition, telling the author to replace 'public(friend)' with 'public(package)'.",
       "claim_type": "finding",
       "confidence": "high",
@@ -85,7 +85,7 @@
     },
     {
       "id": "implicit-imports-doc",
-      "statement": "Framework staples like `sui::transfer` are implicitly imported in every package that depends on the Sui Framework and need no `use` statement. The legacy `use sui::object::{Self, UID}; use sui::transfer; use sui::tx_context::TxContext;` block still compiles silently on sui 1.74.1 (no warning), but it is dead weight — omit it (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md).",
+      "statement": "Framework staples like `sui::transfer` are implicitly imported in every package that depends on the Sui Framework and need no `use` statement. The legacy `use sui::object::{Self, UID}; use sui::transfer; use sui::tx_context::TxContext;` block still compiles silently on sui 1.74.1 (no warning), but it is dead weight \u2014 omit it (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md).",
       "supporting_passage": "The module that defines main storage operations is `sui::transfer`. It is implicitly imported in all\npackages that depend on the [Sui Framework](./../programmability/sui-framework), so, like other\nimplicitly imported modules (e.g. `std::option` or `std::vector`), it does not require adding a use\nstatement.",
       "claim_type": "method",
       "confidence": "high",
@@ -108,7 +108,7 @@
     },
     {
       "id": "abilities-red",
-      "statement": "A `key` struct whose first field is not `id: UID` (e.g. `public struct Item has key { value: u64 }`) does not compile: sui 1.74.1 fails with error[Sui E02007] invalid object declaration — \"Structs with the 'key' ability must have 'id: sui::object::UID' as their first field\".",
+      "statement": "A `key` struct whose first field is not `id: UID` (e.g. `public struct Item has key { value: u64 }`) does not compile: sui 1.74.1 fails with error[Sui E02007] invalid object declaration \u2014 \"Structs with the 'key' ability must have 'id: sui::object::UID' as their first field\".",
       "supporting_passage": "sui 1.74.1 rejects a `key` struct missing the leading `id: UID` field with exit 1, error[Sui E02007]: invalid object declaration.",
       "claim_type": "finding",
       "confidence": "high",
@@ -143,7 +143,7 @@
     },
     {
       "id": "macros-2024-red",
-      "statement": "Pre-2024 style reassignment of a local declared without `mut` (`let total = 0; ... total = total + i;`) does not compile in edition 2024: sui 1.74.1 fails with error[E04024] — \"Invalid assignment of immutable variable\".",
+      "statement": "Pre-2024 style reassignment of a local declared without `mut` (`let total = 0; ... total = total + i;`) does not compile in edition 2024: sui 1.74.1 fails with error[E04024] \u2014 \"Invalid assignment of immutable variable\".",
       "supporting_passage": "sui 1.74.1 rejects reassignment of locals declared without `mut` with exit 1, error[E04024]: invalid usage of immutable variable (one error per rebound variable).",
       "claim_type": "finding",
       "confidence": "high",
@@ -201,7 +201,7 @@
     },
     {
       "id": "ownership-transfer-green",
-      "statement": "To make an object freely transferable from any module via `transfer::public_transfer`, declare it with both abilities: `public struct Item has key, store { id: UID }` — `public_transfer<T: key + store>` requires `store`.",
+      "statement": "To make an object freely transferable from any module via `transfer::public_transfer`, declare it with both abilities: `public struct Item has key, store { id: UID }` \u2014 `public_transfer<T: key + store>` requires `store`.",
       "supporting_passage": "sui 1.74.1 builds `transfer::public_transfer` applied to a struct declared `has key, store` with exit 0.",
       "claim_type": "method",
       "confidence": "high",
@@ -213,7 +213,7 @@
     },
     {
       "id": "ownership-transfer-red",
-      "statement": "Calling `transfer::public_transfer` on a `key`-only struct (no `store`) does not compile: sui 1.74.1 fails with error[E05001] ability constraint not satisfied — \"The type 'ownership_transfer_red::item::Item' does not have the ability 'store'\". For key-only types, use `transfer::transfer` from the defining module instead.",
+      "statement": "Calling `transfer::public_transfer` on a `key`-only struct (no `store`) does not compile: sui 1.74.1 fails with error[E05001] ability constraint not satisfied \u2014 \"The type 'ownership_transfer_red::item::Item' does not have the ability 'store'\". For key-only types, use `transfer::transfer` from the defining module instead.",
       "supporting_passage": "sui 1.74.1 rejects `transfer::public_transfer` on a struct with only `key` with exit 1, error[E05001]: ability constraint not satisfied (missing `store`).",
       "claim_type": "finding",
       "confidence": "high",
@@ -225,7 +225,7 @@
     },
     {
       "id": "ownership-transfer-doc",
-      "statement": "`transfer::transfer` is internal — callable only from the module defining `T` with constraint `T: key` — while `transfer::public_transfer` can be called from any module but requires `T` to have both `key` and `store`.",
+      "statement": "`transfer::transfer` is internal \u2014 callable only from the module defining `T` with constraint `T: key` \u2014 while `transfer::public_transfer` can be called from any module but requires `T` to have both `key` and `store`.",
       "supporting_passage": "In the example above, the `transfer` function can only be called from the module that defines the\n`T`, and has a type constraint `T: key`. While `public_transfer` - clearly indicated in the name -\ncan be called from any module, but requires `T` to have `key` and `store`.",
       "claim_type": "method",
       "confidence": "high",
@@ -248,8 +248,8 @@
     },
     {
       "id": "receiving-red",
-      "statement": "The internal `transfer::receive` cannot unwrap a `Receiving<T>` when `T` is defined in a different module: sui 1.74.1 fails with error[Sui E02009] invalid private transfer call — \"The function 'sui::transfer::receive' is restricted to being called in the object's module\". Outside the defining module, use `public_receive` (which requires `store`).",
-      "supporting_passage": "sui 1.74.1 rejects a cross-module transfer::receive with exit 1, error[Sui E02009]: invalid private transfer call — the function is restricted to being called in the object's module.",
+      "statement": "The internal `transfer::receive` cannot unwrap a `Receiving<T>` when `T` is defined in a different module: sui 1.74.1 fails with error[Sui E02009] invalid private transfer call \u2014 \"The function 'sui::transfer::receive' is restricted to being called in the object's module\". Outside the defining module, use `public_receive` (which requires `store`).",
+      "supporting_passage": "sui 1.74.1 rejects a cross-module transfer::receive with exit 1, error[Sui E02009]: invalid private transfer call \u2014 the function is restricted to being called in the object's module.",
       "claim_type": "finding",
       "confidence": "high",
       "execution": {
@@ -283,7 +283,7 @@
     },
     {
       "id": "entry-vs-public-doc",
-      "statement": "Never write `public entry fun`: PTBs can call any `public` function, so there is no reason to add `entry` to a `public` function — sui 1.74.1 flags it with lint W99010 (unnecessary 'entry' on a 'public' function) (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md). Reserve `entry` for non-public functions that should be PTB-callable but not callable from other packages.",
+      "statement": "Never write `public entry fun`: PTBs can call any `public` function, so there is no reason to add `entry` to a `public` function \u2014 sui 1.74.1 flags it with lint W99010 (unnecessary 'entry' on a 'public' function) (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md). Reserve `entry` for non-public functions that should be PTB-callable but not callable from other packages.",
       "supporting_passage": "PTBs can call any `public` function and any `entry` function, whether private (`entry fun f()`), or `public(package)` (`public(package) entry fun f()`). Non-entry private and `public(package)` functions cannot be called from PTBs. Note that in this way, there is no reason to add `entry` to a `public` function.",
       "claim_type": "method",
       "confidence": "high",
@@ -306,8 +306,8 @@
     },
     {
       "id": "otw-init-red",
-      "statement": "The `init` signature is checked at build time: an `init` whose first parameter is not a one-time witness (e.g. `fun init(value: u64, ctx: &mut TxContext)`) fails on sui 1.74.1 with error[Sui E02003] invalid 'init' function — \"Invalid parameter 'value' of type 'u64'. Expected a one-time witness type\".",
-      "supporting_passage": "sui 1.74.1 rejects an `init` function whose first parameter is a plain `u64` with exit 1, error[Sui E02003]: invalid 'init' function — init signatures are enforced at build time, not only at publish.",
+      "statement": "The `init` signature is checked at build time: an `init` whose first parameter is not a one-time witness (e.g. `fun init(value: u64, ctx: &mut TxContext)`) fails on sui 1.74.1 with error[Sui E02003] invalid 'init' function \u2014 \"Invalid parameter 'value' of type 'u64'. Expected a one-time witness type\".",
+      "supporting_passage": "sui 1.74.1 rejects an `init` function whose first parameter is a plain `u64` with exit 1, error[Sui E02003]: invalid 'init' function \u2014 init signatures are enforced at build time, not only at publish.",
       "claim_type": "finding",
       "confidence": "high",
       "execution": {
@@ -329,7 +329,7 @@
     },
     {
       "id": "capability-green",
-      "statement": "Access-control idiom: declare `public struct AdminCap has key, store { id: UID }`, transfer it to the publisher in `init`, and gate privileged functions by taking `_cap: &AdminCap` as the first parameter — possession of the capability IS the authorization.",
+      "statement": "Access-control idiom: declare `public struct AdminCap has key, store { id: UID }`, transfer it to the publisher in `init`, and gate privileged functions by taking `_cap: &AdminCap` as the first parameter \u2014 possession of the capability IS the authorization.",
       "supporting_passage": "sui 1.74.1 builds the capability pattern (AdminCap created in `init`, privileged function gated on `_cap: &AdminCap`) with exit 0.",
       "claim_type": "method",
       "confidence": "high",
@@ -341,7 +341,7 @@
     },
     {
       "id": "capability-doc",
-      "statement": "Capabilities are objects: a function taking `&AdminCap` can only be called by whoever owns that object, and strict typing guarantees only the correct capability satisfies the parameter. This is a design rule, not a compiler rule — a naive hardcoded sender check like `assert!(ctx.sender() == @0xCAFE)` compiles clean on sui 1.74.1 (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md), so prefer the capability pattern for access control.",
+      "statement": "Capabilities are objects: a function taking `&AdminCap` can only be called by whoever owns that object, and strict typing guarantees only the correct capability satisfies the parameter. This is a design rule, not a compiler rule \u2014 a naive hardcoded sender check like `assert!(ctx.sender() == @0xCAFE)` compiles clean on sui 1.74.1 (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md), so prefer the capability pattern for access control.",
       "supporting_passage": "In the [Sui Object Model](./../object/), capabilities are represented as objects. An owner of an\nobject can pass this object to a function to prove that they have the right to perform a specific\naction. Due to strict typing, the function taking a capability as an argument can only be called\nwith the correct capability.",
       "claim_type": "method",
       "confidence": "high",
@@ -364,7 +364,7 @@
     },
     {
       "id": "coin-currency-red",
-      "statement": "There is no `coin::mint_new`: the fabricated `coin::mint_new(witness, 9, b\"MYC\", ctx)` fails on sui 1.74.1 with error[E03003] unbound module member — \"Unbound function 'mint_new' in module 'sui::coin'\".",
+      "statement": "There is no `coin::mint_new`: the fabricated `coin::mint_new(witness, 9, b\"MYC\", ctx)` fails on sui 1.74.1 with error[E03003] unbound module member \u2014 \"Unbound function 'mint_new' in module 'sui::coin'\".",
       "supporting_passage": "sui 1.74.1 rejects a call to the nonexistent `coin::mint_new` with exit 1, error[E03003]: unbound module member.",
       "claim_type": "finding",
       "confidence": "high",
@@ -434,7 +434,7 @@
     },
     {
       "id": "events-red",
-      "statement": "An event struct missing `copy` (e.g. declared only `has drop`) cannot be emitted: sui 1.74.1 fails against `event::emit<T: copy + drop>` with error[E05001] ability constraint not satisfied — \"The type 'events_red::notify::ValueSet' does not have the ability 'copy'\".",
+      "statement": "An event struct missing `copy` (e.g. declared only `has drop`) cannot be emitted: sui 1.74.1 fails against `event::emit<T: copy + drop>` with error[E05001] ability constraint not satisfied \u2014 \"The type 'events_red::notify::ValueSet' does not have the ability 'copy'\".",
       "supporting_passage": "sui 1.74.1 rejects `event::emit` on a struct lacking `copy` with exit 1, error[E05001]: ability constraint not satisfied.",
       "claim_type": "finding",
       "confidence": "high",
@@ -446,7 +446,7 @@
     },
     {
       "id": "events-doc",
-      "statement": "The native signature of the emit function is `public native fun emit<T: copy + drop>(event: T)` — the event type must have both the `copy` and `drop` abilities.",
+      "statement": "The native signature of the emit function is `public native fun emit<T: copy + drop>(event: T)` \u2014 the event type must have both the `copy` and `drop` abilities.",
       "supporting_passage": "<b>public</b> <b>native</b> <b>fun</b> <a href=\"../sui/event.md#sui_event_emit\">emit</a>&lt;T: <b>copy</b> + drop&gt;(<a href=\"../sui/event.md#sui_event\">event</a>: T);",
       "claim_type": "method",
       "confidence": "high",
@@ -481,7 +481,7 @@
     },
     {
       "id": "clock-doc",
-      "statement": "APIs for accessing time from Move calls go through the `Clock`, a unique shared object created at address 0x6 during genesis — functions that need time take `&Clock` and call `timestamp_ms`.",
+      "statement": "APIs for accessing time from Move calls go through the `Clock`, a unique shared object created at address 0x6 during genesis \u2014 functions that need time take `&Clock` and call `timestamp_ms`.",
       "supporting_passage": "APIs for accessing time from move calls, via the <code><a href=\"../sui/clock.md#sui_clock_Clock\">Clock</a></code>: a unique\nshared object that is created at 0x6 during genesis.",
       "claim_type": "method",
       "confidence": "high",
@@ -492,7 +492,7 @@
     },
     {
       "id": "test-scenario-green",
-      "statement": "Multi-transaction tests use `sui::test_scenario`: `let mut scenario = sui::test_scenario::begin(@0xA);` ... `scenario.next_tx(@0xA); let mut obj = scenario.take_shared<T>();` ... `sui::test_scenario::return_shared(obj); scenario.end();`. Note: plain `sui move build` does not compile `#[test]` code on 1.74.1 — this fixture's test body was additionally verified with `sui move build --test` (exit 0).",
+      "statement": "Multi-transaction tests use `sui::test_scenario`: `let mut scenario = sui::test_scenario::begin(@0xA);` ... `scenario.next_tx(@0xA); let mut obj = scenario.take_shared<T>();` ... `sui::test_scenario::return_shared(obj); scenario.end();`. Note: plain `sui move build` does not compile `#[test]` code on 1.74.1 \u2014 this fixture's test body was additionally verified with `sui move build --test` (exit 0).",
       "supporting_passage": "sui 1.74.1 builds the package containing a test_scenario-based `#[test]` with exit 0; plain `sui move build` skips `#[test]` bodies (verified by planting a type error: plain build exit 0, `--test` build exit 1), and the committed test additionally passes `sui move build --test`.",
       "claim_type": "method",
       "confidence": "high",
@@ -527,8 +527,8 @@
     },
     {
       "id": "test-only-red",
-      "statement": "Non-test code calling a `#[test_only]` function does not compile — test_only members are filtered out of non-test builds, so sui 1.74.1 reports a plain unbound-name error, error[E03005] — \"Unbound function 'create_for_testing' in current scope\" (not a dedicated test_only diagnostic).",
-      "supporting_passage": "sui 1.74.1 rejects a production `public fun` that calls a `#[test_only]` function with exit 1, error[E03005]: unbound unscoped name — the test_only member simply does not exist in the non-test build.",
+      "statement": "Non-test code calling a `#[test_only]` function does not compile \u2014 test_only members are filtered out of non-test builds, so sui 1.74.1 reports a plain unbound-name error, error[E03005] \u2014 \"Unbound function 'create_for_testing' in current scope\" (not a dedicated test_only diagnostic).",
+      "supporting_passage": "sui 1.74.1 rejects a production `public fun` that calls a `#[test_only]` function with exit 1, error[E03005]: unbound unscoped name \u2014 the test_only member simply does not exist in the non-test build.",
       "claim_type": "finding",
       "confidence": "high",
       "execution": {
@@ -539,7 +539,7 @@
     },
     {
       "id": "test-only-doc",
-      "statement": "Code marked `#[test_only]` is compiled only in test mode and is for test utilities, helpers, or imports that must not exist in production code — production code can never call it.",
+      "statement": "Code marked `#[test_only]` is compiled only in test mode and is for test utilities, helpers, or imports that must not exist in production code \u2014 production code can never call it.",
       "supporting_passage": "Code marked with `#[test_only]` is compiled only in test mode. Use it for test utilities, helper\nfunctions, or imports that shouldn't exist in production code.",
       "claim_type": "method",
       "confidence": "high",
@@ -562,7 +562,7 @@
     },
     {
       "id": "use-self-red",
-      "statement": "Rust-style lowercase `self` in a group import does not exist in Move: `use sui::coin::{self, Coin};` fails on sui 1.74.1 with error[E03003] unbound module member — \"Invalid 'use'. Unbound member 'self' in module 'sui::coin'\" (and the module alias is then unresolvable). Use capital `Self`.",
+      "statement": "Rust-style lowercase `self` in a group import does not exist in Move: `use sui::coin::{self, Coin};` fails on sui 1.74.1 with error[E03003] unbound module member \u2014 \"Invalid 'use'. Unbound member 'self' in module 'sui::coin'\" (and the module alias is then unresolvable). Use capital `Self`.",
       "supporting_passage": "sui 1.74.1 rejects `use sui::coin::{self, Coin};` with exit 1, error[E03003]: Invalid 'use'. Unbound member 'self' in module 'sui::coin'.",
       "claim_type": "finding",
       "confidence": "high",
@@ -585,7 +585,7 @@
     },
     {
       "id": "type-name-green",
-      "statement": "Runtime type reflection returns `TypeName` values, not strings: store them as `vector<TypeName>` or convert with `.into_string()`, which yields `std::ascii::String` (not `std::string::String`). On sui 1.74.1 use `type_name::with_defining_ids<T>()` — `type_name::get` is deprecated (\"Renamed to `with_defining_ids`\").",
+      "statement": "Runtime type reflection returns `TypeName` values, not strings: store them as `vector<TypeName>` or convert with `.into_string()`, which yields `std::ascii::String` (not `std::string::String`). On sui 1.74.1 use `type_name::with_defining_ids<T>()` \u2014 `type_name::get` is deprecated (\"Renamed to `with_defining_ids`\").",
       "supporting_passage": "sui 1.74.1 (edition 2024) builds a module storing `type_name::with_defining_ids<T>()` in a `vector<TypeName>` and converting via `.into_string()` to `std::ascii::String` with exit 0 and zero warnings.",
       "claim_type": "method",
       "confidence": "high",
@@ -597,8 +597,8 @@
     },
     {
       "id": "type-name-red",
-      "statement": "Type reflection does not return `std::string::String`: pushing `type_name::with_defining_ids<T>()` into a `vector<String>` fails on sui 1.74.1 with error[E04007] incompatible types — Expected: 'std::string::String', \"Given: 'std::type_name::TypeName'\".",
-      "supporting_passage": "sui 1.74.1 rejects storing a type_name reflection result in a vector<std::string::String> with exit 1, error[E04007]: incompatible types — Given: 'std::type_name::TypeName'.",
+      "statement": "Type reflection does not return `std::string::String`: pushing `type_name::with_defining_ids<T>()` into a `vector<String>` fails on sui 1.74.1 with error[E04007] incompatible types \u2014 Expected: 'std::string::String', \"Given: 'std::type_name::TypeName'\".",
+      "supporting_passage": "sui 1.74.1 rejects storing a type_name reflection result in a vector<std::string::String> with exit 1, error[E04007]: incompatible types \u2014 Given: 'std::type_name::TypeName'.",
       "claim_type": "finding",
       "confidence": "high",
       "execution": {
@@ -620,7 +620,7 @@
     },
     {
       "id": "witness-naming-green",
-      "statement": "A plain (reusable) witness must NOT be named the upper-case version of its module name: name it e.g. `MinterWitness has drop {}` so it can be constructed freely — the all-caps module name pattern is reserved for one-time witnesses.",
+      "statement": "A plain (reusable) witness must NOT be named the upper-case version of its module name: name it e.g. `MinterWitness has drop {}` so it can be constructed freely \u2014 the all-caps module name pattern is reserved for one-time witnesses.",
       "supporting_passage": "sui 1.74.1 (edition 2024) builds a module `minter` whose witness struct `MinterWitness has drop {}` is constructed manually with exit 0.",
       "claim_type": "method",
       "confidence": "high",
@@ -632,8 +632,8 @@
     },
     {
       "id": "witness-naming-red",
-      "statement": "Naming a field-less `drop`-only struct the upper-case of its module name makes the compiler treat it as a one-time witness, so constructing it manually fails: sui 1.74.1 rejects `MINTER {}` in module `minter` with error[Sui E02005] invalid one-time witness usage — \"One-time witness types cannot be created manually\".",
-      "supporting_passage": "sui 1.74.1 rejects manual construction of a struct named the upper-case module name with exit 1, error[Sui E02005]: invalid one-time witness usage — One-time witness types cannot be created manually.",
+      "statement": "Naming a field-less `drop`-only struct the upper-case of its module name makes the compiler treat it as a one-time witness, so constructing it manually fails: sui 1.74.1 rejects `MINTER {}` in module `minter` with error[Sui E02005] invalid one-time witness usage \u2014 \"One-time witness types cannot be created manually\".",
+      "supporting_passage": "sui 1.74.1 rejects manual construction of a struct named the upper-case module name with exit 1, error[Sui E02005]: invalid one-time witness usage \u2014 One-time witness types cannot be created manually.",
       "claim_type": "finding",
       "confidence": "high",
       "execution": {
@@ -655,7 +655,7 @@
     },
     {
       "id": "key-field-store-green",
-      "statement": "Every field of a `key` struct must have `store` — including the element type of a vector field: a plain struct stored inside an object must be declared `has store` (e.g. `public struct Post has store { … }` inside `public struct Board has key { id: UID, posts: vector<Post> }`).",
+      "statement": "Every field of a `key` struct must have `store` \u2014 including the element type of a vector field: a plain struct stored inside an object must be declared `has store` (e.g. `public struct Post has store { \u2026 }` inside `public struct Board has key { id: UID, posts: vector<Post> }`).",
       "supporting_passage": "sui 1.74.1 (edition 2024) builds a `key` struct with a `vector<Post>` field where `Post has store` with exit 0.",
       "claim_type": "method",
       "confidence": "high",
@@ -667,7 +667,7 @@
     },
     {
       "id": "key-field-store-red",
-      "statement": "A `key` struct with a field whose type lacks `store` does not compile: sui 1.74.1 fails with error[E05001] ability constraint not satisfied — \"The struct was declared with the ability 'key' so all fields require the ability 'store'\" (here `posts: vector<Post>` with an ability-less `Post`).",
+      "statement": "A `key` struct with a field whose type lacks `store` does not compile: sui 1.74.1 fails with error[E05001] ability constraint not satisfied \u2014 \"The struct was declared with the ability 'key' so all fields require the ability 'store'\" (here `posts: vector<Post>` with an ability-less `Post`).",
       "supporting_passage": "sui 1.74.1 rejects a key struct holding vector<Post> where Post has no abilities with exit 1, error[E05001]: the struct was declared with the ability 'key' so all fields require the ability 'store'.",
       "claim_type": "finding",
       "confidence": "high",
@@ -690,7 +690,7 @@
     },
     {
       "id": "dynamic-field-exists-green",
-      "statement": "Check for a dynamic field with `dynamic_field::exists(&obj.id, name)` — on sui 1.74.1 the old `exists_` still compiles but warns W04037 deprecated usage (\"Renamed to `exists`\"); `exists` builds clean.",
+      "statement": "Check for a dynamic field with `dynamic_field::exists(&obj.id, name)` \u2014 on sui 1.74.1 the old `exists_` still compiles but warns W04037 deprecated usage (\"Renamed to `exists`\"); `exists` builds clean.",
       "supporting_passage": "sui 1.74.1 (edition 2024) builds a module calling `dynamic_field::exists(&profile.id, b\"bio\")` with exit 0 and zero warnings.",
       "claim_type": "method",
       "confidence": "high",
@@ -709,6 +709,297 @@
       "grounding": {
         "source": "sui-framework-docs",
         "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/dynamic_field.md#sui_dynamic_field_exists\">exists</a>&lt;Name: <b>copy</b>, drop, store&gt;(<a href=\"../sui/object.md#sui_object\">object</a>: &<a href=\"../sui/object.md#sui_object_UID\">sui::object::UID</a>, name: Name): bool"
+      }
+    },
+    {
+      "id": "module-address-form-green",
+      "statement": "A Move 2024 module is declared with its package address (or named address) and name: `module <address>::<name> { ... }` \u2014 e.g. `module my_pkg::fee_splitter { ... }`. The address name is bound in the package manifest (`Move.toml`), and the sui CLI binds the package name itself as a named address.",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module declared `module module_address_form_green::fee_splitter { ... }` with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/module-address-form-green"
+      }
+    },
+    {
+      "id": "module-address-form-red",
+      "statement": "A bare `module name {` declaration (no address qualifier) is the pre-2024 form and does not compile: sui 1.74.1 rejects it with error[E02004] invalid 'module' declaration \u2014 \"The module does not have a specified address\" \u2014 and suggests `module <address>::name`. Always qualify the module with its package address.",
+      "supporting_passage": "sui 1.74.1 rejects `module fee_splitter {` with exit 1, error[E02004]: Invalid module declaration. The module does not have a specified address.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/module-address-form-red"
+      }
+    },
+    {
+      "id": "module-address-form-doc",
+      "statement": "Module declarations name the package address before the module name; the `module` keyword is followed by the address, then the module name.",
+      "supporting_passage": "Modules are declared using the `module` keyword followed by the package address, module name,\nsemicolon, and the module body.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-book",
+        "supporting_passage": "Modules are declared using the `module` keyword followed by the package address, module name,\nsemicolon, and the module body."
+      }
+    },
+    {
+      "id": "option-field-fill-green",
+      "statement": "To set an `Option<T>` field that is currently `none`, use `option::fill` (method syntax `opt.fill(value)`): it adds the value in place and aborts if the option is already occupied \u2014 no old value is discarded, so `T` needs no `drop` ability.",
+      "supporting_passage": "sui 1.74.1 builds a module calling `slot.item.fill(item)` on an `Option<Item>` field where `Item` has `store` but no `drop`, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/option-field-fill-green"
+      }
+    },
+    {
+      "id": "option-field-fill-red",
+      "statement": "Assigning to an `Option<T>` field (`slot.item = option::some(x)`) overwrites the field and destroys the old value, so it requires `T: drop`; when `T` lacks `drop`, sui 1.74.1 fails with error[E05001] ability constraint \u2014 \"Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed\". A runtime `assert!(is_none(...))` guard does not help: the requirement is on the type. Use `option::fill` (or `swap`/`extract` first) instead.",
+      "supporting_passage": "sui 1.74.1 rejects `slot.item = option::some(item)` where the element type lacks drop with exit 1, error[E05001]: Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/option-field-fill-red"
+      }
+    },
+    {
+      "id": "option-field-fill-doc",
+      "statement": "`std::option::fill` converts a none option to a some option by adding the element, and aborts if the option already holds a value \u2014 it never discards an existing element.",
+      "supporting_passage": "Convert the none option <code>t</code> to a some option by adding <code>e</code>.\nAborts if <code>t</code> already holds a value",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "Convert the none option <code>t</code> to a some option by adding <code>e</code>.\nAborts if <code>t</code> already holds a value"
+      }
+    },
+    {
+      "id": "table-key-by-value-green",
+      "statement": "`sui::table` functions take the key BY VALUE, not by reference: `table.contains(key)` / `table.borrow(key)` with `K: copy + drop + store`. Pass the `String` (or other key) itself \u2014 key types are copyable, so passing by value is cheap and correct.",
+      "supporting_passage": "sui 1.74.1 builds a module calling `names.contains(name)` with a `String` key passed by value against `&Table<String, address>`, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/table-key-by-value-green"
+      }
+    },
+    {
+      "id": "table-key-by-value-red",
+      "statement": "Passing a table key by reference (`table.contains(&key)`, the Rust habit) fails on sui 1.74.1 with error[E04007] incompatible types \u2014 \"Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'\" (given `&std::string::String`, expected `std::string::String`). Pass the key by value.",
+      "supporting_passage": "sui 1.74.1 rejects `names.contains(&name)` with exit 1, error[E04007]: Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/table-key-by-value-red"
+      }
+    },
+    {
+      "id": "table-key-by-value-doc",
+      "statement": "The `sui::table::contains` signature takes the key parameter `k: K` by value, with `K: copy + drop + store`.",
+      "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/table.md#sui_table_contains\">contains</a>&lt;K: <b>copy</b>, <a href=\"../sui/table.md#sui_table_drop\">drop</a>, store, V: store&gt;(<a href=\"../sui/table.md#sui_table\">table</a>: &<a href=\"../sui/table.md#sui_table_Table\">sui::table::Table</a>&lt;K, V&gt;, k: K): bool",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/table.md#sui_table_contains\">contains</a>&lt;K: <b>copy</b>, <a href=\"../sui/table.md#sui_table_drop\">drop</a>, store, V: store&gt;(<a href=\"../sui/table.md#sui_table\">table</a>: &<a href=\"../sui/table.md#sui_table_Table\">sui::table::Table</a>&lt;K, V&gt;, k: K): bool"
+      }
+    },
+    {
+      "id": "string-module-path-green",
+      "statement": "`std::string::String` values are created with the lowercase module-path call `string::utf8(b\"...\")` (import `use std::string::{Self, String};`). Function calls in Move go through the module path, not the type name.",
+      "supporting_passage": "sui 1.74.1 builds a module calling `string::utf8(b\"hello\")` via `use std::string::{Self, String};` with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/string-module-path-green"
+      }
+    },
+    {
+      "id": "string-module-path-red",
+      "statement": "The Rust-style associated-function path `String::utf8(b\"...\")` does not parse as a function call: Move 2024 reads `Type::name` in expression position as enum-variant construction, and sui 1.74.1 fails with error[E03006] unexpected name in this position \u2014 \"Invalid construction. Expected an enum\". Call `string::utf8` (module path, lowercase) instead.",
+      "supporting_passage": "sui 1.74.1 rejects `String::utf8(b\"hello\")` with exit 1, error[E03006]: Invalid construction. Expected an enum.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/string-module-path-red"
+      }
+    },
+    {
+      "id": "string-module-path-doc",
+      "statement": "`std::string::utf8` creates a new string from a sequence of bytes and aborts if the bytes are not valid UTF-8 \u2014 it is a module function, called through the `string` module path.",
+      "supporting_passage": "Creates a new string from a sequence of bytes. Aborts if the bytes do\nnot represent valid utf8.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "Creates a new string from a sequence of bytes. Aborts if the bytes do\nnot represent valid utf8."
+      }
+    },
+    {
+      "id": "string-append-green",
+      "statement": "String concatenation in Move is the in-place `append`: `a.append(b)` (or `string::append(&mut a, b)`), mutating the left string through `&mut`. To build up a string, declare it `mut` and append pieces.",
+      "supporting_passage": "sui 1.74.1 builds a module concatenating with `a.append(b)` on `std::string::String` values, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/string-append-green"
+      }
+    },
+    {
+      "id": "string-append-red",
+      "statement": "`a + b` on `String` values does not compile: `+` is an integer-only built-in in Move (u8..u256) and there is no operator overloading; sui 1.74.1 fails with error[E04003] built-in operation not supported \u2014 \"Invalid argument to '+'\". Use `append` for concatenation.",
+      "supporting_passage": "sui 1.74.1 rejects `a + b` on std::string::String values with exit 1, error[E04003]: Invalid argument to '+'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/string-append-red"
+      }
+    },
+    {
+      "id": "string-append-doc",
+      "statement": "`std::string::append` appends a string, taking the destination by mutable reference: `append(s: &mut String, r: String)`.",
+      "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/string.md#std_string_append\">append</a>(s: &<b>mut</b> <a href=\"../std/string.md#std_string_String\">std::string::String</a>, r: <a href=\"../std/string.md#std_string_String\">std::string::String</a>)",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/string.md#std_string_append\">append</a>(s: &<b>mut</b> <a href=\"../std/string.md#std_string_String\">std::string::String</a>, r: <a href=\"../std/string.md#std_string_String\">std::string::String</a>)"
+      }
+    },
+    {
+      "id": "block-statement-semicolon-green",
+      "statement": "Statements in a Move block are separated by `;` \u2014 including a braced `if` or `while` used as a statement mid-sequence. Unlike Rust, the separator after the closing brace is required: `if (cond) { x = cap };` followed by the next statement.",
+      "supporting_passage": "sui 1.74.1 builds a module with `if (x > cap) { x = cap };` followed by a final expression, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/block-statement-semicolon-green"
+      }
+    },
+    {
+      "id": "block-statement-semicolon-red",
+      "statement": "Omitting the `;` after a braced `if`/`while` statement mid-sequence (the Rust habit) fails to parse: sui 1.74.1 reports error[E01002] unexpected token \u2014 the next token is flagged with \"Expected ';'\". Every sequence item before the final expression needs the semicolon separator.",
+      "supporting_passage": "sui 1.74.1 rejects `if (x > cap) { x = cap }` followed by a statement without a `;` between them, with exit 1, error[E01002]: unexpected token, Expected ';'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/block-statement-semicolon-red"
+      }
+    },
+    {
+      "id": "block-statement-semicolon-doc",
+      "statement": "An expression block is a series of statements separated by semicolons; the block's resulting value is the value of the last expression.",
+      "supporting_passage": "An expression block is a series of statements separated by semicolons (`;`). The resulting value of\nan expression block is the value of the last expression in the block.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "An expression block is a series of statements separated by semicolons (`;`). The resulting value of\nan expression block is the value of the last expression in the block."
+      }
+    },
+    {
+      "id": "public-transfer-foreign-green",
+      "statement": "To transfer an object whose type is defined in ANOTHER module \u2014 e.g. `Coin<SUI>`, which has `store` \u2014 call `transfer::public_transfer(obj, recipient)`. The public variant is the one callable outside the type's defining module; this is the mirror of the rule that `transfer::transfer` works only in-module.",
+      "supporting_passage": "sui 1.74.1 builds a foreign module calling `transfer::public_transfer(coin, recipient)` on `Coin<SUI>` with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/public-transfer-foreign-green"
+      }
+    },
+    {
+      "id": "public-transfer-foreign-red",
+      "statement": "`transfer::transfer` on a type defined elsewhere does not compile: it is the PRIVATE transfer, restricted to the type's defining module. sui 1.74.1 rejects `transfer::transfer(coin, recipient)` on `Coin<SUI>` in a foreign module with error[Sui E02009] invalid private transfer call \u2014 \"The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'\" \u2014 and notes that `public_transfer` can be called instead because `Coin` has `store`.",
+      "supporting_passage": "sui 1.74.1 rejects transfer::transfer(coin, recipient) on Coin<SUI> outside sui::coin with exit 1, error[Sui E02009]: The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/public-transfer-foreign-red"
+      }
+    },
+    {
+      "id": "public-transfer-foreign-doc",
+      "statement": "A type with the `key + store` combination can be sent onwards by anyone via `transfer::public_transfer` \u2014 `store` is what unlocks transfer outside the defining module.",
+      "supporting_passage": "`Gift` has a `key` and `store` combination, which means, that whoever owns a `Gift` can\nfreely call `transfer::public_transfer` and send it to anyone else.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-book",
+        "supporting_passage": "`Gift` has a `key` and `store` combination, which means, that whoever owns a `Gift` can\nfreely call `transfer::public_transfer` and send it to anyone else."
+      }
+    },
+    {
+      "id": "transfer-composability-green",
+      "statement": "Public functions that create or extract an object compose better when they RETURN the object instead of `transfer::public_transfer(obj, ctx.sender())`: the 1.74 linter flags transfer-to-sender with warning[Lint W99001] \"non-composable transfer to sender\" and suggests returning the object so a caller (e.g. a PTB) can use it in subsequent commands. Returning the object compiles with zero warnings.",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module whose public function returns the created object (instead of transferring it to the sender) with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/transfer-composability-green"
+      }
+    },
+    {
+      "id": "transfer-composability-doc",
+      "statement": "PTB commands execute in order and the results of one command can be used by any subsequent command \u2014 which is why returning objects from public functions (rather than transferring them to the sender) enables composability.",
+      "supporting_passage": "You can use the results from one transaction command in any subsequent transaction command within the PTB.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-docs-concepts",
+        "supporting_passage": "You can use the results from one transaction command in any subsequent transaction command within the PTB."
+      }
+    },
+    {
+      "id": "vector-literal-green",
+      "statement": "Create vectors with literals \u2014 `vector[]` for empty, `vector[e1, ..., en]` for elements (edition-2024 idiom). `std::vector::empty()` is deprecated on sui 1.74.1 and warns with warning[W04037] \"The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead\"; the literal compiles with zero warnings.",
+      "supporting_passage": "sui 1.74.1 (edition 2024) builds a module using `vector[]` and `vector[a, b]` literals with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/vector-literal-green"
+      }
+    },
+    {
+      "id": "vector-literal-doc",
+      "statement": "Vectors of any type can be created with `vector` literals: `vector[]` is an empty vector and `vector[e1, ..., en]` is a vector with n elements; the element type is inferred or can be given explicitly.",
+      "supporting_passage": "Vectors of any type can be created with `vector` literals.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "Vectors of any type can be created with `vector` literals."
       }
     }
   ]

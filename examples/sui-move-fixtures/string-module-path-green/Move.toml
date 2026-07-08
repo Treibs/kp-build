@@ -1,0 +1,5 @@
+[package]
+name = "string_module_path_green"
+edition = "2024"
+
+[dependencies]

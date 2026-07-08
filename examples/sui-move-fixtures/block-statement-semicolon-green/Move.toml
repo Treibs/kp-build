@@ -1,0 +1,5 @@
+[package]
+name = "block_statement_semicolon_green"
+edition = "2024"
+
+[dependencies]

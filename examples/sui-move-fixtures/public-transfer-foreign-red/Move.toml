@@ -1,0 +1,5 @@
+[package]
+name = "public_transfer_foreign_red"
+edition = "2024"
+
+[dependencies]

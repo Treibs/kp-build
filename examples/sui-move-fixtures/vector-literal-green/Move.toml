@@ -1,0 +1,5 @@
+[package]
+name = "vector_literal_green"
+edition = "2024"
+
+[dependencies]
