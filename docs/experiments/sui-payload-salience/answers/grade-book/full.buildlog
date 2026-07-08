@@ -1,0 +1,126 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04004]: expected a single non-reference type
+  ┌─ ./sources/module.move:8:17
+  │
+8 │         scores: Table<(address, u64), u64>,
+  │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  │                 │     │
+  │                 │     Expected a single non-reference type, but found: '(address, u64)'
+  │                 Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:31:21
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+31 │             scores: table::new(ctx),
+   │                     ^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:59:13
+   │
+59 │         let key = (student, assignment_index);
+   │             ^^^   --------------------------- Expected a single type, but found expression list type: '(address, u64)'
+   │             │      
+   │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:60:18
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+60 │         assert!(!table::contains(&gradebook.scores, key), 1);
+   │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:62:9
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+62 │         table::add(&mut gradebook.scores, key, score);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:75:13
+   │
+75 │         let key = (student, assignment_index);
+   │             ^^^   --------------------------- Expected a single type, but found expression list type: '(address, u64)'
+   │             │      
+   │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:76:17
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+76 │         assert!(table::contains(&gradebook.scores, key), 3);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:78:25
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+78 │         let old_score = table::remove(&mut gradebook.scores, key);
+   │                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:79:9
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+79 │         table::add(&mut gradebook.scores, key, new_score);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:96:17
+   │
+96 │             let key = (student, i);
+   │                 ^^^   ------------ Expected a single type, but found expression list type: '(address, u64)'
+   │                 │      
+   │                 Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:97:17
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+97 │             if (table::contains(&gradebook.scores, key)) {
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:98:34
+   │
+ 8 │         scores: Table<(address, u64), u64>,
+   │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+98 │                 total = total + *table::borrow(&gradebook.scores, key);
+   │                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+    ┌─ ./sources/module.move:110:13
+    │
+110 │         let key = (student, assignment_index);
+    │             ^^^   --------------------------- Expected a single type, but found expression list type: '(address, u64)'
+    │             │      
+    │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:111:9
+    │
+  8 │         scores: Table<(address, u64), u64>,
+    │                       -------------- Expected a single non-reference type, but found: '(address, u64)'
+    ·
+111 │         table::contains(&gradebook.scores, key)
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+Failed to build Move modules: Compilation error.

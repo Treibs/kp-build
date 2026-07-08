@@ -38,3 +38,6 @@ docs/experiments/sui-compile-pass-4/answers/**/Move.lock
 docs/experiments/sui-compile-pass-5/answers/**/build/
 docs/experiments/sui-compile-pass-5/answers/**/Move.lock
 docs/experiments/sui-compile-pass-5/answers/**/*.stderr
+docs/experiments/sui-payload-salience/answers/**/build/
+docs/experiments/sui-payload-salience/answers/**/Move.lock
+docs/experiments/sui-payload-salience/answers/**/*.stderr

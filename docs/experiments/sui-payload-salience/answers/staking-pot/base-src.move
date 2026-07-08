@@ -1,0 +1,89 @@
+module staking::single_asset_staking {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+    use sui::sui::SUI;
+
+    const EInsufficientReserve: u64 = 0;
+    const EUnauthorized: u64 = 1;
+
+    struct RewardPot has key {
+        id: UID,
+        operator: address,
+        reserve: Balance<SUI>,
+        rate_bps: u64,
+    }
+
+    struct StakePosition has key {
+        id: UID,
+        amount: u64,
+        start_epoch: u64,
+    }
+
+    public fun create(
+        rate_bps: u64,
+        coin: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let pot = RewardPot {
+            id: object::new(ctx),
+            operator: tx_context::sender(ctx),
+            reserve: coin::into_balance(coin),
+            rate_bps,
+        };
+        transfer::share_object(pot);
+    }
+
+    public fun stake(
+        pot: &mut RewardPot,
+        stake_coin: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let amount = coin::value(&stake_coin);
+        let current_epoch = tx_context::epoch(ctx);
+        
+        balance::join(&mut pot.reserve, coin::into_balance(stake_coin));
+
+        let position = StakePosition {
+            id: object::new(ctx),
+            amount,
+            start_epoch: current_epoch,
+        };
+        
+        transfer::transfer(position, tx_context::sender(ctx));
+    }
+
+    public fun unstake(
+        pot: &mut RewardPot,
+        position: StakePosition,
+        ctx: &mut TxContext,
+    ) {
+        let StakePosition { id, amount, start_epoch } = position;
+        object::delete(id);
+
+        let current_epoch = tx_context::epoch(ctx);
+        let epochs_elapsed = current_epoch - start_epoch;
+        
+        let reward = (amount * pot.rate_bps * epochs_elapsed) / 10_000;
+        
+        assert!(balance::value(&pot.reserve) >= amount + reward, EInsufficientReserve);
+
+        let out_coin = coin::take(&mut pot.reserve, amount + reward, ctx);
+        transfer::public_transfer(out_coin, tx_context::sender(ctx));
+    }
+
+    public fun top_up(
+        pot: &mut RewardPot,
+        coin: Coin<SUI>,
+        ctx: &TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == pot.operator, EUnauthorized);
+        balance::join(&mut pot.reserve, coin::into_balance(coin));
+    }
+
+    public fun get_balance(pot: &RewardPot): u64 {
+        balance::value(&pot.reserve)
+    }
+}

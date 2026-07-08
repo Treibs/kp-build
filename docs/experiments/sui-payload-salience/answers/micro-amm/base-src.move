@@ -1,0 +1,105 @@
+module swap_pool::pool {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Pool<phantom X, phantom Y> has key {
+        id: UID,
+        reserve_x: Balance<X>,
+        reserve_y: Balance<Y>,
+        fee_bps: u64,
+    }
+
+    struct PoolCapability has key {
+        id: UID,
+        pool_id: ID,
+    }
+
+    const EInvalidSwapOutput: u64 = 0;
+    const EWrongPool: u64 = 1;
+
+    public entry fun create_pool<X, Y>(
+        coin_x: Coin<X>,
+        coin_y: Coin<Y>,
+        fee_bps: u64,
+        ctx: &mut TxContext,
+    ) {
+        let pool = Pool {
+            id: object::new(ctx),
+            reserve_x: coin::into_balance(coin_x),
+            reserve_y: coin::into_balance(coin_y),
+            fee_bps,
+        };
+        
+        let pool_id = object::uid_to_inner(&pool.id);
+        let cap = PoolCapability {
+            id: object::new(ctx),
+            pool_id,
+        };
+
+        transfer::share_object(pool);
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public entry fun swap<X, Y>(
+        pool: &mut Pool<X, Y>,
+        coin_in: Coin<X>,
+        ctx: &mut TxContext,
+    ) {
+        let amount_in = coin::value(&coin_in);
+        let reserve_x = balance::value(&pool.reserve_x);
+        let reserve_y = balance::value(&pool.reserve_y);
+
+        let fee_amount = (amount_in * pool.fee_bps) / 10000;
+        let amount_in_after_fee = amount_in - fee_amount;
+        
+        let amount_out = (amount_in_after_fee * reserve_y) / (reserve_x + amount_in_after_fee);
+        assert!(amount_out > 0, EInvalidSwapOutput);
+
+        balance::join(&mut pool.reserve_x, coin::into_balance(coin_in));
+        let output = coin::from_balance(balance::split(&mut pool.reserve_y, amount_out), ctx);
+
+        transfer::transfer(output, tx_context::sender(ctx));
+    }
+
+    public entry fun add_reserves<X, Y>(
+        cap: &PoolCapability,
+        pool: &mut Pool<X, Y>,
+        coin_x: Coin<X>,
+        coin_y: Coin<Y>,
+    ) {
+        assert!(cap.pool_id == object::uid_to_inner(&pool.id), EWrongPool);
+        
+        balance::join(&mut pool.reserve_x, coin::into_balance(coin_x));
+        balance::join(&mut pool.reserve_y, coin::into_balance(coin_y));
+    }
+
+    public entry fun close_pool<X, Y>(
+        cap: PoolCapability,
+        pool: Pool<X, Y>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(cap.pool_id == object::uid_to_inner(&pool.id), EWrongPool);
+
+        let Pool { id, reserve_x, reserve_y, fee_bps: _ } = pool;
+        object::delete(id);
+
+        let PoolCapability { id: cap_id, pool_id: _ } = cap;
+        object::delete(cap_id);
+
+        let coin_x = coin::from_balance(reserve_x, ctx);
+        let coin_y = coin::from_balance(reserve_y, ctx);
+        
+        transfer::transfer(coin_x, tx_context::sender(ctx));
+        transfer::transfer(coin_y, tx_context::sender(ctx));
+    }
+
+    public fun get_reserves<X, Y>(pool: &Pool<X, Y>): (u64, u64) {
+        (
+            balance::value(&pool.reserve_x),
+            balance::value(&pool.reserve_y),
+        )
+    }
+}

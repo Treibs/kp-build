@@ -1,0 +1,21 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:34:23
+   │
+34 │     public fun create(ctx: &mut TxContext) -> (InstructorCap, GradeBook) {
+   │                       ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:34:44
+   │
+34 │     public fun create(ctx: &mut TxContext) -> (InstructorCap, GradeBook) {
+   │                                            ^^
+   │                                            │
+   │                                            Unexpected '->'
+   │                                            Expected '{'
+
+Failed to build Move modules: Compilation error.

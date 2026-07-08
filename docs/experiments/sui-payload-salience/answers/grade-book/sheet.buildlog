@@ -1,0 +1,114 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:26:34
+   │
+26 │     public fun create_grade_book(ctx: &mut TxContext) -> (GradeBook, InstructorCap) {
+   │                                  ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:26:55
+   │
+26 │     public fun create_grade_book(ctx: &mut TxContext) -> (GradeBook, InstructorCap) {
+   │                                                       ^^
+   │                                                       │
+   │                                                       Unexpected '->'
+   │                                                       Expected '{'
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:57:13
+   │
+57 │         let key = (student, assignment_index);
+   │             ^^^   --------------------------- Expected a single type, but found expression list type: '(address, u64)'
+   │             │      
+   │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:58:18
+   │
+57 │         let key = (student, assignment_index);
+   │                   --------------------------- Expected a single non-reference type, but found: '(address, u64)'
+58 │         assert!(!dynamic_field::exists(&grade_book.id, key), 2);
+   │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:60:9
+   │
+57 │         let key = (student, assignment_index);
+   │                   --------------------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+60 │         dynamic_field::add(&mut grade_book.id, key, score);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:72:13
+   │
+72 │         let key = (student, assignment_index);
+   │             ^^^   --------------------------- Expected a single type, but found expression list type: '(address, u64)'
+   │             │      
+   │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:73:17
+   │
+72 │         let key = (student, assignment_index);
+   │                   --------------------------- Expected a single non-reference type, but found: '(address, u64)'
+73 │         assert!(dynamic_field::exists(&grade_book.id, key), 3);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:75:25
+   │
+72 │         let key = (student, assignment_index);
+   │                   --------------------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+75 │         let old_score = dynamic_field::remove(&mut grade_book.id, key);
+   │                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:76:9
+   │
+72 │         let key = (student, assignment_index);
+   │                   --------------------------- Expected a single non-reference type, but found: '(address, u64)'
+   ·
+76 │         dynamic_field::add(&mut grade_book.id, key, new_score);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:93:17
+   │
+93 │             let key = (student, i);
+   │                 ^^^   ------------ Expected a single type, but found expression list type: '(address, u64)'
+   │                 │      
+   │                 Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:94:17
+   │
+93 │             let key = (student, i);
+   │                       ------------ Expected a single non-reference type, but found: '(address, u64)'
+94 │             if (dynamic_field::exists(&grade_book.id, key)) {
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:95:29
+   │
+93 │             let key = (student, i);
+   │                       ------------ Expected a single non-reference type, but found: '(address, u64)'
+94 │             if (dynamic_field::exists(&grade_book.id, key)) {
+95 │                 let score = dynamic_field::borrow(&grade_book.id, key);
+   │                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:108:9
+    │
+108 │         dynamic_field::exists(&grade_book.id, (student, assignment_index))
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │         │                                     │
+    │         │                                     Expected a single non-reference type, but found: '(address, u64)'
+    │         Invalid type argument
+
+Failed to build Move modules: Compilation error.

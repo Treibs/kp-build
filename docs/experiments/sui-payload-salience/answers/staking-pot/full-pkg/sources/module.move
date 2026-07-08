@@ -1,0 +1,168 @@
+module staking::staking {
+    use sui::balance::{Balance, self};
+    use sui::coin::{Coin, self};
+    use sui::sui::SUI;
+    use sui::event;
+    
+    const EPOCH_REWARD_RATE_PRECISION: u64 = 10_000;
+    const EInsufficientReserve: u64 = 1;
+    
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+    
+    public struct RewardPool has key {
+        id: UID,
+        reserve: Balance<SUI>,
+        reward_rate_basis_points: u64,
+        current_epoch: u64,
+    }
+    
+    public struct StakingPosition has key, store {
+        id: UID,
+        staked_amount: u64,
+        stake_epoch: u64,
+    }
+    
+    public struct PoolCreated has copy, drop {
+        pool_id: ID,
+        reward_rate: u64,
+    }
+    
+    public struct Staked has copy, drop {
+        position_id: ID,
+        amount: u64,
+        epoch: u64,
+    }
+    
+    public struct Unstaked has copy, drop {
+        position_id: ID,
+        principal: u64,
+        reward: u64,
+    }
+    
+    public struct ReserveTopedUp has copy, drop {
+        amount: u64,
+    }
+    
+    public struct EpochAdvanced has copy, drop {
+        new_epoch: u64,
+    }
+    
+    public fun create_pool(
+        reward_rate_basis_points: u64,
+        ctx: &mut TxContext,
+    ): (RewardPool, AdminCap) {
+        let pool = RewardPool {
+            id: object::new(ctx),
+            reserve: balance::zero(),
+            reward_rate_basis_points,
+            current_epoch: 0,
+        };
+        
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        
+        let pool_id = object::id(&pool);
+        event::emit(PoolCreated {
+            pool_id,
+            reward_rate: reward_rate_basis_points,
+        });
+        
+        (pool, admin_cap)
+    }
+    
+    public fun stake(
+        pool: &mut RewardPool,
+        coin: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): StakingPosition {
+        let amount = coin::value(&coin);
+        let current_epoch = pool.current_epoch;
+        
+        balance::join(&mut pool.reserve, coin::into_balance(coin));
+        
+        let position = StakingPosition {
+            id: object::new(ctx),
+            staked_amount: amount,
+            stake_epoch: current_epoch,
+        };
+        
+        let position_id = object::id(&position);
+        event::emit(Staked {
+            position_id,
+            amount,
+            epoch: current_epoch,
+        });
+        
+        position
+    }
+    
+    public fun unstake(
+        pool: &mut RewardPool,
+        position: StakingPosition,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let position_id = object::id(&position);
+        let StakingPosition {
+            id,
+            staked_amount,
+            stake_epoch,
+        } = position;
+        
+        object::delete(id);
+        
+        let full_epochs_elapsed = pool.current_epoch - stake_epoch;
+        
+        let reward = (staked_amount as u128)
+            * (pool.reward_rate_basis_points as u128)
+            * (full_epochs_elapsed as u128)
+            / (EPOCH_REWARD_RATE_PRECISION as u128);
+        let reward = (reward as u64);
+        
+        let total_payout = staked_amount + reward;
+        
+        assert!(
+            balance::value(&pool.reserve) >= total_payout,
+            EInsufficientReserve,
+        );
+        
+        let payout = balance::split(&mut pool.reserve, total_payout);
+        
+        event::emit(Unstaked {
+            position_id,
+            principal: staked_amount,
+            reward,
+        });
+        
+        coin::from_balance(payout, ctx)
+    }
+    
+    public fun top_up_reservoir(
+        _cap: &AdminCap,
+        pool: &mut RewardPool,
+        coin: Coin<SUI>,
+    ) {
+        let amount = coin::value(&coin);
+        balance::join(&mut pool.reserve, coin::into_balance(coin));
+        
+        event::emit(ReserveTopedUp {
+            amount,
+        });
+    }
+    
+    public fun advance_epoch(
+        _cap: &AdminCap,
+        pool: &mut RewardPool,
+    ) {
+        pool.current_epoch = pool.current_epoch + 1;
+        event::emit(EpochAdvanced {
+            new_epoch: pool.current_epoch,
+        });
+    }
+    
+    public fun get_reservoir_balance(pool: &RewardPool): u64 {
+        balance::value(&pool.reserve)
+    }
+}

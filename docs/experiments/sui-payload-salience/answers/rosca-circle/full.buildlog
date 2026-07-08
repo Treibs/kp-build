@@ -1,0 +1,19 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:138:27
+    │
+ 16 │         pot: Option<Coin<SUI>>,
+    │              -----------------
+    │              │      │
+    │              │      The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+    │              The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+    ·
+129 │             mut pot,
+    │                 --- The local variable 'pot' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+138 │         object::delete(id);
+    │                           ^ Invalid return
+
+Failed to build Move modules: Compilation error.

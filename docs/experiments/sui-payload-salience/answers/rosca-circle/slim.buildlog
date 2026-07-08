@@ -1,0 +1,35 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04030]: invalid usage of lambda type
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/vector.move:303:47
+    │
+303 │ public macro fun all<$T>($v: &vector<$T>, $f: |&$T| -> bool): bool {
+    │                                               ^^^^^^^^^^^^^ Unexpected lambda type. Lambdas can only be used with 'macro' functions, as parameters or direct arguments
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:15:14
+   │
+15 │         pot: Coin<SUI>,
+   │              ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04029]: invalid function call
+    ┌─ ./sources/module.move:73:31
+    │
+ 73 │         let all_contributed = vector::all(&circle.contributed, |contributed| contributed);
+    │                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'all' is a macro function and must be called with a `!`. Try replacing with 'all!'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/vector.move:303:8
+    │
+303 │ public macro fun all<$T>($v: &vector<$T>, $f: |&$T| -> bool): bool {
+    │        ----- 'macro' function is declared here
+
+error[E04031]: invalid usage of lambda
+   ┌─ ./sources/module.move:73:64
+   │
+73 │         let all_contributed = vector::all(&circle.contributed, |contributed| contributed);
+   │                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^ Lambdas can only be used directly as arguments to 'macro' functions
+
+Failed to build Move modules: Compilation error.

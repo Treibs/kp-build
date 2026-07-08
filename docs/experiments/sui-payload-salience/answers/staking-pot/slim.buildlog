@@ -1,0 +1,72 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:15:35
+   │
+ 2 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+15 │         reward_reservoir: Balance<SUI>,
+   │                                   ^^^
+   │                                   │
+   │                                   Could not resolve the name 'SUI'
+   │                                   Did you mean: 'Coin'
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:21:22
+   │
+21 │         staked_coin: Coin<SUI>,
+   │                      ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:21:27
+   │
+ 2 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+21 │         staked_coin: Coin<SUI>,
+   │                           ^^^
+   │                           │
+   │                           Could not resolve the name 'SUI'
+   │                           Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:34:27
+   │
+ 2 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+34 │         reward_fund: Coin<SUI>,
+   │                           ^^^
+   │                           │
+   │                           Could not resolve the name 'SUI'
+   │                           Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:47:27
+   │
+ 2 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+47 │         staked_coin: Coin<SUI>,
+   │                           ^^^
+   │                           │
+   │                           Could not resolve the name 'SUI'
+   │                           Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:90:27
+   │
+ 2 │     use sui::coin::{Coin, Self};
+   │                     ---- Similarly named defintion found here
+   ·
+90 │         top_up_coin: Coin<SUI>,
+   │                           ^^^
+   │                           │
+   │                           Could not resolve the name 'SUI'
+   │                           Did you mean: 'Coin'
+
+Failed to build Move modules: Compilation error.

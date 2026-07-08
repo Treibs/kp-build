@@ -1,0 +1,118 @@
+module swap_pool::pool {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+
+    public struct Pool<phantom CoinA, phantom CoinB> has key, store {
+        id: UID,
+        reserve_a: Balance<CoinA>,
+        reserve_b: Balance<CoinB>,
+        fee_bps: u64,
+    }
+
+    public struct PoolCap has key, store {
+        id: UID,
+        pool_id: address,
+    }
+
+    const MAX_FEE_BPS: u64 = 10000;
+    const BPS_DENOMINATOR: u64 = 10000;
+
+    public fun create_pool<CoinA, CoinB>(
+        coin_a: Coin<CoinA>,
+        coin_b: Coin<CoinB>,
+        fee_bps: u64,
+        ctx: &mut TxContext,
+    ): (Pool<CoinA, CoinB>, PoolCap) {
+        assert!(fee_bps <= MAX_FEE_BPS, 1);
+        assert!(coin::value(&coin_a) > 0 && coin::value(&coin_b) > 0, 2);
+
+        let pool = Pool {
+            id: object::new(ctx),
+            reserve_a: coin::into_balance(coin_a),
+            reserve_b: coin::into_balance(coin_b),
+            fee_bps,
+        };
+
+        let pool_id = object::uid_to_address(&pool.id);
+
+        let cap = PoolCap {
+            id: object::new(ctx),
+            pool_id,
+        };
+
+        (pool, cap)
+    }
+
+    public fun reserves<CoinA, CoinB>(pool: &Pool<CoinA, CoinB>): (u64, u64) {
+        (balance::value(&pool.reserve_a), balance::value(&pool.reserve_b))
+    }
+
+    public fun swap_a_for_b<CoinA, CoinB>(
+        pool: &mut Pool<CoinA, CoinB>,
+        input: Coin<CoinA>,
+        ctx: &mut TxContext,
+    ): Coin<CoinB> {
+        let input_amount = coin::value(&input);
+        assert!(input_amount > 0, 3);
+
+        let (reserve_a, reserve_b) = reserves(pool);
+
+        let fee_amount = (input_amount * pool.fee_bps) / BPS_DENOMINATOR;
+        let input_after_fee = input_amount - fee_amount;
+
+        let output_amount = (input_after_fee * reserve_b) / (reserve_a + input_after_fee);
+        assert!(output_amount > 0, 4);
+
+        balance::join(&mut pool.reserve_a, coin::into_balance(input));
+        let out_balance = balance::split(&mut pool.reserve_b, output_amount);
+        coin::from_balance(out_balance, ctx)
+    }
+
+    public fun swap_b_for_a<CoinA, CoinB>(
+        pool: &mut Pool<CoinA, CoinB>,
+        input: Coin<CoinB>,
+        ctx: &mut TxContext,
+    ): Coin<CoinA> {
+        let input_amount = coin::value(&input);
+        assert!(input_amount > 0, 3);
+
+        let (reserve_a, reserve_b) = reserves(pool);
+
+        let fee_amount = (input_amount * pool.fee_bps) / BPS_DENOMINATOR;
+        let input_after_fee = input_amount - fee_amount;
+
+        let output_amount = (input_after_fee * reserve_a) / (reserve_b + input_after_fee);
+        assert!(output_amount > 0, 4);
+
+        balance::join(&mut pool.reserve_b, coin::into_balance(input));
+        let out_balance = balance::split(&mut pool.reserve_a, output_amount);
+        coin::from_balance(out_balance, ctx)
+    }
+
+    public fun add_liquidity<CoinA, CoinB>(
+        pool: &mut Pool<CoinA, CoinB>,
+        _cap: &PoolCap,
+        coin_a: Coin<CoinA>,
+        coin_b: Coin<CoinB>,
+    ) {
+        balance::join(&mut pool.reserve_a, coin::into_balance(coin_a));
+        balance::join(&mut pool.reserve_b, coin::into_balance(coin_b));
+    }
+
+    public fun close_pool<CoinA, CoinB>(
+        pool: Pool<CoinA, CoinB>,
+        cap: PoolCap,
+        ctx: &mut TxContext,
+    ): (Coin<CoinA>, Coin<CoinB>) {
+        let Pool { id, reserve_a, reserve_b, fee_bps: _ } = pool;
+        object::delete(id);
+
+        let PoolCap { id: cap_id, pool_id: _ } = cap;
+        object::delete(cap_id);
+
+        let coin_a = coin::from_balance(reserve_a, ctx);
+        let coin_b = coin::from_balance(reserve_b, ctx);
+
+        (coin_a, coin_b)
+    }
+}

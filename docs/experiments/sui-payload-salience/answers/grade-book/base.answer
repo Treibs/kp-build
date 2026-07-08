@@ -1,0 +1,177 @@
+```move
+module gradebook::gradebook {
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    use sui::vector;
+    use sui::table::{Self, Table};
+    use sui::event;
+    use std::string::String;
+
+    public struct InstructorCap has key {
+        id: UID,
+        gradebook_id: object::ID,
+    }
+
+    public struct Assignment has store {
+        name: String,
+        max_score: u32,
+    }
+
+    public struct GradeBook has key {
+        id: UID,
+        assignments: vector<Assignment>,
+        scores: Table<vector<u8>, u32>,
+    }
+
+    public struct ScoreAmendedEvent has copy, drop {
+        student: address,
+        assignment_index: u32,
+        old_score: u32,
+        new_score: u32,
+    }
+
+    public fun create_gradebook(ctx: &mut TxContext): InstructorCap {
+        let gradebook = GradeBook {
+            id: object::new(ctx),
+            assignments: vector::empty(),
+            scores: table::new(ctx),
+        };
+        let gradebook_id = object::id(&gradebook);
+        
+        transfer::share_object(gradebook);
+        
+        InstructorCap {
+            id: object::new(ctx),
+            gradebook_id,
+        }
+    }
+
+    public fun register_assignment(
+        cap: &InstructorCap,
+        gradebook: &mut GradeBook,
+        name: String,
+        max_score: u32,
+    ) {
+        assert!(cap.gradebook_id == object::id(gradebook));
+        vector::push_back(&mut gradebook.assignments, Assignment { name, max_score });
+    }
+
+    public fun record_score(
+        cap: &InstructorCap,
+        gradebook: &mut GradeBook,
+        student: address,
+        assignment_index: u32,
+        score: u32,
+    ) {
+        assert!(cap.gradebook_id == object::id(gradebook));
+        assert!((assignment_index as u64) < vector::length(&gradebook.assignments));
+        
+        let assignment = vector::borrow(&gradebook.assignments, assignment_index as u64);
+        assert!(score <= assignment.max_score);
+        
+        let key = encode_key(student, assignment_index);
+        assert!(!table::contains(&gradebook.scores, &key));
+        
+        table::add(&mut gradebook.scores, key, score);
+    }
+
+    public fun amend_score(
+        cap: &InstructorCap,
+        gradebook: &mut GradeBook,
+        student: address,
+        assignment_index: u32,
+        new_score: u32,
+    ) {
+        assert!(cap.gradebook_id == object::id(gradebook));
+        assert!((assignment_index as u64) < vector::length(&gradebook.assignments));
+        
+        let assignment = vector::borrow(&gradebook.assignments, assignment_index as u64);
+        assert!(new_score <= assignment.max_score);
+        
+        let key = encode_key(student, assignment_index);
+        assert!(table::contains(&gradebook.scores, &key));
+        
+        let old_score = table::remove(&mut gradebook.scores, key);
+        table::add(&mut gradebook.scores, encode_key(student, assignment_index), new_score);
+        
+        event::emit(ScoreAmendedEvent {
+            student,
+            assignment_index,
+            old_score,
+            new_score,
+        });
+    }
+
+    public fun get_student_total(
+        gradebook: &GradeBook,
+        student: address,
+    ): u32 {
+        let mut total = 0u32;
+        let mut i = 0u32;
+        
+        while (i < vector::length(&gradebook.assignments) as u32) {
+            let key = encode_key(student, i);
+            if (table::contains(&gradebook.scores, &key)) {
+                total = total + *table::borrow(&gradebook.scores, &key);
+            };
+            i = i + 1;
+        };
+        
+        total
+    }
+
+    public fun has_score(
+        gradebook: &GradeBook,
+        student: address,
+        assignment_index: u32,
+    ): bool {
+        let key = encode_key(student, assignment_index);
+        table::contains(&gradebook.scores, &key)
+    }
+
+    fun encode_key(student: address, assignment_index: u32): vector<u8> {
+        let mut key = vector::empty();
+        let addr_bytes = address_to_bytes(student);
+        let idx_bytes = u32_to_bytes(assignment_index);
+        
+        let mut i = 0;
+        while (i < 32) {
+            vector::push_back(&mut key, *vector::borrow(&addr_bytes, i));
+            i = i + 1;
+        };
+        
+        let mut i = 0;
+        while (i < 4) {
+            vector::push_back(&mut key, *vector::borrow(&idx_bytes, i));
+            i = i + 1;
+        };
+        
+        key
+    }
+
+    fun address_to_bytes(addr: address): vector<u8> {
+        let mut bytes = vector::empty();
+        let mut n = (addr as u256);
+        let mut i = 0;
+        while (i < 32) {
+            vector::push_back(&mut bytes, ((n % 256) as u8));
+            n = n / 256;
+            i = i + 1;
+        };
+        bytes
+    }
+
+    fun u32_to_bytes(n: u32): vector<u8> {
+        let mut bytes = vector::empty();
+        let mut x = n;
+        let mut i = 0;
+        while (i < 4) {
+            vector::push_back(&mut bytes, (x as u8));
+            x = x >> 8;
+            i = i + 1;
+        };
+        bytes
+    }
+}
+```

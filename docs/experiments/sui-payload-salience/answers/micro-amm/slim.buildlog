@@ -1,0 +1,46 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:44:13
+    │
+ 10 │         pool_id: address,
+    │                  ------- Expected: 'address'
+    ·
+ 44 │             pool_id,
+    │             ^^^^^^^ Invalid argument for field 'pool_id' for 'my_pkg::swap_pool::PoolCapability'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:243:33
+    │
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                                 -- Given: 'sui::object::ID'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:106:34
+    │
+ 10 │         pool_id: address,
+    │                  ------- Found: 'address'. It is not compatible with the other type.
+    ·
+106 │         assert!(object::id(pool) == cap.pool_id, 6);
+    │                                  ^^ Incompatible arguments to '=='
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:243:33
+    │
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                                 -- Found: 'sui::object::ID'. It is not compatible with the other type.
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:116:35
+    │
+ 10 │         pool_id: address,
+    │                  ------- Found: 'address'. It is not compatible with the other type.
+    ·
+116 │         assert!(object::id(&pool) == cap.pool_id, 7);
+    │                                   ^^ Incompatible arguments to '=='
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:243:33
+    │
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                                 -- Found: 'sui::object::ID'. It is not compatible with the other type.
+
+Failed to build Move modules: Compilation error.

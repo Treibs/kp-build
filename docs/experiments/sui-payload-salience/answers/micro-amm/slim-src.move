@@ -1,0 +1,133 @@
+module my_pkg::swap_pool {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    public struct PoolCapability has key, store {
+        id: UID,
+        pool_id: address,
+    }
+
+    public struct Pool<phantom CoinA, phantom CoinB> has key, store {
+        id: UID,
+        reserve_a: Balance<CoinA>,
+        reserve_b: Balance<CoinB>,
+        fee_bp: u64,
+    }
+
+    const MAX_FEE_BP: u64 = 10000;
+
+    public fun create<CoinA, CoinB>(
+        coin_a: Coin<CoinA>,
+        coin_b: Coin<CoinB>,
+        fee_bp: u64,
+        ctx: &mut TxContext,
+    ): PoolCapability {
+        assert!(fee_bp <= MAX_FEE_BP, 1);
+        assert!(coin::value(&coin_a) > 0, 2);
+        assert!(coin::value(&coin_b) > 0, 3);
+
+        let pool = Pool {
+            id: object::new(ctx),
+            reserve_a: coin::into_balance(coin_a),
+            reserve_b: coin::into_balance(coin_b),
+            fee_bp,
+        };
+
+        let pool_id = object::id(&pool);
+        transfer::share_object(pool);
+
+        PoolCapability {
+            id: object::new(ctx),
+            pool_id,
+        }
+    }
+
+    public fun swap_a_for_b<CoinA, CoinB>(
+        pool: &mut Pool<CoinA, CoinB>,
+        coin_in: Coin<CoinA>,
+        ctx: &mut TxContext,
+    ): Coin<CoinB> {
+        let in_amount = coin::value(&coin_in);
+        assert!(in_amount > 0, 4);
+
+        let reserve_a = balance::value(&pool.reserve_a);
+        let reserve_b = balance::value(&pool.reserve_b);
+
+        let fee_amount = (((in_amount as u128) * (pool.fee_bp as u128)) / 10000) as u64;
+        let amount_after_fee = in_amount - fee_amount;
+
+        let out_amount = ((amount_after_fee as u128) * (reserve_b as u128)) / 
+                        ((reserve_a as u128) + (amount_after_fee as u128));
+        let out_amount = (out_amount as u64);
+
+        assert!(out_amount > 0, 5);
+
+        balance::join(&mut pool.reserve_a, coin::into_balance(coin_in));
+        
+        let out_balance = balance::split(&mut pool.reserve_b, out_amount);
+        coin::from_balance(out_balance, ctx)
+    }
+
+    public fun swap_b_for_a<CoinA, CoinB>(
+        pool: &mut Pool<CoinA, CoinB>,
+        coin_in: Coin<CoinB>,
+        ctx: &mut TxContext,
+    ): Coin<CoinA> {
+        let in_amount = coin::value(&coin_in);
+        assert!(in_amount > 0, 4);
+
+        let reserve_a = balance::value(&pool.reserve_a);
+        let reserve_b = balance::value(&pool.reserve_b);
+
+        let fee_amount = (((in_amount as u128) * (pool.fee_bp as u128)) / 10000) as u64;
+        let amount_after_fee = in_amount - fee_amount;
+
+        let out_amount = ((amount_after_fee as u128) * (reserve_a as u128)) / 
+                        ((reserve_b as u128) + (amount_after_fee as u128));
+        let out_amount = (out_amount as u64);
+
+        assert!(out_amount > 0, 5);
+
+        balance::join(&mut pool.reserve_b, coin::into_balance(coin_in));
+        
+        let out_balance = balance::split(&mut pool.reserve_a, out_amount);
+        coin::from_balance(out_balance, ctx)
+    }
+
+    public fun add_liquidity<CoinA, CoinB>(
+        cap: &PoolCapability,
+        pool: &mut Pool<CoinA, CoinB>,
+        coin_a: Coin<CoinA>,
+        coin_b: Coin<CoinB>,
+    ) {
+        assert!(object::id(pool) == cap.pool_id, 6);
+        balance::join(&mut pool.reserve_a, coin::into_balance(coin_a));
+        balance::join(&mut pool.reserve_b, coin::into_balance(coin_b));
+    }
+
+    public fun close<CoinA, CoinB>(
+        cap: PoolCapability,
+        pool: Pool<CoinA, CoinB>,
+        ctx: &mut TxContext,
+    ): (Coin<CoinA>, Coin<CoinB>) {
+        assert!(object::id(&pool) == cap.pool_id, 7);
+
+        let Pool { id, reserve_a, reserve_b, fee_bp: _ } = pool;
+        object::delete(id);
+
+        let PoolCapability { id: cap_id, pool_id: _ } = cap;
+        object::delete(cap_id);
+
+        (
+            coin::from_balance(reserve_a, ctx),
+            coin::from_balance(reserve_b, ctx),
+        )
+    }
+
+    public fun get_reserves<CoinA, CoinB>(pool: &Pool<CoinA, CoinB>): (u64, u64) {
+        (balance::value(&pool.reserve_a), balance::value(&pool.reserve_b))
+    }
+}

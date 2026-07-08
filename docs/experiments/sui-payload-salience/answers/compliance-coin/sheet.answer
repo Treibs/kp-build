@@ -1,0 +1,81 @@
+```move
+module reg::token {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use std::string::{Self, String};
+    use std::option;
+    use sui::dynamic_field;
+
+    public struct TOKEN has drop {}
+
+    public struct ComplianceCap has key, store {
+        id: UID,
+    }
+
+    public struct FrozenList has key {
+        id: UID,
+    }
+
+    fun init(witness: TOKEN, ctx: &mut TxContext) {
+        let (treasury, metadata) = coin::create_currency(
+            witness,
+            9,
+            b"REG",
+            b"REG",
+            string::utf8(b"Regulated Token"),
+            option::none(),
+            ctx
+        );
+
+        transfer::public_transfer(metadata, ctx.sender());
+        transfer::public_transfer(treasury, ctx.sender());
+        
+        let compliance_cap = ComplianceCap {
+            id: object::new(ctx),
+        };
+        transfer::public_transfer(compliance_cap, ctx.sender());
+
+        let frozen_list = FrozenList {
+            id: object::new(ctx),
+        };
+        transfer::share_object(frozen_list);
+    }
+
+    public fun freeze(cap: &ComplianceCap, frozen_list: &mut FrozenList, address: address) {
+        dynamic_field::add(&mut frozen_list.id, address, true);
+    }
+
+    public fun unfreeze(cap: &ComplianceCap, frozen_list: &mut FrozenList, address: address) {
+        let _ = dynamic_field::remove(&mut frozen_list.id, address);
+    }
+
+    public fun is_frozen(frozen_list: &FrozenList, address: address): bool {
+        dynamic_field::exists(&frozen_list.id, address)
+    }
+
+    public fun mint(
+        cap: &mut TreasuryCap<TOKEN>,
+        amount: u64,
+        recipient: address,
+        frozen_list: &FrozenList,
+        ctx: &mut TxContext,
+    ) {
+        assert!(!is_frozen(frozen_list, recipient), 1);
+        let coin = coin::mint(cap, amount, ctx);
+        transfer::public_transfer(coin, recipient);
+    }
+
+    public fun transfer_regulated(
+        coin: Coin<TOKEN>,
+        recipient: address,
+        frozen_list: &FrozenList,
+        ctx: &mut TxContext,
+    ) {
+        assert!(!is_frozen(frozen_list, ctx.sender()), 2);
+        assert!(!is_frozen(frozen_list, recipient), 3);
+        transfer::public_transfer(coin, recipient);
+    }
+}
+```

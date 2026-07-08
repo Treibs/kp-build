@@ -1,0 +1,82 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:6:9
+  │
+6 │     use sui::vector;
+  │         ^^^^^^^^^^^ Invalid 'use'. Unbound module: 'sui::vector'
+
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:10:5
+   │
+10 │     struct Circle has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:19:18
+   │
+19 │         balance: Coin<SUI>,
+   │                  ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:81:23
+   │
+20 │         contributed_this_round: Bag,
+   │                                 --- The type 'sui::bag::Bag' does not have the ability 'copy'
+   ·
+81 │         let old_bag = circle.contributed_this_round;
+   │                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'contributed_this_round' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/bag.move:31:15
+   │
+31 │ public struct Bag has key, store {
+   │               --- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:82:9
+   │
+20 │         contributed_this_round: Bag,
+   │                                 --- The type 'sui::bag::Bag' does not have the ability 'drop'
+   ·
+82 │         circle.contributed_this_round = bag::new(ctx);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/bag.move:31:15
+   │
+31 │ public struct Bag has key, store {
+   │               --- To satisfy the constraint, the 'drop' ability would need to be added here
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:84:9
+   │
+84 │         bag::drop(old_bag);
+   │         ^^^^^^^^^
+   │         │
+   │         Invalid module access. Unbound function 'drop' in module 'sui::bag'
+   │         Did you mean: 'add'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/bag.move:49:12
+   │
+49 │ public fun add<K: copy + drop + store, V: store>(bag: &mut Bag, k: K, v: V) {
+   │            --- Similarly named defintion found here
+
+error[E03003]: unbound module member
+    ┌─ ./sources/module.move:107:9
+    │
+107 │         bag::drop(contributed_this_round);
+    │         ^^^^^^^^^
+    │         │
+    │         Invalid module access. Unbound function 'drop' in module 'sui::bag'
+    │         Did you mean: 'add'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/bag.move:49:12
+    │
+ 49 │ public fun add<K: copy + drop + store, V: store>(bag: &mut Bag, k: K, v: V) {
+    │            --- Similarly named defintion found here
+
+Failed to build Move modules: Compilation error.

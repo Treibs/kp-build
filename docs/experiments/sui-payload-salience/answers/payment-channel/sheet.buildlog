@@ -1,0 +1,200 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:46:25
+   │
+46 │         opener_deposit: Coin<SUI>,
+   │                         ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:50:27
+   │
+50 │         pending_proposal: Option<PendingProposal>,
+   │                           ^^^^^^^^^^^^^^^^^^^^^^^
+   │                           │      │
+   │                           │      The type 'std::option::Option<0x0::payment_channel::PendingProposal>' can have the ability 'store' but the type argument '0x0::payment_channel::PendingProposal' does not have the required ability 'store'
+   │                           Invalid field type. The struct was declared with the ability 'key' so all fields require the ability 'store'
+   │                           The type 'std::option::Option<0x0::payment_channel::PendingProposal>' does not have the ability 'store'
+
+warning[W09012]: unused 'mut' modifiers
+   ┌─ ./sources/module.move:86:27
+   │
+86 │     public fun cancel(mut channel: Channel, ctx: &mut TxContext) {
+   │                       --- ^^^^^^^ The variable 'channel' is never used mutably
+   │                       │    
+   │                       Consider removing the 'mut' declaration here
+   │
+   = This warning can be suppressed with '#[allow(unused_let_mut)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:90:30
+   │
+46 │         opener_deposit: Coin<SUI>,
+   │                         --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'copy'
+   ·
+90 │         let opener_deposit = channel.opener_deposit;
+   │                              ^^^^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'opener_deposit' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:91:24
+   │
+43 │         id: UID,
+   │             --- The type 'sui::object::UID' does not have the ability 'copy'
+   ·
+91 │         object::delete(channel.id);
+   │                        ^^^^^^^^^^ Invalid implicit copy of field 'id' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+   │
+81 │ public struct UID has store {
+   │               --- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:92:66
+   │
+42 │     public struct Channel has key {
+   │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+86 │     public fun cancel(mut channel: Channel, ctx: &mut TxContext) {
+   │                           -------  ------- The type '0x0::payment_channel::Channel' does not have the ability 'drop'
+   │                           │         
+   │                           The parameter 'channel' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+92 │         transfer::public_transfer(opener_deposit, channel.opener);
+   │                                                                  ^ Invalid return
+
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:108:11
+    │
+ 42 │     public struct Channel has key {
+    │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+ 96 │         mut channel: Channel,
+    │             -------  ------- The type '0x0::payment_channel::Channel' does not have the ability 'drop'
+    │             │         
+    │             The parameter 'channel' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+108 │         });
+    │           ^ Invalid return
+
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:136:11
+    │
+ 42 │     public struct Channel has key {
+    │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+112 │         mut channel: Channel,
+    │             -------  ------- The type '0x0::payment_channel::Channel' does not have the ability 'drop'
+    │             │         
+    │             The parameter 'channel' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+136 │         });
+    │           ^ Invalid return
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:154:24
+    │
+ 46 │         opener_deposit: Coin<SUI>,
+    │                         --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'copy'
+    ·
+154 │         let mut pool = channel.opener_deposit;
+    │                        ^^^^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'opener_deposit' without the 'copy' ability
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+    │
+ 44 │ public struct Coin<phantom T> has key, store {
+    │               ---- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:164:24
+    │
+ 43 │         id: UID,
+    │             --- The type 'sui::object::UID' does not have the ability 'copy'
+    ·
+164 │         object::delete(channel.id);
+    │                        ^^^^^^^^^^ Invalid implicit copy of field 'id' without the 'copy' ability
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+    │
+ 81 │ public struct UID has store {
+    │               --- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:173:11
+    │
+ 42 │     public struct Channel has key {
+    │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+140 │         mut channel: Channel,
+    │             -------  ------- The type '0x0::payment_channel::Channel' does not have the ability 'drop'
+    │             │         
+    │             The parameter 'channel' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+173 │         });
+    │           ^ Invalid return
+
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:184:42
+    │
+ 42 │     public struct Channel has key {
+    │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+177 │         mut channel: Channel,
+    │             -------  ------- The type '0x0::payment_channel::Channel' does not have the ability 'drop'
+    │             │         
+    │             The parameter 'channel' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+184 │         channel.pending_proposal = none();
+    │                                          ^ Invalid return
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:207:24
+    │
+ 43 │         id: UID,
+    │             --- The type 'sui::object::UID' does not have the ability 'copy'
+    ·
+207 │         object::delete(channel.id);
+    │                        ^^^^^^^^^^ Invalid implicit copy of field 'id' without the 'copy' ability
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+    │
+ 81 │ public struct UID has store {
+    │               --- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:209:35
+    │
+ 46 │         opener_deposit: Coin<SUI>,
+    │                         --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'copy'
+    ·
+209 │         transfer::public_transfer(channel.opener_deposit, opener);
+    │                                   ^^^^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'opener_deposit' without the 'copy' ability
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+    │
+ 44 │ public struct Coin<phantom T> has key, store {
+    │               ---- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:216:11
+    │
+ 42 │     public struct Channel has key {
+    │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+188 │         mut channel: Channel,
+    │             -------  ------- The type '0x0::payment_channel::Channel' does not have the ability 'drop'
+    │             │         
+    │             The parameter 'channel' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+216 │         });
+    │           ^ Invalid return
+
+Failed to build Move modules: Compilation error.

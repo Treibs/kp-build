@@ -1,0 +1,206 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:33
+  │
+2 │     use sui::balance::{Balance, self};
+  │                                 ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::balance'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:7:13
+  │
+7 │ module sui::balance;
+  │             ------- Module 'sui::balance' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:27
+  │
+3 │     use sui::coin::{Coin, self};
+  │                           ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:22
+   │
+ 2 │     use sui::balance::{Balance, self};
+   │                        ------- Similarly named defintion found here
+   ·
+58 │             reserve: balance::zero(),
+   │                      ^^^^^^^
+   │                      │
+   │                      Could not resolve the name 'balance'
+   │                      Did you mean: 'Balance'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:78:9
+   │
+78 │         coin: Coin<SUI>,
+   │         ^^^^ Unused parameter 'coin'. Consider removing or prefixing with an underscore: '_coin'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:81:22
+   │
+ 3 │     use sui::coin::{Coin, self};
+   │                     ---- Similarly named defintion found here
+   ·
+81 │         let amount = coin::value(&coin);
+   │                      ^^^^
+   │                      │
+   │                      Could not resolve the name 'coin'
+   │                      Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:84:9
+   │
+ 2 │     use sui::balance::{Balance, self};
+   │                        ------- Similarly named defintion found here
+   ·
+84 │         balance::join(&mut pool.reserve, coin::into_balance(coin));
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:84:42
+   │
+ 3 │     use sui::coin::{Coin, self};
+   │                     ---- Similarly named defintion found here
+   ·
+84 │         balance::join(&mut pool.reserve, coin::into_balance(coin));
+   │                                          ^^^^
+   │                                          │
+   │                                          Could not resolve the name 'coin'
+   │                                          Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:105:9
+    │
+105 │         ctx: &mut TxContext,
+    │         ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:127:13
+    │
+  2 │     use sui::balance::{Balance, self};
+    │                        ------- Similarly named defintion found here
+    ·
+127 │             balance::value(&pool.reserve) >= total_payout,
+    │             ^^^^^^^
+    │             │
+    │             Could not resolve the name 'balance'
+    │             Did you mean: 'Balance'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:131:13
+    │
+131 │         let payout = balance::split(&mut pool.reserve, total_payout);
+    │             ^^^^^^ Unused local variable 'payout'. Consider removing or prefixing with an underscore: '_payout'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:131:22
+    │
+  2 │     use sui::balance::{Balance, self};
+    │                        ------- Similarly named defintion found here
+    ·
+131 │         let payout = balance::split(&mut pool.reserve, total_payout);
+    │                      ^^^^^^^
+    │                      │
+    │                      Could not resolve the name 'balance'
+    │                      Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:139:9
+    │
+  3 │     use sui::coin::{Coin, self};
+    │                     ---- Similarly named defintion found here
+    ·
+139 │         coin::from_balance(payout, ctx)
+    │         ^^^^
+    │         │
+    │         Could not resolve the name 'coin'
+    │         Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:144:9
+    │
+144 │         pool: &mut RewardPool,
+    │         ^^^^ Unused parameter 'pool'. Consider removing or prefixing with an underscore: '_pool'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:145:9
+    │
+145 │         coin: Coin<SUI>,
+    │         ^^^^ Unused parameter 'coin'. Consider removing or prefixing with an underscore: '_coin'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:147:22
+    │
+  3 │     use sui::coin::{Coin, self};
+    │                     ---- Similarly named defintion found here
+    ·
+147 │         let amount = coin::value(&coin);
+    │                      ^^^^
+    │                      │
+    │                      Could not resolve the name 'coin'
+    │                      Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:148:9
+    │
+  2 │     use sui::balance::{Balance, self};
+    │                        ------- Similarly named defintion found here
+    ·
+148 │         balance::join(&mut pool.reserve, coin::into_balance(coin));
+    │         ^^^^^^^
+    │         │
+    │         Could not resolve the name 'balance'
+    │         Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:148:42
+    │
+  3 │     use sui::coin::{Coin, self};
+    │                     ---- Similarly named defintion found here
+    ·
+148 │         balance::join(&mut pool.reserve, coin::into_balance(coin));
+    │                                          ^^^^
+    │                                          │
+    │                                          Could not resolve the name 'coin'
+    │                                          Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:165:38
+    │
+165 │     public fun get_reservoir_balance(pool: &RewardPool): u64 {
+    │                                      ^^^^ Unused parameter 'pool'. Consider removing or prefixing with an underscore: '_pool'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:166:9
+    │
+  2 │     use sui::balance::{Balance, self};
+    │                        ------- Similarly named defintion found here
+    ·
+166 │         balance::value(&pool.reserve)
+    │         ^^^^^^^
+    │         │
+    │         Could not resolve the name 'balance'
+    │         Did you mean: 'Balance'
+
+Failed to build Move modules: Compilation error.
