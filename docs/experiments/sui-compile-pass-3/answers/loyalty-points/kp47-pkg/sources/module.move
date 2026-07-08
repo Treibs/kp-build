@@ -1,0 +1,90 @@
+module loyalty::program {
+    use sui::event;
+    use sui::transfer;
+
+    const REDEEM_COST: u64 = 100;
+
+    public struct OperatorCap has key, store {
+        id: UID,
+    }
+
+    public struct Points has key {
+        id: UID,
+        balance: u64,
+    }
+
+    public struct Reward has key, store {
+        id: UID,
+    }
+
+    public struct PointsIssued has copy, drop {
+        points: u64,
+    }
+
+    public struct PointsRedeemed has copy, drop {
+        points: u64,
+    }
+
+    public struct PointsMerged has copy, drop {
+        points: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(
+            OperatorCap {
+                id: object::new(ctx),
+            },
+            ctx.sender(),
+        );
+    }
+
+    public fun issue(
+        _cap: &OperatorCap,
+        amount: u64,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        let points = Points {
+            id: object::new(ctx),
+            balance: amount,
+        };
+        event::emit(PointsIssued { points: amount });
+        transfer::transfer(points, recipient);
+    }
+
+    public fun redeem(
+        points: Points,
+        ctx: &mut TxContext,
+    ): Reward {
+        assert!(points.balance >= REDEEM_COST);
+        let Points { id, balance } = points;
+        object::delete(id);
+        event::emit(PointsRedeemed { points: balance });
+        Reward {
+            id: object::new(ctx),
+        }
+    }
+
+    public fun balance(points: &Points): u64 {
+        points.balance
+    }
+
+    public fun merge(
+        points1: Points,
+        points2: Points,
+        ctx: &mut TxContext,
+    ): Points {
+        let Points { id: id1, balance: balance1 } = points1;
+        let Points { id: id2, balance: balance2 } = points2;
+        object::delete(id1);
+        object::delete(id2);
+
+        let total = balance1 + balance2;
+        event::emit(PointsMerged { points: total });
+
+        Points {
+            id: object::new(ctx),
+            balance: total,
+        }
+    }
+}

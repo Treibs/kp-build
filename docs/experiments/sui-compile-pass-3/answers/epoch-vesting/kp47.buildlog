@@ -1,0 +1,10 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E02004]: invalid 'module' declaration
+  ┌─ ./sources/module.move:1:8
+  │
+1 │ module linear_vesting {
+  │        ^^^^^^^^^^^^^^ Invalid module declaration. The module does not have a specified address. Either declare it inside of an 'address <address> {' block or declare it with an address 'module <address>::linear_vesting''
+
+Failed to build Move modules: Compilation error.

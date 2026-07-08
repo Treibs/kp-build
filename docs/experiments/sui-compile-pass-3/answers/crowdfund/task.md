@@ -1,0 +1,1 @@
+Write a module implementing a crowdfunding campaign: a creator opens a campaign with a funding goal (in SUI) and a deadline epoch. Anyone contributes `Coin<SUI>` before the deadline; contributions are tracked per contributor. After the deadline: if the goal was met the creator claims the total once; if not, each contributor can reclaim exactly their contribution.

@@ -1,0 +1,98 @@
+# E02004 counterfactual — escrow-swap/kp47 scaffold with the bare module name
+# additionally bound as an address (atomic_swap = "0x0" appended to [addresses]).
+# Question: does an address binding rescue 'module atomic_swap {'? Answer: no - E02004 persists.
+# Not part of the pre-registered gate; run with the same pinned binary (sui 1.74.1-8fc60f1fa966).
+## Move.toml used:
+#   [package]
+#   name = "probe_pkg"
+#   edition = "2024"
+#   
+#   [addresses]
+#   probe = "0x0"
+#   atomic_swap = "0x0"
+## Build output:
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E02004]: invalid 'module' declaration
+  ┌─ ./sources/module.move:1:8
+  │
+1 │ module atomic_swap {
+  │        ^^^^^^^^^^^ Invalid module declaration. The module does not have a specified address. Either declare it inside of an 'address <address> {' block or declare it with an address 'module <address>::atomic_swap''
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:23
+  │
+2 │     use std::option::{self, Option};
+  │                       ^^^^ Invalid 'use'. Unbound member 'self' in module 'std::option'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/option.move:5:13
+  │
+5 │ module std::option;
+  │             ------ Module 'std::option' declared here
+
+warning[W09010]: unused function type parameter
+   ┌─ ./sources/module.move:12:39
+   │
+12 │     public fun create<A: key + store, B: key + store>(
+   │                                       ^ Unused type parameter 'B'.
+   │
+   = This warning can be suppressed with '#[allow(unused_type_parameter)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:17:22
+   │  
+17 │           let escrow = Escrow {
+   │ ╭──────────────────────^
+18 │ │             id: object::new(ctx),
+19 │ │             party_a: ctx.sender(),
+20 │ │             party_b,
+21 │ │             item_a: option::some(item_a),
+22 │ │             item_b: option::none(),
+23 │ │         };
+   │ ╰─────────^ Could not infer this type. Try adding an annotation
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:22:21
+   │
+22 │             item_b: option::none(),
+   │                     ^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:34:9
+   │
+ 9 │         item_b: Option<B>,
+   │                 --------- The type 'std::option::Option<B>' does not have the ability 'drop'
+   ·
+28 │         escrow: &mut Escrow<A, B>,
+   │                                - The type 'std::option::Option<B>' can have the ability 'drop' but the type argument 'B' does not have the required ability 'drop'
+   ·
+34 │         escrow.item_b = option::some(item_b);
+   │         ^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:59:66
+   │
+ 9 │         item_b: Option<B>,
+   │                 --------- The type 'std::option::Option<B>' does not have the ability 'drop'
+   ·
+59 │         let Escrow { id, party_a: _, party_b: _, item_a, item_b: _ } = escrow;
+   │             -----------------------------------------------------^--
+   │             │                                                    │
+   │             │                                                    Cannot ignore values without the 'drop' ability. The value must be used
+   │             The type 'std::option::Option<B>' can have the ability 'drop' but the type argument 'B' does not have the required ability 'drop'
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:71:58
+   │
+ 8 │         item_a: Option<A>,
+   │                 --------- The type 'std::option::Option<A>' does not have the ability 'drop'
+   ·
+71 │         let Escrow { id, party_a: _, party_b: _, item_a: _, item_b } = escrow;
+   │             ---------------------------------------------^----------
+   │             │                                            │
+   │             │                                            Cannot ignore values without the 'drop' ability. The value must be used
+   │             The type 'std::option::Option<A>' can have the ability 'drop' but the type argument 'A' does not have the required ability 'drop'
+
+Failed to build Move modules: Compilation error.
+## exit code: 1

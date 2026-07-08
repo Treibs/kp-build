@@ -1,0 +1,149 @@
+module treasury {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+    use sui::event;
+    use std::vector;
+
+    public struct TREASURY has drop {}
+
+    public struct Treasury has key {
+        id: UID,
+        owners: vector<address>,
+        threshold: u64,
+        balance: Balance<SUI>,
+        next_proposal_id: u64,
+        proposals: vector<Proposal>,
+    }
+
+    public struct Proposal has store {
+        id: u64,
+        amount: u64,
+        recipient: address,
+        approvers: vector<address>,
+        executed: bool,
+    }
+
+    public struct ProposalCreated has copy, drop {
+        proposal_id: u64,
+        amount: u64,
+        recipient: address,
+    }
+
+    public struct ProposalApproved has copy, drop {
+        proposal_id: u64,
+        approver: address,
+    }
+
+    public struct ProposalExecuted has copy, drop {
+        proposal_id: u64,
+        amount: u64,
+        recipient: address,
+    }
+
+    fun init(_: TREASURY, _ctx: &mut TxContext) {
+    }
+
+    public fun create(owners: vector<address>, threshold: u64, ctx: &mut TxContext): Treasury {
+        assert!(threshold > 0, 1);
+        assert!(threshold <= vector::length(&owners), 2);
+        
+        Treasury {
+            id: object::new(ctx),
+            owners,
+            threshold,
+            balance: balance::zero(),
+            next_proposal_id: 0,
+            proposals: vector::empty(),
+        }
+    }
+
+    public fun propose_withdrawal(
+        treasury: &mut Treasury,
+        amount: u64,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(vector::contains(&treasury.owners, &sender), 3);
+
+        let proposal = Proposal {
+            id: treasury.next_proposal_id,
+            amount,
+            recipient,
+            approvers: vector::empty(),
+            executed: false,
+        };
+
+        vector::push_back(&mut treasury.proposals, proposal);
+        treasury.next_proposal_id = treasury.next_proposal_id + 1;
+
+        event::emit(ProposalCreated {
+            proposal_id: treasury.next_proposal_id - 1,
+            amount,
+            recipient,
+        });
+    }
+
+    public fun approve(
+        treasury: &mut Treasury,
+        proposal_id: u64,
+        ctx: &mut TxContext,
+    ) {
+        let sender = tx_context::sender(ctx);
+        assert!(vector::contains(&treasury.owners, &sender), 3);
+        assert!(proposal_id < vector::length(&treasury.proposals), 7);
+
+        let proposal = &mut treasury.proposals[proposal_id];
+        assert!(!proposal.executed, 4);
+        assert!(!vector::contains(&proposal.approvers, &sender), 5);
+
+        vector::push_back(&mut proposal.approvers, sender);
+
+        event::emit(ProposalApproved {
+            proposal_id,
+            approver: sender,
+        });
+    }
+
+    public fun execute(
+        treasury: &mut Treasury,
+        proposal_id: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(proposal_id < vector::length(&treasury.proposals), 7);
+        
+        let proposal = &mut treasury.proposals[proposal_id];
+        assert!(!proposal.executed, 4);
+        assert!(vector::length(&proposal.approvers) >= treasury.threshold, 6);
+        assert!(balance::value(&treasury.balance) >= proposal.amount, 8);
+
+        proposal.executed = true;
+
+        let split_balance = balance::split(&mut treasury.balance, proposal.amount);
+        let coin = coin::from_balance(split_balance, ctx);
+        transfer::public_transfer(coin, proposal.recipient);
+
+        event::emit(ProposalExecuted {
+            proposal_id,
+            amount: proposal.amount,
+            recipient: proposal.recipient,
+        });
+    }
+
+    public fun deposit(treasury: &mut Treasury, coin: Coin<SUI>) {
+        let coin_balance = coin::into_balance(coin);
+        balance::join(&mut treasury.balance, coin_balance);
+    }
+
+    public fun num_proposals(treasury: &Treasury): u64 {
+        vector::length(&treasury.proposals)
+    }
+
+    public fun proposal_approvals(treasury: &Treasury, proposal_id: u64): u64 {
+        vector::length(&treasury.proposals[proposal_id].approvers)
+    }
+}

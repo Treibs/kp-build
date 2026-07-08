@@ -1,0 +1,10 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09009]: unused struct field
+   ┌─ ./sources/module.move:10:9
+   │
+10 │         name: vector<u8>,
+   │         ^^^^ The 'name' field of the 'Artifact' type is unused
+   │
+   = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')

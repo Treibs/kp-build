@@ -1,0 +1,1 @@
+Write a module implementing a linear vesting wallet paid in SUI and measured in epochs (use the transaction context's epoch, not the Clock object): created with a beneficiary, a start epoch, and a duration in epochs; the beneficiary can claim at any time and receives the vested-so-far amount minus what was already claimed; after start+duration the full remainder is claimable.

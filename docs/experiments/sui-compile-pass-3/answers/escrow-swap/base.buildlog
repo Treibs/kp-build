@@ -1,0 +1,34 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:4:9
+  │
+4 │     use sui::option::{self, Option};
+  │         ^^^^^^^^^^^ Invalid 'use'. Unbound module: 'sui::option'
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:51:46
+   │
+ 9 │         item_b: Option<U>,
+   │                 --------- The type 'std::option::Option<U>' does not have the ability 'drop'
+   ·
+51 │         let Escrow { id, mut item_a, item_b: _, party_a: _, party_b: _ } = escrow;
+   │             ---------------------------------^--------------------------
+   │             │                                │
+   │             │                                Cannot ignore values without the 'drop' ability. The value must be used
+   │             The type 'std::option::Option<U>' can have the ability 'drop' but the type argument 'U' does not have the required ability 'drop'
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:62:34
+   │
+ 8 │         item_a: Option<T>,
+   │                 --------- The type 'std::option::Option<T>' does not have the ability 'drop'
+   ·
+62 │         let Escrow { id, item_a: _, mut item_b, party_a: _, party_b: _ } = escrow;
+   │             ---------------------^--------------------------------------
+   │             │                    │
+   │             │                    Cannot ignore values without the 'drop' ability. The value must be used
+   │             The type 'std::option::Option<T>' can have the ability 'drop' but the type argument 'T' does not have the required ability 'drop'
+
+Failed to build Move modules: Compilation error.

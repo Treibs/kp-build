@@ -1,0 +1,154 @@
+```move
+module crowdfunding::campaign {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::table::{Self, Table};
+    use sui::event;
+    use sui::sui::SUI;
+
+    public struct Campaign has key {
+        id: UID,
+        creator: address,
+        goal: u64,
+        deadline: u64,
+        total_raised: u64,
+        claimed: bool,
+        balance: Balance<SUI>,
+        contributions: Table<address, u64>,
+    }
+
+    public struct ContributionEvent has copy, drop {
+        campaign_id: object::ID,
+        contributor: address,
+        amount: u64,
+    }
+
+    public struct ClaimEvent has copy, drop {
+        campaign_id: object::ID,
+        amount: u64,
+    }
+
+    public struct RefundEvent has copy, drop {
+        campaign_id: object::ID,
+        contributor: address,
+        amount: u64,
+    }
+
+    public fun create_campaign(
+        goal: u64,
+        deadline: u64,
+        ctx: &mut TxContext,
+    ): Campaign {
+        Campaign {
+            id: object::new(ctx),
+            creator: tx_context::sender(ctx),
+            goal,
+            deadline,
+            total_raised: 0,
+            claimed: false,
+            balance: balance::zero(),
+            contributions: table::new(ctx),
+        }
+    }
+
+    public fun contribute(
+        campaign: &mut Campaign,
+        coin: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let amount = coin::value(&coin);
+        let contributor = tx_context::sender(ctx);
+        let current_epoch = tx_context::epoch(ctx);
+        
+        assert!(current_epoch < campaign.deadline, 1);
+        
+        if (table::contains(&campaign.contributions, contributor)) {
+            let existing = table::remove(&mut campaign.contributions, contributor);
+            table::add(&mut campaign.contributions, contributor, existing + amount);
+        } else {
+            table::add(&mut campaign.contributions, contributor, amount);
+        };
+
+        campaign.total_raised = campaign.total_raised + amount;
+        balance::join(&mut campaign.balance, coin::into_balance(coin));
+
+        event::emit(ContributionEvent {
+            campaign_id: object::id(campaign),
+            contributor,
+            amount,
+        });
+    }
+
+    public fun claim_funds(
+        campaign: &mut Campaign,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let sender = tx_context::sender(ctx);
+        assert!(sender == campaign.creator, 2);
+        assert!(tx_context::epoch(ctx) >= campaign.deadline, 3);
+        assert!(campaign.total_raised >= campaign.goal, 4);
+        assert!(!campaign.claimed, 5);
+        
+        campaign.claimed = true;
+        let amount = campaign.total_raised;
+        
+        event::emit(ClaimEvent {
+            campaign_id: object::id(campaign),
+            amount,
+        });
+        
+        coin::from_balance(balance::split(&mut campaign.balance, amount), ctx)
+    }
+
+    public fun refund(
+        campaign: &mut Campaign,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let contributor = tx_context::sender(ctx);
+        
+        assert!(tx_context::epoch(ctx) >= campaign.deadline, 3);
+        assert!(campaign.total_raised < campaign.goal, 6);
+        assert!(table::contains(&campaign.contributions, contributor), 7);
+        
+        let amount = table::remove(&mut campaign.contributions, contributor);
+        
+        event::emit(RefundEvent {
+            campaign_id: object::id(campaign),
+            contributor,
+            amount,
+        });
+        
+        coin::from_balance(balance::split(&mut campaign.balance, amount), ctx)
+    }
+
+    public fun total_raised(campaign: &Campaign): u64 {
+        campaign.total_raised
+    }
+
+    public fun goal(campaign: &Campaign): u64 {
+        campaign.goal
+    }
+
+    public fun deadline(campaign: &Campaign): u64 {
+        campaign.deadline
+    }
+
+    public fun creator(campaign: &Campaign): address {
+        campaign.creator
+    }
+
+    public fun is_claimed(campaign: &Campaign): bool {
+        campaign.claimed
+    }
+
+    public fun get_contribution(campaign: &Campaign, contributor: address): u64 {
+        if (table::contains(&campaign.contributions, contributor)) {
+            *table::borrow(&campaign.contributions, contributor)
+        } else {
+            0
+        }
+    }
+}
+```

@@ -1,0 +1,15 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[Sui E01001]: invalid object construction
+   ┌─ ./sources/module.move:74:9
+   │  
+74 │ ╭         Points {
+75 │ │             id: id1,
+   │ │             -- The UID must come directly from `sui::object::new`, or `sui::derived_object::claim`. For tests, it can come from `sui::test_scenario::new_object`
+76 │ │             owner,
+77 │ │             balance,
+78 │ │         }
+   │ ╰─────────^ Invalid object creation without a newly created UID.
+
+Failed to build Move modules: Compilation error.

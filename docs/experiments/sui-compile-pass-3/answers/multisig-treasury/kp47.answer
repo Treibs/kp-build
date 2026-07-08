@@ -1,0 +1,171 @@
+```move
+module treasury::multisig {
+    use sui::coin::{Self, Coin};
+    use sui::event;
+    use sui::object::{Self, ID};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use std::vector;
+
+    public struct Treasury has key, store {
+        id: UID,
+        owners: vector<address>,
+        threshold: u64,
+        balance: Coin<SUI>,
+    }
+
+    public struct Proposal has key, store {
+        id: UID,
+        treasury_id: ID,
+        amount: u64,
+        recipient: address,
+        approvals: vector<address>,
+        executed: bool,
+    }
+
+    public struct ProposalCreated has copy, drop {
+        proposal_id: ID,
+        amount: u64,
+        recipient: address,
+    }
+
+    public struct ProposalApproved has copy, drop {
+        proposal_id: ID,
+        approver: address,
+    }
+
+    public struct ProposalExecuted has copy, drop {
+        proposal_id: ID,
+        amount: u64,
+        recipient: address,
+    }
+
+    public fun create_treasury(
+        owners: vector<address>,
+        threshold: u64,
+        ctx: &mut TxContext,
+    ): Treasury {
+        assert!(threshold > 0, 1);
+        assert!(threshold <= vector::length(&owners), 2);
+        assert!(vector::length(&owners) > 0, 3);
+
+        Treasury {
+            id: object::new(ctx),
+            owners,
+            threshold,
+            balance: coin::zero(ctx),
+        }
+    }
+
+    public fun deposit(treasury: &mut Treasury, amount: Coin<SUI>) {
+        coin::join(&mut treasury.balance, amount);
+    }
+
+    public fun propose(
+        treasury: &Treasury,
+        amount: u64,
+        recipient: address,
+        proposer: address,
+        ctx: &mut TxContext,
+    ): Proposal {
+        assert!(is_owner(treasury, proposer), 4);
+        assert!(amount > 0, 5);
+        assert!(coin::value(&treasury.balance) >= amount, 6);
+
+        let proposal = Proposal {
+            id: object::new(ctx),
+            treasury_id: object::id(treasury),
+            amount,
+            recipient,
+            approvals: vector::empty(),
+            executed: false,
+        };
+
+        event::emit(ProposalCreated {
+            proposal_id: object::id(&proposal),
+            amount,
+            recipient,
+        });
+
+        proposal
+    }
+
+    public fun approve(
+        treasury: &Treasury,
+        proposal: &mut Proposal,
+        approver: address,
+    ) {
+        assert!(proposal.treasury_id == object::id(treasury), 7);
+        assert!(!proposal.executed, 8);
+        assert!(is_owner(treasury, approver), 9);
+        assert!(!has_approved(proposal, approver), 10);
+
+        vector::push_back(&mut proposal.approvals, approver);
+
+        event::emit(ProposalApproved {
+            proposal_id: object::id(proposal),
+            approver,
+        });
+    }
+
+    public fun execute(
+        treasury: &mut Treasury,
+        proposal: &mut Proposal,
+        ctx: &mut TxContext,
+    ) {
+        assert!(proposal.treasury_id == object::id(treasury), 11);
+        assert!(!proposal.executed, 12);
+        assert!(vector::length(&proposal.approvals) >= treasury.threshold, 13);
+
+        let amount = proposal.amount;
+        let recipient = proposal.recipient;
+
+        let withdrawal = coin::split(&mut treasury.balance, amount, ctx);
+        transfer::public_transfer(withdrawal, recipient);
+
+        proposal.executed = true;
+
+        event::emit(ProposalExecuted {
+            proposal_id: object::id(proposal),
+            amount,
+            recipient,
+        });
+    }
+
+    public fun get_threshold(treasury: &Treasury): u64 {
+        treasury.threshold
+    }
+
+    public fun get_owners(treasury: &Treasury): &vector<address> {
+        &treasury.owners
+    }
+
+    public fun get_balance(treasury: &Treasury): u64 {
+        coin::value(&treasury.balance)
+    }
+
+    public fun get_proposal_amount(proposal: &Proposal): u64 {
+        proposal.amount
+    }
+
+    public fun get_proposal_recipient(proposal: &Proposal): address {
+        proposal.recipient
+    }
+
+    public fun get_proposal_approvals(proposal: &Proposal): &vector<address> {
+        &proposal.approvals
+    }
+
+    public fun is_proposal_executed(proposal: &Proposal): bool {
+        proposal.executed
+    }
+
+    fun is_owner(treasury: &Treasury, addr: address): bool {
+        vector::contains(&treasury.owners, &addr)
+    }
+
+    fun has_approved(proposal: &Proposal, addr: address): bool {
+        vector::contains(&proposal.approvals, &addr)
+    }
+}
+```

@@ -1,0 +1,73 @@
+module vesting::linear_vesting {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::object::{Self, UID};
+    use sui::sui::SUI;
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+
+    struct VestingWallet has key {
+        id: UID,
+        beneficiary: address,
+        start_epoch: u64,
+        duration_epochs: u64,
+        total_amount: u64,
+        claimed: u64,
+        balance: Balance<SUI>,
+    }
+
+    public fun create(
+        beneficiary: address,
+        start_epoch: u64,
+        duration_epochs: u64,
+        coin: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let total_amount = coin::value(&coin);
+        let wallet = VestingWallet {
+            id: object::new(ctx),
+            beneficiary,
+            start_epoch,
+            duration_epochs,
+            total_amount,
+            claimed: 0,
+            balance: coin::into_balance(coin),
+        };
+        transfer::share_object(wallet);
+    }
+
+    public fun claim(
+        wallet: &mut VestingWallet,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        assert!(tx_context::sender(ctx) == wallet.beneficiary, 0);
+
+        let current_epoch = tx_context::epoch(ctx);
+        let vested = calculate_vested(
+            wallet.start_epoch,
+            wallet.duration_epochs,
+            wallet.total_amount,
+            current_epoch,
+        );
+        let claimable = vested - wallet.claimed;
+        wallet.claimed = vested;
+
+        coin::from_balance(balance::split(&mut wallet.balance, claimable), ctx)
+    }
+
+    fun calculate_vested(
+        start_epoch: u64,
+        duration_epochs: u64,
+        total_amount: u64,
+        current_epoch: u64,
+    ): u64 {
+        if (current_epoch >= start_epoch + duration_epochs) {
+            total_amount
+        } else if (current_epoch < start_epoch) {
+            0
+        } else {
+            let elapsed = current_epoch - start_epoch;
+            ((total_amount as u128) * (elapsed as u128) / (duration_epochs as u128)) as u64
+        }
+    }
+}

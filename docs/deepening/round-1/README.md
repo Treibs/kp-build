@@ -12,3 +12,9 @@ Pack: `examples/sui-move/` · Oracle: pinned `sui 1.74.1-8fc60f1fa966`, plain `s
 | 5 Rebuild | `examples/sui-move/` | 47 → 61 claims; 39/39 execution gates, 22/22 grounding |
 | 6 Measure (tier 1) | [`remeasure.md`](remeasure.md) | 0/8 → 4/8 compile-pass; 0/8 taught-error recurrence — **tainted, trend only** |
 | 7 Ship | this PR | tier-2 held-out effect unmeasured until next pre-registered falsification |
+
+**Tier-2 resolution (2026-07-07, after this round merged):** the pre-registered held-out
+falsification ran as [experiment 3](../../experiments/sui-compile-pass-3/) — deepened pack 4/6
+vs pre-deepening pack 2/6 compile-pass (claude-haiku-4-5, 6 tasks; one later found to overlap
+experiment 1, disclosed there — verdict robust to its exclusion, 4/5 vs 2/5) → the deepening
+ships under rule branch 1. That experiment, not this ledger, is the headline source.

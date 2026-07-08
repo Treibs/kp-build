@@ -1,0 +1,137 @@
+module crowdfunding::campaign {
+    use sui::bag;
+    use sui::coin::{self, Coin};
+    use sui::clock::Clock;
+    use sui::event;
+    use std::vector;
+
+    public struct Campaign has key {
+        id: UID,
+        creator: address,
+        goal: u64,
+        deadline: u64,
+        total_raised: u64,
+        claimed: bool,
+        contributions: bag::Bag,
+        contributors: vector<address>,
+    }
+
+    public struct Contributed has copy, drop {
+        campaign_id: ID,
+        contributor: address,
+        amount: u64,
+    }
+
+    public struct Claimed has copy, drop {
+        campaign_id: ID,
+        creator: address,
+        total: u64,
+    }
+
+    public struct Refunded has copy, drop {
+        campaign_id: ID,
+        contributor: address,
+        amount: u64,
+    }
+
+    public fun create(
+        goal: u64,
+        deadline: u64,
+        ctx: &mut TxContext,
+    ) {
+        let campaign = Campaign {
+            id: object::new(ctx),
+            creator: ctx.sender(),
+            goal,
+            deadline,
+            total_raised: 0,
+            claimed: false,
+            contributions: bag::new(ctx),
+            contributors: vector::empty(),
+        };
+        transfer::share_object(campaign);
+    }
+
+    public fun contribute(
+        campaign: &mut Campaign,
+        coin: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let amount = coin::value(&coin);
+        assert!(amount > 0, 0);
+        assert!(clock.timestamp_ms() < campaign.deadline, 1);
+
+        let addr = ctx.sender();
+        let is_new = !bag::contains<address>(&campaign.contributions, addr);
+        campaign.total_raised = campaign.total_raised + amount;
+
+        if (is_new) {
+            vector::push_back(&mut campaign.contributors, addr);
+            bag::add(&mut campaign.contributions, addr, coin);
+        } else {
+            let mut existing = bag::remove<address, Coin<SUI>>(&mut campaign.contributions, addr);
+            coin::join(&mut existing, coin);
+            bag::add(&mut campaign.contributions, addr, existing);
+        };
+
+        event::emit(Contributed {
+            campaign_id: object::id(&campaign.id),
+            contributor: addr,
+            amount,
+        });
+    }
+
+    public fun claim(
+        campaign: &mut Campaign,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        assert!(clock.timestamp_ms() >= campaign.deadline, 2);
+        assert!(ctx.sender() == campaign.creator, 3);
+        assert!(!campaign.claimed, 4);
+        assert!(campaign.total_raised >= campaign.goal, 5);
+
+        campaign.claimed = true;
+
+        let mut result = coin::zero(ctx);
+        let len = vector::length(&campaign.contributors);
+        let mut i = 0;
+        while (i < len) {
+            let addr = *vector::borrow(&campaign.contributors, i);
+            let fund = bag::remove<address, Coin<SUI>>(&mut campaign.contributions, addr);
+            coin::join(&mut result, fund);
+            i = i + 1;
+        };
+
+        event::emit(Claimed {
+            campaign_id: object::id(&campaign.id),
+            creator: campaign.creator,
+            total: coin::value(&result),
+        });
+
+        result
+    }
+
+    public fun refund(
+        campaign: &mut Campaign,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        assert!(clock.timestamp_ms() >= campaign.deadline, 2);
+        assert!(campaign.total_raised < campaign.goal, 6);
+
+        let addr = ctx.sender();
+        assert!(bag::contains<address>(&campaign.contributions, addr), 7);
+
+        let fund = bag::remove<address, Coin<SUI>>(&mut campaign.contributions, addr);
+
+        event::emit(Refunded {
+            campaign_id: object::id(&campaign.id),
+            contributor: addr,
+            amount: coin::value(&fund),
+        });
+
+        fund
+    }
+}

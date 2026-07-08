@@ -1,0 +1,26 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E02004]: invalid 'module' declaration
+  ┌─ ./sources/module.move:1:8
+  │
+1 │ module treasury {
+  │        ^^^^^^^^ Invalid module declaration. The module does not have a specified address. Either declare it inside of an 'address <address> {' block or declare it with an address 'module <address>::treasury''
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:60:32
+   │
+60 │             proposals: vector::empty(),
+   │                                ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:77:32
+   │
+77 │             approvers: vector::empty(),
+   │                                ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.
