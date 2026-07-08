@@ -1,0 +1,33 @@
+```python
+from manim import *
+
+class CubeOrbitZoomScene(ThreeDScene):
+    def construct(self):
+        # Create and add cube at origin
+        cube = Cube(size=2, fill_opacity=0.75, stroke_width=2)
+        self.add(cube)
+        
+        # Set initial camera orientation (standard 3D viewing angle)
+        self.set_camera_orientation(phi=60*DEGREES, theta=-45*DEGREES, distance=8)
+        
+        # Setup orbit animation using ValueTracker
+        theta_tracker = ValueTracker(-45)
+        
+        def update_camera(dt):
+            self.set_camera_orientation(
+                phi=60*DEGREES,
+                theta=theta_tracker.get_value()*DEGREES,
+                distance=8
+            )
+        
+        # Orbit the camera around the cube for 2 seconds
+        self.add_updater(update_camera)
+        self.play(theta_tracker.animate.set_value(315), run_time=2, rate_func=linear)
+        self.remove_updater(update_camera)
+        
+        # Zoom in to 2x magnification
+        self.play(self.camera.frame.animate.scale(0.5), run_time=1)
+        
+        # Hold briefly at the end
+        self.wait(1)
+```

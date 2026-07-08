@@ -1,0 +1,32 @@
+```python
+from manim import *
+
+class PulsingCircleScene(Scene):
+    def construct(self):
+        circle = Circle(radius=1, color=BLUE)
+        self.add(circle)
+
+        elapsed = [0.0]
+
+        def pulse(mob, dt):
+            elapsed[0] += dt
+            scale_factor = 1 + 0.2 * np.sin(2 * PI * elapsed[0])
+            mob.set(width=2 * scale_factor)
+
+        circle.add_updater(pulse)
+
+        # Pulse in place for 2 seconds
+        self.wait(2)
+
+        # Suspend pulsing, move 4 units right, resume pulsing
+        circle.remove_updater(pulse)
+        # Reset to unit size before moving
+        circle.set(width=2)
+        self.play(circle.animate.shift(RIGHT * 4), run_time=2)
+
+        # Resume pulsing in place
+        elapsed[0] = 0.0
+        circle.add_updater(pulse)
+        self.wait(1)
+        circle.remove_updater(pulse)
+```

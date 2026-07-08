@@ -1,0 +1,19 @@
+```python
+from manim import *
+
+class DeepAnimations(Scene):
+    def construct(self):
+        headline = Text("Deep Animations")
+        underline = Line(
+            start=headline.get_left(), 
+            end=headline.get_right()
+        ).next_to(headline, DOWN, buff=0.15)
+        
+        self.play(
+            AnimationGroup(
+                Write(headline, run_time=2),
+                Create(underline, run_time=1),
+                lag_ratio=0.5
+            )
+        )
+```

@@ -1,0 +1,22 @@
+```python
+from manim import *
+
+class EquationTransform(Scene):
+    def construct(self):
+        # Create the equation parts
+        e_equals = MathTex(r"E =")
+        mc_squared = MathTex(r"mc^2")
+        
+        # Position the equation
+        equation = VGroup(e_equals, mc_squared).arrange(buff=0.5)
+        self.add(equation)
+        self.wait(1)
+        
+        # Create the replacement for mc_squared
+        hf = MathTex(r"hf")
+        hf.move_to(mc_squared.get_center())
+        
+        # Animate the transformation, keeping E = fixed
+        self.play(Transform(mc_squared, hf))
+        self.wait(1)
+```

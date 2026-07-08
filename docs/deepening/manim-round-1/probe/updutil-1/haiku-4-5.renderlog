@@ -1,0 +1,59 @@
+Manim Community v0.20.1
+
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+[07/08/26 22:44:33] INFO Caching disabled. cairo_renderer.py:83
+[07/08/26 22:44:34] INFO Animation 0 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+ProbeScene/uncached_00000.
+mp4'
+INFO Caching disabled. cairo_renderer.py:83
+[07/08/26 22:44:35] INFO Animation 1 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+ProbeScene/uncached_00001.
+mp4'
+INFO Combining to Movie file. scene_file_writer.py:753
+INFO scene_file_writer.py:904
+File ready at
+'/tmp/media/videos/scene/4
+80p15/ProbeScene.mp4'
+
+INFO Rendered ProbeScene scene.py:278
+Played 2 animations
+
+Animation 0: Create(Circle): 0%| | 0/30 [00:00<?, ?it/s]
+Animation 0: Create(Circle): 13%|█▎ | 4/30 [00:00<00:00, 29.60it/s]
+Animation 0: Create(Circle): 27%|██▋ | 8/30 [00:00<00:00, 32.47it/s]
+Animation 0: Create(Circle): 43%|████▎ | 13/30 [00:00<00:00, 36.57it/s]
+Animation 0: Create(Circle): 67%|██████▋ | 20/30 [00:00<00:00, 40.75it/s]
+Animation 0: Create(Circle): 83%|████████▎ | 25/30 [00:00<00:00, 34.04it/s]
+
+
+Waiting 1: 0%| | 0/15 [00:00<?, ?it/s]
+Waiting 1: 20%|██ | 3/15 [00:00<00:00, 22.01it/s]
+Waiting 1: 40%|████ | 6/15 [00:00<00:00, 19.98it/s]
+Waiting 1: 60%|██████ | 9/15 [00:00<00:00, 21.11it/s]
+Waiting 1: 80%|████████ | 12/15 [00:00<00:00, 23.52it/s]
+

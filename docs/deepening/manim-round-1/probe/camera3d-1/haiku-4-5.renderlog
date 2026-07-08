@@ -1,0 +1,87 @@
+Manim Community v0.20.1
+
+[07/08/26 22:44:02] INFO Caching disabled. cairo_renderer.py:83
+[07/08/26 22:44:08] INFO Animation 0 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+OrbitingSphere/uncached_00
+000.mp4'
+INFO Caching disabled. cairo_renderer.py:83
+INFO Animation 1 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+OrbitingSphere/uncached_00
+001.mp4'
+INFO Combining to Movie file. scene_file_writer.py:753
+[07/08/26 22:44:09] INFO scene_file_writer.py:904
+File ready at
+'/tmp/media/videos/scene/4
+80p15/OrbitingSphere.mp4'
+
+INFO Rendered OrbitingSphere scene.py:278
+Played 2 animations
+
+Waiting 0: 0%| | 0/60 [00:00<?, ?it/s]
+Waiting 0: 2%|▏ | 1/60 [00:00<00:06, 9.53it/s]
+Waiting 0: 3%|▎ | 2/60 [00:00<00:06, 9.43it/s]
+Waiting 0: 5%|▌ | 3/60 [00:00<00:05, 9.64it/s]
+Waiting 0: 7%|▋ | 4/60 [00:00<00:05, 9.74it/s]
+Waiting 0: 8%|▊ | 5/60 [00:00<00:05, 9.76it/s]
+Waiting 0: 10%|█ | 6/60 [00:00<00:05, 9.72it/s]
+Waiting 0: 12%|█▏ | 7/60 [00:00<00:05, 9.69it/s]
+Waiting 0: 13%|█▎ | 8/60 [00:00<00:05, 9.60it/s]
+Waiting 0: 15%|█▌ | 9/60 [00:00<00:05, 9.65it/s]
+Waiting 0: 17%|█▋ | 10/60 [00:01<00:05, 9.60it/s]
+Waiting 0: 18%|█▊ | 11/60 [00:01<00:05, 9.60it/s]
+Waiting 0: 20%|██ | 12/60 [00:01<00:04, 9.63it/s]
+Waiting 0: 22%|██▏ | 13/60 [00:01<00:04, 9.56it/s]
+Waiting 0: 23%|██▎ | 14/60 [00:01<00:04, 9.62it/s]
+Waiting 0: 25%|██▌ | 15/60 [00:01<00:04, 9.62it/s]
+Waiting 0: 27%|██▋ | 16/60 [00:01<00:04, 9.47it/s]
+Waiting 0: 28%|██▊ | 17/60 [00:01<00:04, 9.54it/s]
+Waiting 0: 30%|███ | 18/60 [00:01<00:04, 9.31it/s]
+Waiting 0: 32%|███▏ | 19/60 [00:01<00:04, 9.22it/s]
+Waiting 0: 33%|███▎ | 20/60 [00:02<00:04, 9.37it/s]
+Waiting 0: 35%|███▌ | 21/60 [00:02<00:04, 9.48it/s]
+Waiting 0: 37%|███▋ | 22/60 [00:02<00:03, 9.61it/s]
+Waiting 0: 38%|███▊ | 23/60 [00:02<00:03, 9.66it/s]
+Waiting 0: 40%|████ | 24/60 [00:02<00:03, 9.69it/s]
+Waiting 0: 42%|████▏ | 25/60 [00:02<00:03, 9.73it/s]
+Waiting 0: 43%|████▎ | 26/60 [00:02<00:03, 9.75it/s]
+Waiting 0: 45%|████▌ | 27/60 [00:02<00:03, 9.73it/s]
+Waiting 0: 47%|████▋ | 28/60 [00:02<00:03, 9.59it/s]
+Waiting 0: 48%|████▊ | 29/60 [00:03<00:03, 9.50it/s]
+Waiting 0: 50%|█████ | 30/60 [00:03<00:03, 9.15it/s]
+Waiting 0: 52%|█████▏ | 31/60 [00:03<00:03, 8.51it/s]
+Waiting 0: 53%|█████▎ | 32/60 [00:03<00:03, 7.93it/s]
+Waiting 0: 55%|█████▌ | 33/60 [00:03<00:03, 8.29it/s]
+Waiting 0: 57%|█████▋ | 34/60 [00:03<00:03, 7.80it/s]
+Waiting 0: 58%|█████▊ | 35/60 [00:03<00:03, 7.93it/s]
+Waiting 0: 60%|██████ | 36/60 [00:03<00:03, 7.84it/s]
+Waiting 0: 62%|██████▏ | 37/60 [00:04<00:02, 8.26it/s]
+Waiting 0: 63%|██████▎ | 38/60 [00:04<00:02, 8.57it/s]
+Waiting 0: 65%|██████▌ | 39/60 [00:04<00:02, 8.79it/s]
+Waiting 0: 67%|██████▋ | 40/60 [00:04<00:02, 8.85it/s]
+Waiting 0: 68%|██████▊ | 41/60 [00:04<00:02, 8.94it/s]
+Waiting 0: 70%|███████ | 42/60 [00:04<00:02, 8.77it/s]
+Waiting 0: 72%|███████▏ | 43/60 [00:04<00:01, 8.84it/s]
+Waiting 0: 73%|███████▎ | 44/60 [00:04<00:01, 8.85it/s]
+Waiting 0: 75%|███████▌ | 45/60 [00:04<00:01, 8.89it/s]
+Waiting 0: 77%|███████▋ | 46/60 [00:05<00:01, 8.96it/s]
+Waiting 0: 78%|███████▊ | 47/60 [00:05<00:01, 9.05it/s]
+Waiting 0: 80%|████████ | 48/60 [00:05<00:01, 9.07it/s]
+Waiting 0: 82%|████████▏ | 49/60 [00:05<00:01, 9.12it/s]
+Waiting 0: 83%|████████▎ | 50/60 [00:05<00:01, 9.22it/s]
+Waiting 0: 85%|████████▌ | 51/60 [00:05<00:00, 9.35it/s]
+Waiting 0: 87%|████████▋ | 52/60 [00:05<00:00, 9.44it/s]
+Waiting 0: 88%|████████▊ | 53/60 [00:05<00:00, 9.53it/s]
+Waiting 0: 90%|█████████ | 54/60 [00:05<00:00, 9.50it/s]
+Waiting 0: 92%|█████████▏| 55/60 [00:05<00:00, 9.53it/s]
+Waiting 0: 93%|█████████▎| 56/60 [00:06<00:00, 9.58it/s]
+Waiting 0: 95%|█████████▌| 57/60 [00:06<00:00, 9.54it/s]
+Waiting 0: 97%|█████████▋| 58/60 [00:06<00:00, 9.47it/s]
+Waiting 0: 98%|█████████▊| 59/60 [00:06<00:00, 9.49it/s]
+Waiting 0: 100%|██████████| 60/60 [00:06<00:00, 9.51it/s]
+

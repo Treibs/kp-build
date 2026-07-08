@@ -1,0 +1,54 @@
+Manim Community v0.20.1
+
+[07/08/26 22:43:54] INFO Writing tex_file_writing.py:110
+\special{dvisvgm:raw <g
+id='unique000'>}E
+=\special{dvisvgm:raw </g>}
+to
+/tmp/media/Tex/b907f2eefe30
+c141.tex
+INFO Writing tex_file_writing.py:110
+\special{dvisvgm:raw <g
+id='unique000'>}mc^2\specia
+l{dvisvgm:raw </g>} to
+/tmp/media/Tex/326e8f08122f
+64fc.tex
+INFO Caching disabled. cairo_renderer.py:83
+INFO Animation 0 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+EquationTransform/uncached
+_00000.mp4'
+INFO Writing tex_file_writing.py:110
+\special{dvisvgm:raw <g
+id='unique000'>}hf\special{
+dvisvgm:raw </g>} to
+/tmp/media/Tex/d51b84a8b37e
+4de4.tex
+[07/08/26 22:43:55] INFO Caching disabled. cairo_renderer.py:83
+INFO Animation 1 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+EquationTransform/uncached
+_00001.mp4'
+INFO Caching disabled. cairo_renderer.py:83
+INFO Animation 2 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+EquationTransform/uncached
+_00002.mp4'
+INFO Combining to Movie file. scene_file_writer.py:753
+INFO scene_file_writer.py:904
+File ready at
+'/tmp/media/videos/scene/4
+80p15/EquationTransform.mp
+4'
+
+INFO Rendered EquationTransform scene.py:278
+Played 3 animations
+
+Animation 1: Transform(MathTex('mc^2')): 0%| | 0/15 [00:00<?, ?it/s]
+

@@ -1,0 +1,38 @@
+# manim round-1 probe results — 15 tasks x {haiku-4-5, sonnet-4-6}, pack-loaded arm
+# PASS = pinned-image render exit 0 (protocol: probe/README.md)
+
+legacy-1     haiku-4-5   PASS
+legacy-1     sonnet-4-6  PASS
+legacy-2     haiku-4-5   PASS
+legacy-2     sonnet-4-6  PASS
+legacy-3     haiku-4-5   FAIL Traceback (most recent call last)
+legacy-3     sonnet-4-6  PASS
+compose-1    haiku-4-5   PASS
+compose-1    sonnet-4-6  PASS
+compose-2    haiku-4-5   PASS
+compose-2    sonnet-4-6  PASS
+compose-3    haiku-4-5   PASS
+compose-3    sonnet-4-6  PASS
+transform-1  haiku-4-5   PASS
+transform-1  sonnet-4-6  PASS
+transform-2  haiku-4-5   PASS
+transform-2  sonnet-4-6  PASS
+transform-3  haiku-4-5   PASS
+transform-3  sonnet-4-6  PASS
+camera3d-1   haiku-4-5   PASS
+camera3d-1   sonnet-4-6  PASS
+camera3d-2   haiku-4-5   PASS
+camera3d-2   sonnet-4-6  PASS
+camera3d-3   haiku-4-5   FAIL Traceback (most recent call last)
+camera3d-3   sonnet-4-6  PASS
+updutil-1    haiku-4-5   PASS
+updutil-1    sonnet-4-6  PASS
+updutil-2    haiku-4-5   PASS
+updutil-2    sonnet-4-6  PASS
+updutil-3    haiku-4-5   PASS
+updutil-3    sonnet-4-6  PASS
+
+# Terminal exception lines (from the committed renderlogs; the pre-declared first-error-line
+# rule matched the 'Traceback' header first):
+#   legacy-3   haiku-4-5: TypeError: Circle.surround() got an unexpected keyword argument 'buffer'
+#   camera3d-3 haiku-4-5: TypeError: Mobject.__init__() got an unexpected keyword argument 'size'

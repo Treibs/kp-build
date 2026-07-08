@@ -1,0 +1,59 @@
+```python
+from manim import *
+
+class EnergyToSynergy(Scene):
+    def construct(self):
+        word1 = "ENERGY"
+        word2 = "SYNERGY"
+        
+        # Create individual letter mobjects for word1
+        letters1 = [Text(c, font_size=60) for c in word1]
+        
+        # Arrange them in a group
+        group1 = VGroup(*letters1).arrange(RIGHT, buff=0.1)
+        group1.center()
+        
+        # Add to scene
+        self.add(group1)
+        self.wait(1)
+        
+        # Calculate target positions for word2
+        letters2 = [Text(c, font_size=60) for c in word2]
+        group2 = VGroup(*letters2).arrange(RIGHT, buff=0.1)
+        group2.center()
+        
+        # Greedy matching from word1 to word2
+        match = {}
+        used = set()
+        
+        for i, c1 in enumerate(word1):
+            for j, c2 in enumerate(word2):
+                if j not in used and c1 == c2:
+                    match[i] = j
+                    used.add(j)
+                    break
+        
+        # Create animations
+        animations = []
+        
+        # Animate matched letters to their new positions
+        for i, j in match.items():
+            target_pos = group2[j].get_center()
+            animations.append(letters1[i].animate.move_to(target_pos))
+        
+        # Fade out unmatched letters from word1
+        for i in range(len(word1)):
+            if i not in match:
+                animations.append(FadeOut(letters1[i]))
+        
+        # Add and fade in new letters for word2
+        for j in range(len(word2)):
+            if j not in used:
+                letters2[j].set_opacity(0)
+                self.add(letters2[j])
+                animations.append(FadeIn(letters2[j]))
+        
+        # Play animations
+        self.play(*animations)
+        self.wait(1)
+```

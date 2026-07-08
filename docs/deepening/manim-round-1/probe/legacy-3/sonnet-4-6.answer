@@ -1,0 +1,46 @@
+```python
+from manim import *
+
+class EulerEmphasisScene(Scene):
+    def construct(self):
+        formula = MathTex(r"e^{i\pi} + 1 = 0", font_size=72)
+        self.add(formula)
+        self.wait(0.5)
+
+        ring = SurroundingRectangle(formula, color=YELLOW, buff=0.3, corner_radius=0.2)
+        ring.set_stroke(color=YELLOW, width=4)
+
+        self.play(Create(ring), run_time=0.6)
+        self.wait(0.4)
+        self.play(FadeOut(ring), run_time=0.4)
+        self.wait(0.3)
+
+        original_pos = formula.get_center()
+        self.play(
+            formula.animate.shift(RIGHT * 0.12),
+            run_time=0.07,
+            rate_func=linear,
+        )
+        self.play(
+            formula.animate.shift(LEFT * 0.24),
+            run_time=0.07,
+            rate_func=linear,
+        )
+        self.play(
+            formula.animate.shift(RIGHT * 0.24),
+            run_time=0.07,
+            rate_func=linear,
+        )
+        self.play(
+            formula.animate.shift(LEFT * 0.24),
+            run_time=0.07,
+            rate_func=linear,
+        )
+        self.play(
+            formula.animate.shift(RIGHT * 0.12),
+            run_time=0.07,
+            rate_func=linear,
+        )
+
+        self.wait(1)
+```

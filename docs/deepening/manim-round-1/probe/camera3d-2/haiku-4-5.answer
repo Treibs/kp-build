@@ -1,0 +1,11 @@
+```python
+from manim import *
+
+class CubeScene(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=0, theta=0, distance=5)
+        cube = Cube()
+        self.add(cube)
+        self.move_camera(phi=0, theta=PI/2, distance=5, run_time=2)
+        self.wait(1)
+```

@@ -1,0 +1,29 @@
+```python
+from manim import *
+
+class ProbeScene(Scene):
+    def construct(self):
+        # Create the drifting dot
+        dot = Dot(point=[-4, 0, 0], radius=0.08)
+        
+        # Updater to move dot rightward continuously
+        def drift(mob, dt):
+            mob.shift(RIGHT * dt)
+        
+        dot.add_updater(drift)
+        
+        # Label that follows the dot
+        label = always_redraw(lambda: Text("probe", font_size=24).next_to(dot, UP, buff=0.15))
+        
+        # Circle to animate separately
+        circle = Circle(radius=1, color=BLUE).move_to(RIGHT * 3 + UP * 2)
+        
+        # Add dot and label to scene
+        self.add(dot, label)
+        
+        # Draw circle while dot drifts
+        self.play(Create(circle), run_time=2)
+        
+        # Hold for one second
+        self.wait(1)
+```
