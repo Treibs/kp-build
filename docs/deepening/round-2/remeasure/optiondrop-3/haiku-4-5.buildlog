@@ -1,0 +1,38 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09009]: unused struct field
+  ┌─ ./sources/module.move:8:9
+  │
+8 │         message: String,
+  │         ^^^^^^^ The 'message' field of the 'Gift' type is unused
+  │
+  = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:26:9
+   │
+22 │     public fun unearth(capsule: &mut TimeCapsule, ctx: &mut TxContext) {
+   │                ------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+26 │         transfer::public_transfer(gift, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                               │
+   │         │                               Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:31:37
+   │
+13 │         gift: Option<Gift>,
+   │               ------------
+   │               │      │
+   │               │      The type 'std::option::Option<capsule::capsule::Gift>' can have the ability 'drop' but the type argument 'capsule::capsule::Gift' does not have the required ability 'drop'
+   │               The type 'std::option::Option<capsule::capsule::Gift>' does not have the ability 'drop'
+   ·
+31 │         let TimeCapsule { id, gift: _, unlock_epoch: _ } = capsule;
+   │                                     ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+Failed to build Move modules: Compilation error.

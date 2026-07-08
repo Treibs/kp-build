@@ -1,0 +1,36 @@
+```move
+module capsule::capsule {
+    use std::string::String;
+    use std::option::{Self, Option};
+    use sui::tx_context;
+
+    public struct Gift has key, store {
+        id: UID,
+        message: String,
+    }
+
+    public struct TimeCapsule has key, store {
+        id: UID,
+        gift: Option<Gift>,
+        unlock_epoch: u64,
+    }
+
+    public fun bury(capsule: &mut TimeCapsule, gift: Gift) {
+        assert!(option::is_none(&capsule.gift), 0);
+        option::fill(&mut capsule.gift, gift);
+    }
+
+    public fun unearth(capsule: &mut TimeCapsule, ctx: &mut TxContext) {
+        let current_epoch = tx_context::epoch(ctx);
+        assert!(current_epoch >= capsule.unlock_epoch, 1);
+        let gift = option::extract(&mut capsule.gift);
+        transfer::public_transfer(gift, ctx.sender());
+    }
+
+    public fun discard_empty(capsule: TimeCapsule) {
+        assert!(option::is_none(&capsule.gift), 2);
+        let TimeCapsule { id, gift: _, unlock_epoch: _ } = capsule;
+        object::delete(id);
+    }
+}
+```

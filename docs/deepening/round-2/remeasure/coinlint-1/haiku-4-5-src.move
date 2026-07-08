@@ -1,0 +1,26 @@
+module pot::savings {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+
+    public struct SavingsPot has key {
+        id: UID,
+        balance: Coin<SUI>,
+    }
+
+    public fun create(ctx: &mut TxContext): SavingsPot {
+        SavingsPot {
+            id: object::new(ctx),
+            balance: coin::zero(ctx),
+        }
+    }
+
+    public fun deposit(pot: &mut SavingsPot, coin: Coin<SUI>) {
+        coin::join(&mut pot.balance, coin);
+    }
+
+    public fun withdraw_all(pot: &mut SavingsPot, ctx: &mut TxContext) {
+        let withdrawn_amount = coin::value(&pot.balance);
+        let withdrawn = coin::split(&mut pot.balance, withdrawn_amount, ctx);
+        transfer::public_transfer(withdrawn, ctx.sender());
+    }
+}

@@ -1,0 +1,23 @@
+module text::builder {
+    use std::string::{Self, String};
+    use std::vector;
+
+    public fun join(mut parts: vector<String>, sep: String): String {
+        if (vector::is_empty(&parts)) {
+            return string::utf8(b"")
+        };
+
+        let mut reversed = vector[];
+        while (!vector::is_empty(&parts)) {
+            vector::push_back(&mut reversed, vector::pop_back(&mut parts));
+        };
+        
+        let mut result = vector::pop_back(&mut reversed);
+        while (!vector::is_empty(&reversed)) {
+            result.append(sep);
+            result.append(vector::pop_back(&mut reversed));
+        };
+
+        result
+    }
+}
