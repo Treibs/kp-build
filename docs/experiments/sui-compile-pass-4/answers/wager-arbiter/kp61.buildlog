@@ -1,0 +1,76 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:11:24
+   │
+11 │         creator_stake: Coin<SUI>,
+   │                        ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:46:13
+   │
+46 │         let amount = stake.value();
+   │             ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:68:9
+   │
+ 2 │     use sui::coin::Coin;
+   │                    ---- Similarly named defintion found here
+   ·
+68 │         event::emit(WagerCreated {
+   │         ^^^^^
+   │         │
+   │         Could not resolve the name 'event'
+   │         Did you mean: 'Coin'
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:86:9
+   │
+12 │         opponent_stake: Option<Coin<SUI>>,
+   │                         -----------------
+   │                         │      │
+   │                         │      The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+   │                         The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+   ·
+86 │         wager.opponent_stake = option::some(stake);
+   │         ^^^^^^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:89:9
+   │
+ 2 │     use sui::coin::Coin;
+   │                    ---- Similarly named defintion found here
+   ·
+89 │         event::emit(WagerJoined {
+   │         ^^^^^
+   │         │
+   │         Could not resolve the name 'event'
+   │         Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:116:13
+    │
+116 │         let amount = creator_stake.value() + opp_stake.value();
+    │             ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:123:9
+    │
+  2 │     use sui::coin::Coin;
+    │                    ---- Similarly named defintion found here
+    ·
+123 │         event::emit(WagerResolved {
+    │         ^^^^^
+    │         │
+    │         Could not resolve the name 'event'
+    │         Did you mean: 'Coin'
+
+Failed to build Move modules: Compilation error.

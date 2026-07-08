@@ -1,0 +1,22 @@
+task                   arm    verdict
+rental-agreement       base   PASS WARN2
+rental-agreement       kp61   FAIL error[E03002]: unbound module
+rental-agreement       kp86   PASS WARN2
+wager-arbiter          base   FAIL error[E03003]: unbound module member
+wager-arbiter          kp61   FAIL error[E03006]: unexpected name in this position
+wager-arbiter          kp86   PASS CLEAN
+subscription-service   base   PASS CLEAN
+subscription-service   kp61   FAIL error[E03003]: unbound module member
+subscription-service   kp86   FAIL error[E03006]: unexpected name in this position
+gift-card              base   PASS CLEAN
+gift-card              kp61   PASS CLEAN
+gift-card              kp86   FAIL error[E03003]: unbound module member
+crafting-forge         base   PASS CLEAN
+crafting-forge         kp61   PASS CLEAN
+crafting-forge         kp86   PASS CLEAN
+dead-man-switch        base   PASS WARN1
+dead-man-switch        kp61   PASS WARN1
+dead-man-switch        kp86   FAIL error[E04023]: invalid method call
+
+primary   compile-pass:  base 5/6   kp61 3/6   kp86 3/6
+secondary clean-compile: base 3/6   kp61 2/6   kp86 2/6

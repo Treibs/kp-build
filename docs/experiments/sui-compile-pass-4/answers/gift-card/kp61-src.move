@@ -1,0 +1,97 @@
+module giftcard::giftcard {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::event;
+    use sui::sui::SUI;
+
+    const EInsufficientBalance: u64 = 1;
+
+    public struct GiftCard has key, store {
+        id: UID,
+        merchant: address,
+        balance: Balance<SUI>,
+    }
+
+    public struct Spent has copy, drop {
+        card_id: object::ID,
+        merchant: address,
+        amount: u64,
+        remaining: u64,
+    }
+
+    public struct TopUp has copy, drop {
+        card_id: object::ID,
+        amount: u64,
+        new_balance: u64,
+    }
+
+    public struct CashedOut has copy, drop {
+        card_id: object::ID,
+        amount: u64,
+    }
+
+    public fun create(
+        coin: Coin<SUI>,
+        customer: address,
+        ctx: &mut TxContext,
+    ) {
+        let card = GiftCard {
+            id: object::new(ctx),
+            merchant: ctx.sender(),
+            balance: coin::into_balance(coin),
+        };
+        transfer::public_transfer(card, customer);
+    }
+
+    public fun spend(
+        card: &mut GiftCard,
+        amount: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(balance::value(&card.balance) >= amount, EInsufficientBalance);
+        
+        let spent_balance = balance::split(&mut card.balance, amount);
+        let spent_coin = coin::from_balance(spent_balance, ctx);
+        let remaining = balance::value(&card.balance);
+        
+        transfer::public_transfer(spent_coin, card.merchant);
+        
+        event::emit(Spent {
+            card_id: object::id(card),
+            merchant: card.merchant,
+            amount,
+            remaining,
+        });
+    }
+
+    public fun top_up(
+        card: &mut GiftCard,
+        payment: Coin<SUI>,
+    ) {
+        let amount = coin::value(&payment);
+        balance::join(&mut card.balance, coin::into_balance(payment));
+        event::emit(TopUp {
+            card_id: object::id(card),
+            amount,
+            new_balance: balance::value(&card.balance),
+        });
+    }
+
+    public fun cash_out(
+        card: GiftCard,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let card_id = object::id(&card);
+        let amount = balance::value(&card.balance);
+        
+        let GiftCard { id, merchant: _, balance } = card;
+        object::delete(id);
+        
+        event::emit(CashedOut {
+            card_id,
+            amount,
+        });
+
+        coin::from_balance(balance, ctx)
+    }
+}

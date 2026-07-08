@@ -1,0 +1,112 @@
+module inactivity_vault::vault {
+    use sui::object::{Self, UID};
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::clock::Clock;
+    use sui::event;
+
+    public struct Vault has key {
+        id: UID,
+        balance: Balance<SUI>,
+        owner: address,
+        beneficiary: address,
+        timeout_epochs: u64,
+        last_checkin_epoch: u64,
+    }
+
+    public struct CheckedIn has copy, drop {
+        epoch: u64,
+    }
+
+    public struct Withdrawn has copy, drop {
+        amount: u64,
+    }
+
+    public struct Deposited has copy, drop {
+        amount: u64,
+    }
+
+    public struct Claimed has copy, drop {
+        amount: u64,
+    }
+
+    public fun create(
+        owner: address,
+        beneficiary: address,
+        timeout_epochs: u64,
+        coin: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let vault = Vault {
+            id: object::new(ctx),
+            balance: coin::into_balance(coin),
+            owner,
+            beneficiary,
+            timeout_epochs,
+            last_checkin_epoch: clock.epoch(),
+        };
+        transfer::share_object(vault);
+    }
+
+    public fun check_in(
+        vault: &mut Vault,
+        clock: &Clock,
+        ctx: &TxContext,
+    ) {
+        assert!(ctx.sender() == vault.owner, 0);
+        vault.last_checkin_epoch = clock.epoch();
+        event::emit(CheckedIn { epoch: clock.epoch() });
+    }
+
+    public fun deposit(
+        vault: &mut Vault,
+        coin: Coin<SUI>,
+        ctx: &TxContext,
+    ) {
+        assert!(ctx.sender() == vault.owner, 0);
+        let amount = coin::value(&coin);
+        balance::join(&mut vault.balance, coin::into_balance(coin));
+        event::emit(Deposited { amount });
+    }
+
+    public fun withdraw(
+        vault: &mut Vault,
+        amount: u64,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == vault.owner, 0);
+        let current_epoch = clock.epoch();
+        assert!(current_epoch - vault.last_checkin_epoch <= vault.timeout_epochs, 1);
+        
+        let withdrawn_balance = balance::split(&mut vault.balance, amount);
+        let coin = coin::from_balance(withdrawn_balance, ctx);
+        transfer::public_transfer(coin, vault.owner);
+        event::emit(Withdrawn { amount });
+    }
+
+    public fun claim(
+        vault: Vault,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == vault.beneficiary, 0);
+        let current_epoch = clock.epoch();
+        assert!(current_epoch - vault.last_checkin_epoch > vault.timeout_epochs, 2);
+        
+        let Vault {
+            id,
+            balance,
+            beneficiary,
+            ..
+        } = vault;
+        
+        let amount = balance::value(&balance);
+        object::delete(id);
+        let coin = coin::from_balance(balance, ctx);
+        transfer::public_transfer(coin, beneficiary);
+        event::emit(Claimed { amount });
+    }
+}

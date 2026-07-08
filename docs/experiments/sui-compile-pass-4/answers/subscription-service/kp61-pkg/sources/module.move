@@ -1,0 +1,92 @@
+module subscription::registry {
+    use sui::coin::{Self, Coin, SUI};
+    use sui::dynamic_field;
+    
+    public struct Registry has key {
+        id: UID,
+        price_per_period: u64,
+        period_length_epochs: u64,
+        balance: Coin<SUI>,
+    }
+    
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+    
+    public struct SubscriptionExtended has copy, drop {
+        subscriber: address,
+        paid_through_epoch: u64,
+    }
+    
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, ctx.sender());
+    }
+    
+    public fun create_registry(
+        price_per_period: u64,
+        period_length_epochs: u64,
+        _cap: &AdminCap,
+        ctx: &mut TxContext,
+    ) {
+        let registry = Registry {
+            id: object::new(ctx),
+            price_per_period,
+            period_length_epochs,
+            balance: coin::zero<SUI>(ctx),
+        };
+        transfer::share_object(registry);
+    }
+    
+    public fun subscribe(
+        registry: &mut Registry,
+        num_periods: u64,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let required_amount = registry.price_per_period * num_periods;
+        assert!(coin::value(&payment) == required_amount, 0);
+        
+        let subscriber = ctx.sender();
+        let current_epoch = ctx.epoch();
+        
+        let new_paid_through = if (dynamic_field::exists<address>(&registry.id, subscriber)) {
+            let existing = dynamic_field::borrow<address, u64>(&registry.id, subscriber);
+            let base_epoch = if (*existing > current_epoch) { *existing } else { current_epoch };
+            base_epoch + registry.period_length_epochs * num_periods
+        } else {
+            current_epoch + registry.period_length_epochs * num_periods
+        };
+        
+        if (dynamic_field::exists<address>(&registry.id, subscriber)) {
+            dynamic_field::remove<address, u64>(&mut registry.id, subscriber);
+        };
+        dynamic_field::add<address, u64>(&mut registry.id, subscriber, new_paid_through);
+        
+        coin::join(&mut registry.balance, payment);
+        
+        sui::event::emit(SubscriptionExtended {
+            subscriber,
+            paid_through_epoch: new_paid_through,
+        });
+    }
+    
+    public fun is_active(registry: &Registry, addr: address, ctx: &TxContext): bool {
+        if (!dynamic_field::exists<address>(&registry.id, addr)) {
+            return false
+        };
+        let paid_through = dynamic_field::borrow<address, u64>(&registry.id, addr);
+        *paid_through >= ctx.epoch()
+    }
+    
+    public fun withdraw(
+        registry: &mut Registry,
+        _cap: &AdminCap,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let amount = coin::value(&registry.balance);
+        coin::split(&mut registry.balance, amount, ctx)
+    }
+}

@@ -1,0 +1,58 @@
+```move
+module crafting::forge {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    public struct Blade has key {
+        id: UID,
+    }
+
+    public struct Hilt has key {
+        id: UID,
+    }
+
+    public struct Sword has key {
+        id: UID,
+        components_used: u64,
+    }
+
+    public fun mint_blade(ctx: &mut TxContext): Blade {
+        Blade {
+            id: object::new(ctx),
+        }
+    }
+
+    public fun mint_hilt(ctx: &mut TxContext): Hilt {
+        Hilt {
+            id: object::new(ctx),
+        }
+    }
+
+    public fun forge(blade: Blade, hilt: Hilt, ctx: &mut TxContext): Sword {
+        let Blade { id: blade_id } = blade;
+        let Hilt { id: hilt_id } = hilt;
+        
+        object::delete(blade_id);
+        object::delete(hilt_id);
+
+        Sword {
+            id: object::new(ctx),
+            components_used: 2,
+        }
+    }
+
+    public fun smelt(sword: Sword, ctx: &mut TxContext): (Blade, Hilt) {
+        let Sword { id, components_used: _ } = sword;
+        object::delete(id);
+
+        (
+            Blade {
+                id: object::new(ctx),
+            },
+            Hilt {
+                id: object::new(ctx),
+            }
+        )
+    }
+}
+```

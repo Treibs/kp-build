@@ -1,0 +1,159 @@
+```move
+module wager::wager {
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+    use std::option::{Self, Option};
+
+    public struct Wager has key {
+        id: UID,
+        creator: address,
+        opponent: address,
+        arbiter: address,
+        creator_stake: Coin<SUI>,
+        opponent_stake: Option<Coin<SUI>>,
+        joined: bool,
+    }
+
+    public struct ArbiterCap has key, store {
+        id: UID,
+        wager_id: ID,
+    }
+
+    public struct WagerCreated has copy, drop {
+        wager_id: ID,
+        creator: address,
+        opponent: address,
+        arbiter: address,
+        amount: u64,
+    }
+
+    public struct WagerJoined has copy, drop {
+        wager_id: ID,
+        opponent: address,
+    }
+
+    public struct WagerResolved has copy, drop {
+        wager_id: ID,
+        winner: address,
+        pot: u64,
+    }
+
+    public fun create(
+        opponent: address,
+        arbiter: address,
+        stake: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let amount = stake.value();
+        
+        let wager = Wager {
+            id: object::new(ctx),
+            creator: ctx.sender(),
+            opponent,
+            arbiter,
+            creator_stake: stake,
+            opponent_stake: option::none(),
+            joined: false,
+        };
+        
+        let wager_id = object::id(&wager);
+        transfer::share_object(wager);
+
+        let cap = ArbiterCap {
+            id: object::new(ctx),
+            wager_id,
+        };
+        
+        transfer::transfer(cap, arbiter);
+
+        event::emit(WagerCreated {
+            wager_id,
+            creator: ctx.sender(),
+            opponent,
+            arbiter,
+            amount,
+        });
+    }
+
+    public fun join(
+        wager: &mut Wager,
+        stake: Coin<SUI>,
+        ctx: &TxContext,
+    ) {
+        assert!(ctx.sender() == wager.opponent);
+        assert!(!wager.joined);
+        assert!(stake.value() == wager.creator_stake.value());
+
+        wager.opponent_stake = option::some(stake);
+        wager.joined = true;
+
+        event::emit(WagerJoined {
+            wager_id: object::id(wager),
+            opponent: ctx.sender(),
+        });
+    }
+
+    public fun resolve(
+        wager: Wager,
+        cap: ArbiterCap,
+        winner: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == wager.arbiter);
+        assert!(wager.joined);
+        
+        let wager_id = object::id(&wager);
+        assert!(cap.wager_id == wager_id);
+        assert!(winner == wager.creator || winner == wager.opponent);
+
+        let Wager {
+            id,
+            creator_stake,
+            mut opponent_stake,
+            ..
+        } = wager;
+
+        let opp_stake = option::extract(&mut opponent_stake);
+        let amount = creator_stake.value() + opp_stake.value();
+
+        let mut pot = creator_stake;
+        pot.join(opp_stake);
+
+        transfer::public_transfer(pot, winner);
+
+        event::emit(WagerResolved {
+            wager_id,
+            winner,
+            pot: amount,
+        });
+
+        transfer::transfer(cap, ctx.sender());
+        object::delete(id);
+    }
+
+    public fun cancel(
+        wager: Wager,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ctx.sender() == wager.creator);
+        assert!(!wager.joined);
+
+        let Wager {
+            id,
+            creator_stake,
+            mut opponent_stake,
+            opponent,
+            ..
+        } = wager;
+
+        transfer::public_transfer(creator_stake, ctx.sender());
+
+        if (option::is_some(&opponent_stake)) {
+            let opp_stake = option::extract(&mut opponent_stake);
+            transfer::public_transfer(opp_stake, opponent);
+        };
+
+        object::delete(id);
+    }
+}
+```
