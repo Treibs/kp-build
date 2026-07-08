@@ -1,0 +1,24 @@
+micro-amm         base   FAIL error[E01003]: invalid modifier
+micro-amm         full   PASS CLEAN
+micro-amm         slim   FAIL error[E04007]: incompatible types
+micro-amm         sheet  PASS WARN2
+staking-pot       base   FAIL error[E01003]: invalid modifier
+staking-pot       full   FAIL error[E03003]: unbound module member
+staking-pot       slim   FAIL error[E03006]: unexpected name in this position
+staking-pot       sheet  PASS WARN1
+rosca-circle      base   FAIL error[E03002]: unbound module
+rosca-circle      full   FAIL error[E06001]: unused value without 'drop'
+rosca-circle      slim   FAIL error[E04030]: invalid usage of lambda type
+rosca-circle      sheet  PASS WARN1
+compliance-coin   base   FAIL error[Sui E02003]: invalid 'init' function
+compliance-coin   full   FAIL error[Sui E02009]: invalid private transfer call
+compliance-coin   slim   FAIL error[E03003]: unbound module member
+compliance-coin   sheet  FAIL error[E04007]: incompatible types
+grade-book        base   FAIL error[E03002]: unbound module
+grade-book        full   FAIL error[E04004]: expected a single non-reference type
+grade-book        slim   FAIL error[E01002]: unexpected token
+grade-book        sheet  FAIL error[E01002]: unexpected token
+payment-channel   base   FAIL error[E01003]: invalid modifier
+payment-channel   full   FAIL error[E03006]: unexpected name in this position
+payment-channel   slim   FAIL error[E05001]: ability constraint not satisfied
+payment-channel   sheet  FAIL error[E05001]: ability constraint not satisfied

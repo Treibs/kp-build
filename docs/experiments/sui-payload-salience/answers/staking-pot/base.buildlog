@@ -1,0 +1,34 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:12:5
+   │
+12 │     struct RewardPot has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:19:5
+   │
+19 │     struct StakePosition has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:74:9
+   │
+58 │     public fun unstake(
+   │                ------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+74 │         transfer::public_transfer(out_coin, tx_context::sender(ctx));
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                                   │
+   │         │                                   Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.

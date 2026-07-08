@@ -1,0 +1,26 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:17:42
+   │
+17 │         let (treasury, metadata) = coin::create_currency(
+   │                                          ^^^^^^^^^^^^^^^ The function 'sui::coin::create_currency' is deprecated: Use `coin_registry::new_currency_with_otw` instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[Sui E02009]: invalid private transfer call
+    ┌─ ./sources/module.move:36:9
+    │
+ 36 │         transfer::transfer(treasury, ctx.sender());
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid private transfer. The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:80:47
+    │
+ 80 │ public struct TreasuryCap<phantom T> has key, store {
+    │                                               ----- The object has 'store' so 'sui::transfer::public_transfer' can be called instead
+    ·
+232 │ ): (TreasuryCap<T>, CoinMetadata<T>) {
+    │     -------------- The type 'sui::coin::TreasuryCap<regulated::regulated_token::REGULATED_TOKEN>' is not declared in the current module
+
+Failed to build Move modules: Compilation error.

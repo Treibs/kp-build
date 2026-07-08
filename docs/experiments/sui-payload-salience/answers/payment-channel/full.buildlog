@@ -1,0 +1,102 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:61:33
+   │
+ 4 │     use sui::coin::{Coin, into_balance, from_balance};
+   │                     ---- Similarly named defintion found here
+   ·
+61 │         opener_deposit: Balance<SUI>,
+   │                                 ^^^
+   │                                 │
+   │                                 Could not resolve the name 'SUI'
+   │                                 Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:62:46
+   │
+ 4 │     use sui::coin::{Coin, into_balance, from_balance};
+   │                     ---- Similarly named defintion found here
+   ·
+62 │         counterparty_deposit: Option<Balance<SUI>>,
+   │                                              ^^^
+   │                                              │
+   │                                              Could not resolve the name 'SUI'
+   │                                              Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:71:20
+   │
+ 4 │     use sui::coin::{Coin, into_balance, from_balance};
+   │                     ---- Similarly named defintion found here
+   ·
+71 │         coin: Coin<SUI>,
+   │                    ^^^
+   │                    │
+   │                    Could not resolve the name 'SUI'
+   │                    Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:107:20
+    │
+  4 │     use sui::coin::{Coin, into_balance, from_balance};
+    │                     ---- Similarly named defintion found here
+    ·
+107 │         coin: Coin<SUI>,
+    │                    ^^^
+    │                    │
+    │                    Could not resolve the name 'SUI'
+    │                    Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:139:13
+    │
+139 │             is_joined,
+    │             ^^^^^^^^^ Unused local variable 'is_joined'. Consider removing or prefixing with an underscore: '_is_joined'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04023]: invalid method call
+    ┌─ ./sources/module.move:209:46
+    │
+209 │         let total = opener_deposit.value() + counterparty_deposit.value();
+    │                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │                                              │                    │
+    │                                              │                    No local 'use fun' alias was found for 'std::option::Option<sui::balance::Balance<_>>.value', and no function 'value' was found in the defining module 'std::option'
+    │                                              Invalid method call. No known method 'value' on type 'std::option::Option<sui::balance::Balance<_>>'
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:246:13
+    │
+ 52 │     public struct Proposal has store {
+    │                   -------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+ 64 │         proposal: Option<Proposal>,
+    │                          -------- The type 'payment_channel::channel::Proposal' does not have the ability 'drop'
+    ·
+246 │         let _ = option::extract(&mut channel.proposal);
+    │             ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:269:13
+    │
+ 64 │         proposal: Option<Proposal>,
+    │                   ----------------
+    │                   │      │
+    │                   │      The type 'std::option::Option<payment_channel::channel::Proposal>' can have the ability 'drop' but the type argument 'payment_channel::channel::Proposal' does not have the required ability 'drop'
+    │                   The type 'std::option::Option<payment_channel::channel::Proposal>' does not have the ability 'drop'
+    ·
+269 │             ..
+    │             ^^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E04023]: invalid method call
+    ┌─ ./sources/module.move:280:35
+    │
+280 │         let counterparty_amount = counterparty_deposit.value();
+    │                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │                                   │                    │
+    │                                   │                    No local 'use fun' alias was found for 'std::option::Option<sui::balance::Balance<_>>.value', and no function 'value' was found in the defining module 'std::option'
+    │                                   Invalid method call. No known method 'value' on type 'std::option::Option<sui::balance::Balance<_>>'
+
+Failed to build Move modules: Compilation error.

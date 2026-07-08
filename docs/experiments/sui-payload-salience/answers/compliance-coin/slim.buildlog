@@ -1,0 +1,18 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:25:42
+   │
+25 │         let (treasury, metadata) = coin::create_currency(
+   │                                          ^^^^^^^^^^^^^^^ The function 'sui::coin::create_currency' is deprecated: Use `coin_registry::new_currency_with_otw` instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:35:9
+   │
+35 │         coin::freeze_currency_metadata(metadata);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid module access. Unbound function 'freeze_currency_metadata' in module 'sui::coin'
+
+Failed to build Move modules: Compilation error.

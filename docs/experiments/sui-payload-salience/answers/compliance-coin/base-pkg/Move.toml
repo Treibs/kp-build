@@ -1,0 +1,6 @@
+[package]
+name = "probe_pkg"
+edition = "2024"
+
+[addresses]
+regulated_token = "0x0"

@@ -1,0 +1,66 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[Sui E02003]: invalid 'init' function
+   ┌─ ./sources/module.move:16:9
+   │
+16 │     fun init(otw: REG, ctx: &mut TxContext) {
+   │         ^^^^      --- Invalid parameter 'otw' of type 'regulated_token::reg_token::REG'. Expected a one-time witness type, 'regulated_token::reg_token::REG_TOKEN
+   │         │          
+   │         Invalid 'init' function declaration
+   │
+   = One-time witness types are structs with the following requirements: their name is the upper-case version of the module's name, they have no fields (or a single boolean field), they have no type parameters, and they have only the 'drop' ability.
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:17:46
+   │
+17 │         let (treasury_cap, metadata) = coin::create_currency(
+   │                                              ^^^^^^^^^^^^^^^ The function 'sui::coin::create_currency' is deprecated: Use `coin_registry::new_currency_with_otw` instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:29:39
+   │
+29 │             frozen_addresses: vector::empty(),
+   │                                       ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:37:12
+   │
+37 │     public entry fun mint(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:49:12
+   │
+49 │     public entry fun transfer_with_guard(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:65:12
+   │
+65 │     public entry fun freeze_address(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:74:12
+   │
+74 │     public entry fun unfreeze_address(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.

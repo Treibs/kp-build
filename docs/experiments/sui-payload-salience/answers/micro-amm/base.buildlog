@@ -1,0 +1,98 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01003]: invalid modifier
+  ┌─ ./sources/module.move:8:5
+  │
+8 │     struct Pool<phantom X, phantom Y> has key {
+  │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+  │
+  = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:15:5
+   │
+15 │     struct PoolCapability has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:23:12
+   │
+23 │     public entry fun create_pool<X, Y>(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:46:12
+   │
+46 │     public entry fun swap<X, Y>(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[Sui E02009]: invalid private transfer call
+    ┌─ ./sources/module.move:64:9
+    │
+ 64 │         transfer::transfer(output, tx_context::sender(ctx));
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid private transfer. The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:40
+    │
+ 44 │ public struct Coin<phantom T> has key, store {
+    │                                        ----- The object has 'store' so 'sui::transfer::public_transfer' can be called instead
+    ·
+140 │ public fun from_balance<T>(balance: Balance<T>, ctx: &mut TxContext): Coin<T> {
+    │                                                                       ------- The type 'sui::coin::Coin<Y>' is not declared in the current module
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:67:12
+   │
+67 │     public entry fun add_reserves<X, Y>(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:79:12
+   │
+79 │     public entry fun close_pool<X, Y>(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[Sui E02009]: invalid private transfer call
+    ┌─ ./sources/module.move:95:9
+    │
+ 95 │         transfer::transfer(coin_x, tx_context::sender(ctx));
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid private transfer. The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:40
+    │
+ 44 │ public struct Coin<phantom T> has key, store {
+    │                                        ----- The object has 'store' so 'sui::transfer::public_transfer' can be called instead
+    ·
+140 │ public fun from_balance<T>(balance: Balance<T>, ctx: &mut TxContext): Coin<T> {
+    │                                                                       ------- The type 'sui::coin::Coin<X>' is not declared in the current module
+
+error[Sui E02009]: invalid private transfer call
+    ┌─ ./sources/module.move:96:9
+    │
+ 96 │         transfer::transfer(coin_y, tx_context::sender(ctx));
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid private transfer. The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:40
+    │
+ 44 │ public struct Coin<phantom T> has key, store {
+    │                                        ----- The object has 'store' so 'sui::transfer::public_transfer' can be called instead
+    ·
+140 │ public fun from_balance<T>(balance: Balance<T>, ctx: &mut TxContext): Coin<T> {
+    │                                                                       ------- The type 'sui::coin::Coin<Y>' is not declared in the current module
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,103 @@
+```move
+module staking::staking {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::balance::{Self, Balance};
+    use sui::clock::{Self, Clock};
+
+    const EPOCH_DURATION_MS: u64 = 86_400_000;
+
+    public struct StakingPool has key {
+        id: UID,
+        reward_rate: u64,
+        reservoir: Balance<SUI>,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct StakePosition has key {
+        id: UID,
+        amount: u64,
+        start_time_ms: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
+    }
+
+    public fun create_pool(
+        reward_rate: u64,
+        initial_funds: Coin<SUI>,
+        _admin: &AdminCap,
+        ctx: &mut TxContext,
+    ) {
+        let pool = StakingPool {
+            id: object::new(ctx),
+            reward_rate,
+            reservoir: coin::into_balance(initial_funds),
+        };
+        transfer::share_object(pool);
+    }
+
+    public fun stake(
+        pool: &mut StakingPool,
+        stake_coin: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let amount = coin::value(&stake_coin);
+        let current_time = clock::timestamp_ms(clock);
+        
+        coin::put(&mut pool.reservoir, stake_coin);
+        
+        let position = StakePosition {
+            id: object::new(ctx),
+            amount,
+            start_time_ms: current_time,
+        };
+        transfer::transfer(position, tx_context::sender(ctx));
+    }
+
+    public fun unstake(
+        pool: &mut StakingPool,
+        position: StakePosition,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let StakePosition { id, amount, start_time_ms } = position;
+        let current_time = clock::timestamp_ms(clock);
+        
+        let time_elapsed = current_time - start_time_ms;
+        let epochs_elapsed = time_elapsed / EPOCH_DURATION_MS;
+        
+        let reward = (amount as u128) * (pool.reward_rate as u128) * (epochs_elapsed as u128) / 10000;
+        let reward = (reward as u64);
+        
+        let total_payout = amount + reward;
+        let payout = coin::take(&mut pool.reservoir, total_payout, ctx);
+        
+        transfer::public_transfer(payout, tx_context::sender(ctx));
+        object::delete(id);
+    }
+
+    public fun top_up_reservoir(
+        pool: &mut StakingPool,
+        funds: Coin<SUI>,
+        _admin: &AdminCap,
+    ) {
+        coin::put(&mut pool.reservoir, funds);
+    }
+
+    public fun get_reservoir_balance(pool: &StakingPool): u64 {
+        balance::value(&pool.reservoir)
+    }
+}
+```

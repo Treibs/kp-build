@@ -1,0 +1,52 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:21:5
+   │
+21 │     struct PaymentChannel has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:44:30
+   │
+44 │         let creation_epoch = clock::epoch(clock);
+   │                              ^^^^^^^^^^^^ Invalid module access. Unbound function 'epoch' in module 'sui::clock'
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:73:9
+   │
+26 │         counterparty_deposit: Balance<SUI>,
+   │                               ------------ The type 'sui::balance::Balance<sui::sui::SUI>' does not have the ability 'drop'
+   ·
+73 │         channel.counterparty_deposit = coin::into_balance(deposit);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:36:15
+   │
+36 │ public struct Balance<phantom T> has store {
+   │               ------- To satisfy the constraint, the 'drop' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:90:35
+   │
+26 │         counterparty_deposit: Balance<SUI>,
+   │                               ------------ The type 'sui::balance::Balance<sui::sui::SUI>' does not have the ability 'drop'
+   ·
+90 │             counterparty_deposit: _,
+   │                                   ^ Cannot ignore values without the 'drop' ability. The value must be used
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:36:15
+   │
+36 │ public struct Balance<phantom T> has store {
+   │               ------- To satisfy the constraint, the 'drop' ability would need to be added here
+
+error[E03003]: unbound module member
+    ┌─ ./sources/module.move:202:29
+    │
+202 │         let current_epoch = clock::epoch(clock);
+    │                             ^^^^^^^^^^^^ Invalid module access. Unbound function 'epoch' in module 'sui::clock'
+
+Failed to build Move modules: Compilation error.

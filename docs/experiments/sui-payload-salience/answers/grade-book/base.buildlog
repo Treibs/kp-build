@@ -1,0 +1,129 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:5:9
+  │
+5 │     use sui::vector;
+  │         ^^^^^^^^^^^ Invalid 'use'. Unbound module: 'sui::vector'
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:36:34
+   │
+36 │             assignments: vector::empty(),
+   │                                  ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:73:18
+   │
+23 │         scores: Table<vector<u8>, u32>,
+   │                       ---------- Expected: 'vector<u8>'
+   ·
+73 │         assert!(!table::contains(&gradebook.scores, &key));
+   │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                  │                                  │
+   │                  │                                  Given: '&vector<u8>'
+   │                  Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'
+
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:92:17
+   │
+23 │         scores: Table<vector<u8>, u32>,
+   │                       ---------- Expected: 'vector<u8>'
+   ·
+92 │         assert!(table::contains(&gradebook.scores, &key));
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                 │                                  │
+   │                 │                                  Given: '&vector<u8>'
+   │                 Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:114:17
+    │
+ 23 │         scores: Table<vector<u8>, u32>,
+    │                       ---------- Expected: 'vector<u8>'
+    ·
+114 │             if (table::contains(&gradebook.scores, &key)) {
+    │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │                 │                                  │
+    │                 │                                  Given: '&vector<u8>'
+    │                 Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:115:34
+    │
+ 23 │         scores: Table<vector<u8>, u32>,
+    │                       ---------- Expected: 'vector<u8>'
+    ·
+115 │                 total = total + *table::borrow(&gradebook.scores, &key);
+    │                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │                                  │                                │
+    │                                  │                                Given: '&vector<u8>'
+    │                                  Invalid call of 'sui::table::borrow'. Invalid argument for parameter 'k'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:129:9
+    │
+ 23 │         scores: Table<vector<u8>, u32>,
+    │                       ---------- Expected: 'vector<u8>'
+    ·
+129 │         table::contains(&gradebook.scores, &key)
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │         │                                  │
+    │         │                                  Given: '&vector<u8>'
+    │         Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'
+
+warning[W04037]: deprecated usage
+    ┌─ ./sources/module.move:133:31
+    │
+133 │         let mut key = vector::empty();
+    │                               ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+    │
+    = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+    ┌─ ./sources/module.move:153:33
+    │
+153 │         let mut bytes = vector::empty();
+    │                                 ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+    │
+    = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04003]: built-in operation not supported
+    ┌─ ./sources/module.move:154:22
+    │
+152 │     fun address_to_bytes(addr: address): vector<u8> {
+    │                                ------- Found: 'address'. But expected: 'u8', 'u16', 'u32', 'u64', 'u128', 'u256'
+153 │         let mut bytes = vector::empty();
+154 │         let mut n = (addr as u256);
+    │                      ^^^^ Invalid argument to 'as'
+
+warning[W04039]: unable to determine literal's type
+    ┌─ ./sources/module.move:155:21
+    │
+155 │         let mut i = 0;
+    │                     ^ Could not determine a concrete type for this numeric literal, so defaulting to 'u64'
+    │
+    = To avoid this warning, add an explicit type annotation, e.g., '<num>u64'
+    = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+    ┌─ ./sources/module.move:165:33
+    │
+165 │         let mut bytes = vector::empty();
+    │                                 ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+    │
+    = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04039]: unable to determine literal's type
+    ┌─ ./sources/module.move:167:21
+    │
+167 │         let mut i = 0;
+    │                     ^ Could not determine a concrete type for this numeric literal, so defaulting to 'u64'
+    │
+    = To avoid this warning, add an explicit type annotation, e.g., '<num>u64'
+    = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,60 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:20:22
+   │
+20 │         opener_coin: Coin<SUI>,
+   │                      ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:113:9
+    │
+ 21 │         counterparty_coin: Option<Coin<SUI>>,
+    │                            -----------------
+    │                            │      │
+    │                            │      The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+    │                            The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+    ·
+113 │         channel.counterparty_coin = option::some(deposit);
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:140:32
+    │
+ 21 │         counterparty_coin: Option<Coin<SUI>>,
+    │                            -----------------
+    │                            │      │
+    │                            │      The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+    │                            The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+    ·
+140 │             counterparty_coin: _,
+    │                                ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:219:32
+    │
+ 21 │         counterparty_coin: Option<Coin<SUI>>,
+    │                            -----------------
+    │                            │      │
+    │                            │      The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+    │                            The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+    ·
+219 │             counterparty_coin: _,
+    │                                ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:263:32
+    │
+ 21 │         counterparty_coin: Option<Coin<SUI>>,
+    │                            -----------------
+    │                            │      │
+    │                            │      The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+    │                            The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+    ·
+263 │             counterparty_coin: _,
+    │                                ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+Failed to build Move modules: Compilation error.

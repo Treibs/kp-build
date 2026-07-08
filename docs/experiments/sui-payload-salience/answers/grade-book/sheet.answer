@@ -1,0 +1,112 @@
+```move
+module gradebook::gradebook {
+    use sui::dynamic_field;
+    use sui::event;
+
+    public struct GradeBook has key, store {
+        id: UID,
+        assignments: vector<Assignment>,
+    }
+
+    public struct Assignment has store {
+        name: vector<u8>,
+        max_score: u64,
+    }
+
+    public struct InstructorCap has key, store {
+        id: UID,
+    }
+
+    public struct ScoreAmended has copy, drop {
+        student: address,
+        assignment_index: u64,
+        old_score: u64,
+        new_score: u64,
+    }
+
+    public fun create_grade_book(ctx: &mut TxContext) -> (GradeBook, InstructorCap) {
+        let grade_book = GradeBook {
+            id: object::new(ctx),
+            assignments: vector[],
+        };
+
+        let cap = InstructorCap {
+            id: object::new(ctx),
+        };
+
+        (grade_book, cap)
+    }
+
+    public fun register_assignment(
+        grade_book: &mut GradeBook,
+        _cap: &InstructorCap,
+        name: vector<u8>,
+        max_score: u64,
+    ) {
+        grade_book.assignments.push_back(Assignment { name, max_score });
+    }
+
+    public fun record_score(
+        grade_book: &mut GradeBook,
+        _cap: &InstructorCap,
+        student: address,
+        assignment_index: u64,
+        score: u64,
+    ) {
+        assert!(score <= grade_book.assignments[assignment_index].max_score, 1);
+        
+        let key = (student, assignment_index);
+        assert!(!dynamic_field::exists(&grade_book.id, key), 2);
+        
+        dynamic_field::add(&mut grade_book.id, key, score);
+    }
+
+    public fun amend_score(
+        grade_book: &mut GradeBook,
+        _cap: &InstructorCap,
+        student: address,
+        assignment_index: u64,
+        new_score: u64,
+    ) {
+        assert!(new_score <= grade_book.assignments[assignment_index].max_score, 1);
+        
+        let key = (student, assignment_index);
+        assert!(dynamic_field::exists(&grade_book.id, key), 3);
+        
+        let old_score = dynamic_field::remove(&mut grade_book.id, key);
+        dynamic_field::add(&mut grade_book.id, key, new_score);
+        
+        event::emit(ScoreAmended {
+            student,
+            assignment_index,
+            old_score,
+            new_score,
+        });
+    }
+
+    public fun student_total(
+        grade_book: &GradeBook,
+        student: address,
+    ): u64 {
+        let mut total = 0;
+        let mut i = 0;
+        while (i < grade_book.assignments.length()) {
+            let key = (student, i);
+            if (dynamic_field::exists(&grade_book.id, key)) {
+                let score = dynamic_field::borrow(&grade_book.id, key);
+                total = total + *score;
+            };
+            i = i + 1;
+        };
+        total
+    }
+
+    public fun has_score(
+        grade_book: &GradeBook,
+        student: address,
+        assignment_index: u64,
+    ): bool {
+        dynamic_field::exists(&grade_book.id, (student, assignment_index))
+    }
+}
+```

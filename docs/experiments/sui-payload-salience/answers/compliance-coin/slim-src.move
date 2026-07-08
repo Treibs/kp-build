@@ -1,0 +1,99 @@
+module regulated_coin::regulated {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::dynamic_field;
+    use std::option;
+
+    public struct REGULATED has drop {}
+
+    public struct TreasuryCapability has key, store {
+        id: UID,
+        cap: TreasuryCap<REGULATED>,
+    }
+
+    public struct ComplianceCap has key, store {
+        id: UID,
+    }
+
+    public struct FreezeRegistry has key {
+        id: UID,
+    }
+
+    fun init(witness: REGULATED, ctx: &mut TxContext) {
+        let (treasury, metadata) = coin::create_currency(
+            witness,
+            9,
+            b"REG",
+            b"REG",
+            b"Regulated Token",
+            option::none(),
+            ctx,
+        );
+
+        coin::freeze_currency_metadata(metadata);
+
+        let treasury_cap = TreasuryCapability {
+            id: object::new(ctx),
+            cap: treasury,
+        };
+
+        let compliance_cap = ComplianceCap {
+            id: object::new(ctx),
+        };
+
+        let freeze_registry = FreezeRegistry {
+            id: object::new(ctx),
+        };
+
+        transfer::public_transfer(treasury_cap, ctx.sender());
+        transfer::public_transfer(compliance_cap, ctx.sender());
+        transfer::share_object(freeze_registry);
+    }
+
+    public fun freeze_address(
+        _cap: &ComplianceCap,
+        registry: &mut FreezeRegistry,
+        address: address,
+    ) {
+        dynamic_field::add(&mut registry.id, address, true);
+    }
+
+    public fun unfreeze_address(
+        _cap: &ComplianceCap,
+        registry: &mut FreezeRegistry,
+        address: address,
+    ) {
+        if (dynamic_field::exists(&registry.id, address)) {
+            let _: bool = dynamic_field::remove(&mut registry.id, address);
+        }
+    }
+
+    public fun is_frozen(registry: &FreezeRegistry, address: address): bool {
+        dynamic_field::exists(&registry.id, address)
+    }
+
+    public fun mint(
+        treasury_cap: &mut TreasuryCapability,
+        registry: &FreezeRegistry,
+        recipient: address,
+        amount: u64,
+        ctx: &mut TxContext,
+    ): Coin<REGULATED> {
+        assert!(!is_frozen(registry, recipient), 1);
+        coin::mint(&mut treasury_cap.cap, amount, ctx)
+    }
+
+    entry fun transfer_regulated(
+        registry: &FreezeRegistry,
+        coin: Coin<REGULATED>,
+        recipient: address,
+        ctx: &TxContext,
+    ) {
+        let sender = ctx.sender();
+        assert!(!is_frozen(registry, sender), 1);
+        assert!(!is_frozen(registry, recipient), 1);
+        transfer::public_transfer(coin, recipient);
+    }
+}

@@ -1,0 +1,220 @@
+```move
+module 0x0::payment_channel {
+    use sui::coin::{Coin};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::object;
+    use sui::dynamic_field;
+    use sui::clock::Clock;
+    use sui::event;
+    use std::option::{Option, some, none};
+
+    const EInvalidSplit: u64 = 1;
+    const ENotJoined: u64 = 2;
+    const ENoPendingProposal: u64 = 3;
+    const ENotProposer: u64 = 4;
+    const EForceCloseNotReady: u64 = 5;
+    const ENotParty: u64 = 6;
+    const EAlreadyJoined: u64 = 7;
+
+    public struct ChannelOpened has copy, drop {
+        channel_id: object::ID,
+        opener: address,
+        counterparty: address,
+    }
+
+    public struct ChannelJoined has copy, drop {
+        channel_id: object::ID,
+    }
+
+    public struct ProposalSubmitted has copy, drop {
+        channel_id: object::ID,
+        proposer: address,
+        opener_payout: u64,
+        counterparty_payout: u64,
+    }
+
+    public struct ChannelClosed has copy, drop {
+        channel_id: object::ID,
+        opener_payout: u64,
+        counterparty_payout: u64,
+    }
+
+    public struct Channel has key {
+        id: UID,
+        opener: address,
+        counterparty: address,
+        opener_deposit: Coin<SUI>,
+        joined: bool,
+        opened_timestamp: u64,
+        force_close_delay: u64,
+        pending_proposal: Option<PendingProposal>,
+    }
+
+    public struct PendingProposal has copy, drop {
+        proposer: address,
+        opener_payout: u64,
+        counterparty_payout: u64,
+    }
+
+    public fun open(
+        counterparty: address,
+        deposit: Coin<SUI>,
+        force_close_delay: u64,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let channel = Channel {
+            id: object::new(ctx),
+            opener: ctx.sender(),
+            counterparty,
+            opener_deposit: deposit,
+            joined: false,
+            opened_timestamp: clock.timestamp_ms(),
+            force_close_delay,
+            pending_proposal: none(),
+        };
+
+        event::emit(ChannelOpened {
+            channel_id: object::id(&channel),
+            opener: channel.opener,
+            counterparty: channel.counterparty,
+        });
+
+        transfer::share_object(channel);
+    }
+
+    public fun cancel(mut channel: Channel, ctx: &mut TxContext) {
+        assert!(!channel.joined, EAlreadyJoined);
+        assert!(ctx.sender() == channel.opener, ENotParty);
+
+        let opener_deposit = channel.opener_deposit;
+        object::delete(channel.id);
+        transfer::public_transfer(opener_deposit, channel.opener);
+    }
+
+    public fun join(
+        mut channel: Channel,
+        deposit: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(!channel.joined, EAlreadyJoined);
+        assert!(ctx.sender() == channel.counterparty, ENotParty);
+
+        channel.joined = true;
+        dynamic_field::add(&mut channel.id, b"counterparty_deposit", deposit);
+
+        event::emit(ChannelJoined {
+            channel_id: object::id(&channel),
+        });
+    }
+
+    public fun propose_close(
+        mut channel: Channel,
+        opener_payout: u64,
+        counterparty_payout: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(channel.joined, ENotJoined);
+        let sender = ctx.sender();
+        assert!(sender == channel.opener || sender == channel.counterparty, ENotParty);
+
+        let counterparty_coin: &Coin<SUI> = dynamic_field::borrow(&channel.id, b"counterparty_deposit");
+        let total = channel.opener_deposit.value() + counterparty_coin.value();
+        assert!(opener_payout + counterparty_payout == total, EInvalidSplit);
+
+        channel.pending_proposal = some(PendingProposal {
+            proposer: sender,
+            opener_payout,
+            counterparty_payout,
+        });
+
+        event::emit(ProposalSubmitted {
+            channel_id: object::id(&channel),
+            proposer: sender,
+            opener_payout,
+            counterparty_payout,
+        });
+    }
+
+    public fun accept_close(
+        mut channel: Channel,
+        ctx: &mut TxContext,
+    ) {
+        assert!(channel.joined, ENotJoined);
+        assert!(channel.pending_proposal.is_some(), ENoPendingProposal);
+
+        let sender = ctx.sender();
+        assert!(sender == channel.opener || sender == channel.counterparty, ENotParty);
+
+        let proposal = option::extract(&mut channel.pending_proposal);
+        assert!(proposal.proposer != sender, ENotProposer);
+
+        let counterparty_coin: Coin<SUI> = dynamic_field::remove(&mut channel.id, b"counterparty_deposit");
+
+        let mut pool = channel.opener_deposit;
+        pool.join(counterparty_coin);
+
+        let opener_payout_coin = pool.split(proposal.opener_payout, ctx);
+        let counterparty_payout_coin = pool;
+
+        let channel_id = object::id(&channel);
+        let opener = channel.opener;
+        let counterparty = channel.counterparty;
+
+        object::delete(channel.id);
+
+        transfer::public_transfer(opener_payout_coin, opener);
+        transfer::public_transfer(counterparty_payout_coin, counterparty);
+
+        event::emit(ChannelClosed {
+            channel_id,
+            opener_payout: proposal.opener_payout,
+            counterparty_payout: proposal.counterparty_payout,
+        });
+    }
+
+    public fun withdraw_proposal(
+        mut channel: Channel,
+        ctx: &mut TxContext,
+    ) {
+        assert!(channel.pending_proposal.is_some(), ENoPendingProposal);
+        let proposal = option::borrow(&channel.pending_proposal);
+        assert!(ctx.sender() == proposal.proposer, ENotProposer);
+
+        channel.pending_proposal = none();
+    }
+
+    public fun force_close(
+        mut channel: Channel,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(channel.joined, ENotJoined);
+        let sender = ctx.sender();
+        assert!(sender == channel.opener || sender == channel.counterparty, ENotParty);
+
+        let current_timestamp = clock.timestamp_ms();
+        assert!(current_timestamp > channel.opened_timestamp + channel.force_close_delay, EForceCloseNotReady);
+
+        let counterparty_coin: Coin<SUI> = dynamic_field::remove(&mut channel.id, b"counterparty_deposit");
+
+        let channel_id = object::id(&channel);
+        let opener = channel.opener;
+        let counterparty = channel.counterparty;
+        let opener_amount = channel.opener_deposit.value();
+        let counterparty_amount = counterparty_coin.value();
+
+        object::delete(channel.id);
+
+        transfer::public_transfer(channel.opener_deposit, opener);
+        transfer::public_transfer(counterparty_coin, counterparty);
+
+        event::emit(ChannelClosed {
+            channel_id,
+            opener_payout: opener_amount,
+            counterparty_payout: counterparty_amount,
+        });
+    }
+}
+```
