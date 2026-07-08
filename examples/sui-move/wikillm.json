@@ -6,7 +6,7 @@
   "stats": {
     "papers_verified": 0,
     "papers_total": 0,
-    "claims": 61,
+    "claims": 86,
     "open_problems": 0,
     "debates": 0,
     "benchmarks": 0,
@@ -70,7 +70,7 @@
       "verdict": "kp61 > kp47 on the primary -> deepening improves the pack, ships under pre-registered rule branch 1; secondary tied 1/6 all arms (no cleanliness claim). The taught use-self corner (E03003) recurred twice in the kp47 arm and zero taught-class failures appeared in kp61. Disclosed correction: one task (escrow-swap) overlaps experiment 1's task 4, contrary to the pre-registered held-out assertion; excluding it the primary is kp61 4/5 vs kp47 2/5 - verdict unchanged.",
       "path": "docs/experiments/sui-compile-pass-3/"
     },
-    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap at falsification time: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009). Gap closed 2026-07-07 by the fixture-proven receiving beat added AFTER the experiment; the recorded numbers were measured on the 44-claim pack. Deepening round 1 (2026-07-07, docs/deepening/round-1/) added 14 more claims after these experiments; experiment 3 (pre-registered, held-out) then measured the deepening delta for claude-haiku-4-5: deepened pack 4/6 compile-pass vs pre-deepening pack 2/6 -> deepening improves the pack (ship rule branch 1). Each experiment's numbers stay pinned to the pack size and model they measured.",
+    "verdict": "pack improves cleanliness/modern-idiom compliance (pre-registered clean-compile: kp 3/5 vs base 2/5); it does NOT raise raw compile-pass for claude-sonnet-4-6 (tie both experiments). Known gap at falsification time: transfer::receive/Receiving<T> (both arms failed identically, Sui E02009). Gap closed 2026-07-07 by the fixture-proven receiving beat added AFTER the experiment; the recorded numbers were measured on the 44-claim pack. Deepening round 1 (2026-07-07, docs/deepening/round-1/) added 14 more claims after these experiments; experiment 3 (pre-registered, held-out) then measured the deepening delta for claude-haiku-4-5: deepened pack 4/6 compile-pass vs pre-deepening pack 2/6 -> deepening improves the pack (ship rule branch 1). Each experiment's numbers stay pinned to the pack size and model they measured. Deepening round 2 (2026-07-07, docs/deepening/round-2/) added 25 more claims (61 -> 86) AFTER experiment 3; its held-out effect has not yet been measured (tier-2 falsification pending).",
     "experiment": "docs/experiments/sui-compile-pass-3/"
   }
 }
