@@ -1,0 +1,42 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:14:37
+   │
+14 │             recorded_types: vector::empty(),
+   │                                     ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:19:54
+   │
+19 │         let name = type_name::into_string(type_name::get<W>());
+   │                                                      ^^^ The function 'std::type_name::get' is deprecated: Renamed to `with_defining_ids` for clarity.
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:20:9
+    │
+  8 │         recorded_types: vector<String>,
+    │                                ------ Expected: 'std::string::String'
+    ·
+ 20 │         vector::push_back(&mut reg.recorded_types, name);
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'std::vector::push_back'. Invalid argument for parameter 'e'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/type_name.move:165:41
+    │
+165 │ public fun into_string(self: TypeName): String {
+    │                                         ------ Given: 'std::ascii::String'
+
+error[Sui E02005]: invalid one-time witness usage
+   ┌─ ./sources/module.move:30:28
+   │
+30 │         registry::register(MINTER {}, reg);
+   │                            ^^^^^^^^^ Invalid one-time witness construction. One-time witness types cannot be created manually, but are passed as an argument 'init'
+   │
+   = One-time witness types are structs with the following requirements: their name is the upper-case version of the module's name, they have no fields (or a single boolean field), they have no type parameters, and they have only the 'drop' ability.
+
+Failed to build Move modules: Compilation error.

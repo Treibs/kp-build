@@ -1,0 +1,32 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04016]: too few arguments
+    ┌─ ./sources/module.move:23:9
+    │
+ 23 │         coin::from_balance(balance::split(&mut vault.balance, amount))
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │         │                 │
+    │         │                 Found 1 argument(s) here
+    │         Invalid call of 'sui::coin::from_balance'. The call expected 2 argument(s) but got 1
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:140:12
+    │
+140 │ public fun from_balance<T>(balance: Balance<T>, ctx: &mut TxContext): Coin<T> {
+    │            ------------ Expected 2 argument(s)
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:33:9
+   │
+31 │     public fun withdraw(vault: &mut Vault, amount: u64, ctx: &mut TxContext) {
+   │                -------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+32 │         let coin = vault::core::withdraw(vault, amount);
+33 │         transfer::public_transfer(coin, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                               │
+   │         │                               Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,34 @@
+```move
+module nftpkg::registry {
+    use std::vector;
+    use std::type_name;
+    use std::string::String;
+
+    public struct Registry has key {
+        id: UID,
+        recorded_types: vector<String>,
+    }
+
+    public fun create(ctx: &mut TxContext): Registry {
+        Registry {
+            id: object::new(ctx),
+            recorded_types: vector::empty(),
+        }
+    }
+
+    public fun register<W: drop>(_witness: W, reg: &mut Registry) {
+        let name = type_name::into_string(type_name::get<W>());
+        vector::push_back(&mut reg.recorded_types, name);
+    }
+}
+
+module nftpkg::minter {
+    use nftpkg::registry;
+
+    public struct MINTER has drop {}
+
+    entry fun register_minter(reg: &mut registry::Registry) {
+        registry::register(MINTER {}, reg);
+    }
+}
+```

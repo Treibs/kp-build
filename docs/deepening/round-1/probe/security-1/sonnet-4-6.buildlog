@@ -1,0 +1,18 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:20:31
+   │
+20 │         let name = type_name::get<T>();
+   │                               ^^^ The function 'std::type_name::get' is deprecated: Renamed to `with_defining_ids` for clarity.
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:26:51
+   │
+26 │         vec_set::contains(&reg.types, &type_name::get<T>())
+   │                                                   ^^^ The function 'std::type_name::get' is deprecated: Renamed to `with_defining_ids` for clarity.
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')

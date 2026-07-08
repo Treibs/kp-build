@@ -1,0 +1,26 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:18:24
+   │
+18 │     if (dynamic_field::exists_(&profile.id, key)) {
+   │                        ^^^^^^^ The function 'sui::dynamic_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:27:28
+   │
+27 │     assert!(dynamic_field::exists_(&profile.id, b"bio"), ENO_BIO);
+   │                            ^^^^^^^ The function 'sui::dynamic_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:33:24
+   │
+33 │     if (dynamic_field::exists_(&profile.id, key)) {
+   │                        ^^^^^^^ The function 'sui::dynamic_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')

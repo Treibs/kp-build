@@ -1,0 +1,42 @@
+module registry::registry {
+    const VERSION: u64 = 1;
+    const EVersionMismatch: u64 = 0;
+    const EAlreadyMigrated: u64 = 1;
+
+    public struct REGISTRY has drop {}
+
+    public struct Registry has key {
+        id: UID,
+        version: u64,
+        total: u64,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    fun init(_witness: REGISTRY, ctx: &mut TxContext) {
+        let registry = Registry {
+            id: object::new(ctx),
+            version: VERSION,
+            total: 0,
+        };
+        
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(registry);
+        transfer::transfer(admin_cap, ctx.sender());
+    }
+
+    public fun increment(registry: &mut Registry) {
+        assert!(registry.version == VERSION, EVersionMismatch);
+        registry.total = registry.total + 1;
+    }
+
+    public fun migrate(_cap: &AdminCap, registry: &mut Registry) {
+        assert!(registry.version < VERSION, EAlreadyMigrated);
+        registry.version = VERSION;
+    }
+}

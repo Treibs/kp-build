@@ -1,0 +1,30 @@
+```move
+module reg::whitelist {
+    use sui::vec_set::{Self, VecSet};
+    use std::type_name::{Self, TypeName};
+
+    const EAlreadyRegistered: u64 = 0;
+
+    public struct TypeRegistry has key {
+        id: UID,
+        types: VecSet<TypeName>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(TypeRegistry {
+            id: object::new(ctx),
+            types: vec_set::empty(),
+        });
+    }
+
+    public fun register<T: drop>(_witness: T, reg: &mut TypeRegistry) {
+        let name = type_name::get<T>();
+        assert!(!vec_set::contains(&reg.types, &name), EAlreadyRegistered);
+        vec_set::insert(&mut reg.types, name);
+    }
+
+    public fun is_registered<T>(reg: &TypeRegistry): bool {
+        vec_set::contains(&reg.types, &type_name::get<T>())
+    }
+}
+```

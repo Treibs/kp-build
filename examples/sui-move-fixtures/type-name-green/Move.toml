@@ -1,0 +1,5 @@
+[package]
+name = "type_name_green"
+edition = "2024"
+
+[dependencies]

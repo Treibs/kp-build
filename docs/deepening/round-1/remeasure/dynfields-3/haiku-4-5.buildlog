@@ -1,0 +1,38 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04006]: invalid subtype
+   ┌─ ./sources/module.move:14:17
+   │
+14 │         let _ = dynamic_field::remove(&profile.id, b"bio");
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                 │                     │
+   │                 │                     Given: '&sui::object::UID'
+   │                 Invalid call of 'sui::dynamic_field::remove'. Invalid argument for parameter 'object'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/dynamic_field.move:85:68
+   │
+85 │ public fun remove<Name: copy + drop + store, Value: store>(object: &mut UID, name: Name): Value {
+   │                                                                    -------- Expected: '&mut sui::object::UID'
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:14:17
+   │
+14 │         let _ = dynamic_field::remove(&profile.id, b"bio");
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04006]: invalid subtype
+   ┌─ ./sources/module.move:21:5
+   │
+21 │     dynamic_field::remove(&profile.id, b"bio")
+   │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │     │                     │
+   │     │                     Given: '&sui::object::UID'
+   │     Invalid call of 'sui::dynamic_field::remove'. Invalid argument for parameter 'object'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/dynamic_field.move:85:68
+   │
+85 │ public fun remove<Name: copy + drop + store, Value: store>(object: &mut UID, name: Name): Value {
+   │                                                                    -------- Expected: '&mut sui::object::UID'
+
+Failed to build Move modules: Compilation error.

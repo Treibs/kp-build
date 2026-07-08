@@ -1,0 +1,5 @@
+[package]
+name = "use_self_red"
+edition = "2024"
+
+[dependencies]

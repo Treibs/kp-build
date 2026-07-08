@@ -1,0 +1,41 @@
+module ledger::ledger {
+    use sui::table::Table;
+    use sui::table;
+
+    const EInsufficientBalance: u64 = 0;
+    const EBalanceNotFound: u64 = 1;
+
+    public struct Ledger has key {
+        id: UID,
+        balances: Table<address, u64>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let ledger = Ledger {
+            id: object::new(ctx),
+            balances: table::new(ctx),
+        };
+        transfer::share_object(ledger);
+    }
+
+    public fun credit(ledger: &mut Ledger, who: address, amount: u64) {
+        if (table::contains(&ledger.balances, who)) {
+            let current = table::borrow_mut(&mut ledger.balances, who);
+            *current = *current + amount;
+        } else {
+            table::add(&mut ledger.balances, who, amount);
+        }
+    }
+
+    public fun debit(ledger: &mut Ledger, who: address, amount: u64) {
+        assert!(table::contains(&ledger.balances, who), EBalanceNotFound);
+        let current_balance = *table::borrow(&ledger.balances, who);
+        assert!(current_balance >= amount, EInsufficientBalance);
+        let new_balance = current_balance - amount;
+        if (new_balance == 0) {
+            table::remove(&mut ledger.balances, who);
+        } else {
+            *table::borrow_mut(&mut ledger.balances, who) = new_balance;
+        }
+    }
+}

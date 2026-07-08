@@ -1,0 +1,38 @@
+```move
+module vault::core {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+
+    public struct Vault has key {
+        id: UID,
+        balance: Balance<SUI>,
+    }
+
+    public fun create(ctx: &mut TxContext) {
+        let vault = Vault {
+            id: object::new(ctx),
+            balance: balance::zero(),
+        };
+        transfer::share_object(vault);
+    }
+
+    public fun deposit(vault: &mut Vault, coin: Coin<SUI>) {
+        balance::join(&mut vault.balance, coin::into_balance(coin));
+    }
+
+    public(package) fun withdraw_internal(vault: &mut Vault, amount: u64, ctx: &mut TxContext): Coin<SUI> {
+        let withdrawn = balance::split(&mut vault.balance, amount);
+        coin::from_balance(withdrawn, ctx)
+    }
+}
+
+module vault::api {
+    use vault::core::Vault;
+
+    public fun withdraw(vault: &mut Vault, amount: u64, ctx: &mut TxContext) {
+        let coin = vault::core::withdraw_internal(vault, amount, ctx);
+        transfer::public_transfer(coin, ctx.sender());
+    }
+}
+```

@@ -29,3 +29,5 @@ docs/experiments/sui-compile-pass/answers/**/build/
 docs/experiments/sui-compile-pass/answers/**/Move.lock
 docs/experiments/sui-compile-pass-2/answers/**/build/
 docs/experiments/sui-compile-pass-2/answers/**/Move.lock
+docs/deepening/**/build/
+docs/deepening/**/Move.lock

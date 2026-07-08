@@ -1,0 +1,15 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:23
+  │
+2 │     use std::option::{self, Option};
+  │                       ^^^^ Invalid 'use'. Unbound member 'self' in module 'std::option'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/option.move:5:13
+  │
+5 │ module std::option;
+  │             ------ Module 'std::option' declared here
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,83 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:4:19
+  │
+4 │ use std::string::{self, String};
+  │                   ^^^^ Invalid 'use'. Unbound member 'self' in module 'std::string'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/string.move:6:13
+  │
+6 │ module std::string;
+  │             ------ Module 'std::string' declared here
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:13:24
+   │
+13 │     if (dynamic_field::exists_<vector<u8>>(&profile.id, b"bio")) {
+   │                        ^^^^^^^ The function 'sui::dynamic_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:20:28
+   │
+20 │     assert!(dynamic_field::exists_<vector<u8>>(&profile.id, b"bio"), E_BIO_NOT_FOUND);
+   │                            ^^^^^^^ The function 'sui::dynamic_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:25:24
+   │
+25 │     if (dynamic_field::exists_<vector<u8>>(&profile.id, b"bio")) {
+   │                        ^^^^^^^ The function 'sui::dynamic_field::exists_' is deprecated: Renamed to `exists`
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:26:13
+   │
+26 │         let bio_ref = dynamic_field::borrow<vector<u8>, String>(&profile.id, b"bio");
+   │             ^^^^^^^ Unused local variable 'bio_ref'. Consider removing or prefixing with an underscore: '_bio_ref'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:27:9
+   │
+ 4 │ use std::string::{self, String};
+   │                         ------ Similarly named defintion found here
+   ·
+27 │         string::utf8(*string::bytes(bio_ref))
+   │         ^^^^^^
+   │         │
+   │         Could not resolve the name 'string'
+   │         Did you mean: 'String'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:27:23
+   │
+ 4 │ use std::string::{self, String};
+   │                         ------ Similarly named defintion found here
+   ·
+27 │         string::utf8(*string::bytes(bio_ref))
+   │                       ^^^^^^
+   │                       │
+   │                       Could not resolve the name 'string'
+   │                       Did you mean: 'String'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:29:9
+   │
+ 4 │ use std::string::{self, String};
+   │                         ------ Similarly named defintion found here
+   ·
+29 │         string::utf8(b"")
+   │         ^^^^^^
+   │         │
+   │         Could not resolve the name 'string'
+   │         Did you mean: 'String'
+
+Failed to build Move modules: Compilation error.

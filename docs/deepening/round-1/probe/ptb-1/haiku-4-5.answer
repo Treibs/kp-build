@@ -1,0 +1,27 @@
+```move
+module basket::basket {
+    use sui::balance::{Balance, zero, join, value};
+    use sui::coin::{Coin, into_balance};
+    use sui::sui::SUI;
+
+    public struct Basket has key, store {
+        id: UID,
+        balance: Balance<SUI>,
+    }
+
+    public fun new(ctx: &mut TxContext): Basket {
+        Basket {
+            id: object::new(ctx),
+            balance: zero(),
+        }
+    }
+
+    entry fun deposit(basket: &mut Basket, coin: Coin<SUI>) {
+        join(&mut basket.balance, into_balance(coin));
+    }
+
+    public fun balance_value(basket: &Basket): u64 {
+        value(&basket.balance)
+    }
+}
+```
