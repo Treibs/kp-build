@@ -1,1 +1,1 @@
-FAIL exit-1
+FAIL error[E03003]: unbound module member

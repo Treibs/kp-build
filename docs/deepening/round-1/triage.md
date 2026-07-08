@@ -1,6 +1,6 @@
 # Round-1 triage — sui-move
 
-**Probe outcome:** haiku 7/15 pass (8 FAIL), sonnet 15/15 pass (11 clean, 4 with warnings).
+**Probe outcome:** haiku 7/15 pass (8 FAIL), sonnet 15/15 pass (7 clean, 8 with warnings).
 Full per-task verdicts: `probe/results.txt`; raw compiler output per task: `probe/<task>/<model>.buildlog`.
 
 All 8 failures are haiku's. They collapse into 5 root-cause families.

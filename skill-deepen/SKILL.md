@@ -53,8 +53,11 @@ questions, and must not restate any pack fixture. Protocol per task:
 - Save each answer verbatim; run it through the **same oracle gate the pack's fixtures use**; record
   PASS / FAIL + the observed error text in `probe/results.txt`. Layout:
   `probe/<territory>-<k>/{task.md, <model>.answer, <model>.result}`.
-- Mechanical repair rule (arm-neutral, pre-declared): save the answer unchanged; if it contains
-  multiple modules/scenes, gate the FIRST-defined one; no other edit.
+- Mechanical repair rule (arm-neutral, pre-declared): save the answer unchanged; gate the whole
+  answer as ONE package/unit, with any scaffold (manifest, address bindings) derived mechanically
+  from the answer's own declarations; no source edit. Multi-module answers stay in one gated unit
+  so a failure in ANY module is observed. Write the exact rule used into `probe/README.md`
+  before collecting answers.
 
 ### 3. Triage
 
