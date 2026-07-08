@@ -1,0 +1,46 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:18:9
+   │
+12 │     public fun create(ctx: &mut TxContext) {
+   │                ------ Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+18 │         transfer::transfer(pot, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                       │
+   │         │                       Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:30:9
+   │
+25 │     public fun withdraw_all(pot: &mut SavingsPot, ctx: &mut TxContext) {
+   │                ------------ Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+30 │         transfer::transfer(coin, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                        │
+   │         │                        Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[Sui E02009]: invalid private transfer call
+    ┌─ ./sources/module.move:30:9
+    │
+ 30 │         transfer::transfer(coin, ctx.sender());
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid private transfer. The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:40
+    │
+ 44 │ public struct Coin<phantom T> has key, store {
+    │                                        ----- The object has 'store' so 'sui::transfer::public_transfer' can be called instead
+    ·
+140 │ public fun from_balance<T>(balance: Balance<T>, ctx: &mut TxContext): Coin<T> {
+    │                                                                       ------- The type 'sui::coin::Coin<sui::sui::SUI>' is not declared in the current module
+
+Failed to build Move modules: Compilation error.

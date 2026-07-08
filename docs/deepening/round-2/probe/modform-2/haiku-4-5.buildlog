@@ -1,0 +1,40 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:19:18
+   │
+ 7 │         names: Table<String, address>,
+   │                      ------ Expected: 'std::string::String'
+   ·
+19 │         assert!(!registry.names.contains(&name), 0);
+   │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                  │                       │
+   │                  │                       Given: '&std::string::String'
+   │                  Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'
+
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:24:17
+   │
+ 7 │         names: Table<String, address>,
+   │                      ------ Expected: 'std::string::String'
+   ·
+24 │         assert!(registry.names.contains(&name), 1);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                 │                       │
+   │                 │                       Given: '&std::string::String'
+   │                 Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'
+
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:25:22
+   │
+ 7 │         names: Table<String, address>,
+   │                      ------ Expected: 'std::string::String'
+   ·
+25 │         let owner = *registry.names.borrow(&name);
+   │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                      │                     │
+   │                      │                     Given: '&std::string::String'
+   │                      Invalid call of 'sui::table::borrow'. Invalid argument for parameter 'k'
+
+Failed to build Move modules: Compilation error.

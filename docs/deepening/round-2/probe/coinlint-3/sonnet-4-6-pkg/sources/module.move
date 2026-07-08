@@ -1,0 +1,52 @@
+module split::royalty {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+
+    public struct RoyaltyPool has key {
+        id: UID,
+        beneficiary_a: address,
+        beneficiary_b: address,
+        balance: Balance<SUI>,
+        paid_a: u64,
+        paid_b: u64,
+    }
+
+    public fun create(beneficiary_a: address, beneficiary_b: address, ctx: &mut TxContext) {
+        transfer::share_object(RoyaltyPool {
+            id: object::new(ctx),
+            beneficiary_a,
+            beneficiary_b,
+            balance: balance::zero(),
+            paid_a: 0,
+            paid_b: 0,
+        });
+    }
+
+    public fun contribute(pool: &mut RoyaltyPool, coin: Coin<SUI>) {
+        balance::join(&mut pool.balance, coin::into_balance(coin));
+    }
+
+    public fun claim(pool: &mut RoyaltyPool, ctx: &mut TxContext) {
+        let sender = ctx.sender();
+        assert!(sender == pool.beneficiary_a || sender == pool.beneficiary_b);
+
+        let current = balance::value(&pool.balance);
+        let total = current + pool.paid_a + pool.paid_b;
+        let half = total / 2;
+
+        if (sender == pool.beneficiary_a) {
+            assert!(half > pool.paid_a);
+            let due = half - pool.paid_a;
+            pool.paid_a = pool.paid_a + due;
+            let payout = coin::from_balance(balance::split(&mut pool.balance, due), ctx);
+            transfer::public_transfer(payout, sender);
+        } else {
+            assert!(half > pool.paid_b);
+            let due = half - pool.paid_b;
+            pool.paid_b = pool.paid_b + due;
+            let payout = coin::from_balance(balance::split(&mut pool.balance, due), ctx);
+            transfer::public_transfer(payout, sender);
+        }
+    }
+}

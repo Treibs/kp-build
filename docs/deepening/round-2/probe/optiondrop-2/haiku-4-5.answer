@@ -1,0 +1,47 @@
+```move
+module market::listing {
+    use std::option::{self, Option};
+    use std::string::String;
+    use sui::tx_context;
+
+    public struct Listing<T: key + store> has key, store {
+        id: UID,
+        item: Option<T>,
+        note: String,
+        seller: address,
+    }
+
+    public fun create<T: key + store>(
+        item: T,
+        note: String,
+        ctx: &mut TxContext,
+    ) {
+        let listing = Listing {
+            id: object::new(ctx),
+            item: option::some(item),
+            note,
+            seller: tx_context::sender(ctx),
+        };
+        transfer::share_object(listing);
+    }
+
+    public fun cancel<T: key + store>(
+        listing: &mut Listing<T>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == listing.seller);
+        let item = option::extract(&mut listing.item);
+        transfer::public_transfer(item, listing.seller);
+    }
+
+    public fun relist<T: key + store>(
+        listing: &mut Listing<T>,
+        item: T,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == listing.seller);
+        assert!(option::is_none(&listing.item));
+        listing.item = option::some(item);
+    }
+}
+```

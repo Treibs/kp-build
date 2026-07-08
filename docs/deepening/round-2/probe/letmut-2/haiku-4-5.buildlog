@@ -1,0 +1,51 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:6:20
+   │
+ 6 │             return String::utf8(b"")
+   │                    ^^^^^^ Invalid construction. Expected an enum
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/string.move:18:15
+   │
+18 │ public struct String has copy, drop, store {
+   │               ------ But 'String' is an struct
+
+error[E04003]: built-in operation not supported
+   ┌─ ./sources/module.move:13:22
+   │
+ 4 │     public fun join(parts: vector<String>, sep: String): String {
+   │                                   ------ Found: 'std::string::String'. But expected: 'u8', 'u16', 'u32', 'u64', 'u128', 'u256'
+   ·
+13 │             result = result + sep + parts[i];
+   │                      ^^^^^^ Invalid argument to '+'
+
+error[E04003]: built-in operation not supported
+   ┌─ ./sources/module.move:13:22
+   │
+ 4 │     public fun join(parts: vector<String>, sep: String): String {
+   │                                                 ------ Found: 'std::string::String'. But expected: 'u8', 'u16', 'u32', 'u64', 'u128', 'u256'
+   ·
+13 │             result = result + sep + parts[i];
+   │                      ^^^^^^^^^^^^ Invalid argument to '+'
+
+error[E04003]: built-in operation not supported
+   ┌─ ./sources/module.move:13:31
+   │
+ 4 │     public fun join(parts: vector<String>, sep: String): String {
+   │                                   ------ Found: 'std::string::String'. But expected: 'u8', 'u16', 'u32', 'u64', 'u128', 'u256'
+   ·
+13 │             result = result + sep + parts[i];
+   │                               ^^^ Invalid argument to '+'
+
+error[E04003]: built-in operation not supported
+   ┌─ ./sources/module.move:13:37
+   │
+ 4 │     public fun join(parts: vector<String>, sep: String): String {
+   │                                                 ------ Found: 'std::string::String'. But expected: 'u8', 'u16', 'u32', 'u64', 'u128', 'u256'
+   ·
+13 │             result = result + sep + parts[i];
+   │                                     ^^^^^^^^ Invalid argument to '+'
+
+Failed to build Move modules: Compilation error.

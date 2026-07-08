@@ -1,0 +1,29 @@
+module name_registry::registry {
+    use std::string::String;
+    use sui::table::{Self, Table};
+
+    public struct Registry has key {
+        id: UID,
+        names: Table<String, address>,
+    }
+
+    public fun create_and_share(ctx: &mut TxContext) {
+        let registry = Registry {
+            id: object::new(ctx),
+            names: table::new(ctx),
+        };
+        transfer::share_object(registry);
+    }
+
+    public fun register(registry: &mut Registry, name: String, ctx: &mut TxContext) {
+        assert!(!table::contains(&registry.names, name));
+        table::add(&mut registry.names, name, ctx.sender());
+    }
+
+    public fun release(registry: &mut Registry, name: String, ctx: &mut TxContext) {
+        assert!(table::contains(&registry.names, name));
+        let owner = *table::borrow(&registry.names, name);
+        assert!(owner == ctx.sender());
+        table::remove(&mut registry.names, name);
+    }
+}

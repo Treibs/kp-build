@@ -1,0 +1,12 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09014]: unused mutable reference '&mut' parameter
+   ┌─ ./sources/module.move:16:48
+   │
+16 │     entry fun ping(limiter: &mut Limiter, ctx: &mut TxContext) {
+   │                                           ---  ^^^^^^^^^^^^^^ Mutable reference is never used mutably, consider switching to an immutable reference '&' instead
+   │                                           │     
+   │                                           For parameters, this can be silenced by prefixing the name with an underscore, e.g. '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_mut_parameter)]' applied to the 'module' or module member ('const', 'fun', or 'struct')

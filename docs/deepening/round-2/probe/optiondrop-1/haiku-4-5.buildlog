@@ -1,0 +1,48 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:25:13
+   │
+22 │     public fun stock<T: store>(shop: &mut Shop<T>, item: T, price: u64) {
+   │                      -                         - The type 'T' does not have the ability 'key'
+   │                      │                          
+   │                      To satisfy the constraint, the 'key' ability would need to be added here
+   ·
+25 │             transfer::public_transfer(old_item, shop.shopkeeper);
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/transfer.move:63:31
+   │
+63 │ public fun public_transfer<T: key + store>(obj: T, recipient: address) {
+   │                               --- 'key' constraint declared here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:27:9
+   │
+ 9 │         item: Option<T>,
+   │               --------- The type 'std::option::Option<T>' does not have the ability 'drop'
+   ·
+22 │     public fun stock<T: store>(shop: &mut Shop<T>, item: T, price: u64) {
+   │                                                - The type 'std::option::Option<T>' can have the ability 'drop' but the type argument 'T' does not have the required ability 'drop'
+   ·
+27 │         shop.item = option::some(item);
+   │         ^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:36:9
+   │
+31 │     public fun buy<T: store>(shop: &mut Shop<T>, payment: Coin<SUI>, ctx: &TxContext) {
+   │                    -                         - The type 'T' does not have the ability 'key'
+   │                    │                          
+   │                    To satisfy the constraint, the 'key' ability would need to be added here
+   ·
+36 │         transfer::public_transfer(item, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/transfer.move:63:31
+   │
+63 │ public fun public_transfer<T: key + store>(obj: T, recipient: address) {
+   │                               --- 'key' constraint declared here
+
+Failed to build Move modules: Compilation error.
