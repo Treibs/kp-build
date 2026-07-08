@@ -1,0 +1,27 @@
+```python
+from manim import *
+
+class ResultsScene(Scene):
+    def construct(self):
+        title = Text("Results")
+        title.move_to(ORIGIN)
+
+        caption = Text("n = 42")
+        caption.next_to(title, DOWN, buff=0.5)
+
+        title.shift(UP * 3)
+        title.set_opacity(0)
+
+        self.play(
+            title.animate.shift(DOWN * 3).set_opacity(1),
+            run_time=1
+        )
+
+        self.wait(1)
+
+        self.add(caption)
+        self.play(
+            caption.animate.shift(DOWN * 3).set_opacity(0),
+            run_time=1
+        )
+```

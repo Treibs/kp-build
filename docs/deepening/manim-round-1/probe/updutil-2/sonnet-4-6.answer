@@ -1,0 +1,22 @@
+```python
+from manim import *
+
+class RotatingSquareWithCaption(Scene):
+    def construct(self):
+        square = Square(side_length=2, color=BLUE)
+        caption = Text("A square in perpetual motion", font_size=36)
+        caption.to_edge(DOWN, buff=0.8)
+
+        angle_tracker = ValueTracker(0)
+
+        def spin(mob, dt):
+            mob.rotate(dt * PI / 2)
+
+        square.add_updater(spin)
+        self.add(square)
+
+        self.play(FadeIn(caption), run_time=1)
+        self.wait(2)
+        self.play(FadeOut(caption), run_time=1)
+        self.wait(1)
+```

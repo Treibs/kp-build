@@ -1,0 +1,25 @@
+```python
+from manim import *
+
+class EnergyToSynergy(Scene):
+    def construct(self):
+        source = Text("ENERGY", font_size=96)
+        target = Text("SYNERGY", font_size=96)
+
+        self.add(source)
+        self.wait(0.5)
+
+        # ENERGY:  E(0) N(1) E(2) R(3) G(4) Y(5)
+        # SYNERGY: S(0) Y(1) N(2) E(3) R(4) G(5) Y(6)
+        # Shared suffix NERGY: source[1:6] glides into target[2:7]
+        # source[0] ('E') fades out; target[0] ('S') and target[1] ('Y') fade in
+
+        self.play(
+            FadeOut(source[0]),
+            *[Transform(source[i], target[i + 1]) for i in range(1, 6)],
+            FadeIn(target[0].copy()),
+            FadeIn(target[1].copy()),
+            run_time=1.5,
+        )
+        self.wait(1)
+```

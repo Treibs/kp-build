@@ -1,0 +1,1 @@
+Write a Manim CE scene. Five small dots sit in a horizontal row. Reveal them in a single `self.play` call with staggered fade-ins: each dot's fade begins when the previous dot's fade is halfway done, and the whole reveal takes 3 seconds total.

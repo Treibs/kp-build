@@ -1,0 +1,14 @@
+```python
+from manim import *
+
+class BlueSquareScene(Scene):
+    def construct(self):
+        square = Square(color=BLUE, fill_color=BLUE, fill_opacity=1)
+        square.move_to(LEFT * 6)
+        self.add(square)
+
+        self.play(square.animate.move_to(RIGHT * 6))
+        self.play(square.animate.scale(2))
+        self.play(square.animate.rotate(PI / 2))
+        self.wait(1)
+```

@@ -1,0 +1,22 @@
+```python
+from manim import *
+
+class CubeOrbitZoom(ThreeDScene):
+    def construct(self):
+        cube = Cube(side_length=2, fill_opacity=0.75, fill_color=BLUE_D)
+        cube.set_stroke(WHITE, width=1)
+
+        self.set_camera_orientation(phi=70 * DEGREES, theta=-45 * DEGREES, zoom=1)
+        self.add(cube)
+
+        # Orbit for 2 seconds
+        self.begin_ambient_camera_rotation(rate=0.5)
+        self.wait(2)
+        self.stop_ambient_camera_rotation()
+
+        # Zoom in to twice the magnification (animated)
+        self.move_camera(zoom=2, run_time=2)
+
+        # Hold briefly
+        self.wait(1.5)
+```

@@ -1,0 +1,25 @@
+```python
+from manim import *
+
+class SequentialInOnePlay(Scene):
+    def construct(self):
+        square = Square().shift(LEFT * 3)
+        circle = Circle().shift(ORIGIN)
+        triangle = Triangle().shift(RIGHT * 3)
+
+        self.add(square, circle, triangle)
+
+        self.play(
+            AnimationGroup(
+                square.animate.set_fill(RED, opacity=1).set_stroke(RED),
+                AnimationGroup(
+                    circle.animate.shift(RIGHT * 2),
+                    lag_ratio=0,
+                ),
+                Rotate(triangle, angle=PI),
+                lag_ratio=1,
+            )
+        )
+
+        self.wait(1)
+```

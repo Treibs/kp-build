@@ -1,0 +1,1 @@
+Write a Manim CE scene. A square rotates continuously at a constant rate (about a quarter turn per second) for the whole scene, never stopping. While it rotates, a caption fades in, holds, and fades out.

@@ -1,0 +1,21 @@
+```python
+from manim import *
+
+class DeepAnimationsScene(Scene):
+    def construct(self):
+        headline = Text("Deep Animations")
+        headline.move_to(ORIGIN)
+
+        underline = Line(
+            start=headline.get_left(),
+            end=headline.get_right(),
+        ).next_to(headline, DOWN, buff=0.1)
+
+        self.play(
+            Write(headline, run_time=2),
+            Succession(
+                Wait(1),
+                Create(underline, run_time=1),
+            ),
+        )
+```

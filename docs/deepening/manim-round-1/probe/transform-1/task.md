@@ -1,0 +1,1 @@
+Write a Manim CE scene. A square morphs into a circle. After the morph completes, the resulting circle moves 2 units up and turns green (one animation, or two — your choice), and the moved circle must be the actual on-screen object (no leftover ghost of the square).

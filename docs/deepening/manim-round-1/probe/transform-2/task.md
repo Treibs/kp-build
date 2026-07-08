@@ -1,0 +1,1 @@
+Write a Manim CE scene. The word `Text("ENERGY")` is on screen. Transform it into `Text("SYNERGY")` such that the letters the two words share stay visually continuous (matching pieces glide, unmatched pieces fade).

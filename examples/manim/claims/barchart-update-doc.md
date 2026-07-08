@@ -22,7 +22,7 @@ verified:
   evidence: "Updates the height of the bars of the chart.\n\n        Parameters\n\
     \        ----------\n        values\n            The values that will be used\
     \ to update the height"
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: manim-api-docs

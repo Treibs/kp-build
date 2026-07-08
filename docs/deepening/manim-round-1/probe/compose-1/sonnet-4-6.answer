@@ -1,0 +1,53 @@
+```python
+from manim import *
+
+class StaggeredDotsReveal(Scene):
+    def construct(self):
+        dots = VGroup(*[
+            Dot(radius=0.12, color=WHITE).shift(RIGHT * (i - 2))
+            for i in range(5)
+        ])
+
+        # Total duration: 3 seconds.
+        # Each dot's fade starts when the previous is halfway done.
+        # With 5 dots and overlap at 50%, if each fade has duration d and
+        # successive starts are offset by d/2, the total span is:
+        #   d/2 * 4 + d = 3d = 3  =>  d = 1
+        # So each FadeIn lasts 1 second, offsets are 0.5 s apart.
+        fade_duration = 1.0
+        offset = fade_duration / 2
+
+        self.play(
+            *[
+                FadeIn(dot, run_time=fade_duration, rate_func=linear)
+                for dot in dots
+            ],
+            lag_ratio=offset / (fade_duration * len(dots) - fade_duration * (1 - offset / fade_duration)),
+        )
+```
+
+Wait — `lag_ratio` in Manim is a fraction of the total `run_time` passed to `self.play`, not an absolute offset. Let me reason cleanly:
+
+`lag_ratio` = delay between successive animation starts / total play duration. The total play `run_time` = `fade_duration + offset * (n-1)` = 1 + 0.5*4 = 3. The lag between starts as a fraction of total = 0.5/3. Each individual animation's `run_time` must equal 1 second, but when animations are staggered inside a `self.play`, the individual `run_time` is the total play duration; the `lag_ratio` controls offsets. The right approach is `AnimationGroup` with `lag_ratio`.
+
+```python
+from manim import *
+
+class StaggeredDotsReveal(Scene):
+    def construct(self):
+        dots = VGroup(*[
+            Dot(radius=0.12, color=WHITE).shift(RIGHT * (i - 2))
+            for i in range(5)
+        ])
+
+        # 5 dots, each fade lasts 1 s, next starts 0.5 s after previous.
+        # Total span = 1 + 0.5*4 = 3 s.
+        # lag_ratio for AnimationGroup = offset / total_run_time = 0.5/3
+        self.play(
+            AnimationGroup(
+                *[FadeIn(dot) for dot in dots],
+                lag_ratio=0.5 / 3,
+                run_time=3,
+            )
+        )
+```

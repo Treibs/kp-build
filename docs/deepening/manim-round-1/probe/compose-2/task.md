@@ -1,0 +1,1 @@
+Write a Manim CE scene. A square, a circle, and a triangle are on screen. In ONE single `self.play` call, run three animations strictly one after another: the square turns red, THEN the circle moves 2 units right, THEN the triangle rotates half a turn.

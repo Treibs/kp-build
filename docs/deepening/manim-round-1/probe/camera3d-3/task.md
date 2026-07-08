@@ -1,0 +1,1 @@
+Write a Manim CE scene (3D). A cube sits at the origin, viewed from a standard 3D angle. The camera orbits the cube for 2 seconds, stops, and then zooms in to twice the magnification (animated), holding briefly at the end.

@@ -97,3 +97,28 @@ All 4 Part V fixtures proved OK through the real runner in one batch (greens gat
 `render_error`, reds gate `red_violation`, all `{"codes": []}`). Fragments pasted from the
 observed container output. No hangs — both reds crash before `file_writer.begin_animation`.
 Full fixture census: **28** (17 green + 11 red).
+
+## Part VI — deepening round 1 beats (proven 2026-07-08)
+
+All six beats came out of the manim round-1 deepening probe (provenance, task texts, gated
+answers, and triage reasoning: `docs/deepening/manim-round-1/` — cross-linked, not duplicated
+here). Three are execution beats seeded by observed probe failures; three are render-blind
+(the failure renders clean, so no RED is possible — recorded oracle limitation) and ship as
+GREEN + doc-grounding. One novel artifact kind: `camera-distance-kwarg/silent` is a
+green-gated **finding** — the fixture passes `distance=99` (a manimgl-ism) and renders exit 0,
+proving the swallow is silent.
+
+| beat | red result: exit + fragment observed | green: exit | notes |
+|---|---|---|---|
+| circle-surround | exit 1; `TypeError: Circle.surround() got an unexpected keyword argument 'buffer'` | 0 | CE `surround` scales by multiplicative `buffer_factor`; additive `buff`/`buffer` is the manimgl shape. Probe: legacy-3 haiku, observed live. |
+| cube-side-length | exit 1; `Mobject.__init__() got an unexpected keyword argument 'size'` | 0 | `Cube(size=…)` falls through VGroup→Mobject init. CE parameter is `side_length`. Probe: camera3d-3 haiku, observed live. |
+| threed-camera-frame | exit 1; `AttributeError: 'ThreeDCamera' object has no attribute 'frame'` | 0 | manimgl `camera.frame` bleed on `ThreeDScene`; unreached in the probe answer (Cube crash fired first), RED generated its own observed error. Distinct from `moving-camera` (2D, where `self.camera.frame` IS correct) and `fixed-frame`. Red class renamed `ThreeDFrameZoom` to avoid sharing a name with the moving-camera red. |
+| camera-phi-theta | (render-blind — any phi/theta renders clean) | 0 | Haiku swapped the convention twice (math θ=polar); CE: `phi` = polar, `theta` = azimuth. GREEN animates phi 0→90°. |
+| camera-distance-kwarg | (render-blind — `distance=` is silently absorbed by `**kwargs`) | 0 (green) + 0 (silent) | `silent/` proves the no-error absorption at render time; doc claim pins the real signature (`focal_distance`, `zoom`). |
+| lag-ratio-total | (render-blind — any lag_ratio renders clean) | 0 | Sonnet computed lag_ratio as a fraction of total duration and passed it to a bare `self.play`, which staggers nothing between animations (observed render: 1.0 s instead of 3 s; a second, self-corrected block in the same answer reached AnimationGroup but kept the fraction-of-total `lag_ratio=0.5/3` — wrong under either block); doc claim pins the AnimationGroup per-animation overlap semantics. |
+
+All 10 Part VI fixtures proved through the pinned image before commit (same flags and
+containment as the runner); fragments pasted from observed container output only. All three
+reds crash before `file_writer.begin_animation` — no hang-class exposure. Corpus extended
+with four passages from the same pinned commit (`1157b746`, tag v0.20.1) to ground the six
+doc claims. Full fixture census: **38** (24 green-gated + 14 red).

@@ -1,0 +1,33 @@
+```python
+from manim import *
+
+class PulsingCircleScene(Scene):
+    def construct(self):
+        circle = Circle(radius=0.5, color=BLUE)
+        self.add(circle)
+        
+        elapsed_time = {"value": 0}
+        original_width = circle.get_width()
+        
+        def pulse_updater(mob, dt):
+            elapsed_time["value"] += dt
+            t = elapsed_time["value"]
+            scale_factor = 1 + 0.3 * np.sin(TAU * t)
+            new_width = original_width * scale_factor
+            current_width = mob.get_width()
+            if current_width > 0:
+                ratio = new_width / current_width
+                mob.scale(ratio)
+        
+        # Pulse continuously
+        circle.add_updater(pulse_updater)
+        self.wait(2)
+        
+        # Suspend pulsing and move 4 units right
+        circle.remove_updater(pulse_updater)
+        self.play(circle.animate.shift(RIGHT * 4), run_time=2)
+        
+        # Resume pulsing
+        circle.add_updater(pulse_updater)
+        self.wait(1)
+```

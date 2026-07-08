@@ -1,0 +1,37 @@
+```python
+from manim import *
+
+class ResultsScene(Scene):
+    def construct(self):
+        title = Text("Results")
+        caption = Text("n = 42")
+        
+        # Position title and caption at their final locations
+        title.to_edge(UP, buff=1)
+        caption.next_to(title, DOWN, buff=0.5)
+        
+        # Prepare title for animation: move above frame and make transparent
+        title.shift(UP * 3)
+        title.set_opacity(0)
+        
+        # Add title to scene
+        self.add(title)
+        
+        # Animate title: slide down from above while fading in
+        self.play(
+            title.animate.shift(DOWN * 3).set_opacity(1),
+            run_time=1
+        )
+        
+        # Hold title on screen
+        self.wait(1)
+        
+        # Add caption to scene
+        self.add(caption)
+        
+        # Animate caption: fade out while sliding down
+        self.play(
+            caption.animate.shift(DOWN * 3).set_opacity(0),
+            run_time=1
+        )
+```

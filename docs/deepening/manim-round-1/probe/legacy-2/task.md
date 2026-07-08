@@ -1,0 +1,1 @@
+Write a Manim CE scene. A blue square starts near the left edge of the frame. Animate it, as three separate sequential animations: (1) it moves to the right edge, (2) it grows to twice its size, (3) it rotates a quarter turn.

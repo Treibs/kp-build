@@ -1,0 +1,23 @@
+```python
+from manim import *
+
+class OrbitingSphere(ThreeDScene):
+    def construct(self):
+        # Create 3D axes
+        axes = ThreeDAxes()
+        
+        # Create sphere at origin
+        sphere = Sphere(radius=0.5, color=BLUE, fill_opacity=0.8)
+        
+        # Add to scene
+        self.add(axes, sphere)
+        
+        # Set initial camera orientation (70 degrees from vertical)
+        self.set_camera_orientation(phi=70 * DEGREES, theta=0)
+        
+        # Orbit camera around the scene for 4 seconds
+        self.move_camera(phi=70 * DEGREES, theta=2 * PI, run_time=4)
+        
+        # Hold for 1 second
+        self.wait(1)
+```

@@ -1,0 +1,21 @@
+```python
+from manim import *
+
+class EqualityTransform(Scene):
+    def construct(self):
+        eq1 = MathTex(r"E", r"=", r"m c^2")
+        eq2 = MathTex(r"E", r"=", r"h f")
+
+        for eq in (eq1, eq2):
+            eq.move_to(ORIGIN)
+
+        self.play(Write(eq1))
+        self.wait(1)
+
+        self.play(
+            ReplacementTransform(eq1[0], eq2[0]),
+            ReplacementTransform(eq1[1], eq2[1]),
+            ReplacementTransform(eq1[2], eq2[2]),
+        )
+        self.wait(1)
+```

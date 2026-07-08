@@ -1,0 +1,17 @@
+```python
+from manim import *
+
+class StaggeredDots(Scene):
+    def construct(self):
+        dots = VGroup(*[Dot(radius=0.12) for _ in range(5)])
+        dots.arrange(RIGHT, buff=0.6)
+
+        self.play(
+            AnimationGroup(
+                *[FadeIn(dot) for dot in dots],
+                lag_ratio=0.5,
+            ),
+            run_time=3,
+        )
+        self.wait(1)
+```

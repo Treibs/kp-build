@@ -1,0 +1,1 @@
+Write a Manim CE scene (3D). A sphere sits at the origin on a set of 3D axes. Start the view from a raised angle (roughly 70 degrees from vertical), then have the camera orbit continuously around the scene for 4 seconds, then stop orbiting and hold for a second.

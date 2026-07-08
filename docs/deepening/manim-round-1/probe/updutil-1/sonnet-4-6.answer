@@ -1,0 +1,19 @@
+```python
+from manim import *
+
+class DotProbeScene(Scene):
+    def construct(self):
+        dot = Dot(point=LEFT * 5)
+        label = always_redraw(lambda: Text("probe", font_size=24).next_to(dot, UP, buff=0.15))
+
+        self.add(dot, label)
+
+        dot.add_updater(lambda m, dt: m.shift(RIGHT * dt * 1.5))
+
+        circle = Circle(radius=1, color=BLUE).move_to(RIGHT * 2 + DOWN * 1)
+        self.play(Create(circle), run_time=2)
+
+        self.wait(1)
+
+        dot.remove_updater(dot.get_updaters()[0])
+```

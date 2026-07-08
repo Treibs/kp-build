@@ -1,0 +1,15 @@
+```python
+from manim import *
+
+class SquareToCircle(Scene):
+    def construct(self):
+        square = Square()
+        self.add(square)
+        
+        circle = Circle()
+        self.play(Transform(square, circle))
+        
+        self.play(square.animate.shift(UP * 2).set_color(GREEN))
+        
+        self.wait()
+```

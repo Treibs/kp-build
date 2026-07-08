@@ -1,0 +1,20 @@
+Manim Community v0.20.1
+
+[07/08/26 22:43:17] INFO Caching disabled. cairo_renderer.py:83
+INFO Animation 0 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+ShapeAnimations/uncached_0
+0000.mp4'
+INFO Combining to Movie file. scene_file_writer.py:753
+INFO scene_file_writer.py:904
+File ready at
+'/tmp/media/videos/scene/4
+80p15/ShapeAnimations.mp4'
+
+INFO Rendered ShapeAnimations scene.py:278
+Played 1 animations
+
+Animation 0: Succession(Group): 0%| | 0/45 [00:00<?, ?it/s]
+

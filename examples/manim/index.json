@@ -337,6 +337,118 @@
       "type": "method",
       "confidence": "high",
       "corroborated_by": []
+    },
+    {
+      "id": "circle-surround-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "circle-surround-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "circle-surround-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "cube-side-length-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "cube-side-length-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "cube-side-length-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "threed-camera-frame-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "threed-camera-frame-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "threed-camera-frame-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "camera-phi-theta-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "camera-phi-theta-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "camera-distance-kwarg-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "camera-distance-kwarg-silent",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "camera-distance-kwarg-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "lag-ratio-total-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "lag-ratio-total-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
     }
   ],
   "open_problems": [],

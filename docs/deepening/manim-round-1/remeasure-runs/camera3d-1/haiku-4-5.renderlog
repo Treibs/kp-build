@@ -1,0 +1,81 @@
+Manim Community v0.20.1
+
+[07/08/26 23:09:45] INFO Caching disabled. cairo_renderer.py:83
+[07/08/26 23:09:52] INFO Animation 0 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+OrbitingSphere/uncached_00
+000.mp4'
+INFO Caching disabled. cairo_renderer.py:83
+INFO Animation 1 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+OrbitingSphere/uncached_00
+001.mp4'
+INFO Combining to Movie file. scene_file_writer.py:753
+INFO scene_file_writer.py:904
+File ready at
+'/tmp/media/videos/scene/4
+80p15/OrbitingSphere.mp4'
+
+INFO Rendered OrbitingSphere scene.py:278
+Played 2 animations
+
+Animation 0: _MethodAnimation(ValueTracker), etc.: 0%| | 0/60 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 2%|▏ | 1/60 [00:00<00:06, 9.49it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 3%|▎ | 2/60 [00:00<00:06, 9.41it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 5%|▌ | 3/60 [00:00<00:05, 9.52it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 7%|▋ | 4/60 [00:00<00:06, 8.38it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 8%|▊ | 5/60 [00:00<00:06, 8.71it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 10%|█ | 6/60 [00:00<00:06, 8.06it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 12%|█▏ | 7/60 [00:00<00:06, 8.55it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 13%|█▎ | 8/60 [00:00<00:05, 8.87it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 15%|█▌ | 9/60 [00:01<00:05, 9.14it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 17%|█▋ | 10/60 [00:01<00:05, 9.25it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 18%|█▊ | 11/60 [00:01<00:05, 9.41it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 20%|██ | 12/60 [00:01<00:05, 9.34it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 22%|██▏ | 13/60 [00:01<00:05, 9.29it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 23%|██▎ | 14/60 [00:01<00:04, 9.33it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 25%|██▌ | 15/60 [00:01<00:04, 9.35it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 27%|██▋ | 16/60 [00:01<00:04, 9.37it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 28%|██▊ | 17/60 [00:01<00:04, 9.45it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 30%|███ | 18/60 [00:01<00:04, 9.56it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 32%|███▏ | 19/60 [00:02<00:04, 9.61it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 33%|███▎ | 20/60 [00:02<00:04, 9.60it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 35%|███▌ | 21/60 [00:02<00:04, 9.71it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 38%|███▊ | 23/60 [00:02<00:03, 9.70it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 40%|████ | 24/60 [00:02<00:03, 9.61it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 42%|████▏ | 25/60 [00:02<00:03, 9.59it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 45%|████▌ | 27/60 [00:02<00:03, 9.79it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 48%|████▊ | 29/60 [00:03<00:03, 9.86it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 50%|█████ | 30/60 [00:03<00:03, 9.74it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 53%|█████▎ | 32/60 [00:03<00:02, 9.86it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 55%|█████▌ | 33/60 [00:03<00:02, 9.85it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 57%|█████▋ | 34/60 [00:03<00:02, 9.76it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 58%|█████▊ | 35/60 [00:03<00:02, 9.77it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 62%|██████▏ | 37/60 [00:03<00:02, 9.87it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 65%|██████▌ | 39/60 [00:04<00:02, 9.93it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 67%|██████▋ | 40/60 [00:04<00:02, 9.88it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 68%|██████▊ | 41/60 [00:04<00:01, 9.81it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 70%|███████ | 42/60 [00:04<00:01, 9.63it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 72%|███████▏ | 43/60 [00:04<00:01, 9.51it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 73%|███████▎ | 44/60 [00:04<00:01, 8.60it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 75%|███████▌ | 45/60 [00:04<00:01, 8.73it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 77%|███████▋ | 46/60 [00:04<00:01, 7.83it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 78%|███████▊ | 47/60 [00:05<00:01, 8.14it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 80%|████████ | 48/60 [00:05<00:01, 8.37it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 82%|████████▏ | 49/60 [00:05<00:01, 8.56it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 83%|████████▎ | 50/60 [00:05<00:01, 8.71it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 85%|████████▌ | 51/60 [00:05<00:01, 8.83it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 87%|████████▋ | 52/60 [00:05<00:00, 8.98it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 88%|████████▊ | 53/60 [00:05<00:00, 8.95it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 90%|█████████ | 54/60 [00:05<00:00, 9.01it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 92%|█████████▏| 55/60 [00:05<00:00, 9.16it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 93%|█████████▎| 56/60 [00:06<00:00, 9.18it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 95%|█████████▌| 57/60 [00:06<00:00, 9.19it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 97%|█████████▋| 58/60 [00:06<00:00, 9.30it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 98%|█████████▊| 59/60 [00:06<00:00, 9.30it/s]
+Animation 0: _MethodAnimation(ValueTracker), etc.: 100%|██████████| 60/60 [00:06<00:00, 9.38it/s]
+

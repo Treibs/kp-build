@@ -1,0 +1,68 @@
+Manim Community v0.20.1
+
+Traceback (most recent call last)
+/opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+render
+
+122 try:
+123 with tempconfig({}):
+124 scene = SceneClass()
+❱ 125 scene.render()
+126 except Exception:
+127 error_console.print_exception()
+128 sys.exit(1)
+
+/opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+256 """
+257 self.setup()
+258 try:
+❱ 259 self.construct()
+260 except EndSceneEarlyException:
+261 pass
+262 except RerunSceneException:
+
+/manim/scene.py:6 in construct
+
+3 class CubeOrbitZoomScene(ThreeDScene):
+4 def construct(self):
+5 # Create and add cube at origin
+❱ 6 cube = Cube(size=2, fill_opacity=0.75, stroke_width=2)
+7 self.add(cube)
+8
+9 # Set initial camera orientation (standard 3D viewing angle)
+
+/opt/venv/lib/python3.14/site-packages/manim/mobject/three_d/three_dimension
+s.py:522 in __init__
+
+519 **kwargs: Any,
+520 ) -> None:
+521 self.side_length = side_length
+❱ 522 super().__init__(
+523 fill_color=fill_color,
+524 fill_opacity=fill_opacity,
+525 stroke_width=stroke_width,
+
+/opt/venv/lib/python3.14/site-packages/manim/mobject/types/vectorized_mobjec
+t.py:2143 in __init__
+
+2140 def __init__(
+2141 self, *vmobjects: VMobject | Iterable[VMobject], **kwargs: An
+2142 ) -> None:
+❱ 2143 super().__init__(**kwargs)
+2144 self.add(*vmobjects)
+2145
+2146 def __repr__(self) -> str:
+
+/opt/venv/lib/python3.14/site-packages/manim/mobject/types/vectorized_mobjec
+t.py:160 in __init__
+
+157 0, 1, n_points_per_cubic_curve
+158 )
+159 self.cap_style: CapStyleType = cap_style
+❱ 160 super().__init__(**kwargs)
+161 self.submobjects: list[VMobject]
+162
+163 # TODO: Find where color overwrites are happening and remove
+
+TypeError: Mobject.__init__() got an unexpected keyword argument 'size'

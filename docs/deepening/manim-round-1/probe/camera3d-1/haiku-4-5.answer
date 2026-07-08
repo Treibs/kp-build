@@ -1,0 +1,29 @@
+```python
+from manim import *
+
+class OrbitingSphere(ThreeDScene):
+    def construct(self):
+        # Add 3D axes
+        axes = ThreeDAxes()
+        self.add(axes)
+        
+        # Add sphere at origin
+        sphere = Sphere()
+        self.add(sphere)
+        
+        # Set initial camera orientation (70 degrees from vertical)
+        self.set_camera_orientation(phi=0, theta=70*PI/180)
+        
+        # Begin continuous camera rotation around the sphere
+        # Rate is in radians per second; PI/2 rad/s completes 2*PI radians in 4 seconds
+        self.begin_ambient_camera_rotation(rate=PI/2)
+        
+        # Wait while camera orbits for 4 seconds
+        self.wait(4)
+        
+        # Stop the rotation
+        self.stop_ambient_camera_rotation()
+        
+        # Hold the view for 1 second
+        self.wait(1)
+```

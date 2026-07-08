@@ -845,3 +845,117 @@ class MarkupText(SVGMobject):
     def frame_width(self, value: float) -> None:
         self._d.__setitem__("frame_width", value)
 
+
+## FILE: manim/scene/three_d_scene.py (lines 55–100)
+
+    def set_camera_orientation(
+        self,
+        phi: float | None = None,
+        theta: float | None = None,
+        gamma: float | None = None,
+        zoom: float | None = None,
+        focal_distance: float | None = None,
+        frame_center: Mobject | Sequence[float] | None = None,
+        **kwargs,
+    ):
+        """
+        This method sets the orientation of the camera in the scene.
+
+        Parameters
+        ----------
+        phi
+            The polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
+
+        theta
+            The azimuthal angle i.e the angle that spins the camera around the Z_AXIS.
+
+        focal_distance
+            The focal_distance of the Camera.
+
+        gamma
+            The rotation of the camera about the vector from the ORIGIN to the Camera.
+
+        zoom
+            The zoom factor of the scene.
+
+        frame_center
+            The new center of the camera frame in cartesian coordinates.
+
+        """
+        if phi is not None:
+            self.renderer.camera.set_phi(phi)
+        if theta is not None:
+            self.renderer.camera.set_theta(theta)
+        if focal_distance is not None:
+            self.renderer.camera.set_focal_distance(focal_distance)
+        if gamma is not None:
+            self.renderer.camera.set_gamma(gamma)
+        if zoom is not None:
+            self.renderer.camera.set_zoom(zoom)
+        if frame_center is not None:
+            self.renderer.camera._frame_center.move_to(frame_center)
+
+## FILE: manim/mobject/geometry/arc.py (lines 658–675)
+
+    def surround(
+        self,
+        mobject: Mobject,
+        dim_to_match: int = 0,
+        stretch: bool = False,
+        buffer_factor: float = 1.2,
+    ) -> Self:
+        """Modifies a circle so that it surrounds a given mobject.
+
+        Parameters
+        ----------
+        mobject
+            The mobject that the circle will be surrounding.
+        dim_to_match
+        buffer_factor
+            Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
+        stretch
+            Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class:`Line`
+
+## FILE: manim/mobject/three_d/three_dimensions.py (lines 483–497)
+
+class Cube(VGroup):
+    """A three-dimensional cube.
+
+    Parameters
+    ----------
+    side_length
+        Length of each side of the :class:`Cube`.
+    fill_opacity
+        The opacity of the :class:`Cube`, from 0 being fully transparent to 1 being
+        fully opaque. Defaults to 0.75.
+    fill_color
+        The color of the :class:`Cube`.
+    stroke_width
+        The width of the stroke surrounding each face of the :class:`Cube`.
+
+
+## FILE: manim/animation/composition.py (lines 30–52)
+
+class AnimationGroup(Animation):
+    """Plays a group or series of :class:`~.Animation`.
+
+    Parameters
+    ----------
+    animations
+        Sequence of :class:`~.Animation` objects to be played.
+    group
+        A group of multiple :class:`~.Mobject`.
+    run_time
+        The duration of the animation in seconds.
+    rate_func
+        The function defining the animation progress based on the relative
+        runtime (see :mod:`~.rate_functions`) .
+    lag_ratio
+        Defines the delay after which the animation is applied to submobjects. A lag_ratio of
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
+        Defaults to 0.0, meaning that all animations will be played together.
+
+        This does not influence the total runtime of the animation. Instead the runtime
+        of individual animations is adjusted so that the complete animation has the defined
+        run time.
+    """

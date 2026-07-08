@@ -1,0 +1,21 @@
+```python
+from manim import *
+
+class ShapeAnimations(Scene):
+    def construct(self):
+        square = Square(color=WHITE)
+        circle = Circle(color=WHITE)
+        triangle = Triangle(color=WHITE)
+        
+        square.move_to(LEFT * 2)
+        circle.move_to(ORIGIN)
+        triangle.move_to(RIGHT * 2)
+        
+        self.add(square, circle, triangle)
+        
+        self.play(Succession(
+            square.animate.set_color(RED),
+            circle.animate.shift(RIGHT * 2),
+            triangle.animate.rotate(PI)
+        ))
+```

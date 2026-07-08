@@ -1,0 +1,1 @@
+Write a Manim CE scene. A formula (e raised to the i pi, plus 1, equals 0) is already on screen. Emphasize it twice: first draw a temporary ring/highlight around it that appears and then vanishes, then give the formula a brief wiggle to draw the eye.
