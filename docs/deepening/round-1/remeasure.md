@@ -42,3 +42,7 @@ buildlogs ANSI-stripped and home-directory-redacted).
 The held-out effect of the round-1 beats is **unmeasured** until the next tier-2
 falsification (pre-registered, fresh tasks, base-vs-kp); nothing in this file is a headline
 claim.
+
+*Resolution (2026-07-07, added after merge): that tier-2 run happened —
+[experiment 3](../../experiments/sui-compile-pass-3/), deepened pack 4/6 vs pre-deepening
+2/6 compile-pass → ships under rule branch 1. Headline numbers live there, not here.*
