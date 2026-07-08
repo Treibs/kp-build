@@ -55,7 +55,8 @@ request, 2026-07-07.
 **Pre-registered ship rule, branch 1: kp61 compile-pass (4/6) > kp47 compile-pass (2/6) →
 deepening improves the pack.** This is the headline, measured on the primary metric with no
 substitution. The secondary metric ties at 1/6 across all arms (kp61's extra passes carry
-lint-tier warnings — see below), so no cleanliness claim is made for the deepening.
+warning-tier findings — two lint, one unused-field warning; see below), so no cleanliness
+claim is made for the deepening.
 
 Scope the claim exactly: one deepening round doubled the held-out compile-pass rate for
 `claude-haiku-4-5` on this task band (2/6 → 4/6, n=6). The base arm also sits at 2/6, so on
@@ -68,7 +69,7 @@ measured failures, that move the primary metric.
 | task/arm | first error | root cause |
 |---|---|---|
 | escrow-swap/base | E03002 unbound module | `use sui::option::{self, Option}` — `option` lives in `std`, not `sui`; the import also uses lowercase `self`, the taught `use-self` corner's shape (masked here by the unbound-module error) |
-| escrow-swap/kp47 | E02004 invalid 'module' declaration | `module atomic_swap {` — no address qualifier; Move 2024 requires `module <address>::name`. Subsequent errors in the same log include E03003 on `use std::option::{self, Option}` — a second **taught `use-self` class** hit in this arm — plus E04010/E05001 |
+| escrow-swap/kp47 | E02004 invalid 'module' declaration | `module atomic_swap {` — no address qualifier; Move 2024 requires `module <address>::name`. Subsequent errors in the same log include E03003 on `use std::option::{self, Option}` — a second **taught `use-self` class** hit in this arm — E04010, and an E05001 that is the same Option-mutation corner as escrow-swap/kp61's (counted in round-2 candidate 2) |
 | escrow-swap/kp61 | E05001 ability constraint | `escrow.item_b = option::some(item_b)` — overwriting an `Option<U>` field destroys the old value, requiring `drop` on `U` (a generic without `drop`). NOT the taught key-field-store class (same code, different rule) |
 | english-auction/base | E05001 ability constraint | same Option-mutation corner: `auction.highest_bid_coin = option::some(coin)` needs `drop` on `Coin<SUI>`, which has none |
 | english-auction/kp47 | E04024 invalid usage of immutable variable | `&mut auction_id` — a **mutable borrow** of a binding declared without `mut` (not a reassignment). Same `let mut` rule family and error code as the pack's let-mut claims, but those cover the reassignment shape; the borrow shape is an untaught variant (round-2 nuance candidate) |
@@ -93,7 +94,8 @@ error, `use std::option::{self, Option}`), the arm without the beat. The kp61 ar
 taught-class failures.
 escrow-swap/kp61's E05001 shares the error *code* with the key-field-store beat but is a
 different rule (Option-field mutation vs key-struct field abilities); it is counted as a new
-corner, not a beat recurrence.
+corner, not a beat recurrence (the same corner also appears in escrow-swap/kp47's subsequent
+errors and english-auction/base — 3 hits total, tallied in round-2 candidate 2).
 
 ## Warning detail (every PASS WARN row)
 
@@ -114,7 +116,8 @@ tied, they are the natural targets if a cleanliness headline is ever wanted.
 
 1. **module-declaration address form** (E02004, 3 hits, pack arms only) — top priority.
 2. **Option-field mutation requires `drop`** (E05001 shape: assign via `option::fill`/`swap` or
-   extract first; 2 hits across arms).
+   extract first; 3 hits across arms — escrow-swap/kp61, escrow-swap/kp47 [subsequent error],
+   english-auction/base — tying E02004's count).
 3. **W99003 Balance-vs-Coin field idiom** and **W99001 transfer composability** (lint tier).
 
 ## Combined falsification record (experiments 1–3)
