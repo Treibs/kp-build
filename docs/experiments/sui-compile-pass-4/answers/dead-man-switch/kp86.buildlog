@@ -1,0 +1,49 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:48:33
+   │
+48 │             last_checkin_epoch: clock.epoch(),
+   │                                 ^^^^^^^^^^^^^
+   │                                 │     │
+   │                                 │     No local 'use fun' alias was found for 'sui::clock::Clock.epoch', and no function 'epoch' was found in the defining module 'sui::clock'
+   │                                 Invalid method call. No known method 'epoch' on type 'sui::clock::Clock'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:59:36
+   │
+59 │         vault.last_checkin_epoch = clock.epoch();
+   │                                    ^^^^^^^^^^^^^
+   │                                    │     │
+   │                                    │     No local 'use fun' alias was found for 'sui::clock::Clock.epoch', and no function 'epoch' was found in the defining module 'sui::clock'
+   │                                    Invalid method call. No known method 'epoch' on type 'sui::clock::Clock'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:60:40
+   │
+60 │         event::emit(CheckedIn { epoch: clock.epoch() });
+   │                                        ^^^^^^^^^^^^^
+   │                                        │     │
+   │                                        │     No local 'use fun' alias was found for 'sui::clock::Clock.epoch', and no function 'epoch' was found in the defining module 'sui::clock'
+   │                                        Invalid method call. No known method 'epoch' on type 'sui::clock::Clock'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:81:29
+   │
+81 │         let current_epoch = clock.epoch();
+   │                             ^^^^^^^^^^^^^
+   │                             │     │
+   │                             │     No local 'use fun' alias was found for 'sui::clock::Clock.epoch', and no function 'epoch' was found in the defining module 'sui::clock'
+   │                             Invalid method call. No known method 'epoch' on type 'sui::clock::Clock'
+
+error[E04023]: invalid method call
+   ┌─ ./sources/module.move:96:29
+   │
+96 │         let current_epoch = clock.epoch();
+   │                             ^^^^^^^^^^^^^
+   │                             │     │
+   │                             │     No local 'use fun' alias was found for 'sui::clock::Clock.epoch', and no function 'epoch' was found in the defining module 'sui::clock'
+   │                             Invalid method call. No known method 'epoch' on type 'sui::clock::Clock'
+
+Failed to build Move modules: Compilation error.

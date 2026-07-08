@@ -1,0 +1,236 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:22:14
+   │
+22 │     fun init(witness: SUBSCRIPTION, ctx: &mut TxContext) {
+   │              ^^^^^^^ Unused parameter 'witness'. Consider removing or prefixing with an underscore: '_witness'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:38:26
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+38 │             subscribers: table::new(ctx),
+   │                          ^^^^^
+   │                          │
+   │                          Could not resolve the name 'table'
+   │                          Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:39:34
+   │
+ 2 │     use sui::balance::{Balance};
+   │                        ------- Similarly named defintion found here
+   ·
+39 │             accumulated_balance: balance::zero(),
+   │                                  ^^^^^^^
+   │                                  │
+   │                                  Could not resolve the name 'balance'
+   │                                  Did you mean: 'Balance'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:50:13
+   │
+50 │         let subscriber = ctx.sender();
+   │             ^^^^^^^^^^ Unused local variable 'subscriber'. Consider removing or prefixing with an underscore: '_subscriber'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:40
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+58 │         let current_paid_through = if (table::contains(&registry.subscribers, subscriber)) {
+   │                                        ^^^^^
+   │                                        │
+   │                                        Could not resolve the name 'table'
+   │                                        Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:59:14
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+59 │             *table::borrow(&registry.subscribers, subscriber)
+   │              ^^^^^
+   │              │
+   │              Could not resolve the name 'table'
+   │              Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:66:13
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+66 │         if (table::contains(&registry.subscribers, subscriber)) {
+   │             ^^^^^
+   │             │
+   │             Could not resolve the name 'table'
+   │             Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:67:14
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+67 │             *table::borrow_mut(&mut registry.subscribers, subscriber) = new_paid_through;
+   │              ^^^^^
+   │              │
+   │              Could not resolve the name 'table'
+   │              Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:69:13
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+69 │             table::add(&mut registry.subscribers, subscriber, new_paid_through);
+   │             ^^^^^
+   │             │
+   │             Could not resolve the name 'table'
+   │             Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:72:9
+   │
+ 2 │     use sui::balance::{Balance};
+   │                        ------- Similarly named defintion found here
+   ·
+72 │         balance::join(&mut registry.accumulated_balance, coin::into_balance(payment));
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:72:58
+   │
+ 3 │     use sui::coin::{Coin};
+   │                     ---- Similarly named defintion found here
+   ·
+72 │         balance::join(&mut registry.accumulated_balance, coin::into_balance(payment));
+   │                                                          ^^^^
+   │                                                          │
+   │                                                          Could not resolve the name 'coin'
+   │                                                          Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:76:9
+   │
+76 │         registry: &SubscriptionRegistry,
+   │         ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:77:9
+   │
+77 │         subscriber: address,
+   │         ^^^^^^^^^^ Unused parameter 'subscriber'. Consider removing or prefixing with an underscore: '_subscriber'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:80:14
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+80 │         if (!table::contains(&registry.subscribers, subscriber)) {
+   │              ^^^^^
+   │              │
+   │              Could not resolve the name 'table'
+   │              Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:83:29
+   │
+ 5 │     use sui::table::{Table};
+   │                      ----- Similarly named defintion found here
+   ·
+83 │         let paid_through = *table::borrow(&registry.subscribers, subscriber);
+   │                             ^^^^^
+   │                             │
+   │                             Could not resolve the name 'table'
+   │                             Did you mean: 'Table'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:89:9
+   │
+89 │         registry: &mut SubscriptionRegistry,
+   │         ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:91:9
+   │
+91 │         ctx: &mut TxContext,
+   │         ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:93:13
+   │
+93 │         let amount = balance::value(&registry.accumulated_balance);
+   │             ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:93:22
+   │
+ 2 │     use sui::balance::{Balance};
+   │                        ------- Similarly named defintion found here
+   ·
+93 │         let amount = balance::value(&registry.accumulated_balance);
+   │                      ^^^^^^^
+   │                      │
+   │                      Could not resolve the name 'balance'
+   │                      Did you mean: 'Balance'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:94:13
+   │
+94 │         let balance_out = balance::split(&mut registry.accumulated_balance, amount);
+   │             ^^^^^^^^^^^ Unused local variable 'balance_out'. Consider removing or prefixing with an underscore: '_balance_out'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:94:27
+   │
+ 2 │     use sui::balance::{Balance};
+   │                        ------- Similarly named defintion found here
+   ·
+94 │         let balance_out = balance::split(&mut registry.accumulated_balance, amount);
+   │                           ^^^^^^^
+   │                           │
+   │                           Could not resolve the name 'balance'
+   │                           Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:95:20
+   │
+ 3 │     use sui::coin::{Coin};
+   │                     ---- Similarly named defintion found here
+   ·
+95 │         let coin = coin::from_balance(balance_out, ctx);
+   │                    ^^^^
+   │                    │
+   │                    Could not resolve the name 'coin'
+   │                    Did you mean: 'Coin'
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,109 @@
+module 0x0::rental {
+    use sui::coin::{Self, Coin};
+    use sui::object::{Self, UID};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    public struct RentalListing<phantom T> has key, store {
+        id: UID,
+        owner: address,
+        per_epoch_price: u64,
+        required_deposit: u64,
+    }
+
+    public struct RentalAgreement<T: key + store> has key, store {
+        id: UID,
+        owner: address,
+        renter: address,
+        item: T,
+        rent_collected: Coin<SUI>,
+        deposit: Coin<SUI>,
+        start_epoch: u64,
+        duration_epochs: u64,
+    }
+
+    public fun create_listing<T>(
+        per_epoch_price: u64,
+        required_deposit: u64,
+        ctx: &mut TxContext,
+    ): RentalListing<T> {
+        RentalListing {
+            id: object::new(ctx),
+            owner: tx_context::sender(ctx),
+            per_epoch_price,
+            required_deposit,
+        }
+    }
+
+    public fun rent<T: key + store>(
+        listing: &RentalListing<T>,
+        item: T,
+        rent_payment: Coin<SUI>,
+        deposit: Coin<SUI>,
+        duration_epochs: u64,
+        current_epoch: u64,
+        ctx: &mut TxContext,
+    ): RentalAgreement<T> {
+        let required_rent = listing.per_epoch_price * duration_epochs;
+        assert!(coin::value(&rent_payment) >= required_rent, 1);
+        assert!(coin::value(&deposit) >= listing.required_deposit, 2);
+
+        RentalAgreement {
+            id: object::new(ctx),
+            owner: listing.owner,
+            renter: tx_context::sender(ctx),
+            item,
+            rent_collected: rent_payment,
+            deposit,
+            start_epoch: current_epoch,
+            duration_epochs,
+        }
+    }
+
+    public fun return_item<T: key + store>(
+        agreement: RentalAgreement<T>,
+        current_epoch: u64,
+    ) {
+        assert!(current_epoch <= agreement.start_epoch + agreement.duration_epochs, 1);
+        
+        let RentalAgreement {
+            id,
+            owner,
+            renter,
+            item,
+            rent_collected,
+            deposit,
+            start_epoch: _,
+            duration_epochs: _,
+        } = agreement;
+
+        transfer::public_transfer(item, renter);
+        transfer::public_transfer(deposit, renter);
+        transfer::public_transfer(rent_collected, owner);
+        object::delete(id);
+    }
+
+    public fun claim_overdue<T: key + store>(
+        agreement: RentalAgreement<T>,
+        current_epoch: u64,
+    ) {
+        assert!(current_epoch > agreement.start_epoch + agreement.duration_epochs, 1);
+        
+        let RentalAgreement {
+            id,
+            owner,
+            renter: _,
+            item,
+            rent_collected,
+            deposit,
+            start_epoch: _,
+            duration_epochs: _,
+        } = agreement;
+
+        transfer::public_transfer(item, owner);
+        transfer::public_transfer(rent_collected, owner);
+        transfer::public_transfer(deposit, owner);
+        object::delete(id);
+    }
+}

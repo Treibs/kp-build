@@ -1,0 +1,222 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:33
+  │
+2 │     use sui::balance::{Balance, self};
+  │                                 ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::balance'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:7:13
+  │
+7 │ module sui::balance;
+  │             ------- Module 'sui::balance' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:27
+  │
+3 │     use sui::coin::{Coin, self};
+  │                           ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E01003]: invalid modifier
+  ┌─ ./sources/module.move:9:5
+  │
+9 │     struct WagerCap has key {
+  │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+  │
+  = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:14:5
+   │
+14 │     struct Wager has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:26:9
+   │
+26 │         creator_stake: Coin<SUI>,
+   │         ^^^^^^^^^^^^^ Unused parameter 'creator_stake'. Consider removing or prefixing with an underscore: '_creator_stake'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:31:28
+   │
+ 3 │     use sui::coin::{Coin, self};
+   │                     ---- Similarly named defintion found here
+   ·
+31 │         let stake_amount = coin::value(&creator_stake);
+   │                            ^^^^
+   │                            │
+   │                            Could not resolve the name 'coin'
+   │                            Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:34:23
+   │
+ 2 │     use sui::balance::{Balance, self};
+   │                        ------- Similarly named defintion found here
+   ·
+34 │         let mut pot = balance::zero();
+   │                       ^^^^^^^
+   │                       │
+   │                       Could not resolve the name 'balance'
+   │                       Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:35:9
+   │
+ 2 │     use sui::balance::{Balance, self};
+   │                        ------- Similarly named defintion found here
+   ·
+35 │         balance::join(&mut pot, coin::into_balance(creator_stake));
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:35:33
+   │
+ 3 │     use sui::coin::{Coin, self};
+   │                     ---- Similarly named defintion found here
+   ·
+35 │         balance::join(&mut pot, coin::into_balance(creator_stake));
+   │                                 ^^^^
+   │                                 │
+   │                                 Could not resolve the name 'coin'
+   │                                 Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:61:9
+   │
+61 │         opponent_stake: Coin<SUI>,
+   │         ^^^^^^^^^^^^^^ Unused parameter 'opponent_stake'. Consider removing or prefixing with an underscore: '_opponent_stake'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:64:13
+   │
+64 │         let sender = @0x0;
+   │             ^^^^^^ Unused local variable 'sender'. Consider removing or prefixing with an underscore: '_sender'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:65:17
+   │
+ 3 │     use sui::coin::{Coin, self};
+   │                     ---- Similarly named defintion found here
+   ·
+65 │         assert!(coin::value(&opponent_stake) == wager.stake_amount, 1);
+   │                 ^^^^
+   │                 │
+   │                 Could not resolve the name 'coin'
+   │                 Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:68:9
+   │
+ 2 │     use sui::balance::{Balance, self};
+   │                        ------- Similarly named defintion found here
+   ·
+68 │         balance::join(&mut wager.pot, coin::into_balance(opponent_stake));
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:68:39
+   │
+ 3 │     use sui::coin::{Coin, self};
+   │                     ---- Similarly named defintion found here
+   ·
+68 │         balance::join(&mut wager.pot, coin::into_balance(opponent_stake));
+   │                                       ^^^^
+   │                                       │
+   │                                       Could not resolve the name 'coin'
+   │                                       Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:83:13
+   │
+83 │         let pot_balance = balance::withdraw_all(&mut wager.pot);
+   │             ^^^^^^^^^^^ Unused local variable 'pot_balance'. Consider removing or prefixing with an underscore: '_pot_balance'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:83:27
+   │
+ 2 │     use sui::balance::{Balance, self};
+   │                        ------- Similarly named defintion found here
+   ·
+83 │         let pot_balance = balance::withdraw_all(&mut wager.pot);
+   │                           ^^^^^^^
+   │                           │
+   │                           Could not resolve the name 'balance'
+   │                           Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:84:24
+   │
+ 3 │     use sui::coin::{Coin, self};
+   │                     ---- Similarly named defintion found here
+   ·
+84 │         let pot_coin = coin::from_balance(pot_balance, ctx);
+   │                        ^^^^
+   │                        │
+   │                        Could not resolve the name 'coin'
+   │                        Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:104:17
+    │
+104 │             mut pot,
+    │                 ^^^ Unused local variable 'pot'. Consider removing or prefixing with an underscore: '_pot'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:110:13
+    │
+110 │         let pot_balance = balance::withdraw_all(&mut pot);
+    │             ^^^^^^^^^^^ Unused local variable 'pot_balance'. Consider removing or prefixing with an underscore: '_pot_balance'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:110:27
+    │
+  2 │     use sui::balance::{Balance, self};
+    │                        ------- Similarly named defintion found here
+    ·
+110 │         let pot_balance = balance::withdraw_all(&mut pot);
+    │                           ^^^^^^^
+    │                           │
+    │                           Could not resolve the name 'balance'
+    │                           Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:111:20
+    │
+  3 │     use sui::coin::{Coin, self};
+    │                     ---- Similarly named defintion found here
+    ·
+111 │         let coin = coin::from_balance(pot_balance, ctx);
+    │                    ^^^^
+    │                    │
+    │                    Could not resolve the name 'coin'
+    │                    Did you mean: 'Coin'
+
+Failed to build Move modules: Compilation error.

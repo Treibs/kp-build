@@ -33,3 +33,5 @@ docs/deepening/**/build/
 docs/deepening/**/Move.lock
 docs/experiments/sui-compile-pass-3/answers/**/build/
 docs/experiments/sui-compile-pass-3/answers/**/Move.lock
+docs/experiments/sui-compile-pass-4/answers/**/build/
+docs/experiments/sui-compile-pass-4/answers/**/Move.lock

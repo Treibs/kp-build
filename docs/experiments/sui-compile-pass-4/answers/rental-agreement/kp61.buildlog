@@ -1,0 +1,266 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:6:9
+  │
+6 │     use sui::option;
+  │         ^^^^^^^^^^^ Invalid 'use'. Unbound module: 'sui::option'
+
+warning[W04039]: unable to determine literal's type
+   ┌─ ./sources/module.move:50:64
+   │
+50 │         assert!(deposit.value() >= agreement.required_deposit, "Deposit insufficient");
+   │                                                                ^^^^^^^^^^^^^^^^^^^^^^ Could not determine a concrete type for this string literal, so defaulting to 'vector<u8>'
+   │
+   = To avoid this warning, add an explicit annotation, e.g., 'b"<const>"'
+   = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04035]: invalid constant usage in error context
+   ┌─ ./sources/module.move:50:64
+   │
+50 │         assert!(deposit.value() >= agreement.required_deposit, "Deposit insufficient");
+   │                                                                ^^^^^^^^^^^^^^^^^^^^^^
+   │                                                                │
+   │                                                                Invalid error code for assertion, expected a u64 or constant declared with '#[error]' annotation
+   │                                                                If you want to use a non-u64 as an abort code, you must use a '#[error]' attribute on a constant
+   │
+   = Non-u64 constants can only be used as error codes if the '#[error]' attribute is added to them.
+
+warning[W04039]: unable to determine literal's type
+   ┌─ ./sources/module.move:51:69
+   │
+51 │         assert!(rent.value() == agreement.per_epoch_price * epochs, "Rent amount mismatch");
+   │                                                                     ^^^^^^^^^^^^^^^^^^^^^^ Could not determine a concrete type for this string literal, so defaulting to 'vector<u8>'
+   │
+   = To avoid this warning, add an explicit annotation, e.g., 'b"<const>"'
+   = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04035]: invalid constant usage in error context
+   ┌─ ./sources/module.move:51:69
+   │
+51 │         assert!(rent.value() == agreement.per_epoch_price * epochs, "Rent amount mismatch");
+   │                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+   │                                                                     │
+   │                                                                     Invalid error code for assertion, expected a u64 or constant declared with '#[error]' annotation
+   │                                                                     If you want to use a non-u64 as an abort code, you must use a '#[error]' attribute on a constant
+   │
+   = Non-u64 constants can only be used as error codes if the '#[error]' attribute is added to them.
+
+warning[W04039]: unable to determine literal's type
+   ┌─ ./sources/module.move:52:43
+   │
+52 │         assert!(agreement.renter == @0x0, "Already rented");
+   │                                           ^^^^^^^^^^^^^^^^ Could not determine a concrete type for this string literal, so defaulting to 'vector<u8>'
+   │
+   = To avoid this warning, add an explicit annotation, e.g., 'b"<const>"'
+   = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04035]: invalid constant usage in error context
+   ┌─ ./sources/module.move:52:43
+   │
+52 │         assert!(agreement.renter == @0x0, "Already rented");
+   │                                           ^^^^^^^^^^^^^^^^
+   │                                           │
+   │                                           Invalid error code for assertion, expected a u64 or constant declared with '#[error]' annotation
+   │                                           If you want to use a non-u64 as an abort code, you must use a '#[error]' attribute on a constant
+   │
+   = Non-u64 constants can only be used as error codes if the '#[error]' attribute is added to them.
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:57:9
+   │
+13 │         deposit: option::Option<Coin<SUI>>,
+   │                  -------------------------
+   │                  │              │
+   │                  │              The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+   │                  The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+   ·
+57 │         agreement.deposit = option::some(deposit);
+   │         ^^^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:58:9
+   │
+14 │         rent_paid: option::Option<Coin<SUI>>,
+   │                    -------------------------
+   │                    │              │
+   │                    │              The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+   │                    The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+   ·
+58 │         agreement.rent_paid = option::some(rent);
+   │         ^^^^^^^^^^^^^^^^^^^ Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed
+
+warning[W04039]: unable to determine literal's type
+   ┌─ ./sources/module.move:69:45
+   │
+69 │         assert!(current_time <= rental_end, "Rental period expired");
+   │                                             ^^^^^^^^^^^^^^^^^^^^^^^ Could not determine a concrete type for this string literal, so defaulting to 'vector<u8>'
+   │
+   = To avoid this warning, add an explicit annotation, e.g., 'b"<const>"'
+   = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04035]: invalid constant usage in error context
+   ┌─ ./sources/module.move:69:45
+   │
+69 │         assert!(current_time <= rental_end, "Rental period expired");
+   │                                             ^^^^^^^^^^^^^^^^^^^^^^^
+   │                                             │
+   │                                             Invalid error code for assertion, expected a u64 or constant declared with '#[error]' annotation
+   │                                             If you want to use a non-u64 as an abort code, you must use a '#[error]' attribute on a constant
+   │
+   = Non-u64 constants can only be used as error codes if the '#[error]' attribute is added to them.
+
+warning[W04039]: unable to determine literal's type
+   ┌─ ./sources/module.move:70:51
+   │
+70 │         assert!(ctx.sender() == agreement.renter, "Not the renter");
+   │                                                   ^^^^^^^^^^^^^^^^ Could not determine a concrete type for this string literal, so defaulting to 'vector<u8>'
+   │
+   = To avoid this warning, add an explicit annotation, e.g., 'b"<const>"'
+   = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04035]: invalid constant usage in error context
+   ┌─ ./sources/module.move:70:51
+   │
+70 │         assert!(ctx.sender() == agreement.renter, "Not the renter");
+   │                                                   ^^^^^^^^^^^^^^^^
+   │                                                   │
+   │                                                   Invalid error code for assertion, expected a u64 or constant declared with '#[error]' annotation
+   │                                                   If you want to use a non-u64 as an abort code, you must use a '#[error]' attribute on a constant
+   │
+   = Non-u64 constants can only be used as error codes if the '#[error]' attribute is added to them.
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:72:20
+   │
+61 │     public fun return_item<T: key + store>(
+   │                            - To satisfy the constraint, the 'copy' ability would need to be added here
+62 │         mut agreement: RentalAgreement<T>,
+   │                                        - The type 'T' does not have the ability 'copy'
+   ·
+72 │         let item = agreement.item;
+   │                    ^^^^^^^^^^^^^^ Invalid implicit copy of field 'item' without the 'copy' ability
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:81:19
+   │
+61 │     public fun return_item<T: key + store>(
+   │                            - To satisfy the constraint, the 'drop' ability would need to be added here
+62 │         mut agreement: RentalAgreement<T>,
+   │                                        - The type 'T' does not have the ability 'drop'
+   ·
+81 │             item: _,
+   │                   ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:84:22
+   │
+13 │         deposit: option::Option<Coin<SUI>>,
+   │                  -------------------------
+   │                  │              │
+   │                  │              The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+   │                  The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+   ·
+84 │             deposit: _,
+   │                      ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:85:24
+   │
+14 │         rent_paid: option::Option<Coin<SUI>>,
+   │                    -------------------------
+   │                    │              │
+   │                    │              The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+   │                    The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+   ·
+85 │             rent_paid: _,
+   │                        ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+warning[W04039]: unable to determine literal's type
+    ┌─ ./sources/module.move:104:44
+    │
+104 │         assert!(current_time > rental_end, "Rental period not expired");
+    │                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not determine a concrete type for this string literal, so defaulting to 'vector<u8>'
+    │
+    = To avoid this warning, add an explicit annotation, e.g., 'b"<const>"'
+    = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04035]: invalid constant usage in error context
+    ┌─ ./sources/module.move:104:44
+    │
+104 │         assert!(current_time > rental_end, "Rental period not expired");
+    │                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │                                            │
+    │                                            Invalid error code for assertion, expected a u64 or constant declared with '#[error]' annotation
+    │                                            If you want to use a non-u64 as an abort code, you must use a '#[error]' attribute on a constant
+    │
+    = Non-u64 constants can only be used as error codes if the '#[error]' attribute is added to them.
+
+warning[W04039]: unable to determine literal's type
+    ┌─ ./sources/module.move:105:50
+    │
+105 │         assert!(ctx.sender() == agreement.owner, "Not the owner");
+    │                                                  ^^^^^^^^^^^^^^^ Could not determine a concrete type for this string literal, so defaulting to 'vector<u8>'
+    │
+    = To avoid this warning, add an explicit annotation, e.g., 'b"<const>"'
+    = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04035]: invalid constant usage in error context
+    ┌─ ./sources/module.move:105:50
+    │
+105 │         assert!(ctx.sender() == agreement.owner, "Not the owner");
+    │                                                  ^^^^^^^^^^^^^^^
+    │                                                  │
+    │                                                  Invalid error code for assertion, expected a u64 or constant declared with '#[error]' annotation
+    │                                                  If you want to use a non-u64 as an abort code, you must use a '#[error]' attribute on a constant
+    │
+    = Non-u64 constants can only be used as error codes if the '#[error]' attribute is added to them.
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:107:20
+    │
+ 96 │     public fun reclaim_item<T: key + store>(
+    │                             - To satisfy the constraint, the 'copy' ability would need to be added here
+ 97 │         mut agreement: RentalAgreement<T>,
+    │                                        - The type 'T' does not have the ability 'copy'
+    ·
+107 │         let item = agreement.item;
+    │                    ^^^^^^^^^^^^^^ Invalid implicit copy of field 'item' without the 'copy' ability
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:116:19
+    │
+ 96 │     public fun reclaim_item<T: key + store>(
+    │                             - To satisfy the constraint, the 'drop' ability would need to be added here
+ 97 │         mut agreement: RentalAgreement<T>,
+    │                                        - The type 'T' does not have the ability 'drop'
+    ·
+116 │             item: _,
+    │                   ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:119:22
+    │
+ 13 │         deposit: option::Option<Coin<SUI>>,
+    │                  -------------------------
+    │                  │              │
+    │                  │              The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+    │                  The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+    ·
+119 │             deposit: _,
+    │                      ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:120:24
+    │
+ 14 │         rent_paid: option::Option<Coin<SUI>>,
+    │                    -------------------------
+    │                    │              │
+    │                    │              The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' can have the ability 'drop' but the type argument 'sui::coin::Coin<sui::sui::SUI>' does not have the required ability 'drop'
+    │                    The type 'std::option::Option<sui::coin::Coin<sui::sui::SUI>>' does not have the ability 'drop'
+    ·
+120 │             rent_paid: _,
+    │                        ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+Failed to build Move modules: Compilation error.

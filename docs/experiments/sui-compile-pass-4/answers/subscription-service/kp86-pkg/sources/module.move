@@ -1,0 +1,98 @@
+module subscription_registry::subscription {
+    use sui::balance::{Balance};
+    use sui::coin::{Coin};
+    use sui::sui::SUI;
+    use sui::table::{Table};
+    use sui::tx_context::TxContext;
+
+    public struct SUBSCRIPTION has drop {}
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct SubscriptionRegistry has key {
+        id: UID,
+        price_per_period: u64,
+        period_length: u64,
+        subscribers: Table<address, u64>,
+        accumulated_balance: Balance<SUI>,
+    }
+
+    fun init(witness: SUBSCRIPTION, ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, ctx.sender());
+    }
+
+    public fun create_registry(
+        price_per_period: u64,
+        period_length: u64,
+        ctx: &mut TxContext,
+    ) {
+        let registry = SubscriptionRegistry {
+            id: object::new(ctx),
+            price_per_period,
+            period_length,
+            subscribers: table::new(ctx),
+            accumulated_balance: balance::zero(),
+        };
+        transfer::share_object(registry);
+    }
+
+    public fun subscribe(
+        registry: &mut SubscriptionRegistry,
+        payment: Coin<SUI>,
+        current_epoch: u64,
+        ctx: &mut TxContext,
+    ) {
+        let subscriber = ctx.sender();
+        let amount = payment.value();
+        let periods = amount / registry.price_per_period;
+        
+        assert!(periods > 0, 0);
+        
+        let additional_epochs = periods * registry.period_length;
+        
+        let current_paid_through = if (table::contains(&registry.subscribers, subscriber)) {
+            *table::borrow(&registry.subscribers, subscriber)
+        } else {
+            current_epoch
+        };
+        
+        let new_paid_through = current_paid_through + additional_epochs;
+        
+        if (table::contains(&registry.subscribers, subscriber)) {
+            *table::borrow_mut(&mut registry.subscribers, subscriber) = new_paid_through;
+        } else {
+            table::add(&mut registry.subscribers, subscriber, new_paid_through);
+        };
+        
+        balance::join(&mut registry.accumulated_balance, coin::into_balance(payment));
+    }
+
+    public fun is_active(
+        registry: &SubscriptionRegistry,
+        subscriber: address,
+        current_epoch: u64,
+    ): bool {
+        if (!table::contains(&registry.subscribers, subscriber)) {
+            return false
+        };
+        let paid_through = *table::borrow(&registry.subscribers, subscriber);
+        current_epoch <= paid_through
+    }
+
+    public fun withdraw(
+        _cap: &AdminCap,
+        registry: &mut SubscriptionRegistry,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        let amount = balance::value(&registry.accumulated_balance);
+        let balance_out = balance::split(&mut registry.accumulated_balance, amount);
+        let coin = coin::from_balance(balance_out, ctx);
+        transfer::public_transfer(coin, recipient);
+    }
+}
