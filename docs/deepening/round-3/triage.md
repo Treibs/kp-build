@@ -48,7 +48,8 @@ check is now part of the task-design step.)
    `option::destroy_none`. RED: `id: _`.
 3. **`implicit-field-copy`** — `let x = s.field;` copies, so non-`copy` fields cannot be read
    out by field access (E05001); move them out by destructuring the struct. RED: field access
-   on a `Coin` field.
+   on a non-`copy` field (the observed failure was on a `Coin` field; the shipped fixture
+   minimizes to a plain `store`-only struct — same error class, message shape preserved).
 4. **`param-mut`** — assigning through a by-value function parameter requires `mut` in the
    signature (E04024). RED: `fun f(x: S)` with `x.n = 1`.
 
