@@ -41,3 +41,4 @@ docs/experiments/sui-compile-pass-5/answers/**/*.stderr
 docs/experiments/sui-payload-salience/answers/**/build/
 docs/experiments/sui-payload-salience/answers/**/Move.lock
 docs/experiments/sui-payload-salience/answers/**/*.stderr
+docs/deepening/manim-round-1/probe/**/*.stderr
