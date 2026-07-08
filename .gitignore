@@ -37,3 +37,4 @@ docs/experiments/sui-compile-pass-4/answers/**/build/
 docs/experiments/sui-compile-pass-4/answers/**/Move.lock
 docs/experiments/sui-compile-pass-5/answers/**/build/
 docs/experiments/sui-compile-pass-5/answers/**/Move.lock
+docs/experiments/sui-compile-pass-5/answers/**/*.stderr

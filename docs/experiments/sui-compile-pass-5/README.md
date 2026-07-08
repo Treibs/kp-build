@@ -32,6 +32,12 @@ pack's oldest beat, still doing its job.
   [`answers/results.txt`](answers/results.txt).
 - The assembled payloads themselves are not committed; they are mechanically reproducible from
   the assembly rule in tasks.md (the pinned commits + `sorted()` claim statements).
+- **Erratum in the frozen pre-registration** (tasks.md is not edited post hoc): its context
+  sentence "sonnet-4-6 probed 13/15 with the pack loaded in round 3; its two valid failures
+  were one task" is wrong — the round-3 probe record (`docs/deepening/round-3/triage.md`) has
+  sonnet 13/15 with one of the two failures VOID (import-3, the reserved-word task defect), so
+  sonnet had ONE valid probe failure (destr-3). Context-only; no arm, task, metric, or ship-rule
+  text is affected.
 
 ## Results
 
@@ -54,9 +60,10 @@ pack's oldest beat, still doing its job.
 - **Branch 3: no round-3 headline on this evidence; recorded as-is.** kp98 is not below kp86
   on the primary, so this is not a primary regression under the rule — but **the cleanliness
   regression is real and attributable to a specific ignored rule:** kp98's two non-clean passes
-  carry three `Lint W99001` hits (`transfer::transfer(cap, ctx.sender())`-shaped calls in
-  insurance-pool ×2 and oracle-feed ×1), the class the round-2 `transfer-composability`
-  grounding beat targets. The rule was in the kp98 payload for every one of those answers.
+  carry three `Lint W99001` hits (`transfer::transfer(cap, ctx.sender())` in insurance-pool
+  plus `transfer::public_transfer(withdrawal_coin, ctx.sender())` there, and
+  `transfer::public_transfer(cap, ...sender(ctx))` in oracle-feed), the class the round-2
+  `transfer-composability` grounding beat targets. The rule was in the kp98 payload for every one of those answers.
   kp86's three passes were all clean, and W99001 appeared nowhere else in any passing log.
 
 Context notes, neither of which changes the verdict:
@@ -78,26 +85,35 @@ Context notes, neither of which changes the verdict:
 | insurance-pool/base | E01003 ×7 | `struct InsurancePool has key { ... }` etc. — seven struct declarations without `public` ("Visibility annotations are required on struct declarations from the Move 2024 edition onwards") | **original taught `struct-visibility` class** — fired only in the no-pack arm; both pack arms passed this task |
 | hash-riddle/base | E01003 ×1, E03003 ×1 | two independent root causes: a `struct` without `public`; and `hash::sha3_256` called in `sui::hash` ("Unbound function 'sha3_256' in module 'sui::hash'" — `sha3_256` lives in `std::hash`) | **original taught `struct-visibility` class** + wrong-module hash API (untaught) |
 | allowance-vault/base | E05001 ×6 | `public struct Allowance has store` stored via `dynamic_object_field` — `remove` requires `key` (+`store`), and `let _: Allowance = dynamic_object_field::remove(...)` additionally needs `drop` to discard | dof-value-ability (untaught) — the only failure in the experiment rooted on a pre-registered vocabulary surface, and it is in the **base** arm |
-| milestone-contract/base | E01003 ×1, E05001 ×2, E06001 ×2 | a `struct` without `public`; and `transfer::public_transfer(contract.balance, ...)` without unpacking the struct — "Invalid implicit copy of field 'balance' without the 'copy' ability" (E05001), with the un-consumed `contract` then flagged E06001; one design defect, two symptom codes | **original taught `struct-visibility` class** + **round-3 taught `implicit-field-copy` class** (exact fragment) — both fired only in the no-pack arm; both pack arms avoided them |
+| milestone-contract/base | E01003 ×1, E05001 ×2, E06001 ×2 | a `struct` without `public`; and `transfer::public_transfer(contract.balance, ...)` without unpacking the struct — "Invalid implicit copy of field 'balance' without the 'copy' ability" (E05001), with the un-consumed `contract` then flagged E06001; one design defect, two symptom codes | **original taught `struct-visibility` class** + **round-3 taught `implicit-field-copy` class** (exact message template — the fixture pins "Invalid implicit copy of field 'gem'…", the log reads "…field 'balance'…"; identical modulo the field identifier) — both fired only in the no-pack arm; both pack arms avoided them |
 | hash-riddle/kp86 | E03003 ×1, E03006 ×4 | `use sui::coin::{Coin, SUI, Self}` — `SUI` is not in `sui::coin` (it is `sui::sui::SUI`); all four E03006 are downstream uses of the unbound `SUI` | **SUI-import-path** (untaught; round-4 candidate, wrong-module shape) |
 | allowance-vault/kp86 | E01002 ×2, E05001 ×2, E06001 ×1 | **three independent root causes:** (1) `fun create_vault(...) -> OwnerCap` — Rust return arrow (E01002 "Unexpected '->'"; the E06001 on the unconsumed `coin` parameter is parse-recovery fallout — "Expected '{'" dropped the body that consumes it at `coin::into_balance(coin)`); (2) `vault.allowance = option::some(...)` / `= option::none()` on `Option<Allowance>` where `Allowance` lacks `drop` — E05001 "Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed"; (3) `if (...) { ... }` followed by a statement with no `;` — E01002 "Unexpected 'assert' / Expected ';'" | rust-return-arrow (untaught; round-3 deferral, ×2 cumulative) + **round-2 taught `option-field-fill` class (exact fragment)** + **round-2 taught `block-statement-semicolon` class** — two loaded rules ignored in one answer |
 | milestone-contract/kp86 | E03003 ×2, E03006 ×1 | `use sui::coin::{self, Coin}` and `use sui::object::{self, UID}` — lowercase `self` in group imports; the E03006 is a downstream `coin::split` | **round-1 taught `use-self` class** — a loaded rule ignored (the second such event for this class; round-3's remeasure recorded one) |
-| hash-riddle/kp98 | E04007 ×2 | `hash::sha2_256(&answer)` — `std::hash::sha2_256` takes `data: vector<u8>` by value; the answer passed `&vector<u8>` (both call sites) | api-byref-arg (new) — Rust-style by-reference argument passing; sibling of the round-3-deferred `api-arity-missing-ctx` (wrong-signature family). Note the module and function are *right* this time (base's answer had used `sui::hash::sha3_256`) |
-| allowance-vault/kp98 | E03006 ×4, E05001 ×2 | two independent root causes: (1) `SUI` referenced (`Balance<SUI>`, `Coin<SUI>`) but never imported — no `use sui::sui::SUI` anywhere (all four E03006); (2) `let _ = option::extract(&mut vault.allowance)` — "Cannot ignore values without the 'drop' ability" (both E05001) | **SUI-import family, absent-import shape** (untaught; the wrong-module shape is recorded in exp-4 and hash-riddle/kp86 above) + let-discard (untaught value-level sibling of the round-3 taught `destructure-ignore`, which pins the field-level `field: _` shape; this lineage is exp-3's "drop on discard" residual) |
+| hash-riddle/kp98 | E04007 ×2 | `hash::sha2_256(&answer)` — `std::hash::sha2_256` takes `data: vector<u8>` by value; the answer passed `&vector<u8>` (both call sites) | api-byref-arg — Rust-style by-reference argument passing; sibling of the round-3-deferred `api-arity-missing-ctx` (wrong-signature family). **The loaded round-2 `table-key-by-value` claims teach this exact habit** ("passing a table key by reference (`table.contains(&key)`, the Rust habit)" — same E04007, same "Invalid call of … Invalid argument for parameter" template) but pin it to `sui::table` keys specifically; at the fixture-rule scope the recurrence check uses, this is a *new API* for a *loaded rule shape* — recorded as loaded-rule-adjacent, not recurrence. Note the module and function are *right* this time (base's answer had used `sui::hash::sha3_256`) |
+| allowance-vault/kp98 | E03006 ×4, E05001 ×2 | two independent root causes: (1) `SUI` referenced (`Balance<SUI>`, `Coin<SUI>`) but never imported — no `use sui::sui::SUI` anywhere (all four E03006); (2) `let _ = option::extract(&mut vault.allowance)` — "Cannot ignore values without the 'drop' ability" (both E05001) | **SUI-import family, absent-import shape** — no loaded claim teaches `use sui::sui::SUI` (the wrong-module shape is recorded in exp-4 and hash-riddle/kp86 above); the E03006 message template ("Could not resolve the name 'SUI'") matches the round-3 `missing-module-import` fixture's ("…the name 'event'") modulo identifier, but that beat pins module-alias *calls* (`use sui::module` before `module::fn`), a different rule with a different fix — loaded-rule-adjacent at template scope, not recurrence + let-discard — the compile-tier fixture scope is untaught (round-3 `destructure-ignore` pins the field-level `field: _` shape; this is the value-level `let _ =` sibling, exp-3's "drop on discard" lineage), **but the loaded round-3 `destructure-ignore-doc` claim states the general rule verbatim** ("The `drop` ability gates every way of ignoring a value — including leaving a local or parameter unused"), so this too is a loaded rule not applied |
 | milestone-contract/kp98 | E04023 ×6 | `milestones.len()` and `milestones.get(i)` — `std::vector` has no `len`/`get` (Move 2024 methods are `.length()` / `.borrow(i)`); six call sites, one habit | rust-vector-method (new) — Rust `Vec` API bleed; family sibling of rust-return-arrow and the taught block-statement-semicolon |
 
-**Taught-beat recurrence (pre-registered check, original pack + rounds 1, 2, 3):** the arms
-split sharply. In **base**, taught classes did the failing: original `struct-visibility` in 3
-of 4 failing rows and round-3 `implicit-field-copy` (exact fragment) in one — and both pack
-arms avoided every one of those hits. In **kp86**, three taught classes recurred *with their
-rules loaded*: round-1 `use-self`, round-2 `option-field-fill` (exact fragment), and round-2
-`block-statement-semicolon` — five error sites across two tasks, all loaded-rule-ignored
-events. In **kp98**, zero error-tier taught classes recurred; its three failures are new or
-sibling classes — but at the warning tier it ignored the loaded round-2
-`transfer-composability` rule three times (the entire secondary regression). Net: the pack's
-beats demonstrably encode real failure classes (base keeps hitting them), but on this draw the
-binding constraint was rule *salience*, not rule *coverage* — 8 of the pack arms' recorded
-defect events (5 error sites + 3 warnings) were rules already in the loaded payload.
+**Taught-beat recurrence (pre-registered check, original pack + rounds 1, 2, 3):** the
+recurrence standard, stated explicitly: a hit counts as recurrence when the answer's defect is
+the *rule* a fixture pins (same defect shape, same fix), with the error message matching the
+fixture fragment up to answer-specific identifiers; a defect whose message template matches
+but whose pinned rule and fix differ is recorded as *loaded-rule-adjacent*, not recurrence.
+By that standard the arms split sharply. In **base**, taught classes did the failing: original
+`struct-visibility` in 3 of 4 failing rows and round-3 `implicit-field-copy` (message template
+modulo the field name) in one — and both pack arms avoided every one of those hits. In
+**kp86**, three taught classes recurred *with their rules loaded*: round-1 `use-self`, round-2
+`option-field-fill` (byte-exact fragment), and round-2 `block-statement-semicolon` — five
+error sites across two tasks, all loaded-rule-ignored events. In **kp98**, zero error-tier
+taught classes recurred at that standard — but the qualifier cuts against kp98, not for it:
+two of its three failures sit directly adjacent to loaded rules (the E04007 by-ref habit the
+round-2 `table-key-by-value` claims teach for table keys, applied here to `std::hash`; the
+`let _ =` discard the loaded `destructure-ignore-doc` claim's general wording covers
+verbatim), and at the warning tier it ignored the loaded round-2 `transfer-composability`
+rule three times (the entire secondary regression). Net: the pack's beats demonstrably encode
+real failure classes (base keeps hitting them), but on this draw the binding constraint was
+rule *salience*, not rule *coverage* — 8 of the pack arms' recorded defect events (5 error
+sites + 3 warnings) were rules literally in the loaded payload, and kp98's loaded-rule-adjacent
+events (E04007 ×2, E05001 ×2) push the same diagnosis further.
 
 ## Pre-registered vocabulary-induction analysis (observational, no ship-rule weight)
 
@@ -148,8 +164,9 @@ Full census (line count + pre-registered surfaces referenced, per task × arm):
 ## Round-4 candidates recorded by this experiment
 
 1. **SUI-import family** — now the top candidate, two shapes: wrong-module
-   (`use sui::coin::{..., SUI}`; hash-riddle/kp86 here, 2 tasks in exp-4, ×3 in the round-3
-   remeasure) and absent-import (`SUI` used, never imported; allowance-vault/kp98 here). One
+   (`use sui::coin::{..., SUI}`; hash-riddle/kp86 here, 2 tasks in exp-4, and one round-3
+   remeasure task — import-2 — whose one unbound `SUI` cascaded to ×3 error sites) and
+   absent-import (`SUI` used, never imported; allowance-vault/kp98 here). One
    beat showing `use sui::sui::SUI` covers both.
 2. **Rust-bleed family** — rust-return-arrow (allowance-vault/kp86; ×2 cumulative with the
    round-3 deferral) and NEW **rust-vector-method** (`.len()`/`.get()` on `vector`;
@@ -158,8 +175,9 @@ Full census (line count + pre-registered surfaces referenced, per task × arm):
 3. **hash-functions corner** — two different failures on one API in one task: base called
    `sha3_256` in the wrong module (`sui::hash`), kp98 passed `&vector<u8>` by reference
    (**api-byref-arg**, new). A hash beat pins module path + by-value signature at once.
-4. **let-discard** — `let _ = <non-drop value>` (allowance-vault/kp98 ×2); the value-level
-   sibling of the taught `destructure-ignore`.
+4. **let-discard** — `let _ = <non-drop value>` (allowance-vault/kp98 ×2; allowance-vault/base
+   also hit it ×2 inside its E05001 pile-up); the value-level sibling of the taught
+   `destructure-ignore`.
 5. **dof-value-ability** — `dynamic_object_field` values need `key`+`store`
    (allowance-vault/base ×6 sites); base-arm only, lower priority.
 6. Carried from the round-3 ledger, did not fire here: `uid-reuse` (×2), `std-mem-replace`
