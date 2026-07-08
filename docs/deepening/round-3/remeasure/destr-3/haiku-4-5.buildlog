@@ -1,0 +1,42 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[Sui E01001]: invalid object construction
+   ┌─ ./sources/module.move:20:25
+   │  
+20 │           let new_snake = Snake {
+   │ ╭─────────────────────────^
+21 │ │             id: snake_id,
+   │ │             -- The UID must come directly from `sui::object::new`, or `sui::derived_object::claim`. For tests, it can come from `sui::test_scenario::new_object`
+22 │ │             skin: new_skin,
+23 │ │         };
+   │ ╰─────────^ Invalid object creation without a newly created UID.
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:26:9
+   │
+12 │     public fun molt(snake: Snake, new_pattern: u8, ctx: &mut TxContext) {
+   │                ---- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+25 │         let owner = ctx.sender();
+   │                     ------------ Transaction sender address coming from here
+26 │         transfer::public_transfer(new_snake, owner);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:27:9
+   │
+12 │     public fun molt(snake: Snake, new_pattern: u8, ctx: &mut TxContext) {
+   │                ---- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+25 │         let owner = ctx.sender();
+   │                     ------------ Transaction sender address coming from here
+26 │         transfer::public_transfer(new_snake, owner);
+27 │         transfer::public_transfer(old_skin, owner);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,92 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:27
+  │
+2 │     use sui::coin::{Coin, SUI};
+  │                           ^^^ Invalid 'use'. Unbound member 'SUI' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:23
+  │
+3 │     use std::option::{self, Option};
+  │                       ^^^^ Invalid 'use'. Unbound member 'self' in module 'std::option'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/option.move:5:13
+  │
+5 │ module std::option;
+  │             ------ Module 'std::option' declared here
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:11:18
+   │
+11 │         deposit: Coin<SUI>,
+   │                  ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:11:23
+   │
+ 2 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+11 │         deposit: Coin<SUI>,
+   │                       ^^^
+   │                       │
+   │                       Could not resolve the name 'SUI'
+   │                       Did you mean: 'Coin'
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:17:15
+   │
+17 │         tips: Coin<SUI>,
+   │               ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:17:20
+   │
+ 2 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+17 │         tips: Coin<SUI>,
+   │                    ^^^
+   │                    │
+   │                    Could not resolve the name 'SUI'
+   │                    Did you mean: 'Coin'
+
+error[E04016]: too few arguments
+    ┌─ ./sources/module.move:28:19
+    │
+ 28 │             tips: sui::coin::zero(),
+    │                   ^^^^^^^^^^^^^^^^^
+    │                   │              │
+    │                   │              Found 0 argument(s) here
+    │                   Invalid call of 'sui::coin::zero'. The call expected 1 argument(s) but got 0
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:209:12
+    │
+209 │ public fun zero<T>(ctx: &mut TxContext): Coin<T> {
+    │            ---- Expected 1 argument(s)
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:37:23
+   │
+ 2 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+37 │         deposit: Coin<SUI>,
+   │                       ^^^
+   │                       │
+   │                       Could not resolve the name 'SUI'
+   │                       Did you mean: 'Coin'
+
+Failed to build Move modules: Compilation error.
