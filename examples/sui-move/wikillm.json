@@ -105,7 +105,7 @@
       "path": "docs/experiments/sui-compile-pass-5/"
     },
     "payload_salience": {
-      "metrics": "compile-pass (primary) + zero-warning clean-compile (secondary), 6 fresh held-out tasks, claude-haiku-4-5 all arms, pre-registered before answers at commit c170058; same 98 claims (master 04d7cba) in every pack arm - only the payload FORM varies: full (standard CONTEXT.md + sorted claim statements, 49656 B, byte-identical to experiment 5's kp98 payload), slim (same sorted statements once, briefing stripped, 24519 B), sheet (37 imperative rule lines derived 1:1 from the claims, 5887 B); headline comparisons = slim vs full and sheet vs full (disclosed multiplicity, >= +2 bar)",
+      "metrics": "compile-pass (primary) + zero-warning clean-compile (secondary), 6 fresh held-out tasks, claude-haiku-4-5 all arms, pre-registered before answers at commit c170058; same 98 claims (master 04d7cba) in every pack arm - only the payload FORM varies: full (standard CONTEXT.md + sorted claim statements, 49656 B, byte-identical to experiment 5's kp98 payload), slim (same sorted statements once, briefing stripped, 24639 B), sheet (35 imperative rule lines derived 1:1 from the claims, 5887 B); headline comparisons = slim vs full and sheet vs full (disclosed multiplicity, >= +2 bar)",
       "base": {
         "compile_pass": "0/6",
         "clean_compile": "0/6"
