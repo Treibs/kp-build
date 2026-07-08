@@ -17,11 +17,21 @@ request, 2026-07-07.
   **kp61 vs kp47**. Base is contextual only.
 - **Model, all arms:** `claude-haiku-4-5`, fresh context per task per arm, headless, no tools.
 - **Tasks:** 6 held-out contract-authoring tasks (escrow-swap, english-auction,
-  multisig-treasury, loyalty-points, epoch-vesting, crowdfund) — none restates a pack fixture,
-  a round-1 probe task, or an experiment-1/2 task.
+  multisig-treasury, loyalty-points, epoch-vesting, crowdfund). **Correction (adversarial
+  review, post-verdict):** the pre-registration asserted none restates an experiment-1/2 task —
+  that is false for escrow-swap, which shares its name and core contract with experiment 1's
+  task 4 ("an escrow that atomically swaps two objects"). Sensitivity: escrow-swap FAILED in
+  all three arms, so excluding it gives kp61 4/5 > kp47 2/5 — the verdict is unchanged.
+  (Experiment 1 was sonnet at ceiling and no pack beat derives from it, so no leakage
+  advantage accrues to any arm.) The other 5 tasks were re-checked and genuinely restate no
+  pack fixture, round-1 probe task, or experiment-1/2 task.
 - **Gate:** mechanical extraction → pre-declared scaffold (every declared `module X::Y` address
   name bound to `0x0`; multi-module answers gated as one package; no source edit) → plain
-  `sui move build` with the pinned binary (`sui 1.74.1-8fc60f1fa966`).
+  `sui move build` with the pinned binary (`sui 1.74.1-8fc60f1fa966`). **Deviation disclosed:**
+  for answers declaring a bare `module name {` (no `X::Y` address name to bind), the scaffold
+  script fell back to an inert `probe = "0x0"` binding (3 answers: escrow-swap/kp47,
+  epoch-vesting/kp47, multisig-treasury/kp61). The binding references nothing in those answers
+  and was verified inert (see the E02004 counterfactual below); it was applied arm-neutrally.
 - **Payload assembly:** per `tasks.md` — CONTEXT.md + a `## Pack claims (all)` section with every
   claim statement, sorted (Python `sorted()`, byte order), one bullet each. The same assembly
   code produced both pack payloads (arm-neutral). The kp47 payload carries the identical claim
@@ -58,10 +68,10 @@ measured failures, that move the primary metric.
 | task/arm | first error | root cause |
 |---|---|---|
 | escrow-swap/base | E03002 unbound module | `use sui::option::{self, Option}` — `option` lives in `std`, not `sui`; the import also uses lowercase `self`, the taught `use-self` corner's shape (masked here by the unbound-module error) |
-| escrow-swap/kp47 | E02004 invalid 'module' declaration | `module atomic_swap {` — no address qualifier; Move 2024 requires `module <address>::name` |
+| escrow-swap/kp47 | E02004 invalid 'module' declaration | `module atomic_swap {` — no address qualifier; Move 2024 requires `module <address>::name`. Subsequent errors in the same log include E03003 on `use std::option::{self, Option}` — a second **taught `use-self` class** hit in this arm — plus E04010/E05001 |
 | escrow-swap/kp61 | E05001 ability constraint | `escrow.item_b = option::some(item_b)` — overwriting an `Option<U>` field destroys the old value, requiring `drop` on `U` (a generic without `drop`). NOT the taught key-field-store class (same code, different rule) |
 | english-auction/base | E05001 ability constraint | same Option-mutation corner: `auction.highest_bid_coin = option::some(coin)` needs `drop` on `Coin<SUI>`, which has none |
-| english-auction/kp47 | E04024 invalid usage of immutable variable | reassigned a non-`mut` binding — the pack's existing let-mut rule was loaded and ignored (a restated rule, not a missing one) |
+| english-auction/kp47 | E04024 invalid usage of immutable variable | `&mut auction_id` — a **mutable borrow** of a binding declared without `mut` (not a reassignment). Same `let mut` rule family and error code as the pack's let-mut claims, but those cover the reassignment shape; the borrow shape is an untaught variant (round-2 nuance candidate) |
 | multisig-treasury/kp61 | E02004 invalid 'module' declaration | `module treasury {` — same missing-address form |
 | loyalty-points/base | Sui E01001 invalid object construction | constructed a `key` object without a fresh `object::new(ctx)` UID |
 | epoch-vesting/base | E01003 invalid modifier | `struct VestingWallet has key` — missing `public`; the pack's flagship struct-visibility corner, hit by the unaided arm |
@@ -77,8 +87,10 @@ currently teach the module-declaration address form; E02004 appeared only in pac
 is the deepened pack's largest residual failure class in this run.
 
 **Taught-beat error-class check (pre-registered):** of the 5 round-1 beats, exactly one taught
-class appears in this run's failures — `use-self` (E03003 lowercase-`self` group import) in
-**kp47**, the arm without the beat; the kp61 arm shows zero taught-class failures.
+class appears in this run's failures — `use-self` (E03003 lowercase-`self` group import) —
+and it fired **twice, both in kp47** (crowdfund's first error; escrow-swap/kp47's second
+error, `use std::option::{self, Option}`), the arm without the beat. The kp61 arm shows zero
+taught-class failures.
 escrow-swap/kp61's E05001 shares the error *code* with the key-field-store beat but is a
 different rule (Option-field mutation vs key-struct field abilities); it is counted as a new
 corner, not a beat recurrence.
@@ -116,4 +128,21 @@ Honesty notes: n=6 per arm is small — the headline is the pre-registered compa
 pre-registered rule, not a general benchmark claim. All numbers above are pinned to the pack
 size and model they measured. Committed buildlogs are ANSI-stripped and home-directory-redacted;
 the scaffold `build/` outputs and `Move.lock` files are gitignored, so the committed artifacts
-are the answers, extracted sources, Move.toml scaffolds, buildlogs, and verdicts.
+are the answers, extracted sources, Move.toml scaffolds, buildlogs, and verdicts. The pack
+payloads themselves are not committed — they are mechanically reproducible from the assembly
+rule in `tasks.md` applied to the two pinned commits (`82d55df`, `8c1a2e5`).
+
+## Corrections from adversarial review (post-verdict, artifacts untouched)
+
+The whole-branch adversarial review found, and this README now discloses: (1) the
+pre-registration's held-out assertion was **false for escrow-swap** (overlaps experiment 1's
+task 4 — sensitivity above; verdict unchanged); (2) the scaffold's inert `probe = "0x0"`
+fallback binding for bare-module answers was an **undisclosed deviation** from the
+pre-registered scaffold wording (now disclosed in Setup; verified inert and arm-neutral);
+(3) english-auction/kp47's root cause was initially misdescribed as a reassignment — it is a
+mutable **borrow** of a non-`mut` binding (table corrected); (4) the taught `use-self` class
+fired twice in kp47, not once (undercount corrected). Also noted: the pre-registered
+escrow-swap task text contains a garbled sentence ("…the exact object type it wants in return
+is out of scope — instead:") — frozen as committed since all arms received identical text and
+the gate is compile-only. `tasks.md` itself is never edited post-registration; all corrections
+live here.

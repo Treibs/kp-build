@@ -15,5 +15,6 @@ Pack: `examples/sui-move/` · Oracle: pinned `sui 1.74.1-8fc60f1fa966`, plain `s
 
 **Tier-2 resolution (2026-07-07, after this round merged):** the pre-registered held-out
 falsification ran as [experiment 3](../../experiments/sui-compile-pass-3/) — deepened pack 4/6
-vs pre-deepening pack 2/6 compile-pass (claude-haiku-4-5, 6 fresh tasks) → the deepening ships
-under rule branch 1. That experiment, not this ledger, is the headline source.
+vs pre-deepening pack 2/6 compile-pass (claude-haiku-4-5, 6 tasks; one later found to overlap
+experiment 1, disclosed there — verdict robust to its exclusion, 4/5 vs 2/5) → the deepening
+ships under rule branch 1. That experiment, not this ledger, is the headline source.
