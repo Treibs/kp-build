@@ -22,13 +22,20 @@ error text is written from memory). The same answer also passes `distance=8` to
 
 ## Render-blind wrongness (PASS answers whose behavior contradicts the task)
 
-1. **compose-1 / sonnet — wrong `lag_ratio` arithmetic.** Task: five staggered fades, each
+1. **compose-1 / sonnet — wrong `lag_ratio` usage.** Task: five staggered fades, each
    starting when the previous is half done, total exactly 3 s. Sonnet derived
    `lag_ratio ≈ 0.111` from an invented formula (its own comment shows the intent was
-   0.5-out-of-1s offsets); with run_time 1 s per fade the real semantics
-   (next starts when `lag_ratio`×100% of the current has played) give starts at
-   ~0.111 s intervals and a ~1.44 s total, not 3 s. Haiku got the same task right
-   (`lag_ratio=0.5` → starts at 0/0.5/1/1.5/2 s, total 3 s). **Beat-worthy**
+   0.5-out-of-1s offsets) and passed it to a bare `self.play(*fades, ...)`. In CE,
+   `play()` kwargs are set on each animation individually (pinned `scene.py`,
+   `compile_animations`), so the value staggered nothing *between* the five fades —
+   the committed renderlog shows one composite animation, 15 frames @ 15 fps =
+   **1.0 s total**, no stagger at all, not 3 s. Haiku got the same task right
+   (`AnimationGroup(..., lag_ratio=0.5)` → starts at 0/0.5/1/1.5/2 s, total 3 s —
+   renderlog 45 frames). *Correction (adversarial review round 1, 2026-07-08): this
+   note originally claimed "~0.111 s intervals and a ~1.44 s total" — AnimationGroup
+   start-time math misapplied to a bare play call; the committed renderlog (15 frames,
+   "Played 1 animations") refutes it. Verdict (WRONG) and the beat are unchanged.*
+   **Beat-worthy**
    (render-blind class → ships as GREEN + doc-grounding, no RED possible: every
    `lag_ratio` value renders clean).
 2. **camera3d-1 + camera3d-2 / haiku — phi/theta convention swap, twice.** camera3d-1 asked
