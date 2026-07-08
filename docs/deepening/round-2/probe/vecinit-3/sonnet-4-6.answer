@@ -1,0 +1,38 @@
+```move
+module tags::tags;
+
+use std::string::String;
+
+public struct TagSet has key {
+    id: UID,
+    tags: vector<String>,
+}
+
+public fun create(ctx: &mut TxContext) {
+    transfer::transfer(
+        TagSet { id: object::new(ctx), tags: vector[] },
+        ctx.sender(),
+    );
+}
+
+public fun add_tag(set: &mut TagSet, tag: String) {
+    assert!(!has_tag(set, &tag));
+    set.tags.push_back(tag);
+}
+
+public fun has_tag(set: &TagSet, tag: &String): bool {
+    let mut i = 0;
+    let len = set.tags.length();
+    while (i < len) {
+        if (set.tags.borrow(i) == tag) {
+            return true
+        };
+        i = i + 1;
+    };
+    false
+}
+
+public fun clear(set: &mut TagSet) {
+    set.tags = vector[];
+}
+```

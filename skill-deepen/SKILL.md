@@ -40,6 +40,13 @@ drift, restriction rules). For each: one line on why it's a candidate. Get the o
 the list (an approved design/spec naming the territories counts). Record proposed + approved + what
 was deliberately excluded in `territories.md`.
 
+**Gap-seeded rounds:** when a prior held-out falsification or an earlier round has recorded
+residual failure classes as round-N+1 candidates, seed the territory list from those recorded gaps
+instead of a fresh brainstorm — measured failures outrank speculation (this is the skill's core
+thesis applied recursively). State the seeding rule in `territories.md`, and design probe tasks to
+*elicit* each class the way it actually fired (e.g. if a defect only appeared when the task left a
+choice to the model, do not constrain that choice in the probe tasks).
+
 ### 2. Probe
 
 ~3 tasks per territory. Tasks must be **concrete authoring tasks** (write a module that…), not quiz

@@ -1,0 +1,30 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+  ┌─ ./sources/module.move:3:39
+  │
+3 │         let mut result = std::vector::empty<address>();
+  │                                       ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+  │
+  = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:12:13
+   │
+12 │             i = i + 1;
+   │             ^
+   │             │
+   │             Unexpected 'i'
+   │             Expected ';'
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:15:9
+   │
+15 │         result
+   │         ^^^^^^
+   │         │
+   │         Unexpected 'result'
+   │         Expected ';'
+
+Failed to build Move modules: Compilation error.

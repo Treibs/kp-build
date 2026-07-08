@@ -1,0 +1,18 @@
+```move
+module dedup::dedup {
+    public fun unique(addrs: vector<address>): vector<address> {
+        let mut result = vector[];
+        let mut seen = vector[];
+        let mut i = 0;
+        while (i < addrs.length()) {
+            let addr = addrs[i];
+            if (!seen.contains(&addr)) {
+                seen.push_back(addr);
+                result.push_back(addr);
+            };
+            i = i + 1;
+        };
+        result
+    }
+}
+```

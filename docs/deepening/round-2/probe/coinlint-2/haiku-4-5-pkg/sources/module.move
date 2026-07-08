@@ -1,0 +1,68 @@
+module vend::machine {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+
+    public struct Widget has key, store {
+        id: UID,
+    }
+
+    public struct VendingMachine has key {
+        id: UID,
+        price: u64,
+        balance: Balance<SUI>,
+    }
+
+    public struct MachineCap has key, store {
+        id: UID,
+    }
+
+    public fun buy(
+        machine: &mut VendingMachine,
+        mut payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Widget {
+        let paid = coin::value(&payment);
+        assert!(paid >= machine.price);
+        
+        let to_keep = coin::split(&mut payment, machine.price, ctx);
+        let coin_balance = coin::into_balance(to_keep);
+        balance::join(&mut machine.balance, coin_balance);
+        
+        if (coin::value(&payment) > 0) {
+            transfer::public_transfer(payment, ctx.sender());
+        } else {
+            coin::destroy_zero(payment);
+        };
+        
+        Widget {
+            id: object::new(ctx),
+        }
+    }
+
+    public fun collect(
+        machine: &mut VendingMachine,
+        _cap: &MachineCap,
+        ctx: &mut TxContext,
+    ) {
+        let amount = balance::value(&machine.balance);
+        let balance_to_withdraw = balance::split(&mut machine.balance, amount);
+        let coin = coin::from_balance(balance_to_withdraw, ctx);
+        transfer::public_transfer(coin, ctx.sender());
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let cap = MachineCap {
+            id: object::new(ctx),
+        };
+        
+        let machine = VendingMachine {
+            id: object::new(ctx),
+            price: 1000000,
+            balance: balance::zero(),
+        };
+        
+        transfer::share_object(machine);
+        transfer::transfer(cap, ctx.sender());
+    }
+}

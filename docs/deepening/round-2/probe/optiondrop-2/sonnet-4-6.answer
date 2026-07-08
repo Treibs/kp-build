@@ -1,0 +1,34 @@
+```move
+module market::listing {
+    use std::string::String;
+
+    public struct Listing<T: key + store> has key {
+        id: UID,
+        seller: address,
+        item: std::option::Option<T>,
+        note: String,
+    }
+
+    public fun create<T: key + store>(item: T, note: String, ctx: &mut TxContext) {
+        transfer::share_object(Listing {
+            id: object::new(ctx),
+            seller: ctx.sender(),
+            item: std::option::some(item),
+            note,
+        });
+    }
+
+    public fun cancel<T: key + store>(listing: &mut Listing<T>, ctx: &mut TxContext) {
+        assert!(listing.seller == ctx.sender());
+        let seller = listing.seller;
+        let item = listing.item.extract();
+        transfer::public_transfer(item, seller);
+    }
+
+    public fun relist<T: key + store>(listing: &mut Listing<T>, item: T, ctx: &mut TxContext) {
+        assert!(listing.seller == ctx.sender());
+        assert!(listing.item.is_none());
+        listing.item.fill(item);
+    }
+}
+```

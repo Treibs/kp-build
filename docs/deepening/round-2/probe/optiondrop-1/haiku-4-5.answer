@@ -1,0 +1,41 @@
+```move
+module shop::consign {
+    use std::option::{Self, Option};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+
+    public struct Shop<T: store> has key {
+        id: UID,
+        shopkeeper: address,
+        item: Option<T>,
+        price: u64,
+    }
+
+    public fun new<T: store>(shopkeeper: address, ctx: &mut TxContext): Shop<T> {
+        Shop {
+            id: object::new(ctx),
+            shopkeeper,
+            item: option::none(),
+            price: 0,
+        }
+    }
+
+    public fun stock<T: store>(shop: &mut Shop<T>, item: T, price: u64) {
+        if (option::is_some(&shop.item)) {
+            let old_item = option::extract(&mut shop.item);
+            transfer::public_transfer(old_item, shop.shopkeeper);
+        };
+        shop.item = option::some(item);
+        shop.price = price;
+    }
+
+    public fun buy<T: store>(shop: &mut Shop<T>, payment: Coin<SUI>, ctx: &TxContext) {
+        assert!(option::is_some(&shop.item));
+        assert!(coin::value(&payment) == shop.price);
+        
+        let item = option::extract(&mut shop.item);
+        transfer::public_transfer(item, ctx.sender());
+        transfer::public_transfer(payment, shop.shopkeeper);
+    }
+}
+```

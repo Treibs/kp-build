@@ -1,0 +1,20 @@
+```move
+module mint::batch {
+    public struct Ticket has key {
+        id: UID,
+        serial: u64,
+    }
+
+    entry fun mint_batch(count: u64, recipient: address, ctx: &mut TxContext) {
+        let mut i = 0u64;
+        while (i < count) {
+            let ticket = Ticket {
+                id: object::new(ctx),
+                serial: i,
+            };
+            transfer::transfer(ticket, recipient);
+            i = i + 1;
+        }
+    }
+}
+```

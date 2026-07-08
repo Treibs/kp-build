@@ -3413,3 +3413,122 @@ macro fun for($start: u64, $stop: u64, $body: |u64|) {
  -->
 
 
+
+## FILE: reference/variables.md (lines 585-655: Expression Blocks — statements, semicolons, implicit unit)
+
+### Expression Blocks
+
+An expression block is a series of statements separated by semicolons (`;`). The resulting value of
+an expression block is the value of the last expression in the block.
+
+```move
+{ let x = 1; let y = 1; x + y }
+```
+
+In this example, the result of the block is `x + y`.
+
+A statement can be either a `let` declaration or an expression. Remember that assignments (`x = e`)
+are expressions of type `()`.
+
+```move
+{ let x; let y = 1; x = 1; x + y }
+```
+
+Function calls are another common expression of type `()`. Function calls that modify data are
+commonly used as statements.
+
+```move
+{ let v = vector[]; vector::push_back(&mut v, 1); v }
+```
+
+This is not just limited to `()` types---any expression can be used as a statement in a sequence!
+
+```move
+{
+    let x = 0;
+    x + 1; // value is discarded
+    x + 2; // value is discarded
+    b"hello"; // value is discarded
+}
+```
+
+But! If the expression contains a resource (a value without the `drop` [ability](./abilities)), you
+will get an error. This is because Move's type system guarantees that any value that is dropped has
+the `drop` [ability](./abilities). (Ownership must be transferred or the value must be explicitly
+destroyed within its declaring module.)
+
+```move
+{
+    let x = 0;
+// highlight-error-start
+    Coin { value: x }; // ERROR!
+//  ^^^^^^^^^^^^^^^^^ unused value without the `drop` ability
+// highlight-error-end
+    x
+}
+```
+
+If a final expression is not present in a block---that is, if there is a trailing semicolon `;`,
+there is an implicit [unit `()` value](https://en.wikipedia.org/wiki/Unit_type). Similarly, if the
+expression block is empty, there is an implicit unit `()` value.
+
+Both are equivalent
+
+```move
+{ x = x + 1; 1 / x; }
+```
+
+```move
+{ x = x + 1; 1 / x; () }
+```
+
+Similarly both are equivalent
+
+```move
+{ }
+```
+
+## FILE: reference/primitive-types/vector.md (lines 1-42: vector literals)
+
+---
+title: 'Vector | Reference'
+description: "Move vector type reference: create, access, push, pop, destroy vectors, and use vector literals with full API documentation."
+---
+
+# Vector
+
+`vector<T>` is the only primitive collection type provided by Move. A `vector<T>` is a homogeneous
+collection of `T`'s that can grow or shrink by pushing/popping values off the "end".
+
+A `vector<T>` can be instantiated with any type `T`. For example, `vector<u64>`, `vector<address>`,
+`vector<0x42::my_module::MyData>`, and `vector<vector<u8>>` are all valid vector types.
+
+## Literals
+
+### General `vector` Literals
+
+Vectors of any type can be created with `vector` literals.
+
+| Syntax                | Type                                                                          | Description                                |
+| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
+| `vector[]`            | `vector[]: vector<T>` where `T` is any single, non-reference type             | An empty vector                            |
+| `vector[e1, ..., en]` | `vector[e1, ..., en]: vector<T>` where `e_i: T` s.t. `0 < i <= n` and `n > 0` | A vector with `n` elements (of length `n`) |
+
+In these cases, the type of the `vector` is inferred, either from the element type or from the
+vector's usage. If the type cannot be inferred, or simply for added clarity, the type can be
+specified explicitly:
+
+```move
+vector<T>[]: vector<T>
+vector<T>[e1, ..., en]: vector<T>
+```
+
+#### Example Vector Literals
+
+```move
+(vector[]: vector<bool>);
+(vector[0u8, 1u8, 2u8]: vector<u8>);
+(vector<u128>[]: vector<u128>);
+(vector<address>[@0x42, @0x100]: vector<address>);
+```
+

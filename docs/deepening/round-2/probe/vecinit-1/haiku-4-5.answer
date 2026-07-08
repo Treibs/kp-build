@@ -1,0 +1,29 @@
+```move
+module music::playlist {
+    use std::string::String;
+    use std::vector;
+
+    public struct Playlist has key, store {
+        id: UID,
+        tracks: vector<String>,
+    }
+
+    public fun create(ctx: &mut TxContext) {
+        let playlist = Playlist {
+            id: object::new(ctx),
+            tracks: vector::empty(),
+        };
+        transfer::transfer(playlist, tx_context::sender(ctx));
+    }
+
+    public fun add(playlist: &mut Playlist, name: String) {
+        vector::push_back(&mut playlist.tracks, name);
+    }
+
+    public fun remove_at(playlist: &mut Playlist, index: u64) {
+        let len = vector::length(&playlist.tracks);
+        assert!(index < len);
+        vector::remove(&mut playlist.tracks, index);
+    }
+}
+```

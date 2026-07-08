@@ -138,3 +138,44 @@ Notes:
 
 **Totals:** 22 green fixtures, 17 red fixtures (5 beats grounding-only: implicit-imports,
 entry-vs-public, capability, test-scenario, dynamic-field-exists).
+
+## Deepening round 2 — 9 beats (proven 2026-07-07)
+
+Source: the second /kp-deepen round (`docs/deepening/round-2/`) — gap-seeded from the
+experiment-3 recorded candidates plus round-1 deferrals; 15 tasks × 2 models with the
+61-claim pack loaded, gated by the same pinned binary (`sui 1.74.1-8fc60f1fa966`, plain
+build). Triage table in `docs/deepening/round-2/triage.md`. Every compile-tier beat traces
+to an observed haiku-4-5 probe failure; the two warning-tier beats trace to the probe's
+warning census (W99001: 15 hits across 10 of 30 logs, both models; W04037: 4 hits, haiku only).
+
+| beat | red form tried | observed (exit + key output) | classification | fragment (expected_error.txt) |
+|---|---|---|---|---|
+| module-address-form | bare `module fee_splitter {` (no address qualifier) | exit 1, `error[E02004]: invalid 'module' declaration` | RED/GREEN pair | `The module does not have a specified address` |
+| option-field-fill | `slot.item = option::some(item)` where `Item` has `store` but no `drop` | exit 1, `error[E05001]: ability constraint not satisfied` — the *mutation* variant: "Mutation requires the 'drop' ability as the old value is destroyed" | RED/GREEN pair | `Invalid mutation. Mutation requires the 'drop' ability as the old value is destroyed` |
+| table-key-by-value | `names.contains(&name)` — key passed by reference | exit 1, `error[E04007]: incompatible types` (Given `&std::string::String`, expected `std::string::String`) | RED/GREEN pair | `Invalid call of 'sui::table::contains'. Invalid argument for parameter 'k'` |
+| string-module-path | Rust-style `String::utf8(b"hello")` associated path | exit 1, `error[E03006]: unexpected name in this position` (parsed as enum-variant construction) | RED/GREEN pair | `Invalid construction. Expected an enum` |
+| string-append | `a + b` on `std::string::String` values | exit 1, `error[E04003]: built-in operation not supported` | RED/GREEN pair | `Invalid argument to '+'` |
+| block-statement-semicolon | braced `if (x > cap) { x = cap }` mid-sequence with no trailing `;` | exit 1, `error[E01002]: unexpected token` at the *next* statement | RED/GREEN pair | `Expected ';'` |
+| public-transfer-foreign | `transfer::transfer(coin, recipient)` on `Coin<SUI>` in a foreign module | exit 1, `error[Sui E02009]: invalid private transfer call` | RED/GREEN pair | `The function 'sui::transfer::transfer' is restricted to being called in the object's module, 'sui::coin'` |
+| transfer-composability | n/a — `public_transfer(.., ctx.sender())` only *warns* (`warning[Lint W99001]: non-composable transfer to sender`, exit 0), so a red cannot fail the plain-build gate | green (public fun returns the object) exit 0, zero warnings | grounding-only (green + doc) | — |
+| vector-literal | n/a — `std::vector::empty<u64>()` only *warns* (`warning[W04037]: deprecated usage ... Use `vector[]` literal instead`, exit 0) | green (`vector[]` + `vector[a, b]` literals) exit 0, zero warnings | grounding-only (green + doc) | — |
+
+Notes:
+- New error classes for the pack: `E02004`, `E03006`, `E04003`, `E01002`; plus new message
+  shapes under E05001 (the mutation variant) and E04007 (the by-reference table-key variant).
+  `Sui E02009` recurs from the receiving beat, but as the *inverse rule direction*: the pack's
+  ownership-transfer beat taught "public_transfer needs store"; this beat teaches "foreign
+  store types need public_transfer, not transfer".
+- Both warning-tier warn-forms were proven in a scratch dir (`/tmp/kp-r2/warn-candidates/`,
+  not committed) — classification is observed, not assumed, same rule as round 1.
+- option-field-fill fixtures gained a `value()` accessor to silence an unrelated `W09009`
+  unused-field warning so the greens stay zero-warning.
+- Corpus extended (same pinned commits as the original vendoring — move-book `8ce4dcb9`,
+  sui `d9f4797d`) with: `book/move-basics/module.md`, `reference/variables.md` (expression
+  blocks), `reference/primitive-types/vector.md` (literals), `std/option.md` (fill/swap),
+  `std/string.md` (utf8/append), `std/vector.md` (empty).
+- Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
+
+**Totals:** 31 green fixtures, 24 red fixtures (7 beats grounding-only: implicit-imports,
+entry-vs-public, capability, test-scenario, dynamic-field-exists, transfer-composability,
+vector-literal).

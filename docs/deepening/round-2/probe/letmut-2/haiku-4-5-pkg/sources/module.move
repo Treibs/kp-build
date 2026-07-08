@@ -1,0 +1,19 @@
+module text::builder {
+    use std::string::String;
+
+    public fun join(parts: vector<String>, sep: String): String {
+        if (parts.is_empty()) {
+            return String::utf8(b"")
+        };
+
+        let mut result = parts[0];
+        let mut i: u64 = 1;
+        
+        while (i < parts.length()) {
+            result = result + sep + parts[i];
+            i = i + 1;
+        };
+
+        result
+    }
+}
