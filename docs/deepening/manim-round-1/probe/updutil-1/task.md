@@ -1,0 +1,1 @@
+Write a Manim CE scene. A dot drifts continuously to the right at a constant rate for the entire scene, with a `Text("probe")` label glued just above it the whole time (the label follows the dot). While they drift, a separate circle elsewhere is drawn on screen with an animation, then the scene holds for a second.

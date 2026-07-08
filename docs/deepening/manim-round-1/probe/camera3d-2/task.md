@@ -1,0 +1,1 @@
+Write a Manim CE scene (3D). A cube sits at the origin. The scene opens looking straight down from above; mid-scene, the camera moves smoothly (animated over about 2 seconds, not a cut) to a side-on view, then holds.

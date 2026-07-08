@@ -1,0 +1,1 @@
+Write a Manim CE scene. A title `Text("Results")` slides in from above while fading in, holds on screen for one second, then a caption `Text("n = 42")` positioned below the title fades out while sliding down toward the bottom edge.

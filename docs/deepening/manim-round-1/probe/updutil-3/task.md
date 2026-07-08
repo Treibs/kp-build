@@ -1,0 +1,1 @@
+Write a Manim CE scene. A circle pulses continuously (its scale oscillates) via an updater. Move the circle 4 units to the right with its pulsing SUSPENDED for the duration of the move, then resume the pulsing in place for a second afterward.

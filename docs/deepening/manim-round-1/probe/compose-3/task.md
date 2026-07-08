@@ -1,0 +1,1 @@
+Write a Manim CE scene. In a single `self.play` call: a headline `Text("Deep Animations")` writes itself over 2 seconds, while a horizontal underline beneath it draws itself on over 1 second, with the underline's draw starting exactly 1 second after the write begins.
