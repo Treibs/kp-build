@@ -42,5 +42,5 @@ owner approval. No changes were made to the approved list.
 payload family as `docs/experiments/sui-compile-pass-2/`), dual model:
 `claude-haiku-4-5` (falsification primary) and `claude-sonnet-4-6` (secondary).
 Every answer is gated by the pinned binary with the arm-neutral scaffold repair
-(declared address names bound to `0x0`; first-defined-module rule for multi-module
-answers). Tasks and per-task results live under `probe/`.
+(every declared address name bound to `0x0`; multi-module answers gated as one
+package). Tasks and per-task results live under `probe/`.

@@ -15,7 +15,7 @@ buildlogs ANSI-stripped and home-directory-redacted).
 | task | before (47-claim pack) | after (61-claim pack) | taught error recurred? |
 |---|---|---|---|
 | dynfields-3 | FAIL E03003 `use …::{self}` | FAIL E04006 (`&UID` passed where `&mut UID` needed) | **no** — new root cause (mutability slip) |
-| ptb-2 | FAIL E03003 `use …::{self}` | FAIL E03006 (missing `;` after a `while` block mid-sequence) | **no** — new root cause (statement-position syntax) |
+| ptb-2 | FAIL E03003 `use …::{self}` | FAIL E03006 (`SUI` unresolved — missing `use sui::sui::SUI`) + E01002 (missing `;` after a `while` block mid-sequence) | **no** — two new root causes (missing import; statement-position syntax) |
 | ptb-3 | FAIL E03003 `use …::{self}` | **PASS CLEAN** | no |
 | upgrades-2 | FAIL E03003 `use …::{self}` | FAIL E04016 (`coin::from_balance` called without `ctx`) | **no** — new root cause (API arity slip) |
 | upgrades-3 | FAIL E04007 TypeName/String + E02005 OTW | **PASS WARN1** (`vector::empty` deprecation — the family deferred at triage) | no |
@@ -31,12 +31,12 @@ buildlogs ANSI-stripped and home-directory-redacted).
   E05001 key-field-`store`) — grep-verified across all 8 buildlogs. In ownership-2 the taught
   rule is visibly applied in the answer's source; the task still fails on an adjacent,
   untaught ability rule.
-- **The 4 residual failures are 4 new, unrelated root-cause families** (mutability of a
-  receiver, statement-position `;`, API arity, `drop` on discard). These are round-2
-  candidates, not evidence against the round-1 beats.
-- **Both residual warnings are the two families explicitly recorded-and-deferred at triage**
-  (`vector::empty` deprecation; Lint W99001 composability) — the triage ledger and the
-  remeasure agree.
+- **The 4 residual failures span 5 new, unrelated root causes** (mutability of a receiver,
+  a missing import, statement-position `;`, API arity, `drop` on discard — ptb-2 carries
+  two). These are round-2 candidates, not evidence against the round-1 beats.
+- **All residual warnings (2 on PASS rows, 1 more on ownership-2's FAIL log) fall in the two
+  families explicitly recorded-and-deferred at triage** (`vector::empty` deprecation; Lint
+  W99001 composability) — the triage ledger and the remeasure agree.
 
 The held-out effect of the round-1 beats is **unmeasured** until the next tier-2
 falsification (pre-registered, fresh tasks, base-vs-kp); nothing in this file is a headline
