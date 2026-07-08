@@ -24,7 +24,7 @@ verified:
     reference to `TxContext`, and
 
     returns a new `UID`.'
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-move-book

@@ -603,6 +603,90 @@
       "type": "method",
       "confidence": "high",
       "corroborated_by": []
+    },
+    {
+      "id": "missing-module-import-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "missing-module-import-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "missing-module-import-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "destructure-ignore-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "destructure-ignore-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "destructure-ignore-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "implicit-field-copy-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "implicit-field-copy-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "implicit-field-copy-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "param-mut-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "param-mut-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "param-mut-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
     }
   ],
   "open_problems": [],

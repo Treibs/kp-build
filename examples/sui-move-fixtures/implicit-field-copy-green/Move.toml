@@ -1,0 +1,5 @@
+[package]
+name = "implicit_field_copy_green"
+edition = "2024"
+
+[dependencies]

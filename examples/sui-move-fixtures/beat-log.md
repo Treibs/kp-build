@@ -179,3 +179,40 @@ Notes:
 **Totals:** 31 green fixtures, 24 red fixtures (7 beats grounding-only: implicit-imports,
 entry-vs-public, capability, test-scenario, dynamic-field-exists, transfer-composability,
 vector-literal).
+
+## Deepening round 3 — 4 beats (proven 2026-07-08)
+
+Source: the third /kp-deepen round (`docs/deepening/round-3/`) — gap-seeded from the
+experiment-4 recorded candidates plus the two carried promotion-rule deferrals; 15 tasks ×
+2 models with the 86-claim pack loaded, gated by the same pinned binary
+(`sui 1.74.1-8fc60f1fa966`, plain build). Triage table in `docs/deepening/round-3/triage.md`.
+Two beats trace to on-target probe failures (territories 1 and 2); two were promoted on
+recurrence per the rule recorded in `docs/deepening/round-3/territories.md` —
+implicit-field-copy (exp-4 rental/kp61 + round-3 import-2/haiku) and param-mut (the exp-3
+E04024 record + round-3 generic-3/haiku).
+
+| beat | red form tried | observed (exit + key output) | classification | fragment (expected_error.txt) |
+|---|---|---|---|---|
+| missing-module-import | `event::emit(Ping { value })` with no `use sui::event` in the module | exit 1, `error[E03006]: unexpected name in this position` — the unresolved-alias variant | RED/GREEN pair | `Could not resolve the name 'event'` |
+| destructure-ignore | `let Crate { id: _ } = c;` — `field: _` ignore of a `UID` field | exit 1, `error[E05001]: ability constraint not satisfied` — the ignore variant | RED/GREEN pair | `The type 'sui::object::UID' does not have the ability 'drop'` |
+| implicit-field-copy | `let gem = p.gem;` where `Gem` has `store` only | exit 1, `error[E05001]: ability constraint not satisfied` — the implicit-copy variant (plus a downstream `E06001` unused value without 'drop' on the never-consumed struct) | RED/GREEN pair | `Invalid implicit copy of field 'gem' without the 'copy' ability` |
+| param-mut | `public fun bump(c: Counter)` assigning `c.n = c.n + 1` through the non-`mut` parameter | exit 1, `error[E04024]: invalid usage of immutable variable` | RED/GREEN pair | `To use the variable mutably, it must be declared 'mut'` |
+
+Notes:
+- New error class for the pack: `E04024`; plus new message shapes under E03006 (the
+  unresolved-alias variant — round 2's was the enum-construction variant) and E05001 (the
+  ignore and implicit-copy variants — the pack now pins four distinct E05001 shapes).
+- missing-module-import is the *omission* sibling of round 1's use-self beat (which taught
+  the lowercase-`self` form inside a `use` that exists); adjacency to the loaded events
+  claim (which shows a fully-qualified `sui::event::emit` call in passing) is disclosed in
+  the round-3 triage.
+- Triaged-out candidates this round (reasons in `docs/deepening/round-3/triage.md`):
+  `uid-reuse` (Sui E01001, 1 answer, deferred), `std-mem-replace` (E03002, 1 answer,
+  deferred), `assert-abort-code` (0 hits this round, stays deferred), and import-2's
+  E01002 — the round-2 taught class `block-statement-semicolon` recurring (a loaded rule
+  ignored is recorded, not re-taught).
+- Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
+
+**Totals:** 35 green fixtures, 28 red fixtures (7 beats grounding-only: implicit-imports,
+entry-vs-public, capability, test-scenario, dynamic-field-exists, transfer-composability,
+vector-literal).

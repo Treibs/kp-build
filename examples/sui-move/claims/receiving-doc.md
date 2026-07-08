@@ -23,7 +23,7 @@ verified:
   match_score: 0.0
   evidence: Object inputs have the type `T` of the underlying object. `ObjectArg::Receiving`
     inputs are the exception and have type `sui::transfer::Receiving<T>`. This wrap
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-docs-concepts

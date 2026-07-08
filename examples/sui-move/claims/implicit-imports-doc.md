@@ -32,7 +32,7 @@ verified:
     is implicitly imported in all
 
     packages that depend on the [Sui Framework](./../programmab'
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-move-book
