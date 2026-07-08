@@ -35,6 +35,13 @@ error text is written from memory). The same answer also passes `distance=8` to
    note originally claimed "~0.111 s intervals and a ~1.44 s total" — AnimationGroup
    start-time math misapplied to a bare play call; the committed renderlog (15 frames,
    "Played 1 animations") refutes it. Verdict (WRONG) and the beat are unchanged.*
+   Disclosure: the same answer contains a second, self-corrected code block (prose:
+   "Wait — … Let me reason cleanly") that does reach for `AnimationGroup` — but with
+   `lag_ratio=0.5/3` ≈ 0.167 (offset ÷ total-duration again), which starts each fade
+   when ~17% of the previous has played, not 50%. The graded unit is the first block
+   per the pre-declared rule (and it is what the oracle rendered), but the answer is
+   WRONG under either block; sonnet's gap is the lag_ratio *semantics*, not the
+   AnimationGroup idiom itself.
    **Beat-worthy**
    (render-blind class → ships as GREEN + doc-grounding, no RED possible: every
    `lag_ratio` value renders clean).
