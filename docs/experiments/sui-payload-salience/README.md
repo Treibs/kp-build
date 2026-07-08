@@ -136,11 +136,12 @@ the most of any arm on the inclusive count, a three-way 2–2–2 tie on the str
 slim's failures still ignored two loaded rules. Two caveats cut in opposite directions:
 (1) conditioning on failure biases the count — sheet failed only 3 tasks, so its
 ignored-events-per-failing-row (1.0) is the highest, while its ignored events per task (0.5)
-is comparable to full's; the pre-registration did not fix a normalization, so both are shown;
+is comparable to full's (0.33 inclusive; equal at 0.33 on the strict count); the
+pre-registration did not fix a normalization, so both are shown;
 (2) at the **warning tier**, full and slim show zero W99001 and zero W99010 across all six
 logs each, against base's 1× W99001 + 8× W99010 — the verbose arms *did* apply lint-tier
 rules broadly, and W99003 (sub-optimal `Coin` field — a class the pack does not carry) is now
-the dominant residual warning in pack arms (slim 3, sheet 4). Honest net: the sheet form
+the dominant lint-tier residual warning in pack arms (slim 3, sheet 4). Honest net: the sheet form
 bought three compile-passes, but where it failed it ignored its own lines at the same rate as
 the verbose forms — form helps, but it does not solve rule application.
 
