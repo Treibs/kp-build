@@ -1,0 +1,28 @@
+module relay::baton {
+    public struct Relay<T: store> has key, store {
+        id: UID,
+        cargo: T,
+        legs: u64,
+    }
+
+    public fun start<T: store>(cargo: T, next: address, legs: u64, ctx: &mut TxContext) {
+        let relay = Relay {
+            id: object::new(ctx),
+            cargo,
+            legs,
+        };
+        transfer::public_transfer(relay, next);
+    }
+
+    public fun pass<T: store>(relay: Relay<T>, next: address, ctx: &mut TxContext) {
+        assert!(relay.legs > 0);
+        relay.legs = relay.legs - 1;
+        transfer::public_transfer(relay, next);
+    }
+
+    public fun finish<T: store>(relay: Relay<T>, _ctx: &mut TxContext): T {
+        let Relay { id, cargo, legs: _ } = relay;
+        object::delete(id);
+        cargo
+    }
+}

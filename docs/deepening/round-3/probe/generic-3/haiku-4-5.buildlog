@@ -1,0 +1,21 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:17:63
+   │
+17 │     public fun pass<T: store>(relay: Relay<T>, next: address, ctx: &mut TxContext) {
+   │                                                               ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:19:9
+   │
+17 │     public fun pass<T: store>(relay: Relay<T>, next: address, ctx: &mut TxContext) {
+   │                               ----- To use the variable mutably, it must be declared 'mut', e.g. 'mut relay'
+18 │         assert!(relay.legs > 0);
+19 │         relay.legs = relay.legs - 1;
+   │         ^^^^^^^^^^ Invalid mutable borrow of immutable variable 'relay'
+
+Failed to build Move modules: Compilation error.

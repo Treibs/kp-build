@@ -29,7 +29,7 @@ verified:
     so will result in a
 
     compilation error. The OTW can be received as the first argument in th'
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-move-book

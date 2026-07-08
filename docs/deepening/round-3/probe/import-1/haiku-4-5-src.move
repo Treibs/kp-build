@@ -1,0 +1,78 @@
+module park::meter {
+    use sui::coin::{Coin, Self};
+    use sui::sui::SUI;
+    use sui::balance::{Balance, Self};
+    use sui::tx_context;
+
+    public struct Meter has key {
+        id: UID,
+        price_per_hour: u64,
+        collected: Balance<SUI>,
+    }
+
+    public struct Permit has key, store {
+        id: UID,
+        paid_through_hour: u64,
+        epoch_of_purchase: u64,
+    }
+
+    public struct CityCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(
+            CityCap { id: object::new(ctx) },
+            tx_context::sender(ctx),
+        );
+    }
+
+    public fun create_meter(
+        price_per_hour: u64,
+        ctx: &mut TxContext,
+    ) {
+        let meter = Meter {
+            id: object::new(ctx),
+            price_per_hour,
+            collected: balance::zero(),
+        };
+        transfer::share_object(meter);
+    }
+
+    public fun park(
+        meter: &mut Meter,
+        payment: Coin<SUI>,
+        hours: u64,
+        ctx: &mut TxContext,
+    ): Permit {
+        let amount_owed = meter.price_per_hour * hours;
+        let payment_amount = coin::value(&payment);
+
+        assert!(payment_amount >= amount_owed);
+
+        let mut coin_to_keep = payment;
+        if (payment_amount > amount_owed) {
+            let overpayment = coin::split(&mut coin_to_keep, payment_amount - amount_owed, ctx);
+            transfer::public_transfer(overpayment, tx_context::sender(ctx));
+        };
+
+        balance::join(&mut meter.collected, coin::into_balance(coin_to_keep));
+
+        Permit {
+            id: object::new(ctx),
+            paid_through_hour: hours,
+            epoch_of_purchase: tx_context::epoch(ctx),
+        }
+    }
+
+    public fun sweep(
+        _cap: &CityCap,
+        meter: &mut Meter,
+        ctx: &mut TxContext,
+    ) {
+        let amount = balance::value(&meter.collected);
+        let collected = balance::split(&mut meter.collected, amount);
+        let coins = coin::from_balance(collected, ctx);
+        transfer::public_transfer(coins, tx_context::sender(ctx));
+    }
+}

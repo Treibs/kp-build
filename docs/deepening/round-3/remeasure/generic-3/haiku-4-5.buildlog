@@ -1,0 +1,42 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:16:9
+   │  
+ 9 │       public fun start<T>(cargo: T, next: address, legs: u64, ctx: &mut TxContext) {
+   │                                  - The type 'relay::baton::Relay<T>' can have the ability 'key' but the type argument 'T' does not have the required ability 'store'
+10 │           let relay = Relay {
+   │ ╭─────────────────────'
+11 │ │             id: object::new(ctx),
+12 │ │             cargo,
+13 │ │             next,
+14 │ │             legs,
+15 │ │         };
+   │ ╰─────────' The type 'relay::baton::Relay<T>' does not have the ability 'key'
+16 │           transfer::transfer(relay, next);
+   │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │  
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/transfer.move:54:24
+   │
+54 │ public fun transfer<T: key>(obj: T, recipient: address) {
+   │                        --- 'key' constraint declared here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:23:9
+   │
+19 │     public fun pass<T>(mut relay: Relay<T>, next: address, _ctx: &mut TxContext) {
+   │                                   --------
+   │                                   │     │
+   │                                   │     The type 'relay::baton::Relay<T>' can have the ability 'key' but the type argument 'T' does not have the required ability 'store'
+   │                                   The type 'relay::baton::Relay<T>' does not have the ability 'key'
+   ·
+23 │         transfer::transfer(relay, next);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/transfer.move:54:24
+   │
+54 │ public fun transfer<T: key>(obj: T, recipient: address) {
+   │                        --- 'key' constraint declared here
+
+Failed to build Move modules: Compilation error.

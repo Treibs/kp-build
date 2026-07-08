@@ -1,0 +1,5 @@
+[package]
+name = "destructure_ignore_green"
+edition = "2024"
+
+[dependencies]

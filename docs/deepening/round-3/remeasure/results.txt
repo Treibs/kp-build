@@ -1,0 +1,6 @@
+modimp-2       haiku-4-5   FAIL error[E01002]: unexpected token
+destr-2        haiku-4-5   PASS CLEAN
+destr-3        haiku-4-5   FAIL error[Sui E01001]: invalid object construction
+destr-3        sonnet-4-6  FAIL error[E03002]: unbound module
+import-2       haiku-4-5   FAIL error[E03003]: unbound module member
+generic-3      haiku-4-5   FAIL error[E05001]: ability constraint not satisfied

@@ -36,7 +36,7 @@ verified:
     be manually created and
 
     it is guaranteed to be unique per module. Sui Adapter treats '
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-move-book

@@ -30,7 +30,7 @@ verified:
     can have dynamic fields
 
     that can be added after the object has been constructed. Unlike '
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-framework-docs

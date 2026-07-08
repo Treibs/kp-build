@@ -1,0 +1,69 @@
+```move
+module faucet::drip {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+
+    public struct Faucet has key {
+        id: UID,
+        balance: Coin<SUI>,
+        drip_amount: u64,
+        cooldown_epochs: u64,
+        last_draw: Table<address, u64>,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct DRIP has drop {}
+
+    fun init(_witness: DRIP, ctx: &mut TxContext) {
+        let faucet = Faucet {
+            id: object::new(ctx),
+            balance: coin::zero(ctx),
+            drip_amount: 1_000_000_000,
+            cooldown_epochs: 5,
+            last_draw: table::new(ctx),
+        };
+        transfer::share_object(faucet);
+
+        let cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun draw(faucet: &mut Faucet, ctx: &mut TxContext): Coin<SUI> {
+        let sender = ctx.sender();
+        let current_epoch = tx_context::epoch(ctx);
+
+        if (table::contains(&faucet.last_draw, sender)) {
+            let last_epoch = *table::borrow(&faucet.last_draw, sender);
+            assert!(current_epoch >= last_epoch + faucet.cooldown_epochs, 1);
+        };
+
+        if (table::contains(&faucet.last_draw, sender)) {
+            table::remove(&mut faucet.last_draw, sender);
+        };
+        table::add(&mut faucet.last_draw, sender, current_epoch);
+        
+        coin::split(&mut faucet.balance, faucet.drip_amount, ctx)
+    }
+
+    public fun top_up(_cap: &AdminCap, faucet: &mut Faucet, amount: Coin<SUI>) {
+        coin::join(&mut faucet.balance, amount);
+    }
+
+    public fun can_draw(faucet: &Faucet, addr: address, ctx: &TxContext): bool {
+        let current_epoch = tx_context::epoch(ctx);
+        
+        if (!table::contains(&faucet.last_draw, addr)) {
+            return true
+        };
+
+        let last_epoch = *table::borrow(&faucet.last_draw, addr);
+        current_epoch >= last_epoch + faucet.cooldown_epochs
+    }
+}
+```

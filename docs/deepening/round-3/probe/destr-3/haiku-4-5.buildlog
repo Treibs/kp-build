@@ -1,0 +1,57 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[Sui E01001]: invalid object construction
+   ┌─ ./sources/module.move:18:25
+   │  
+18 │           let new_snake = Snake {
+   │ ╭─────────────────────────^
+19 │ │             id: snake_id,
+   │ │             -- The UID must come directly from `sui::object::new`, or `sui::derived_object::claim`. For tests, it can come from `sui::test_scenario::new_object`
+20 │ │             skin: new_skin,
+21 │ │         };
+   │ ╰─────────^ Invalid object creation without a newly created UID.
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:24:9
+   │
+12 │     public fun molt(snake: Snake, new_pattern: u8, ctx: &mut TxContext) {
+   │                ---- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+24 │         transfer::transfer(old_skin, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                            │
+   │         │                            Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:28:25
+   │
+ 8 │         id: UID,
+   │             --- The type 'sui::object::UID' does not have the ability 'drop'
+   ·
+28 │         let Snake { id: _, skin } = snake;
+   │                         ^ Cannot ignore values without the 'drop' ability. The value must be used
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+   │
+81 │ public struct UID has store {
+   │               --- To satisfy the constraint, the 'drop' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:29:24
+   │
+ 3 │         id: UID,
+   │             --- The type 'sui::object::UID' does not have the ability 'drop'
+   ·
+29 │         let Skin { id: _, pattern: _ } = skin;
+   │                        ^ Cannot ignore values without the 'drop' ability. The value must be used
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+   │
+81 │ public struct UID has store {
+   │               --- To satisfy the constraint, the 'drop' ability would need to be added here
+
+Failed to build Move modules: Compilation error.

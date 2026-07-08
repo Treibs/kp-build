@@ -1,0 +1,67 @@
+```move
+module faucet::drip {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+
+    const COOLDOWN_EPOCHS: u64 = 5;
+    const DRIP_AMOUNT: u64 = 1_000_000_000;
+    const E_COOLDOWN: u64 = 0;
+    const E_INSUFFICIENT_BALANCE: u64 = 1;
+
+    public struct Faucet has key {
+        id: UID,
+        balance: Balance<SUI>,
+        last_draw: Table<address, u64>,
+    }
+
+    public struct FaucetCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let faucet = Faucet {
+            id: object::new(ctx),
+            balance: balance::zero(),
+            last_draw: table::new(ctx),
+        };
+        transfer::share_object(faucet);
+
+        let cap = FaucetCap { id: object::new(ctx) };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun draw(faucet: &mut Faucet, ctx: &mut TxContext): Coin<SUI> {
+        assert!(faucet.balance.value() >= DRIP_AMOUNT, E_INSUFFICIENT_BALANCE);
+
+        let sender = ctx.sender();
+        let current_epoch = ctx.epoch();
+
+        if (faucet.last_draw.contains(sender)) {
+            let last = *faucet.last_draw.borrow(sender);
+            assert!(current_epoch >= last + COOLDOWN_EPOCHS, E_COOLDOWN);
+            *faucet.last_draw.borrow_mut(sender) = current_epoch;
+        } else {
+            faucet.last_draw.add(sender, current_epoch);
+        };
+
+        let drip = faucet.balance.split(DRIP_AMOUNT);
+        coin::from_balance(drip, ctx)
+    }
+
+    public fun top_up(_cap: &FaucetCap, faucet: &mut Faucet, payment: Coin<SUI>) {
+        faucet.balance.join(coin::into_balance(payment));
+    }
+
+    public fun can_draw(faucet: &Faucet, addr: address, ctx: &TxContext): bool {
+        let current_epoch = ctx.epoch();
+        if (!faucet.last_draw.contains(addr)) {
+            true
+        } else {
+            let last = *faucet.last_draw.borrow(addr);
+            current_epoch >= last + COOLDOWN_EPOCHS
+        }
+    }
+}
+```

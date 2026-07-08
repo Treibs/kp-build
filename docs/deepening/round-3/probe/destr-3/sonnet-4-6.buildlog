@@ -1,0 +1,52 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:2:9
+  │
+2 │     use std::mem;
+  │         ^^^^^^^^ Invalid 'use'. Unbound module: 'std::mem'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:21:21
+   │
+21 │     public fun molt(snake: &mut Snake, new_pattern: u8, ctx: &mut TxContext) {
+   │                     ^^^^^ Unused parameter 'snake'. Consider removing or prefixing with an underscore: '_snake'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:21:40
+   │
+21 │     public fun molt(snake: &mut Snake, new_pattern: u8, ctx: &mut TxContext) {
+   │                                        ^^^^^^^^^^^ Unused parameter 'new_pattern'. Consider removing or prefixing with an underscore: '_new_pattern'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:22:24
+   │
+ 4 │     public struct Skin has key, store {
+   │                   ---- Similarly named defintion found here
+   ·
+22 │         let old_skin = mem::replace(
+   │                        ^^^
+   │                        │
+   │                        Could not resolve the name 'mem'
+   │                        Did you mean: 'Skin'
+
+error[Sui E02009]: invalid private transfer call
+   ┌─ ./sources/module.move:26:9
+   │    
+22 │             let old_skin = mem::replace(
+   │ ╭──────────────────────────'
+   │ │ ╭────────────────────────'
+23 │ │ │             &mut snake.skin,
+24 │ │ │             Skin { id: object::new(ctx), pattern: new_pattern },
+25 │ │ │         );
+   │ ╰─│─────────' The type '_' is not declared in the current module
+   │   ╰─────────' The object has 'store' so 'sui::transfer::public_transfer' can be called instead
+26 │             transfer::transfer(old_skin, ctx.sender());
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid private transfer. The function 'sui::transfer::transfer' is restricted to being called in the object's module
+
+Failed to build Move modules: Compilation error.

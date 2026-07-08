@@ -1,0 +1,46 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:29:13
+   │
+29 │         let beacon_id = object::id(&beacon);
+   │             ^^^^^^^^^ Unused local variable 'beacon_id'. Consider removing or prefixing with an underscore: '_beacon_id'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:31:9
+   │
+31 │         event::emit(BeaconCreated {
+   │         ^^^^^ Could not resolve the name 'event'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:39:63
+   │
+39 │     entry fun set_status(beacon: &mut Beacon, new_status: u8, ctx: &mut TxContext) {
+   │                                                               ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:42:9
+   │
+42 │         event::emit(StatusChanged {
+   │         ^^^^^ Could not resolve the name 'event'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:49:59
+   │
+49 │     entry fun set_note(beacon: &mut Beacon, note: String, ctx: &mut TxContext) {
+   │                                                           ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:52:9
+   │
+52 │         event::emit(StatusChanged {
+   │         ^^^^^ Could not resolve the name 'event'
+
+Failed to build Move modules: Compilation error.

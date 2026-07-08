@@ -1,0 +1,54 @@
+```move
+module queue::waitlist {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+
+    const DEPOSIT_MIST: u64 = 1_000_000;
+
+    public struct HostCap has key, store {
+        id: UID,
+    }
+
+    public struct Waitlist has key {
+        id: UID,
+        next_up: Option<address>,
+        deposit: Option<Coin<SUI>>,
+        tip_pool: Balance<SUI>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(Waitlist {
+            id: object::new(ctx),
+            next_up: option::none(),
+            deposit: option::none(),
+            tip_pool: balance::zero(),
+        });
+        transfer::public_transfer(HostCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun reserve(waitlist: &mut Waitlist, payment: Coin<SUI>, ctx: &mut TxContext) {
+        assert!(waitlist.next_up.is_none());
+        assert!(payment.value() == DEPOSIT_MIST);
+        waitlist.next_up.fill(ctx.sender());
+        waitlist.deposit.fill(payment);
+    }
+
+    public fun seat(waitlist: &mut Waitlist, _cap: &HostCap) {
+        let seated = waitlist.next_up.extract();
+        let deposit = waitlist.deposit.extract();
+        transfer::public_transfer(deposit, seated);
+    }
+
+    public fun clear_no_show(waitlist: &mut Waitlist, _cap: &HostCap) {
+        let _ = waitlist.next_up.extract();
+        let deposit = waitlist.deposit.extract();
+        waitlist.tip_pool.join(deposit.into_balance());
+    }
+
+    public fun sweep_tips(waitlist: &mut Waitlist, _cap: &HostCap, ctx: &mut TxContext): Coin<SUI> {
+        let amount = waitlist.tip_pool.value();
+        coin::from_balance(waitlist.tip_pool.split(amount), ctx)
+    }
+}
+```

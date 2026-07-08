@@ -27,7 +27,7 @@ verified:
     href="../sui/coin.md#sui_coin_TreasuryCap">TreasuryCap</a></code> for
 
     <code>T</code> to the'
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-framework-docs

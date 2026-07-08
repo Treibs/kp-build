@@ -23,7 +23,7 @@ verified:
   evidence: 'Creates a new string from a sequence of bytes. Aborts if the bytes do
 
     not represent valid utf8.'
-  checked: '2026-07-07'
+  checked: '2026-07-08'
 execution: {}
 grounding:
   source: sui-framework-docs

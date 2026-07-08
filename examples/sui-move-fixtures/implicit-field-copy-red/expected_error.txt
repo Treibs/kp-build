@@ -1,0 +1,1 @@
+Invalid implicit copy of field 'gem' without the 'copy' ability

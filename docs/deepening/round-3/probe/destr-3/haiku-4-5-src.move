@@ -1,0 +1,31 @@
+module molt::snake {
+    public struct Skin has key, store {
+        id: UID,
+        pattern: u8,
+    }
+
+    public struct Snake has key {
+        id: UID,
+        skin: Skin,
+    }
+
+    public fun molt(snake: Snake, new_pattern: u8, ctx: &mut TxContext) {
+        let Snake { id: snake_id, skin: old_skin } = snake;
+        let new_skin = Skin {
+            id: object::new(ctx),
+            pattern: new_pattern,
+        };
+        let new_snake = Snake {
+            id: snake_id,
+            skin: new_skin,
+        };
+        
+        transfer::transfer(new_snake, ctx.sender());
+        transfer::transfer(old_skin, ctx.sender());
+    }
+
+    public fun retire(snake: Snake) {
+        let Snake { id: _, skin } = snake;
+        let Skin { id: _, pattern: _ } = skin;
+    }
+}

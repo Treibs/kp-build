@@ -1,0 +1,40 @@
+```move
+module timelock::strongbox {
+    use sui::clock::Clock;
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+
+    public struct Strongbox has key, store {
+        id: UID,
+        contents: Coin<SUI>,
+        unlock_at_ms: u64,
+        heir: address,
+    }
+
+    public fun lock(
+        deposit: Coin<SUI>,
+        unlock_at_ms: u64,
+        heir: address,
+        ctx: &mut TxContext,
+    ) {
+        let strongbox = Strongbox {
+            id: object::new(ctx),
+            contents: deposit,
+            unlock_at_ms,
+            heir,
+        };
+        transfer::transfer(strongbox, heir);
+    }
+
+    public fun open(
+        strongbox: Strongbox,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(clock.timestamp_ms() >= strongbox.unlock_at_ms);
+        let Strongbox { id, contents, unlock_at_ms: _, heir: _ } = strongbox;
+        object::delete(id);
+        transfer::public_transfer(contents, ctx.sender());
+    }
+}
+```

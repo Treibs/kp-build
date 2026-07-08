@@ -1,0 +1,82 @@
+```move
+module queue::waitlist {
+    use sui::coin::{Coin, SUI};
+    use std::option::{self, Option};
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct Reservation has store {
+        reserver: address,
+        deposit: Coin<SUI>,
+    }
+
+    public struct Waitlist has key {
+        id: UID,
+        next_up: Option<Reservation>,
+        tips: Coin<SUI>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+
+        let waitlist = Waitlist {
+            id: object::new(ctx),
+            next_up: option::none(),
+            tips: sui::coin::zero(),
+        };
+
+        transfer::transfer(admin_cap, ctx.sender());
+        transfer::share_object(waitlist);
+    }
+
+    public fun reserve(
+        waitlist: &mut Waitlist,
+        deposit: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(sui::coin::value(&deposit) == 1_000_000, 1);
+        assert!(option::is_none(&waitlist.next_up), 2);
+
+        let reservation = Reservation {
+            reserver: ctx.sender(),
+            deposit,
+        };
+
+        option::fill(&mut waitlist.next_up, reservation);
+    }
+
+    public fun seat(
+        waitlist: &mut Waitlist,
+        _cap: &AdminCap,
+    ) {
+        let reservation = option::extract(&mut waitlist.next_up);
+        let Reservation { reserver, deposit } = reservation;
+        transfer::public_transfer(deposit, reserver);
+    }
+
+    public fun clear_no_show(
+        waitlist: &mut Waitlist,
+        _cap: &AdminCap,
+    ) {
+        let reservation = option::extract(&mut waitlist.next_up);
+        let Reservation { reserver: _, deposit } = reservation;
+        sui::coin::join(&mut waitlist.tips, deposit);
+    }
+
+    public fun sweep_tips(
+        waitlist: &mut Waitlist,
+        _cap: &AdminCap,
+        ctx: &mut TxContext,
+    ) {
+        let amount = sui::coin::value(&waitlist.tips);
+        if (amount > 0) {
+            let swept = sui::coin::split(&mut waitlist.tips, amount, ctx);
+            transfer::public_transfer(swept, ctx.sender());
+        }
+    }
+}
+```

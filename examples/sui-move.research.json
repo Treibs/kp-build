@@ -1001,6 +1001,146 @@
         "source": "sui-move-reference",
         "supporting_passage": "Vectors of any type can be created with `vector` literals."
       }
+    },
+    {
+      "id": "missing-module-import-green",
+      "statement": "Calling a module's function through its alias (`event::emit(...)`) requires the alias to be bound first with a `use` declaration: `use sui::event;` then `event::emit(Ping { value })` builds green.",
+      "supporting_passage": "sui 1.74.1 builds a module with `use sui::event;` and an `event::emit(Ping { value })` call, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/missing-module-import-green"
+      }
+    },
+    {
+      "id": "missing-module-import-red",
+      "statement": "Calling `event::emit(...)` with no `use sui::event` in the module (the Rust habit of resolving `mod::fn` paths without a per-module import) fails: sui 1.74.1 reports error[E03006] unexpected name in this position \u2014 \"Could not resolve the name 'event'\". Every `module::fn` alias call needs its module bound by `use`.",
+      "supporting_passage": "sui 1.74.1 rejects `event::emit(Ping { value })` in a module with no `use sui::event`, with exit 1, error[E03006]: unexpected name in this position, Could not resolve the name 'event'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/missing-module-import-red"
+      }
+    },
+    {
+      "id": "missing-module-import-doc",
+      "statement": "A function call names its target either through an alias (bound by a `use` declaration) or fully qualified; a bare module alias with no `use` binding is not a valid path.",
+      "supporting_passage": "When calling a function, the name can be specified either through an alias or fully qualified",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "When calling a function, the name can be specified either through an alias or fully qualified"
+      }
+    },
+    {
+      "id": "destructure-ignore-green",
+      "statement": "Dismantling an object binds its non-`drop` fields and consumes them explicitly: `let Crate { id } = c; object::delete(id);` builds green \u2014 the `UID` is destroyed by `object::delete`, not ignored.",
+      "supporting_passage": "sui 1.74.1 builds a module that destructures a `key` object with `let Crate { id } = c` and consumes the `UID` via `object::delete(id)`, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/destructure-ignore-green"
+      }
+    },
+    {
+      "id": "destructure-ignore-red",
+      "statement": "`field: _` in a destructure is an ignore, and ignoring a value is gated on the `drop` ability (unlike Rust's `_`, which drops anything): `let Crate { id: _ } = c` on a `UID` field fails in sui 1.74.1 with error[E05001] \u2014 \"The type 'sui::object::UID' does not have the ability 'drop'\". The same applies to any non-`drop` field, e.g. an `Option<Coin<SUI>>` (use `option::destroy_none` / `destroy_some`).",
+      "supporting_passage": "sui 1.74.1 rejects `let Crate { id: _ } = c` where `id: UID`, with exit 1, error[E05001]: ability constraint not satisfied, The type 'sui::object::UID' does not have the ability 'drop'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/destructure-ignore-red"
+      }
+    },
+    {
+      "id": "destructure-ignore-doc",
+      "statement": "The `drop` ability gates every way of ignoring a value \u2014 including leaving a local or parameter unused \u2014 so values without `drop` must be consumed explicitly.",
+      "supporting_passage": "this\nability gates the ability to ignore values in a multitude of locations, including:\n\n- not using the value in a local variable or parameter",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "this\nability gates the ability to ignore values in a multitude of locations, including:\n\n- not using the value in a local variable or parameter"
+      }
+    },
+    {
+      "id": "implicit-field-copy-green",
+      "statement": "Moving a non-`copy` field out of a struct is done by destructuring the struct: `let Pouch { gem } = p; gem` builds green \u2014 the field is moved, not copied, and the struct is consumed in the same step.",
+      "supporting_passage": "sui 1.74.1 builds a module that moves a non-`copy` field out with `let Pouch { gem } = p`, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/implicit-field-copy-green"
+      }
+    },
+    {
+      "id": "implicit-field-copy-red",
+      "statement": "Reading a field with the dot operator copies, so `let gem = p.gem;` on a non-`copy` field fails in sui 1.74.1 with error[E05001] \u2014 \"Invalid implicit copy of field 'gem' without the 'copy' ability\" (and the never-consumed struct then trips error[E06001] unused value without 'drop'). Field access never moves; destructure (or borrow) instead.",
+      "supporting_passage": "sui 1.74.1 rejects `let gem = p.gem;` where `gem` lacks `copy`, with exit 1, error[E05001]: ability constraint not satisfied, Invalid implicit copy of field 'gem' without the 'copy' ability.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/implicit-field-copy-red"
+      }
+    },
+    {
+      "id": "implicit-field-copy-doc",
+      "statement": "Reading a struct field with the dot operator (without borrowing) requires the field's type to have the `copy` ability.",
+      "supporting_passage": "More canonically, the dot operator can be used to read fields of a struct without any borrowing. As\nis true with\n[dereferencing](./primitive-types/references#reading-and-writing-through-references), the field\ntype must have the `copy` [ability](./abilities).",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "More canonically, the dot operator can be used to read fields of a struct without any borrowing. As\nis true with\n[dereferencing](./primitive-types/references#reading-and-writing-through-references), the field\ntype must have the `copy` [ability](./abilities)."
+      }
+    },
+    {
+      "id": "param-mut-green",
+      "statement": "Assigning through a by-value function parameter requires `mut` on the parameter, the same keyword `let mut` requires for locals: `public fun bump(mut c: Counter)` with `c.n = c.n + 1` builds green.",
+      "supporting_passage": "sui 1.74.1 builds a module whose function takes `mut c: Counter` by value and assigns `c.n = c.n + 1`, with exit 0 and zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/param-mut-green"
+      }
+    },
+    {
+      "id": "param-mut-red",
+      "statement": "Mutating a by-value parameter not declared `mut` fails: `fun bump(c: Counter)` with `c.n = c.n + 1` is rejected by sui 1.74.1 with error[E04024] invalid usage of immutable variable \u2014 \"To use the variable mutably, it must be declared 'mut'\". Move 2024's `mut` requirement covers function parameters, not just `let` bindings.",
+      "supporting_passage": "sui 1.74.1 rejects an assignment through a non-`mut` by-value parameter, with exit 1, error[E04024]: invalid usage of immutable variable, To use the variable mutably, it must be declared 'mut'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/param-mut-red"
+      }
+    },
+    {
+      "id": "param-mut-doc",
+      "statement": "The `mut` keyword is required to declare mutable bindings in tuple destructuring and function arguments, not just in `let` statements.",
+      "supporting_passage": "Additionally, the `mut` keyword is used in tuple destructuring and function arguments to declare\nmutable variables.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "Additionally, the `mut` keyword is used in tuple destructuring and function arguments to declare\nmutable variables."
+      }
     }
   ]
 }

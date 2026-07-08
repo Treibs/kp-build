@@ -1,0 +1,45 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09009]: unused struct field
+   ┌─ ./sources/module.move:13:9
+   │
+13 │         beacon_id: ID,
+   │         ^^^^^^^^^ The 'beacon_id' field of the 'BeaconCreated' type is unused
+   │
+   = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09009]: unused struct field
+   ┌─ ./sources/module.move:14:9
+   │
+14 │         owner: address,
+   │         ^^^^^ The 'owner' field of the 'BeaconCreated' type is unused
+   │
+   = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:23:23
+   │
+23 │     public fun create(note: String, ctx: &mut TxContext) -> Beacon {
+   │                       ^^^^ Unused parameter 'note'. Consider removing or prefixing with an underscore: '_note'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:23:37
+   │
+23 │     public fun create(note: String, ctx: &mut TxContext) -> Beacon {
+   │                                     ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:23:58
+   │
+23 │     public fun create(note: String, ctx: &mut TxContext) -> Beacon {
+   │                                                          ^^
+   │                                                          │
+   │                                                          Unexpected '->'
+   │                                                          Expected '{'
+
+Failed to build Move modules: Compilation error.

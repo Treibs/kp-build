@@ -1,0 +1,5 @@
+[package]
+name = "missing_module_import_red"
+edition = "2024"
+
+[dependencies]

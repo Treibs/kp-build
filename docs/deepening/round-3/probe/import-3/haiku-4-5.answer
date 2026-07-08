@@ -1,0 +1,91 @@
+```move
+module match::donation {
+    use sui::coin::{Coin, split, join, value};
+    use sui::sui::SUI;
+    use sui::event;
+
+    public struct MatchPool has key {
+        id: UID,
+        reserves: Coin<SUI>,
+        charity: address,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct DonationMade has copy, drop {
+        donor: address,
+        donated: u64,
+        matched: u64,
+        total: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun create_pool(
+        _cap: &AdminCap,
+        initial_reserves: Coin<SUI>,
+        charity: address,
+        ctx: &mut TxContext,
+    ) {
+        let pool = MatchPool {
+            id: object::new(ctx),
+            reserves: initial_reserves,
+            charity,
+        };
+        transfer::share_object(pool);
+    }
+
+    public fun donate(
+        pool: &mut MatchPool,
+        gift: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let donor = ctx.sender();
+        let donated = value(&gift);
+        let reserve_value = value(&pool.reserves);
+        
+        let matched = if (reserve_value >= donated) {
+            donated
+        } else {
+            reserve_value
+        };
+
+        let mut total_coin = gift;
+        
+        if (matched > 0) {
+            let match_coin = split(&mut pool.reserves, matched, ctx);
+            join(&mut total_coin, match_coin);
+        };
+
+        let total = value(&total_coin);
+
+        event::emit(DonationMade {
+            donor,
+            donated,
+            matched,
+            total,
+        });
+
+        transfer::public_transfer(total_coin, pool.charity);
+    }
+
+    public fun reserves(pool: &MatchPool): u64 {
+        value(&pool.reserves)
+    }
+
+    public fun refill(
+        _cap: &AdminCap,
+        pool: &mut MatchPool,
+        additional: Coin<SUI>,
+    ) {
+        join(&mut pool.reserves, additional);
+    }
+}
+```
