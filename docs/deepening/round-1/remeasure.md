@@ -34,9 +34,10 @@ buildlogs ANSI-stripped and home-directory-redacted).
 - **The 4 residual failures span 5 new, unrelated root causes** (mutability of a receiver,
   a missing import, statement-position `;`, API arity, `drop` on discard — ptb-2 carries
   two). These are round-2 candidates, not evidence against the round-1 beats.
-- **All residual warnings (2 on PASS rows, 1 more on ownership-2's FAIL log) fall in the two
-  families explicitly recorded-and-deferred at triage** (`vector::empty` deprecation; Lint
-  W99001 composability) — the triage ledger and the remeasure agree.
+- **All 4 residual warnings (2 on PASS rows: ownership-1 W99001, upgrades-3 `vector::empty`;
+  2 on FAIL logs: upgrades-2 W99001, ownership-2 `vector::empty`) fall in the two families
+  explicitly recorded-and-deferred at triage** (`vector::empty` deprecation; Lint W99001
+  composability) — the triage ledger and the remeasure agree.
 
 The held-out effect of the round-1 beats is **unmeasured** until the next tier-2
 falsification (pre-registered, fresh tasks, base-vs-kp); nothing in this file is a headline
