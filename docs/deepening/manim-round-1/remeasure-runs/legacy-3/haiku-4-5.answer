@@ -1,0 +1,25 @@
+```python
+from manim import *
+
+class EulerFormulaEmphasis(Scene):
+    def construct(self):
+        # Create and display the Euler formula
+        formula = MathTex(r"e^{i\pi} + 1 = 0")
+        self.add(formula)
+        
+        # First emphasis: temporary ring around the formula
+        ring = Circle().surround(formula, buffer_factor=1.3)
+        ring.set_stroke(color=YELLOW, width=3)
+        
+        self.play(Create(ring), run_time=0.5)
+        self.wait(0.3)
+        self.play(FadeOut(ring), run_time=0.5)
+        
+        # Second emphasis: brief wiggle
+        self.play(formula.animate.shift(0.15 * RIGHT), run_time=0.08)
+        self.play(formula.animate.shift(0.15 * LEFT), run_time=0.08)
+        self.play(formula.animate.shift(0.1 * RIGHT), run_time=0.08)
+        self.play(formula.animate.shift(0.1 * LEFT), run_time=0.08)
+        
+        self.wait(1)
+```

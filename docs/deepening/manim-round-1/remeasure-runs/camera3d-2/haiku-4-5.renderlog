@@ -1,0 +1,27 @@
+Manim Community v0.20.1
+
+[07/08/26 23:10:12] INFO Caching disabled. cairo_renderer.py:83
+INFO Animation 0 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+CubeScene/uncached_00000.m
+p4'
+INFO Caching disabled. cairo_renderer.py:83
+[07/08/26 23:10:13] INFO Animation 1 : Partial scene_file_writer.py:601
+movie file written in
+'/tmp/media/videos/scene/4
+80p15/partial_movie_files/
+CubeScene/uncached_00001.m
+p4'
+INFO Combining to Movie file. scene_file_writer.py:753
+INFO scene_file_writer.py:904
+File ready at
+'/tmp/media/videos/scene/4
+80p15/CubeScene.mp4'
+
+INFO Rendered CubeScene scene.py:278
+Played 2 animations
+
+Animation 0: _MethodAnimation(ValueTracker): 0%| | 0/30 [00:00<?, ?it/s]
+
