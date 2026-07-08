@@ -199,9 +199,12 @@ E04024 record + round-3 generic-3/haiku).
 | param-mut | `public fun bump(c: Counter)` assigning `c.n = c.n + 1` through the non-`mut` parameter | exit 1, `error[E04024]: invalid usage of immutable variable` | RED/GREEN pair | `To use the variable mutably, it must be declared 'mut'` |
 
 Notes:
-- New error class for the pack: `E04024`; plus new message shapes under E03006 (the
-  unresolved-alias variant — round 2's was the enum-construction variant) and E05001 (the
-  ignore and implicit-copy variants — the pack now pins four distinct E05001 shapes).
+- No new error *class* this round: `macros-2024` already pins E04024 (the assignment shape,
+  fragment `Invalid assignment of immutable variable`); param-mut pins a new *message shape*
+  under that existing class (the by-value-parameter shape). Also new message shapes under
+  E03006 (the unresolved-alias variant — round 2's was the enum-construction variant) and
+  E05001 (the ignore and implicit-copy variants — the pack now pins four distinct E05001
+  shapes).
 - missing-module-import is the *omission* sibling of round 1's use-self beat (which taught
   the lowercase-`self` form inside a `use` that exists); adjacency to the loaded events
   claim (which shows a fully-qualified `sui::event::emit` call in passing) is disclosed in
