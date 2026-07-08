@@ -1,0 +1,37 @@
+```move
+module party::pinata {
+    use sui::balance::Balance;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+
+    public struct Toy has key, store {
+        id: UID,
+    }
+
+    public struct Pinata has key, store {
+        id: UID,
+        candy: Balance<SUI>,
+        toy: Toy,
+    }
+
+    public fun create(coin: Coin<SUI>, ctx: &mut TxContext): Pinata {
+        let toy = Toy {
+            id: object::new(ctx),
+        };
+        Pinata {
+            id: object::new(ctx),
+            candy: coin::into_balance(coin),
+            toy,
+        }
+    }
+
+    public fun smash(pinata: Pinata, ctx: &mut TxContext) {
+        let Pinata { id, candy, toy } = pinata;
+        object::delete(id);
+        let sender = tx_context::sender(ctx);
+        let coin = coin::from_balance(candy, ctx);
+        transfer::public_transfer(coin, sender);
+        transfer::public_transfer(toy, sender);
+    }
+}
+```

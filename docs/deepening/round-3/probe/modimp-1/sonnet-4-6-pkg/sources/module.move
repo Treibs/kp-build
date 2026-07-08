@@ -1,0 +1,48 @@
+module depot::inventory {
+    use sui::table::{Self, Table};
+    use std::string::String;
+
+    public struct Depot has key {
+        id: UID,
+        stock: Table<String, u64>,
+    }
+
+    public struct OperatorCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let depot = Depot {
+            id: object::new(ctx),
+            stock: table::new(ctx),
+        };
+        transfer::share_object(depot);
+
+        let cap = OperatorCap { id: object::new(ctx) };
+        transfer::public_transfer(cap, ctx.sender());
+    }
+
+    public fun restock(depot: &mut Depot, _cap: &OperatorCap, name: String, qty: u64) {
+        if (depot.stock.contains(name)) {
+            let current = depot.stock.borrow_mut(name);
+            *current = *current + qty;
+        } else {
+            depot.stock.add(name, qty);
+        };
+    }
+
+    public fun consume(depot: &mut Depot, name: String) {
+        assert!(depot.stock.contains(name));
+        let current = depot.stock.borrow_mut(name);
+        assert!(*current > 0);
+        *current = *current - 1;
+    }
+
+    public fun stock(depot: &Depot, name: String): u64 {
+        if (depot.stock.contains(name)) {
+            *depot.stock.borrow(name)
+        } else {
+            0
+        }
+    }
+}

@@ -1,0 +1,46 @@
+module lostfound::office {
+    use sui::dynamic_field;
+
+    public struct LostAndFound has key {
+        id: UID,
+        next_ticket: u64,
+    }
+
+    public struct Receipt has key, store {
+        id: UID,
+        ticket_no: u64,
+    }
+
+    public fun create_office(ctx: &mut TxContext) {
+        let office = LostAndFound {
+            id: object::new(ctx),
+            next_ticket: 1,
+        };
+        transfer::share_object(office);
+    }
+
+    public fun hand_in<T: store>(
+        office: &mut LostAndFound,
+        item: T,
+        _label: vector<u8>,
+        ctx: &mut TxContext,
+    ): Receipt {
+        let ticket_no = office.next_ticket;
+        office.next_ticket = office.next_ticket + 1;
+        dynamic_field::add(&mut office.id, ticket_no, item);
+        
+        Receipt {
+            id: object::new(ctx),
+            ticket_no,
+        }
+    }
+
+    public fun claim<T: store>(
+        office: &mut LostAndFound,
+        receipt: Receipt,
+    ): T {
+        let Receipt { id, ticket_no } = receipt;
+        object::delete(id);
+        dynamic_field::remove(&mut office.id, ticket_no)
+    }
+}

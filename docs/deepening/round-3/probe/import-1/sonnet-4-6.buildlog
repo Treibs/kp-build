@@ -1,0 +1,46 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:30:9
+   │
+22 │     public fun create(price_per_hour: u64, ctx: &mut TxContext) {
+   │                ------ Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+30 │         transfer::public_transfer(cap, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                              │
+   │         │                              Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:39:13
+   │
+33 │     public fun park(meter: &mut Meter, mut payment: Coin<SUI>, hours: u64, ctx: &mut TxContext) {
+   │                ---- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+39 │             transfer::public_transfer(payment, ctx.sender());
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │             │                                  │
+   │             │                                  Transaction sender address coming from here
+   │             Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:54:9
+   │
+51 │     public fun sweep(_cap: &CityCap, meter: &mut Meter, ctx: &mut TxContext) {
+   │                ----- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+54 │         transfer::public_transfer(coin::from_balance(swept, ctx), ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                                                         │
+   │         │                                                         Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io

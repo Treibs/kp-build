@@ -1,0 +1,32 @@
+```move
+module harvest::farm {
+
+    public struct Seedling has key, store {
+        id: UID,
+        planted_epoch: u64,
+    }
+
+    public struct Crop has key, store {
+        id: UID,
+        epochs_grown: u64,
+    }
+
+    public fun plant(ctx: &mut TxContext): Seedling {
+        Seedling {
+            id: object::new(ctx),
+            planted_epoch: ctx.epoch(),
+        }
+    }
+
+    public fun harvest(seedling: Seedling, ctx: &mut TxContext): Crop {
+        let current_epoch = ctx.epoch();
+        let Seedling { id, planted_epoch } = seedling;
+        assert!(current_epoch >= planted_epoch + 3);
+        object::delete(id);
+        Crop {
+            id: object::new(ctx),
+            epochs_grown: current_epoch - planted_epoch,
+        }
+    }
+}
+```

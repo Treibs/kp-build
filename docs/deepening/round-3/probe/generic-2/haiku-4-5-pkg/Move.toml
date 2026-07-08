@@ -1,0 +1,6 @@
+[package]
+name = "probe_pkg"
+edition = "2024"
+
+[addresses]
+lostfound = "0x0"

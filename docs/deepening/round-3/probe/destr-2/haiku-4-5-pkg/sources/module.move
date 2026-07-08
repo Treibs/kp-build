@@ -1,0 +1,49 @@
+module board::bounty {
+    use std::string::String;
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+    use std::option::{Self, Option};
+
+    public struct Bounty has key, store {
+        id: UID,
+        task: String,
+        reward: Option<Coin<SUI>>,
+    }
+
+    public fun create(task: String, ctx: &mut TxContext): Bounty {
+        Bounty {
+            id: object::new(ctx),
+            task,
+            reward: option::none(),
+        }
+    }
+
+    public fun fund(bounty: &mut Bounty, coin: Coin<SUI>) {
+        option::fill(&mut bounty.reward, coin);
+    }
+
+    public fun defund(bounty: &mut Bounty, ctx: &mut TxContext) {
+        if (option::is_some(&bounty.reward)) {
+            let coin = option::extract(&mut bounty.reward);
+            transfer::public_transfer(coin, ctx.sender());
+        };
+    }
+
+    public fun award(mut bounty: Bounty, hunter: address) {
+        if (option::is_some(&bounty.reward)) {
+            let coin = option::extract(&mut bounty.reward);
+            transfer::public_transfer(coin, hunter);
+        };
+        let Bounty { id, task: _, reward: _ } = bounty;
+        object::delete(id);
+    }
+
+    public fun refund_and_close(mut bounty: Bounty, ctx: &mut TxContext) {
+        if (option::is_some(&bounty.reward)) {
+            let coin = option::extract(&mut bounty.reward);
+            transfer::public_transfer(coin, ctx.sender());
+        };
+        let Bounty { id, task: _, reward: _ } = bounty;
+        object::delete(id);
+    }
+}

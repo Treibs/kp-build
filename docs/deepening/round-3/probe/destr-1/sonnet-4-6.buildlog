@@ -1,0 +1,30 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:29:9
+   │
+25 │     public fun smash(pinata: Pinata, ctx: &mut TxContext) {
+   │                ----- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+26 │         let smasher = ctx.sender();
+   │                       ------------ Transaction sender address coming from here
+   ·
+29 │         transfer::public_transfer(coin::from_balance(candy, ctx), smasher);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:30:9
+   │
+25 │     public fun smash(pinata: Pinata, ctx: &mut TxContext) {
+   │                ----- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+26 │         let smasher = ctx.sender();
+   │                       ------------ Transaction sender address coming from here
+   ·
+30 │         transfer::public_transfer(toy, smasher);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io

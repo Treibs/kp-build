@@ -1,0 +1,30 @@
+modimp-1       haiku-4-5   PASS CLEAN
+modimp-1       sonnet-4-6  PASS CLEAN
+modimp-2       haiku-4-5   FAIL error[E03006]: unexpected name in this position
+modimp-2       sonnet-4-6  PASS CLEAN
+modimp-3       haiku-4-5   PASS CLEAN
+modimp-3       sonnet-4-6  PASS WARN1
+destr-1        haiku-4-5   PASS WARN2
+destr-1        sonnet-4-6  PASS WARN2
+destr-2        haiku-4-5   FAIL error[E05001]: ability constraint not satisfied
+destr-2        sonnet-4-6  PASS CLEAN
+destr-3        haiku-4-5   FAIL error[Sui E01001]: invalid object construction
+destr-3        sonnet-4-6  FAIL error[E03002]: unbound module
+import-1       haiku-4-5   PASS WARN2
+import-1       sonnet-4-6  PASS WARN3
+import-2       haiku-4-5   FAIL error[E05001]: ability constraint not satisfied
+import-2       sonnet-4-6  PASS CLEAN
+import-3       haiku-4-5   FAIL error[E01002]: unexpected token
+import-3       sonnet-4-6  FAIL error[E01002]: unexpected token
+generic-1      haiku-4-5   PASS CLEAN
+generic-1      sonnet-4-6  PASS CLEAN
+generic-2      haiku-4-5   PASS CLEAN
+generic-2      sonnet-4-6  PASS CLEAN
+generic-3      haiku-4-5   FAIL error[E04024]: invalid usage of immutable variable
+generic-3      sonnet-4-6  PASS CLEAN
+time-1         haiku-4-5   PASS WARN1
+time-1         sonnet-4-6  PASS CLEAN
+time-2         haiku-4-5   PASS WARN2
+time-2         sonnet-4-6  PASS WARN2
+time-3         haiku-4-5   PASS CLEAN
+time-3         sonnet-4-6  PASS CLEAN

@@ -1,0 +1,13 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01002]: unexpected token
+  ┌─ ./sources/module.move:1:8
+  │
+1 │ module match::donation {
+  │        ^^^^^
+  │        │
+  │        Unexpected 'match'
+  │        Expected an address or an identifier
+
+Failed to build Move modules: Compilation error.

@@ -1,0 +1,87 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:5:31
+  │
+5 │     use std::option::{Option, some, none, is_some, extract, fill};
+  │                               ^^^^ Unused 'use' of alias 'some'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:15:18
+   │
+15 │         deposit: Coin<SUI>,
+   │                  ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:72:23
+   │
+15 │         deposit: Coin<SUI>,
+   │                  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'copy'
+   ·
+72 │         let deposit = reservation.deposit;
+   │                       ^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'deposit' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:76:46
+   │
+13 │     public struct Reservation has store {
+   │                   ----------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+20 │         current: Option<Reservation>,
+   │                         ----------- The type 'queue::waitlist::Reservation' does not have the ability 'drop'
+   ·
+70 │         let reservation = extract(&mut waitlist.current);
+   │             ----------- The local variable 'reservation' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+76 │         sui::event::emit(Seated { reservee });
+   │                                              ^ Invalid return
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:86:23
+   │
+15 │         deposit: Coin<SUI>,
+   │                  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'copy'
+   ·
+86 │         let deposit = reservation.deposit;
+   │                       ^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'deposit' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:90:53
+   │
+13 │     public struct Reservation has store {
+   │                   ----------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+20 │         current: Option<Reservation>,
+   │                         ----------- The type 'queue::waitlist::Reservation' does not have the ability 'drop'
+   ·
+84 │         let reservation = extract(&mut waitlist.current);
+   │             ----------- The local variable 'reservation' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+90 │         sui::event::emit(NoShowCleared { reservee });
+   │                                                     ^ Invalid return
+
+error[E01002]: unexpected token
+    ┌─ ./sources/module.move:103:9
+    │
+103 │         total
+    │         ^^^^^
+    │         │
+    │         Unexpected 'total'
+    │         Expected ';'
+
+Failed to build Move modules: Compilation error.
