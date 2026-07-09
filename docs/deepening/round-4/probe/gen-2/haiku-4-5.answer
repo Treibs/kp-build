@@ -1,0 +1,43 @@
+```move
+module dispatch::carebox {
+    use std::vector;
+    use std::string::String;
+
+    public struct CareBox<T: store> has key, store {
+        id: UID,
+        item: T,
+        note: String,
+    }
+
+    public fun pack<T: store>(item: T, note: String, ctx: &mut TxContext): CareBox<T> {
+        CareBox {
+            id: object::new(ctx),
+            item,
+            note,
+        }
+    }
+
+    public fun send_batch<T: store>(
+        boxes: vector<CareBox<T>>,
+        recipients: vector<address>,
+    ) {
+        let boxes_len = vector::length(&boxes);
+        let recipients_len = vector::length(&recipients);
+        assert!(boxes_len == recipients_len);
+
+        let mut i = 0;
+        while (i < boxes_len) {
+            let box = vector::pop_back(&mut boxes);
+            let recipient = vector::pop_back(&mut recipients);
+            transfer::public_transfer(box, recipient);
+            i = i + 1;
+        };
+    }
+
+    public fun unpack<T: store>(box: CareBox<T>): T {
+        let CareBox { id, item, note: _ } = box;
+        object::delete(id);
+        item
+    }
+}
+```

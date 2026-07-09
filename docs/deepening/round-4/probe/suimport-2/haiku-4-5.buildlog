@@ -1,0 +1,20 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:14:14
+   │
+14 │         pot: Coin<SUI>,
+   │              ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E07001]: referential transparency violated
+   ┌─ ./sources/module.move:44:50
+   │
+44 │         let prize = split(&mut raffle.pot, value(&raffle.pot), ctx);
+   │                           ---------------        ^^^^^^^^^^^ Invalid immutable borrow at field 'pot'.
+   │                           │                       
+   │                           Field 'pot' is still being mutably borrowed by this reference
+

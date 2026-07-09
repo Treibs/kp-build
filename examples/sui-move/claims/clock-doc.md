@@ -24,7 +24,7 @@ verified:
     a unique
 
     shared object that is created at 0x6'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-framework-docs

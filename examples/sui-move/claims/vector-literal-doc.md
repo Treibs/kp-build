@@ -18,7 +18,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: Vectors of any type can be created with `vector` literals.
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-reference

@@ -687,6 +687,90 @@
       "type": "method",
       "confidence": "high",
       "corroborated_by": []
+    },
+    {
+      "id": "borrow-arg-alias-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "borrow-arg-alias-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "borrow-arg-alias-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "compound-assignment-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "compound-assignment-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "compound-assignment-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "while-condition-parens-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "while-condition-parens-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "while-condition-parens-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-mem-swap-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-mem-swap-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-mem-swap-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
     }
   ],
   "open_problems": [],

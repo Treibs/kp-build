@@ -1,0 +1,68 @@
+module pets::registry {
+    use std::string::String;
+    use sui::object::{Self, UID, ID};
+    use sui::table::{Self, Table};
+    use sui::transfer;
+
+    public struct REGISTRY has drop {}
+
+    public struct ShelterCap has key, store {
+        id: UID,
+    }
+
+    public struct Pet has key, store {
+        id: UID,
+        name: String,
+    }
+
+    public struct AdoptionRegistry has key {
+        id: UID,
+        adoptions: Table<ID, address>,
+        count: u64,
+    }
+
+    fun init(_witness: REGISTRY, ctx: &mut TxContext) {
+        let registry = AdoptionRegistry {
+            id: object::new(ctx),
+            adoptions: table::new(ctx),
+            count: 0,
+        };
+        transfer::share_object(registry);
+
+        let cap = ShelterCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun mint_pet(
+        _cap: &ShelterCap,
+        name: String,
+        ctx: &mut TxContext,
+    ): Pet {
+        Pet {
+            id: object::new(ctx),
+            name,
+        }
+    }
+
+    public fun adopt(
+        registry: &mut AdoptionRegistry,
+        pet: Pet,
+        adopter: address,
+        _cap: &ShelterCap,
+    ) {
+        let pet_id = object::id(&pet);
+        table::add(&mut registry.adoptions, pet_id, adopter);
+        registry.count = registry.count + 1;
+        transfer::public_transfer(pet, adopter);
+    }
+
+    public fun adopter_of(registry: &AdoptionRegistry, pet_id: ID): address {
+        *table::borrow(&registry.adoptions, pet_id)
+    }
+
+    public fun adoption_count(registry: &AdoptionRegistry): u64 {
+        registry.count
+    }
+}

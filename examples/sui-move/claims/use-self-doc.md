@@ -24,7 +24,7 @@ verified:
     use the `Self` keyword. The
 
     `Self` keyword refers to the module itself and can be used to i'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-book

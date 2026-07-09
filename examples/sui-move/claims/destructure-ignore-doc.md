@@ -27,7 +27,7 @@ verified:
 
 
     - not using the value in a local variable or parameter'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-reference

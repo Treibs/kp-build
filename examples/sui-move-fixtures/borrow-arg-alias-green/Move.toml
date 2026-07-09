@@ -1,0 +1,5 @@
+[package]
+name = "borrow_arg_alias_green"
+edition = "2024"
+
+[dependencies]

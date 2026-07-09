@@ -1,0 +1,42 @@
+module robo::battery {
+    use std::option::{Self, Option};
+
+    public struct Battery has key, store {
+        id: UID,
+        serial: u64,
+        charge: u64,
+    }
+
+    public struct Robot has key, store {
+        id: UID,
+        battery: Option<Battery>,
+    }
+
+    public fun build_robot(ctx: &mut TxContext): Robot {
+        Robot {
+            id: object::new(ctx),
+            battery: option::some(Battery {
+                id: object::new(ctx),
+                serial: 0,
+                charge: 100,
+            }),
+        }
+    }
+
+    public fun swap_battery(robot: &mut Robot, fresh: Battery): Battery {
+        option::swap(&mut robot.battery, fresh)
+    }
+
+    public fun recharge(battery: &mut Battery, amount: u64) {
+        let remaining = 100 - battery.charge;
+        if (amount >= remaining) {
+            battery.charge = 100;
+        } else {
+            battery.charge = battery.charge + amount;
+        };
+    }
+
+    public fun charge_level(robot: &Robot): u64 {
+        option::borrow(&robot.battery).charge
+    }
+}

@@ -1,0 +1,11 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:40:30
+   │
+40 │             street: *string::bytes(&street),
+   │                              ^^^^^ The function 'std::string::bytes' is deprecated: Use `std::string::as_bytes` instead.
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

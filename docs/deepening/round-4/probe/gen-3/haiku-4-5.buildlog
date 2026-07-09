@@ -1,0 +1,22 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09010]: unused function type parameter
+   ┌─ ./sources/module.move:30:28
+   │
+30 │     public fun create_pool<T: key + store>(ctx: &mut TxContext) {
+   │                            ^ Unused type parameter 'T'.
+   │
+   = This warning can be suppressed with '#[allow(unused_type_parameter)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:31:20
+   │  
+31 │           let pool = GiftPool {
+   │ ╭────────────────────^
+32 │ │             id: object::new(ctx),
+33 │ │             gifts: vector[],
+34 │ │         };
+   │ ╰─────────^ Could not infer this type. Try adding an annotation
+

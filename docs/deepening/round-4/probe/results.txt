@@ -1,0 +1,32 @@
+# Round-4 probe results (pack-loaded arm, sui 1.74.1-8fc60f1fa966)
+
+suimport-1   haiku-4-5  PASS WARN2
+suimport-1   sonnet-4-6 PASS CLEAN
+suimport-2   haiku-4-5  FAIL error[E07001]: referential transparency violated
+suimport-2   sonnet-4-6 PASS WARN1
+suimport-3   haiku-4-5  PASS WARN1
+suimport-3   sonnet-4-6 PASS CLEAN
+rsyn-1       haiku-4-5  PASS CLEAN
+rsyn-1       sonnet-4-6 PASS CLEAN
+rsyn-2       haiku-4-5  PASS CLEAN
+rsyn-2       sonnet-4-6 PASS CLEAN
+rsyn-3       haiku-4-5  FAIL error[E01002]: unexpected token
+rsyn-3       sonnet-4-6 PASS CLEAN
+rapi-1       haiku-4-5  PASS CLEAN
+rapi-1       sonnet-4-6 PASS CLEAN
+rapi-2       haiku-4-5  PASS CLEAN
+rapi-2       sonnet-4-6 PASS CLEAN
+rapi-3       haiku-4-5  PASS CLEAN
+rapi-3       sonnet-4-6 FAIL error[E03002]: unbound module
+gen-1        haiku-4-5  PASS CLEAN
+gen-1        sonnet-4-6 PASS CLEAN
+gen-2        haiku-4-5  FAIL error[E04024]: invalid usage of immutable variable
+gen-2        sonnet-4-6 PASS CLEAN
+gen-3        haiku-4-5  FAIL error[E04010]: cannot infer type
+gen-3        sonnet-4-6 PASS CLEAN
+oid-1        haiku-4-5  PASS CLEAN
+oid-1        sonnet-4-6 PASS CLEAN
+oid-2        haiku-4-5  PASS CLEAN
+oid-2        sonnet-4-6 PASS CLEAN
+oid-3        haiku-4-5  PASS WARN1
+oid-3        sonnet-4-6 PASS CLEAN

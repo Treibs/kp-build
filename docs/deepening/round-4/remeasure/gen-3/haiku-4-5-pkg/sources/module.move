@@ -1,0 +1,52 @@
+module exchange::gifts {
+    use std::vector;
+
+    public struct OrganizerCap has key, store {
+        id: UID,
+    }
+
+    public struct WrappedGift<T> has key, store {
+        id: UID,
+        gift: T,
+        giver: address,
+    }
+
+    public struct GiftPool<T> has key {
+        id: UID,
+        gifts: vector<WrappedGift<T>>,
+    }
+
+    public fun create_pool<T: store>(ctx: &mut TxContext): OrganizerCap {
+        transfer::share_object(GiftPool<T> {
+            id: object::new(ctx),
+            gifts: vector[],
+        });
+        OrganizerCap {
+            id: object::new(ctx),
+        }
+    }
+
+    public fun deposit_gift<T: store>(pool: &mut GiftPool<T>, gift: T, giver: address, ctx: &mut TxContext) {
+        let wrapped = WrappedGift {
+            id: object::new(ctx),
+            gift,
+            giver,
+        };
+        vector::push_back(&mut pool.gifts, wrapped);
+    }
+
+    public fun hand_out<T: store>(
+        _cap: &OrganizerCap,
+        pool: &mut GiftPool<T>,
+        index: u64,
+        recipient: address,
+    ) {
+        assert!(index < vector::length(&pool.gifts), 0);
+        let wrapped = vector::remove(&mut pool.gifts, index);
+        transfer::public_transfer(wrapped, recipient);
+    }
+
+    public fun gifts_remaining<T: store>(pool: &GiftPool<T>): u64 {
+        vector::length(&pool.gifts)
+    }
+}

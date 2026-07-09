@@ -1,0 +1,42 @@
+```move
+module contest::prize {
+    use sui::object::ID;
+
+    public struct Contest<T: key + store> has key {
+        id: UID,
+        prize: Option<T>,
+    }
+
+    public struct JudgeCap has key, store {
+        id: UID,
+        contest_id: ID,
+    }
+
+    public fun open_contest<T: key + store>(prize: T, ctx: &mut TxContext): JudgeCap {
+        let uid = object::new(ctx);
+        let contest_id = object::uid_to_inner(&uid);
+        transfer::share_object(Contest {
+            id: uid,
+            prize: option::some(prize),
+        });
+        JudgeCap {
+            id: object::new(ctx),
+            contest_id,
+        }
+    }
+
+    public fun award<T: key + store>(
+        contest: &mut Contest<T>,
+        cap: &JudgeCap,
+        winner: address,
+    ) {
+        assert!(cap.contest_id == object::uid_to_inner(&contest.id));
+        let prize = option::extract(&mut contest.prize);
+        transfer::public_transfer(prize, winner);
+    }
+
+    public fun is_open<T: key + store>(contest: &Contest<T>): bool {
+        option::is_some(&contest.prize)
+    }
+}
+```

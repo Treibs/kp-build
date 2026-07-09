@@ -24,7 +24,7 @@ verified:
     for test utilities, helper
 
     functions, or imports that shouldn''t exist in production code.'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-book

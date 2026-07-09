@@ -30,7 +30,7 @@ verified:
     - `store`, all fields must have `store`.
 
     - `key`, all fields must have `store`.'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-reference
