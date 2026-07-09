@@ -22,7 +22,7 @@ verified:
   evidence: "This method is used to prevent the rotation and movement\n        of\
     \ mobjects as the camera moves around. The mobject is\n        essentially overlaid,\
     \ and is not"
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

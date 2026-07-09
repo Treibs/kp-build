@@ -17,7 +17,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: manim-render:render_error cleared
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution:
   tool: manim-render
   gate_code: render_error

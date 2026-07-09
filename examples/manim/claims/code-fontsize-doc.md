@@ -22,7 +22,7 @@ verified:
   evidence: "    default_paragraph_config: dict[str, Any] = {\n        \"font\": \"\
     Monospace\",\n        \"font_size\": 24,\n        \"line_spacing\": 0.5,\n   \
     \     \"disable_ligatures\":"
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

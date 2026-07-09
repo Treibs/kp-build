@@ -742,6 +742,157 @@
         "source": "manim-api-docs",
         "supporting_passage": "    lag_ratio\n        Defines the delay after which the animation is applied to submobjects. A lag_ratio of\n        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.\n        Defaults to 0.0, meaning that all animations will be played together.\n\n        This does not influence the total runtime of the animation. Instead the runtime\n        of individual animations is adjusted so that the complete animation has the defined\n        run time."
       }
+    },
+    {
+      "id": "image-resampling-green",
+      "statement": "Pixel art shown through `ImageMobject` keeps hard pixel edges when scaled by setting nearest-neighbor resampling: `sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS[\"nearest\"])`. Without it the default (bicubic) blurs every upscaled sprite — the scene still renders, so the omission is invisible to a render gate.",
+      "supporting_passage": "manim 0.20.1 renders an ImageMobject built from a raw uint8 array with set_resampling_algorithm(RESAMPLING_ALGORITHMS[\"nearest\"]) and height=4, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/image-resampling/green"
+      }
+    },
+    {
+      "id": "image-resampling-red",
+      "statement": "There is no PIL/scipy-style filtering kwarg on `ImageMobject`: `ImageMobject(arr, filter_kwargs={\"order\": 0})` fails on manim 0.20.1 with TypeError: Mobject.__init__() got an unexpected keyword argument 'filter_kwargs'. Crispness is set via `set_resampling_algorithm`, not a constructor kwarg.",
+      "supporting_passage": "manim 0.20.1 rejects ImageMobject(arr, filter_kwargs={\"order\": 0}) with exit 1, TypeError: Mobject.__init__() got an unexpected keyword argument 'filter_kwargs'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/image-resampling/red"
+      }
+    },
+    {
+      "id": "image-resampling-doc",
+      "statement": "`set_resampling_algorithm` takes an integer constant — one from the `RESAMPLING_ALGORITHMS` global dictionary (e.g. `RESAMPLING_ALGORITHMS[\"nearest\"]`).",
+      "supporting_passage": "An integer constant described in the Pillow library,\n            or one from the RESAMPLING_ALGORITHMS global dictionary,",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "An integer constant described in the Pillow library,\n            or one from the RESAMPLING_ALGORITHMS global dictionary,"
+      }
+    },
+    {
+      "id": "image-group-green",
+      "statement": "Image mobjects are grouped with `Group`, which accepts any mobject: `Group(ImageMobject(arr), ImageMobject(arr), Text(\"x2\")).arrange(RIGHT)` renders on manim 0.20.1.",
+      "supporting_passage": "manim 0.20.1 renders a Group holding two ImageMobjects and a Text, arranged in a row, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/image-group/green"
+      }
+    },
+    {
+      "id": "image-group-red",
+      "statement": "`VGroup` is vector-only — putting an `ImageMobject` in one fails on manim 0.20.1 with TypeError: Only values of type VMobject can be added as submobjects of VGroup. (The pack pins a second rule under this same message: table-labels, where the fix is wrapping strings in `Text`. Here the fix is using `Group`.)",
+      "supporting_passage": "manim 0.20.1 rejects VGroup(ImageMobject(arr), ImageMobject(arr)) with exit 1, TypeError: Only values of type VMobject can be added as submobjects of VGroup.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/image-group/red"
+      }
+    },
+    {
+      "id": "image-group-doc",
+      "statement": "`VGroup` groups vectorized mobjects (`VMobject` instances); `Group` groups mobjects of any kind — images included.",
+      "supporting_passage": "\"\"\"Groups together multiple :class:`Mobjects <.Mobject>`.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "\"\"\"Groups together multiple :class:`Mobjects <.Mobject>`."
+      }
+    },
+    {
+      "id": "color-constants-green",
+      "statement": "Manim CE's brown constants are `LIGHT_BROWN`, `DARK_BROWN`, `GRAY_BROWN`/`GREY_BROWN` — a scene using them renders on manim 0.20.1.",
+      "supporting_passage": "manim 0.20.1 renders a scene coloring mobjects with DARK_BROWN, LIGHT_BROWN and GREY_BROWN, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/color-constants/green"
+      }
+    },
+    {
+      "id": "color-constants-red",
+      "statement": "Bare `BROWN` is not a Manim CE color constant: `Rectangle(color=BROWN)` fails on manim 0.20.1 with NameError: name 'BROWN' is not defined. Reach for `LIGHT_BROWN`/`DARK_BROWN`/`GREY_BROWN` instead; the color-constant surface also drifts across releases (0.20 fixed `YELLOW_C` and added three `PURE_*` constants).",
+      "supporting_passage": "manim 0.20.1 rejects Rectangle(color=BROWN) with exit 1, NameError: name 'BROWN' is not defined.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/color-constants/red"
+      }
+    },
+    {
+      "id": "color-constants-doc",
+      "statement": "The brown family in manim's color module is `LIGHT_BROWN` (#CD853F), `DARK_BROWN` (#8B4513), and `GRAY_BROWN`/`GREY_BROWN` (#736357) — there is no bare `BROWN`.",
+      "supporting_passage": "LIGHT_BROWN = ManimColor(\"#CD853F\")\nDARK_BROWN = ManimColor(\"#8B4513\")\nGRAY_BROWN = ManimColor(\"#736357\")\nGREY_BROWN = ManimColor(\"#736357\")",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "LIGHT_BROWN = ManimColor(\"#CD853F\")\nDARK_BROWN = ManimColor(\"#8B4513\")\nGRAY_BROWN = ManimColor(\"#736357\")\nGREY_BROWN = ManimColor(\"#736357\")"
+      }
+    },
+    {
+      "id": "camera-follow-green",
+      "statement": "A camera that continuously tracks a moving mobject is an updater on `self.camera.frame` in a `MovingCameraScene`: `self.camera.frame.add_updater(lambda f: f.move_to(runner.get_center()))` before the movement `play`, cleared after. The one-shot `frame.animate.move_to(...)` form (see moving-camera) pans once and then sits still — a follow shot that never follows renders exit 0, so this corner is invisible to a render gate.",
+      "supporting_passage": "manim 0.20.1 renders a MovingCameraScene whose camera.frame carries a follow updater across a full traverse, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/camera-follow/green"
+      }
+    },
+    {
+      "id": "camera-follow-doc",
+      "statement": "`MovingCameraScene` exposes the camera as `self.camera.frame`, a mobject that can be animated and manipulated like any other — which is what makes attaching an updater to it the follow-shot idiom.",
+      "supporting_passage": "class ChangingCameraWidthAndRestore(MovingCameraScene):\n        def construct(self):\n            text = Text(\"Hello World\").set_color(BLUE)\n            self.add(text)\n            self.camera.frame.save_state()",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "class ChangingCameraWidthAndRestore(MovingCameraScene):\n        def construct(self):\n            text = Text(\"Hello World\").set_color(BLUE)\n            self.add(text)\n            self.camera.frame.save_state()"
+      }
+    },
+    {
+      "id": "sprite-facing-green",
+      "statement": "A sprite that changes travel direction faces the new direction with a horizontal mirror — `sprite.flip(UP)` — not a rotation: rotating 180 degrees puts a walking figure on its head, and a tangent-following orbit needs its rotation phase checked the same way (both failure shapes render exit 0 and were observed on video in this round's probe).",
+      "supporting_passage": "manim 0.20.1 renders a sprite that traverses right, mirrors with flip(UP), and traverses back left along MoveAlongPath, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/sprite-facing/green"
+      }
+    },
+    {
+      "id": "sprite-facing-doc",
+      "statement": "`flip` mirrors a mobject about its center — the facing-change primitive, distinct from `rotate`.",
+      "supporting_passage": "Flips/Mirrors an mobject about its center.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "Flips/Mirrors an mobject about its center."
+      }
     }
   ]
 }

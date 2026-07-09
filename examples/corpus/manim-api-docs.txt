@@ -959,3 +959,120 @@ class AnimationGroup(Animation):
         of individual animations is adjusted so that the complete animation has the defined
         run time.
     """
+
+## FILE: manim/mobject/types/image_mobject.py (lines 80–112: set_resampling_algorithm)
+
+    def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
+        """
+        Sets the interpolation method for upscaling the image. By default the image is
+        interpolated using bicubic algorithm. This method lets you change it.
+        Interpolation is done internally using Pillow, and the function besides the
+        string constants describing the algorithm accepts the Pillow integer constants.
+
+        Parameters
+        ----------
+        resampling_algorithm
+            An integer constant described in the Pillow library,
+            or one from the RESAMPLING_ALGORITHMS global dictionary,
+            under the following keys:
+
+            * 'bicubic' or 'cubic'
+            * 'nearest' or 'none'
+            * 'box'
+            * 'bilinear' or 'linear'
+            * 'hamming'
+            * 'lanczos' or 'antialias'
+        """
+        if resampling_algorithm not in RESAMPLING_ALGORITHMS.values():
+            raise ValueError(
+                "resampling_algorithm has to be an int, one of the values defined in "
+                "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
+                "Available algorithms: 'bicubic' (or 'cubic'), 'nearest' (or 'none'), "
+                "'bilinear' (or 'linear').",
+            )
+
+        self.resampling_algorithm = resampling_algorithm
+        return self
+
+    def reset_points(self) -> Self:
+
+## FILE: manim/mobject/types/vectorized_mobject.py (lines 2081–2097: VGroup; 2230–2238: the VMobject-only add check)
+
+class VGroup(VMobject, metaclass=ConvertToOpenGL):
+    """A group of vectorized mobjects.
+
+    This can be used to group multiple :class:`~.VMobject` instances together
+    in order to scale, move, ... them together.
+
+    Notes
+    -----
+    When adding the same mobject more than once, repetitions are ignored.
+    Use :meth:`.Mobject.copy` to create a separate copy which can then
+    be added to the group.
+
+    Examples
+    --------
+
+    To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the
+    :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you
+
+        """
+
+        def get_type_error_message(invalid_obj, invalid_indices):
+            return (
+                f"Only values of type {vmobject_render_type.__name__} can be added "
+                "as submobjects of VGroup, but the value "
+                f"{repr(invalid_obj)} (at index {invalid_indices[1]} of "
+                f"parameter {invalid_indices[0]}) is of type "
+                f"{type(invalid_obj).__name__}."
+
+## FILE: manim/mobject/mobject.py (lines 3300–3310: Group; 1395–1410: flip)
+
+class Group(Mobject, metaclass=ConvertToOpenGL):
+    """Groups together multiple :class:`Mobjects <.Mobject>`.
+
+    Notes
+    -----
+    When adding the same mobject more than once, repetitions are ignored.
+    Use :meth:`.Mobject.copy` to create a separate copy which can then
+    be added to the group.
+    """
+
+    def __init__(self, *mobjects, **kwargs) -> None:
+
+    def flip(
+        self,
+        axis: Vector3DLike = UP,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        """Flips/Mirrors an mobject about its center.
+
+        Examples
+        --------
+
+        .. manim:: FlipExample
+            :save_last_frame:
+
+            class FlipExample(Scene):
+
+## FILE: manim/utils/color/manim_colors.py (lines 199–215: the brown/grey constants)
+
+MAROON = ManimColor("#C55F73")
+PURPLE_A = ManimColor("#CAA3E8")
+PURPLE_B = ManimColor("#B189C6")
+PURPLE_C = ManimColor("#9A72AC")
+PURPLE_D = ManimColor("#715582")
+PURPLE_E = ManimColor("#644172")
+PURPLE = ManimColor("#9A72AC")
+PINK = ManimColor("#D147BD")
+LIGHT_PINK = ManimColor("#DC75CD")
+ORANGE = ManimColor("#FF862F")
+LIGHT_BROWN = ManimColor("#CD853F")
+DARK_BROWN = ManimColor("#8B4513")
+GRAY_BROWN = ManimColor("#736357")
+GREY_BROWN = ManimColor("#736357")
+
+# Colors used for Manim Community's logo and banner
+

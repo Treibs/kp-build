@@ -24,7 +24,7 @@ verified:
   evidence: "        phi\n            The polar angle i.e the angle between Z_AXIS\
     \ and Camera through ORIGIN in radians.\n\n        theta\n            The azimuthal\
     \ angle i.e th"
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

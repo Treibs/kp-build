@@ -29,7 +29,7 @@ verified:
     multiple names from the Manim namespace. In your script, you imported and used
 
     ``Scene'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-tutorials

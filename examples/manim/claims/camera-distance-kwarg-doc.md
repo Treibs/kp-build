@@ -25,7 +25,7 @@ verified:
   evidence: "    def set_camera_orientation(\n        self,\n        phi: float |\
     \ None = None,\n        theta: float | None = None,\n        gamma: float | None\
     \ = None,\n        "
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

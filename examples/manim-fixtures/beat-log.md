@@ -122,3 +122,28 @@ containment as the runner); fragments pasted from observed container output only
 reds crash before `file_writer.begin_animation` — no hang-class exposure. Corpus extended
 with four passages from the same pinned commit (`1157b746`, tag v0.20.1) to ground the six
 doc claims. Full fixture census: **38** (24 green-gated + 14 red).
+
+## Part VII — deepening round 2 beats (proven 2026-07-09)
+
+All five beats came out of the manim round-2 pixel-sprite probe (operator-chosen domain:
+"a pixel person running through or around a scene, Pokémon style"; provenance, task texts,
+gated answers, hand-check verdicts: `docs/deepening/manim-round-2/` — cross-linked, not
+duplicated). Three are execution beats seeded by observed probe failures; two are render-blind
+(recorded oracle limitation) and ship GREEN + doc-grounding. The image fixtures build their
+pixel art from raw `uint8` numpy arrays, so no binary assets enter the fixture tree.
+
+| beat | red result: exit + fragment observed | green: exit | notes |
+|---|---|---|---|
+| image-resampling | exit 1; `TypeError: Mobject.__init__() got an unexpected keyword argument 'filter_kwargs'` | 0 | The round's headline gap: every task demanded crisp pixels; haiku called the real API 0/12 times (all its image passes ship blurry — render-blind in the omission form) and hallucinated a scipy-style kwarg once (frames-3, the RED, observed live); sonnet used `set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])` 9/12 plus two disclosed dodges (PIL squares rebuild; PIL `NEAREST` 16× pre-upscale). |
+| image-group | exit 1; `Only values of type VMobject can be added as submobjects of VGroup` | 0 | Probe: imgpx-2 haiku, observed live. **Second rule pinned under this message** — `table-labels` pins the strings-vs-mobjects rule with the same fragment; here the rule is images-need-`Group`. Disclosed in both the red claim and the round-2 triage (loaded-rule-adjacent, exp-5 standard). |
+| color-constants | exit 1; `NameError: name 'BROWN' is not defined` | 0 | Probe: camfollow-3 haiku (the same answer used `GREY_BROWN` correctly 12 lines earlier). Single answer, taught anyway: pinnable constant list + documented drift in the surface (0.20 changelog: `YELLOW_C` fix, `PURE_*` additions). |
+| camera-follow | (render-blind — a camera that never follows renders exit 0) | 0 | Both sonnet camera-follow probe tasks failed on video (camera static, subject leaves frame) while passing the gate 15/15 overall. GREEN is the follow-updater on `camera.frame`; the claim explicitly contrasts the one-shot `frame.animate` form the `moving-camera` beat pins. |
+| sprite-facing | (render-blind — any orientation renders clean) | 0 | Haiku's track lap ran upside-down (tangent rotation where mirroring was asked) and its planet orbit was inverted 180°; both observed on video, both render exit 0. GREEN mirrors with `flip(UP)` between opposite `MoveAlongPath` legs. |
+
+All 8 Part VII fixtures proved through the pinned image before commit (same flags and
+containment as the runner); fragments pasted from observed container output only. All three
+reds crash before `file_writer.begin_animation` — no hang-class exposure. The camera-follow
+green attaches its updater to `camera.frame` while animating a *different* mobject (the safe
+side of the `animate-live-updater` hang class — the updater target is structure-stable).
+Corpus extended with four passages from the same pinned commit (`1157b746`, tag v0.20.1) to
+ground the five doc claims. Full fixture census: **46** (29 green-gated + 17 red).

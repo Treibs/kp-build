@@ -23,7 +23,7 @@ verified:
   evidence: "        focal_distance\n            The focal_distance of the Camera.\n\
     \n        gamma\n            The rotation of the camera about the vector from\
     \ the ORIGIN to t"
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

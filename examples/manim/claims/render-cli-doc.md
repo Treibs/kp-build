@@ -27,7 +27,7 @@ verified:
     15FPS).  This does not look very good, but is very useful for rapid
 
     prototyping and t'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-tutorials
