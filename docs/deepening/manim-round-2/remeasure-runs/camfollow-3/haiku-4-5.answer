@@ -1,0 +1,99 @@
+```python
+from manim import *
+
+class CharacterClimb(MovingCameraScene):
+    def construct(self):
+        # Load sprite with nearest-neighbor filtering for crisp pixels
+        sprite = ImageMobject("sprite.png")
+        sprite.scale(1.2)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        
+        # Ground level
+        ground_y = -3.5
+        ground = Line(
+            start=np.array([-8, ground_y, 0]),
+            end=np.array([8, ground_y, 0]),
+            color=WHITE,
+            stroke_width=3
+        )
+        
+        # Ladder structure
+        ladder_x = 0
+        ladder_bottom = ground_y
+        ladder_top = ground_y + 3 * config.frame_height
+        
+        # Ladder rails
+        left_rail = Line(
+            start=np.array([ladder_x - 0.3, ladder_bottom, 0]),
+            end=np.array([ladder_x - 0.3, ladder_top, 0]),
+            color=GREY_BROWN,
+            stroke_width=2
+        )
+        right_rail = Line(
+            start=np.array([ladder_x + 0.3, ladder_bottom, 0]),
+            end=np.array([ladder_x + 0.3, ladder_top, 0]),
+            color=GREY_BROWN,
+            stroke_width=2
+        )
+        
+        # Ladder rungs
+        rung_spacing = 0.4
+        rungs = VGroup()
+        y = ladder_bottom
+        while y <= ladder_top:
+            rung = Line(
+                start=np.array([ladder_x - 0.3, y, 0]),
+                end=np.array([ladder_x + 0.3, y, 0]),
+                color=GREY_BROWN,
+                stroke_width=2
+            )
+            rungs.add(rung)
+            y += rung_spacing
+        
+        # Add scene elements
+        self.add(ground, left_rail, right_rail, rungs)
+        
+        # Sprite starting and ending positions
+        sprite_start_y = ground_y + 0.6
+        sprite_end_y = ladder_top - 0.6
+        sprite.move_to(np.array([ladder_x, sprite_start_y, 0]))
+        self.add(sprite)
+        
+        # Camera initialization
+        frame_height = config.frame_height
+        initial_camera_y = ground_y + frame_height / 2
+        self.camera.frame.move_to(np.array([0, initial_camera_y, 0]))
+        
+        # Climb parameters
+        climb_distance = sprite_end_y - sprite_start_y
+        climb_duration = 6.0
+        
+        # Threshold: camera can start following when character reaches this height
+        camera_follow_threshold = ground_y + frame_height / 2
+        distance_to_threshold = camera_follow_threshold - sprite_start_y
+        time_to_threshold = (distance_to_threshold / climb_distance) * climb_duration if climb_distance > 0 else 0
+        
+        # Phase 1: Climb to threshold (camera stays fixed)
+        if time_to_threshold > 0:
+            self.play(
+                sprite.animate.move_to(np.array([ladder_x, camera_follow_threshold, 0])),
+                run_time=time_to_threshold
+            )
+        
+        # Phase 2: Continue climbing with camera following
+        remaining_time = climb_duration - time_to_threshold
+        
+        def follow_sprite(frame):
+            frame.move_to(np.array([0, sprite.get_y(), 0]))
+        
+        self.camera.frame.add_updater(follow_sprite)
+        
+        self.play(
+            sprite.animate.move_to(np.array([ladder_x, sprite_end_y, 0])),
+            run_time=remaining_time
+        )
+        
+        self.camera.frame.remove_updater(follow_sprite)
+        
+        self.wait()
+```

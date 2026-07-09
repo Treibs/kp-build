@@ -850,8 +850,8 @@
     },
     {
       "id": "camera-follow-green",
-      "statement": "A camera that continuously tracks a moving mobject is an updater on `self.camera.frame` in a `MovingCameraScene`: `self.camera.frame.add_updater(lambda f: f.move_to(runner.get_center()))` before the movement `play`, cleared after. The one-shot `frame.animate.move_to(...)` form (see moving-camera) pans once and then sits still — a follow shot that never follows renders exit 0, so this corner is invisible to a render gate.",
-      "supporting_passage": "manim 0.20.1 renders a MovingCameraScene whose camera.frame carries a follow updater across a full traverse, exit 0.",
+      "statement": "A camera that continuously tracks a moving mobject is an updater on `self.camera.frame` in a `MovingCameraScene` — AND the frame must be added to the scene first, or its updaters never run during `play`: `self.add(self.camera.frame)`, then `self.camera.frame.add_updater(lambda f: f.move_to(runner.get_center()))` before the movement `play`, cleared after. Without the `self.add` step the scene renders exit 0 and the camera silently never moves (this pack's own first GREEN omitted it and was caught by hand-checking the video — a render gate cannot see it). The one-shot `frame.animate.move_to(...)` form (see moving-camera) pans once and then sits still.",
+      "supporting_passage": "manim 0.20.1 renders a MovingCameraScene whose camera.frame is added to the scene and carries a follow updater across a full traverse, exit 0; the follow was verified on the output video (marks scroll, runner centered).",
       "claim_type": "method",
       "confidence": "high",
       "execution": {

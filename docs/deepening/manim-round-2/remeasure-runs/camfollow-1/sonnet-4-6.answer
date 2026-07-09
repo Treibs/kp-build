@@ -1,0 +1,45 @@
+```python
+from manim import *
+
+
+class SideScrollScene(MovingCameraScene):
+    def construct(self):
+        ground_y = -1.5
+
+        # Ground line spanning the full path with margin
+        ground = Line([-12, ground_y, 0], [12, ground_y, 0], color=WHITE)
+
+        # Five evenly-spaced signposts from x=-8 to x=8
+        signpost_xs = np.linspace(-8, 8, 5)
+        signposts = VGroup()
+        for i, x in enumerate(signpost_xs):
+            pole = Line([x, ground_y, 0], [x, ground_y + 1.1, 0], color=YELLOW)
+            label = Text(str(i + 1), font_size=32, color=YELLOW)
+            label.move_to([x, ground_y + 1.45, 0])
+            signposts.add(VGroup(pole, label))
+
+        # Character sprite — nearest-neighbor resampling keeps pixels crisp
+        sprite = ImageMobject("sprite.png")
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.set_height(1.5)
+        sprite.move_to([-8, ground_y + 0.75, 0])
+
+        # Zoom the camera frame to half the default width before adding anything
+        frame = self.camera.frame
+        frame.set(width=config.frame_width / 2)
+        frame.move_to([-8, 0, 0])
+
+        self.add(ground, signposts, sprite)
+
+        # Updater keeps the camera horizontally centred on the sprite every frame
+        frame.add_updater(lambda f: f.move_to([sprite.get_x(), 0, 0]))
+
+        self.play(
+            sprite.animate.move_to([8, ground_y + 0.75, 0]),
+            run_time=6,
+            rate_func=linear,
+        )
+
+        frame.clear_updaters()
+        self.wait(0.5)
+```

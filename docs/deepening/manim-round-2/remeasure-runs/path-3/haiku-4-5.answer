@@ -1,0 +1,44 @@
+```python
+from manim import *
+import numpy as np
+
+class CharacterOrbitScene(Scene):
+    def construct(self):
+        # Create circle with radius 3
+        circle = Circle(radius=3, color=WHITE, stroke_width=2)
+        self.add(circle)
+        
+        # Load and scale sprite
+        sprite = ImageMobject("sprite.png")
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.height = 1.2
+        
+        # Angle tracker for the orbit
+        angle = ValueTracker(0)
+        
+        # Track rotation state to handle cumulative rotation
+        rotation_state = {"prev_angle": 0}
+        
+        def update_sprite(mob):
+            theta = angle.get_value()
+            
+            # Position on circle (counterclockwise)
+            pos_x = 3 * np.cos(theta)
+            pos_y = 3 * np.sin(theta)
+            mob.move_to([pos_x, pos_y, 0])
+            
+            # Rotation delta
+            delta_rotation = theta - rotation_state["prev_angle"]
+            
+            # Rotate sprite around its center to face inward
+            mob.rotate(delta_rotation, about_point=mob.get_center())
+            
+            rotation_state["prev_angle"] = theta
+        
+        sprite.add_updater(update_sprite)
+        self.add(sprite)
+        
+        # Animate one full counterclockwise lap (0 to 2π) over 6 seconds
+        self.play(angle.animate.set_value(2 * np.pi), run_time=6)
+        self.wait(1)
+```

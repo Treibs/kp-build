@@ -1,0 +1,46 @@
+Manim Community v0.20.1
+
+[07/09/26 22:24:42] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/SpriteScene/uncached_000
+ 00.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/SpriteScene/uncached_000
+ 01.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/SpriteScene/uncached_000
+ 02.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/SpriteScene/uncached_000
+ 03.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/manim/media/videos/scene
+ /480p15/SpriteScene.mp4'
+
+ INFO Rendered SpriteScene scene.py:278
+ Played 4 animations
+
+Animation 0: _MethodAnimation(ImageMobject): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 1: _MethodAnimation(ImageMobject): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 2: _MethodAnimation(ImageMobject): 0%| | 0/8 [00:00<?, ?it/s]

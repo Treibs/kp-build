@@ -147,3 +147,18 @@ green attaches its updater to `camera.frame` while animating a *different* mobje
 side of the `animate-live-updater` hang class — the updater target is structure-stable).
 Corpus extended with four passages from the same pinned commit (`1157b746`, tag v0.20.1) to
 ground the five doc claims. Full fixture census: **46** (29 green-gated + 17 red).
+
+### Part VII correction — camera-follow GREEN (2026-07-09, same day, pre-merge)
+
+The camera-follow GREEN as first committed attached the updater to `camera.frame` but did
+**not** add the frame to the scene — and `camera.frame` updaters never run during `play`
+unless `self.add(self.camera.frame)` happens first. The scene rendered exit 0 with the camera
+sitting still: the beat's own fixture was a live instance of the render-blind failure mode it
+was written to teach. Caught by hand-checking the remeasure videos (all three remeasure
+camera-follow answers reproduced the broken pattern the pack had just taught them — the
+smoking gun that sent the check back to the fixture itself). Fixed by adding
+`self.add(self.camera.frame)`; the fix was verified on the output video (marks scroll, runner
+stays centered) before re-commit, and the green claim now names the `self.add` step as part
+of the idiom. The remeasure was collected against the pre-fix payload — disclosed in the
+round-2 remeasure ledger, which treats its camera-follow rows as evidence of the defect, not
+of the fix.
