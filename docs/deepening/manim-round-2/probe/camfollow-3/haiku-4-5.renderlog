@@ -1,0 +1,35 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:30 in construct
+
+ 27 left_rail = Line(
+ 28 np.array([left_x, ground_y, 0]),
+ 29 np.array([left_x, ground_y + ladder_height, 0]),
+ ❱ 30 color=BROWN,
+ 31 stroke_width=2.5
+ 32 )
+ 33 right_rail = Line(
+
+NameError: name 'BROWN' is not defined

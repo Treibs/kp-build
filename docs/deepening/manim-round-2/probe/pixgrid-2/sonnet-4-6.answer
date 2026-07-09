@@ -1,0 +1,103 @@
+```python
+from manim import *
+import numpy as np
+
+PIXEL = 0.35
+
+_N = None
+SK = "#FFCD94"
+HR = "#3D1C00"
+SH = "#4169E1"
+PT = "#1A237E"
+SW = "#2D1000"
+EY = "#111111"
+GR = "#228B22"
+BR = "#8B4513"
+
+PERSON_MAP = [
+    [_N, _N, HR, HR, HR, HR, _N, _N],
+    [_N, SK, SK, SK, SK, SK, SK, _N],
+    [_N, SK, EY, SK, SK, EY, SK, _N],
+    [_N, SK, SK, SK, SK, SK, SK, _N],
+    [SH, SH, SH, SH, SH, SH, SH, SH],
+    [_N, SH, SH, SH, SH, SH, SH, _N],
+    [_N, PT, PT, _N, _N, PT, PT, _N],
+    [_N, SW, SW, _N, _N, SW, SW, _N],
+]
+
+TREE_MAP = [
+    [_N, _N, _N, GR, GR, GR, GR, _N, _N, _N],
+    [_N, _N, GR, GR, GR, GR, GR, GR, _N, _N],
+    [_N, GR, GR, GR, GR, GR, GR, GR, GR, _N],
+    [_N, GR, GR, GR, GR, GR, GR, GR, GR, _N],
+    [GR, GR, GR, GR, GR, GR, GR, GR, GR, GR],
+    [_N, GR, GR, GR, GR, GR, GR, GR, GR, _N],
+    [_N, _N, GR, GR, GR, GR, GR, GR, _N, _N],
+    [_N, _N, _N, GR, GR, GR, GR, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+    [_N, _N, _N, _N, BR, BR, _N, _N, _N, _N],
+]
+
+
+def make_pixels(pixel_map):
+    group = VGroup()
+    for r, row in enumerate(pixel_map):
+        for c, color in enumerate(row):
+            if color is not None:
+                sq = Square(
+                    side_length=PIXEL,
+                    fill_color=color,
+                    fill_opacity=1.0,
+                    stroke_width=0,
+                )
+                sq.move_to(np.array([c * PIXEL, -r * PIXEL, 0]))
+                group.add(sq)
+    return group
+
+
+class PixelWalkScene(Scene):
+    def construct(self):
+        fw = config.frame_width
+        fh = config.frame_height
+        ground_y = -2.5
+
+        sky = Rectangle(
+            width=fw + 0.2,
+            height=fh + 0.2,
+            fill_color="#B0D4E8",
+            fill_opacity=1.0,
+            stroke_width=0,
+        )
+        sky.move_to(ORIGIN)
+        sky.set_z_index(0)
+
+        tree = make_pixels(TREE_MAP)
+        tree.move_to(ORIGIN)
+        tree.shift(UP * (ground_y - tree.get_bottom()[1]))
+        tree.set_x(0.0)
+        tree.set_z_index(2)
+
+        person = make_pixels(PERSON_MAP)
+        person.move_to(ORIGIN)
+        person.shift(UP * (ground_y - person.get_bottom()[1]))
+        pw = person.get_width()
+        start_x = -fw / 2 + pw / 2
+        end_x = fw / 2 - pw / 2
+        person.set_x(start_x)
+        person.set_z_index(1)
+
+        self.add(sky, person, tree)
+
+        self.play(
+            person.animate.set_x(end_x),
+            run_time=5,
+            rate_func=linear,
+        )
+        self.wait(0.5)
+```

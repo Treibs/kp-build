@@ -1,0 +1,51 @@
+```python
+from manim import *
+
+class PixelArtPerson(Scene):
+    def construct(self):
+        pixel_size = 0.4
+        
+        # Define pixel art person (8x8 grid)
+        pattern = [
+            [0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 1, 1, 0, 0, 1, 1, 0],
+            [0, 1, 1, 0, 0, 1, 1, 0],
+        ]
+        
+        def get_color(row):
+            return LIGHT_BROWN if row < 3 else RED if row < 5 else BLUE
+        
+        pixels = []
+        pixel_dict = {}
+        
+        for row in range(8):
+            for col in range(8):
+                if pattern[row][col] == 1:
+                    sq = Square(side_length=pixel_size, fill_opacity=1)
+                    sq.set_color(get_color(row))
+                    sq.move_to([(col - 3.5) * pixel_size, (3.5 - row) * pixel_size, 0])
+                    pixels.append(sq)
+                    pixel_dict[(row, col)] = sq
+        
+        self.add(*pixels)
+        colors = [p.get_color() for p in pixels]
+        
+        # Flash white twice
+        for _ in range(2):
+            self.play(*[p.animate.set_color(WHITE) for p in pixels], run_time=0.15)
+            self.play(*[p.animate.set_color(colors[i]) for i, p in enumerate(pixels)], run_time=0.15)
+        
+        # Five pixels fall and rotate
+        to_remove = [pixel_dict[coord] for coord in [(1, 6), (2, 6), (3, 5), (4, 5), (5, 6)]]
+        
+        self.play(
+            *[p.animate.shift(DOWN * 10).rotate(2 * PI) for p in to_remove],
+            run_time=1.5
+        )
+        self.wait()
+```

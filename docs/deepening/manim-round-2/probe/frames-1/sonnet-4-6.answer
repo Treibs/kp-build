@@ -1,0 +1,38 @@
+```python
+from manim import *
+from PIL import Image
+import numpy as np
+
+
+class PixelWalkCycle(Scene):
+    def construct(self):
+        # Pre-scale each 16×16 frame by 32× with nearest-neighbor so Manim's
+        # internal interpolation sees large uniform blocks → crisp pixel edges.
+        upscale = 32
+        frame_arrays = []
+        for i in range(4):
+            pil_img = Image.open(f"sprite_{i}.png").convert("RGBA")
+            pil_img = pil_img.resize(
+                (pil_img.width * upscale, pil_img.height * upscale),
+                Image.NEAREST,
+            )
+            frame_arrays.append(np.array(pil_img))
+
+        sprite = ImageMobject(frame_arrays[0])
+        sprite.set_height(3)
+        self.add(sprite)
+
+        elapsed = [0.0]
+        current_frame = [0]
+
+        def cycle_frames(mob, dt):
+            elapsed[0] += dt
+            new_frame = int(elapsed[0] / 0.25) % 4
+            if new_frame != current_frame[0]:
+                current_frame[0] = new_frame
+                mob.pixel_array = frame_arrays[new_frame]
+
+        sprite.add_updater(cycle_frames)
+        self.wait(4)
+        sprite.remove_updater(cycle_frames)
+```

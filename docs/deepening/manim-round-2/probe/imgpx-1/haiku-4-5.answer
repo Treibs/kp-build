@@ -1,0 +1,13 @@
+```python
+from manim import *
+
+class SpriteScene(Scene):
+    def construct(self):
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 4
+        sprite.move_to(ORIGIN)
+        
+        self.play(FadeIn(sprite), run_time=0.5)
+        self.wait(1)
+        self.play(sprite.animate.shift(RIGHT * 3), run_time=1)
+```

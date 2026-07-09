@@ -1,0 +1,39 @@
+```python
+from manim import *
+
+class WalkCycleScene(Scene):
+    def construct(self):
+        # Load the 4-frame walk cycle
+        sprites = [ImageMobject(f"sprite_{i}.png", filter_kwargs={"order": 0}) for i in range(4)]
+        
+        # Scale all sprites to 2 units tall
+        for sprite in sprites:
+            sprite.scale_to_fit_height(2)
+        
+        # Create display mobjects positioned left and right of center
+        left_char = sprites[0].copy().shift(LEFT * 2)
+        right_char = sprites[0].copy().shift(RIGHT * 2)
+        
+        self.add(left_char, right_char)
+        
+        # Time tracking for each character (in seconds)
+        left_elapsed = [0]
+        right_elapsed = [0]
+        
+        def update_left(mob, dt):
+            left_elapsed[0] += dt
+            frame_idx = int((left_elapsed[0] / 0.2) % 4)
+            new_sprite = sprites[frame_idx].copy().shift(LEFT * 2)
+            mob.become(new_sprite)
+        
+        def update_right(mob, dt):
+            right_elapsed[0] += dt
+            frame_idx = int((right_elapsed[0] / 0.4) % 4)
+            new_sprite = sprites[frame_idx].copy().shift(RIGHT * 2)
+            mob.become(new_sprite)
+        
+        left_char.add_updater(update_left)
+        right_char.add_updater(update_right)
+        
+        self.wait(4)
+```

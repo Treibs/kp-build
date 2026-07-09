@@ -1,0 +1,23 @@
+Manim Community v0.20.1
+
+[07/09/26 21:05:10] INFO Caching disabled. cairo_renderer.py:83
+[07/09/26 21:05:11] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelWalkCycle/uncached_00
+ 000.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/PixelWalkCycle.mp4'
+
+ INFO Rendered PixelWalkCycle scene.py:278
+ Played 1 animations
+/manim/scene.py:21: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ sprite.set_height(3)
+
+Waiting 0: 0%| | 0/60 [00:00<?, ?it/s]
+Waiting 0: 43%|████▎ | 26/60 [00:00<00:00, 254.05it/s]
+Waiting 0: 90%|█████████ | 54/60 [00:00<00:00, 264.56it/s]

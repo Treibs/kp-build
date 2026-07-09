@@ -1,0 +1,94 @@
+Manim Community v0.20.1
+
+[07/09/26 21:38:08] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 00.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 01.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 02.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 03.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 04.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 5 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 05.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 6 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 06.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 7 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 07.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 8 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 08.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 9 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelHitScene/uncached_000
+ 09.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/PixelHitScene.mp4'
+
+ INFO Rendered PixelHitScene scene.py:278
+ Played 10 animations
+
+Animation 1: _MethodAnimation(Square), etc.: 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 2: _MethodAnimation(Square), etc.: 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 4: _MethodAnimation(Square), etc.: 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 5: _MethodAnimation(Square), etc.: 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Waiting 8: 0%| | 0/35 [00:00<?, ?it/s]

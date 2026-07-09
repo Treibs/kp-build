@@ -1,0 +1,104 @@
+```python
+from manim import *
+import numpy as np
+from PIL import Image as PILImage
+
+
+class LadderClimbScene(MovingCameraScene):
+    def construct(self):
+        frame_h = config.frame_height  # 8 units
+        frame_w = config.frame_width   # ~14.22 units
+
+        # Ground sits at the very bottom edge of the initial camera view
+        ground_y = -frame_h / 2 + 0.3
+        ladder_height = 3 * frame_h          # 3 screen-heights tall
+        ladder_top_y = ground_y + ladder_height
+
+        char_height = 1.2
+        char_start_y = ground_y + char_height / 2   # centre when standing on ground
+        char_end_y   = ladder_top_y                  # centre at top of ladder
+
+        # Camera centre may never drop below this (would expose below-ground)
+        cam_min_y = ground_y + frame_h / 2
+
+        # Initialise camera so ground sits exactly at the bottom of the frame
+        self.camera.frame.move_to(np.array([0.0, cam_min_y, 0.0]))
+
+        # ── Ground line ──────────────────────────────────────────────────────
+        ground_line = Line(
+            np.array([-frame_w * 3, ground_y, 0.0]),
+            np.array([ frame_w * 3, ground_y, 0.0]),
+            color=WHITE,
+            stroke_width=2,
+        )
+
+        # ── Ladder: two thin rails + evenly spaced rungs ─────────────────────
+        rail_x      = 0.18
+        rung_spacing = 0.38
+        num_rungs    = int(ladder_height / rung_spacing)
+
+        left_rail = Line(
+            np.array([-rail_x, ground_y, 0.0]),
+            np.array([-rail_x, ladder_top_y, 0.0]),
+            color=GRAY,
+            stroke_width=2,
+        )
+        right_rail = Line(
+            np.array([rail_x, ground_y, 0.0]),
+            np.array([rail_x, ladder_top_y, 0.0]),
+            color=GRAY,
+            stroke_width=2,
+        )
+        rungs = VGroup(*[
+            Line(
+                np.array([-rail_x, ground_y + i * rung_spacing, 0.0]),
+                np.array([ rail_x, ground_y + i * rung_spacing, 0.0]),
+                color=GRAY,
+                stroke_width=2,
+            )
+            for i in range(1, num_rungs + 1)
+        ])
+
+        # ── Sprite: upscale with nearest-neighbour for crisp pixels ──────────
+        pil_img = PILImage.open("sprite.png").convert("RGBA")
+        try:
+            resample = PILImage.Resampling.NEAREST
+        except AttributeError:
+            resample = PILImage.NEAREST  # Pillow < 10
+
+        upscale = 8
+        pil_up  = pil_img.resize(
+            (pil_img.width * upscale, pil_img.height * upscale),
+            resample=resample,
+        )
+        sprite = ImageMobject(np.array(pil_up))
+        sprite.height = char_height
+        sprite.move_to(np.array([0.0, char_start_y, 0.0]))
+
+        self.add(ground_line, left_rail, right_rail, rungs, sprite)
+
+        # ── Animation: ValueTracker drives both sprite and camera ─────────────
+        tracker = ValueTracker(0.0)
+
+        def update_sprite(mob):
+            t  = tracker.get_value()
+            y  = char_start_y + t * (char_end_y - char_start_y)
+            mob.move_to(np.array([0.0, y, 0.0]))
+
+        def update_camera(mob):
+            t      = tracker.get_value()
+            char_y = char_start_y + t * (char_end_y - char_start_y)
+            # Follow the character but never expose below ground_y
+            cam_y  = max(cam_min_y, char_y)
+            mob.move_to(np.array([0.0, cam_y, 0.0]))
+
+        sprite.add_updater(update_sprite)
+        self.camera.frame.add_updater(update_camera)
+
+        self.play(tracker.animate.set_value(1.0), run_time=6, rate_func=linear)
+
+        sprite.remove_updater(update_sprite)
+        self.camera.frame.remove_updater(update_camera)
+
+        self.wait(1)
+```

@@ -1,0 +1,53 @@
+Manim Community v0.20.1
+
+[07/09/26 21:12:58] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SideScrollingCharacter/unc
+ ached_00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SideScrollingCharacter/unc
+ ached_00001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/SideScrollingCharact
+ er.mp4'
+
+ INFO Rendered SideScrollingCharacter scene.py:278
+ Played 2 animations
+/manim/scene.py:6: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ self.camera.frame.set_width(config.frame_width / 2)
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+
+Animation 0: _MethodAnimation(ImageMobject), etc.: 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ImageMobject), etc.: 19%|█▉ | 17/90 [00:00<00:00, 164.85it/s]
+Animation 0: _MethodAnimation(ImageMobject), etc.: 40%|████ | 36/90 [00:00<00:00, 175.70it/s]
+Animation 0: _MethodAnimation(ImageMobject), etc.: 60%|██████ | 54/90 [00:00<00:00, 177.16it/s]
+Animation 0: _MethodAnimation(ImageMobject), etc.: 81%|████████ | 73/90 [00:00<00:00, 179.32it/s]
