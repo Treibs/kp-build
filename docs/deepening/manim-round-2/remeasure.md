@@ -6,8 +6,12 @@ numbers come from pre-registered held-out falsification (tier 2).*
 Exactly the failed probe runs — the three render-gate FAILs plus the four render-blind wrong
 answers found by hand inspection (the API-shape oracle cannot see those, so their remeasure
 verdict is also by hand inspection). Fresh answers, same models and prompts, deepened
-**77-claim** payload (42,734 bytes, sha256 `78240c5496275857…` — assembled from the teach
-commit `d698597`), gated by the pinned image. Artifacts in `remeasure-runs/`.
+**77-claim** payload — 42,734 bytes, sha256 `78240c5496275857…`, assembled from the teach
+commit `d698597` by the standard rule stated precisely (review round 1 asked): `CONTEXT.md`
+at `d698597` + `\n## Pack claims (all)\n` + the `statement` strings from
+`examples/manim.research.json` at `d698597`, sorted by Python `sorted()` (code-point order),
+one `- ` bullet each, joined with `\n`, trailing newline. Re-verified reproducible from
+`git show d698597:` inputs after the review. Gated by the pinned image. Artifacts in `remeasure-runs/`.
 
 **Payload-desync disclosure (the round's own defect, caught here):** this remeasure was
 collected against the payload whose `camera-follow` GREEN **omitted
@@ -42,6 +46,12 @@ fix** — the corrected claim's effect is unmeasured until the next round or tie
   lesson: **the pack taught a broken pattern and the models applied it faithfully** — rule
   application worked; the rule was wrong. Only the hand-check protocol (probe → remeasure →
   the beat's own fixture) caught the chain.
+- **Engine note (review round 1, minor m3):** the CONTEXT.md briefing cap displaced several
+  taught method claims (round-1 and round-2 GREENs, including the corrected camera-follow
+  idiom) into the "+N more — see claims/" tail; probe/remeasure payloads are unaffected (they
+  append all claim statements), but a consumer loading CONTEXT.md alone does not see them.
+  Recorded as engine debt (same family as the report-renderer 0-source debt), not a round
+  defect.
 - **Round-3 candidate ledger:** `orbit-phase` (tangent-following rotation with correct phase;
   ×2 — probe + remeasure); the corrected `camera-follow` claim's effect (unmeasured);
   `image-group` corner unexercised in its remeasure (avoided) — the class stays watched, not
