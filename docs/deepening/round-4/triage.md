@@ -37,16 +37,19 @@ distinct root causes.
   constructors used `: T` returns, including a tuple return. The two territory-2 hits were the
   *other* invited shape (compound-assign) and a new sibling (while-parens).
 - Territory 3's tuple-key and vector-method shapes did not fire either: rapi-1 both models
-  encoded pair keys as `copy+drop+store` structs (`Pair`/`DuelKey`), rapi-2 both used
-  `.length()`/`.borrow()`. The one T3 hit was the `std::mem` family.
+  encoded pair keys as `copy+drop+store` structs (`Pair`/`DuelKey`); on rapi-2, sonnet used
+  the method forms `.length()`/`.borrow()` and haiku the function forms
+  `vector::length`/`vector::borrow` — neither reached for Rust's `.len()`/`.get()`. The one
+  T3 hit was the `std::mem` family.
 
 ## Warnings on passing runs (recorded, not beats)
 
 - **W99001 non-composable-transfer ×3** (suimport-1/haiku, suimport-3/haiku, suimport-2/sonnet)
   — the loaded round-2 grounding rule ignored again, consistent with the standing
   ignored-while-loaded phenomenon (warning-tier).
-- **W99003 coin-field ×1** (suimport-1/haiku, `proceeds: Coin<SUI>`) — another data point for
-  the excluded class; the exclusion reasoning stands.
+- **W99003 coin-field ×1 on passing runs** (suimport-1/haiku, `proceeds: Coin<SUI>`); the
+  failing suimport-2/haiku log carries a second (`pot: Coin<SUI>`) — two data points for the
+  excluded class this round; the exclusion reasoning stands.
 - **W04037 deprecated ×1** (oid-3/haiku, `*string::bytes(&street)`).
 
 ## Notes

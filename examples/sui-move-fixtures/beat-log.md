@@ -257,8 +257,9 @@ Notes:
 - Three territories recorded clean with corners demonstrably exercised: sui-import-path (all
   six answers wrote `use sui::sui::SUI` — the ×4-cumulative top ledger class did not reproduce
   under targeted elicitation), generic-transfer-key-bound (all six bound choices sound; second
-  consecutive clean probe), object-identity (all six answers handled UID/ID/`object::delete`
-  correctly).
+  consecutive clean probe), object-identity (all six answers passed with the identity
+  corners engaged — `object::delete` ×4, `ID`-typed event fields; one registry keyed by the
+  object's `address` form, noted in the triage).
 - Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
 
 **Totals:** 39 green fixtures, 32 red fixtures (7 beats grounding-only: implicit-imports,
