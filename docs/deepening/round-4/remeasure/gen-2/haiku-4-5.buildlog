@@ -1,0 +1,17 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:31:10
+   │
+19 │         mut boxes: vector<CareBox<T>>,
+   │             -----  ------------------
+   │             │      │      │
+   │             │      │      The type 'vector<dispatch::carebox::CareBox<T>>' can have the ability 'drop' but the type argument 'dispatch::carebox::CareBox<T>' does not have the required ability 'drop'
+   │             │      The type 'vector<dispatch::carebox::CareBox<T>>' does not have the ability 'drop'
+   │             The parameter 'boxes' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+31 │         };
+   │          ^ Invalid return
+

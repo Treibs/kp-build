@@ -1,0 +1,38 @@
+```move
+module hero::xp {
+    use std::string::String;
+
+    public struct Character has key, store {
+        id: UID,
+        name: String,
+        level: u64,
+        experience: u64,
+    }
+
+    public fun create_character(name: String, ctx: &mut TxContext): Character {
+        Character {
+            id: object::new(ctx),
+            name,
+            level: 1,
+            experience: 0,
+        }
+    }
+
+    public fun gain_xp(character: &mut Character, amount: u64) {
+        character.experience = character.experience + amount;
+        
+        while (character.experience >= experience_required(character.level)) {
+            character.experience = character.experience - experience_required(character.level);
+            character.level = character.level + 1;
+        };
+    }
+
+    public fun power(character: &Character): u64 {
+        character.level * 10 + character.experience
+    }
+
+    fun experience_required(level: u64): u64 {
+        level * 100
+    }
+}
+```
