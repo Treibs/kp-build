@@ -1,5 +1,12 @@
 # Payload-salience experiment — same 98 claims, form varies (sui-move)
 
+> **Update 2026-07-09 — the adoption below is WITHDRAWN.** The confirmation draw this README
+> requires ("one fresh draw, sheet vs full only") was run pre-registered
+> ([`docs/experiments/sui-sheet-confirm/`](../sui-sheet-confirm/), frozen at `5e605c9`) and
+> landed on its branch 3: full 4/6 vs sheet 1/6. The sheet reverts to an experimental view of
+> the pack; the full payload is again the recommended load format. Everything below stands as
+> recorded — the numbers stay pinned to what this draw measured.
+
 **Result up front: branch 1 fires — payload form matters.** The hand-compressed cheat sheet
 (**sheet**, 5,887 bytes) compile-passed **3/6** against the standard payload's (**full**,
 49,656 bytes) **1/6**, meeting the pre-registered ≥ full + 2 bar **exactly** (3 = 1 + 2). Per
