@@ -11,7 +11,9 @@ surface that recorded the adoption now records the withdrawal.
 
 This is the confirmation draw the salience experiment itself required before any tooling
 ("one fresh draw, sheet vs full only"). The salience result cleared its bar **exactly**
-(3/6 vs 1/6, zero margin, n = 6); this draw reversed it decisively. Pooled across both
+(3/6 vs 1/6, zero margin, n = 6); this draw reversed it (full +3 at the same n — a clear
+branch-3 outcome under the frozen rule, though nothing at n = 6 is statistically decisive).
+Pooled across both
 draws (observational, no ship-rule weight): sheet **4/12** vs full **5/12** — no form
 signal survives. The zero-margin qualifier disclosed at adoption time did its job.
 
