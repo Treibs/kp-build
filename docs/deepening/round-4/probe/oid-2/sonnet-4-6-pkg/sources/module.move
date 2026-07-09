@@ -1,0 +1,60 @@
+module pets::registry {
+    use sui::table::{Self, Table};
+    use std::string::String;
+
+    public struct ShelterCap has key, store {
+        id: UID,
+    }
+
+    public struct Pet has key {
+        id: UID,
+        name: String,
+    }
+
+    public struct AdoptionRegistry has key {
+        id: UID,
+        adoptions: Table<address, address>,
+        count: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let cap = ShelterCap { id: object::new(ctx) };
+        transfer::transfer(cap, ctx.sender());
+
+        let registry = AdoptionRegistry {
+            id: object::new(ctx),
+            adoptions: table::new(ctx),
+            count: 0,
+        };
+        transfer::share_object(registry);
+    }
+
+    public fun mint_pet(
+        _cap: &ShelterCap,
+        name: String,
+        ctx: &mut TxContext,
+    ): Pet {
+        Pet { id: object::new(ctx), name }
+    }
+
+    public fun adopt(
+        _cap: &ShelterCap,
+        registry: &mut AdoptionRegistry,
+        pet: Pet,
+        adopter: address,
+    ) {
+        let pet_id = object::id_address(&pet);
+        table::add(&mut registry.adoptions, pet_id, adopter);
+        registry.count = registry.count + 1;
+        transfer::transfer(pet, adopter);
+    }
+
+    public fun adopter_of(registry: &AdoptionRegistry, pet_id: address): address {
+        assert!(table::contains(&registry.adoptions, pet_id));
+        *table::borrow(&registry.adoptions, pet_id)
+    }
+
+    public fun adoption_count(registry: &AdoptionRegistry): u64 {
+        registry.count
+    }
+}

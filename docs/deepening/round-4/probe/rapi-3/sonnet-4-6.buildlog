@@ -1,0 +1,13 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+   ┌─ ./sources/module.move:26:9
+   │
+26 │         std::mem::swap(&mut robot.battery, &mut depleted);
+   │         ^^^^^^^^
+   │         │
+   │         Unbound module 'std::mem'
+   │         Did you mean: 'std::u8'
+

@@ -1,0 +1,35 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:29:40
+   │
+20 │         boxes: vector<CareBox<T>>,
+   │         ----- To use the variable mutably, it must be declared 'mut', e.g. 'mut boxes'
+   ·
+29 │             let box = vector::pop_back(&mut boxes);
+   │                                        ^^^^^^^^^^ Invalid mutable borrow of immutable variable 'boxes'
+
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:30:46
+   │
+21 │         recipients: vector<address>,
+   │         ---------- To use the variable mutably, it must be declared 'mut', e.g. 'mut recipients'
+   ·
+30 │             let recipient = vector::pop_back(&mut recipients);
+   │                                              ^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'recipients'
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:33:10
+   │
+20 │         boxes: vector<CareBox<T>>,
+   │         -----  ------------------
+   │         │      │      │
+   │         │      │      The type 'vector<dispatch::carebox::CareBox<T>>' can have the ability 'drop' but the type argument 'dispatch::carebox::CareBox<T>' does not have the required ability 'drop'
+   │         │      The type 'vector<dispatch::carebox::CareBox<T>>' does not have the ability 'drop'
+   │         The parameter 'boxes' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+33 │         };
+   │          ^ Invalid return
+

@@ -1,0 +1,46 @@
+module contest::prize {
+    use std::option::{Self, Option};
+
+    public struct Contest<T: key + store> has key {
+        id: UID,
+        prize: Option<T>,
+    }
+
+    public struct JudgeCap has key, store {
+        id: UID,
+        contest_id: ID,
+    }
+
+    public fun open_contest<T: key + store>(
+        prize: T,
+        ctx: &mut TxContext,
+    ): JudgeCap {
+        let contest = Contest {
+            id: object::new(ctx),
+            prize: option::some(prize),
+        };
+        let contest_id = object::id(&contest);
+        
+        transfer::share_object(contest);
+        
+        JudgeCap {
+            id: object::new(ctx),
+            contest_id,
+        }
+    }
+
+    public fun award<T: key + store>(
+        contest: &mut Contest<T>,
+        judge_cap: &JudgeCap,
+        winner: address,
+    ) {
+        assert!(object::id(contest) == judge_cap.contest_id);
+        
+        let prize = option::extract(&mut contest.prize);
+        transfer::public_transfer(prize, winner);
+    }
+
+    public fun is_open<T: key + store>(contest: &Contest<T>): bool {
+        option::is_some(&contest.prize)
+    }
+}

@@ -1,0 +1,39 @@
+module robo::battery {
+    public struct Battery has copy, drop, store {
+        serial: u64,
+        charge: u64,
+    }
+
+    public struct Robot has key {
+        id: UID,
+        battery: Battery,
+    }
+
+    public fun build_robot(ctx: &mut TxContext): Robot {
+        Robot {
+            id: object::new(ctx),
+            battery: Battery {
+                serial: 0,
+                charge: 100,
+            }
+        }
+    }
+
+    public fun swap_battery(robot: &mut Robot, fresh: Battery): Battery {
+        let old = robot.battery;
+        robot.battery = fresh;
+        old
+    }
+
+    public fun recharge(battery: &mut Battery, amount: u64) {
+        battery.charge = if (battery.charge + amount > 100) {
+            100
+        } else {
+            battery.charge + amount
+        };
+    }
+
+    public fun charge_level(robot: &Robot): u64 {
+        robot.battery.charge
+    }
+}

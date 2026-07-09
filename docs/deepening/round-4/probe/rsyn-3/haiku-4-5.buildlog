@@ -1,0 +1,38 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:20:24
+   │
+20 │     public fun gain_xp(character: &mut Character, amount: u64) {
+   │                        ^^^^^^^^^ Unused parameter 'character'. Consider removing or prefixing with an underscore: '_character'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:20:51
+   │
+20 │     public fun gain_xp(character: &mut Character, amount: u64) {
+   │                                                   ^^^^^^ Unused parameter 'amount'. Consider removing or prefixing with an underscore: '_amount'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:21:31
+   │
+21 │         character.experience += amount;
+   │                               ^
+   │                               │
+   │                               Unexpected '='
+   │                               Expected an expression term
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:23:15
+   │
+23 │         while character.experience >= character.level * 100 {
+   │               ^^^^^^^^^
+   │               │
+   │               Unexpected 'character'
+   │               Expected '('
+

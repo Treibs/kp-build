@@ -1,0 +1,51 @@
+module raffle::pot {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+
+    public struct Raffle has key {
+        id: UID,
+        ticket_price: u64,
+        pot: Balance<SUI>,
+        entrants: vector<address>,
+    }
+
+    public struct OrganizerCap has key, store {
+        id: UID,
+    }
+
+    public fun create(ticket_price: u64, ctx: &mut TxContext) {
+        let raffle = Raffle {
+            id: object::new(ctx),
+            ticket_price,
+            pot: balance::zero(),
+            entrants: vector[],
+        };
+        let cap = OrganizerCap {
+            id: object::new(ctx),
+        };
+        transfer::share_object(raffle);
+        transfer::public_transfer(cap, ctx.sender());
+    }
+
+    public fun enter(raffle: &mut Raffle, payment: Coin<SUI>, ctx: &TxContext) {
+        assert!(coin::value(&payment) == raffle.ticket_price);
+        balance::join(&mut raffle.pot, coin::into_balance(payment));
+        raffle.entrants.push_back(ctx.sender());
+    }
+
+    public fun draw(
+        _cap: &OrganizerCap,
+        raffle: &mut Raffle,
+        winner_index: u64,
+        ctx: &mut TxContext,
+    ) {
+        let n = raffle.entrants.length();
+        assert!(winner_index < n);
+        let winner = *raffle.entrants.borrow(winner_index);
+        let pot_amount = balance::value(&raffle.pot);
+        let winnings = coin::take(&mut raffle.pot, pot_amount, ctx);
+        transfer::public_transfer(winnings, winner);
+        raffle.entrants = vector[];
+    }
+}
