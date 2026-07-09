@@ -23,7 +23,7 @@ verified:
     arguments to declare
 
     mutable variables.'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-reference

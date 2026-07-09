@@ -23,7 +23,7 @@ verified:
     address, module name,
 
     semicolon, and the module body.'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-book

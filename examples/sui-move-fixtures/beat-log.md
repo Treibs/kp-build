@@ -219,3 +219,48 @@ Notes:
 **Totals:** 35 green fixtures, 28 red fixtures (7 beats grounding-only: implicit-imports,
 entry-vs-public, capability, test-scenario, dynamic-field-exists, transfer-composability,
 vector-literal).
+
+## Deepening round 4 — 4 beats (proven 2026-07-09)
+
+Source: the fourth /kp-deepen round (`docs/deepening/round-4/`) — gap-seeded from the enriched
+post-experiment ledger (experiment 5, payload-salience, sheet-confirm) plus the round-3
+carried deferrals; 15 tasks × 2 models with the 98-claim pack loaded (payload byte-identical
+to the confirmation draw's full arm, sha `4a53c7df…`), gated by the same pinned binary
+(`sui 1.74.1-8fc60f1fa966`, plain build). Triage table in `docs/deepening/round-4/triage.md`.
+Two beats trace to on-target probe failures in their own territories (compound-assignment,
+std-mem-swap); one was promoted on recurrence per the pre-declared rule (borrow-arg-alias —
+the sheet-confirm E07001 record + round-4 suimport-2/haiku); one is a new parse-level sibling
+elicited inside the Rust-syntax territory (while-condition-parens).
+
+| beat | red form tried | observed (exit + key output) | classification | fragment (expected_error.txt) |
+|---|---|---|---|---|
+| borrow-arg-alias | `consume(&mut p.pot, peek(&p.pot))` — a second borrow of the field inside the argument list of a call already holding `&mut` on it | exit 1, `error[E07001]: referential transparency violated` | RED/GREEN pair | `Field 'pot' is still being mutably borrowed by this reference` |
+| compound-assignment | `t.total += n;` | exit 1, `error[E01002]: unexpected token` — `Unexpected '='`, `Expected an expression term` | RED/GREEN pair | `Unexpected '='` |
+| while-condition-parens | `while i < n {` — Rust's paren-free loop head | exit 1, `error[E01002]: unexpected token` — `Unexpected 'i'`, `Expected '('` | RED/GREEN pair | `Expected '('` |
+| std-mem-swap | `std::mem::swap(&mut d.slot, &mut old)` | exit 1, `error[E03002]: unbound module` | RED/GREEN pair | `Unbound module 'std::mem'` |
+
+Notes:
+- New error *class* this round: E07001 (referential transparency) — the pack's first. E01002
+  gains two new message shapes (the compound-assignment `Unexpected '='` and the paren-free
+  loop head `Expected '('` — round 2's was the missing-semicolon shape); E03002 gains the
+  unbound-`std::mem` shape (round 3's std-mem-replace deferral, now proven in its `swap`
+  variant after the family's third recorded answer).
+- std-mem-swap-green teaches the replacement idiom, not just the absence: an `Option` slot
+  with `std::option::swap(t: &mut Option<Element>, e: Element): Element` (doc claim grounds on
+  the pinned framework-docs signature). The corpus gained one excerpt for borrow-arg-alias-doc:
+  `reference/primitive-types/references.md` (Ownership — unique mutable borrows) from the SAME
+  pinned move-book commit `8ce4dcb…` (no pin change).
+- Triaged-out this round (reasons in `docs/deepening/round-4/triage.md`): gen-2/haiku's
+  E04024 ×2 — the round-3 taught `param-mut` rule ignored while loaded (recorded, not
+  re-taught); `vector-destroy-empty` (E06001, 1 answer, deferred); `vector-literal-annotation`
+  (E04010, 1 answer, deferred).
+- Three territories recorded clean with corners demonstrably exercised: sui-import-path (all
+  six answers wrote `use sui::sui::SUI` — the ×4-cumulative top ledger class did not reproduce
+  under targeted elicitation), generic-transfer-key-bound (all six bound choices sound; second
+  consecutive clean probe), object-identity (all six answers handled UID/ID/`object::delete`
+  correctly).
+- Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
+
+**Totals:** 39 green fixtures, 32 red fixtures (7 beats grounding-only: implicit-imports,
+entry-vs-public, capability, test-scenario, dynamic-field-exists, transfer-composability,
+vector-literal).

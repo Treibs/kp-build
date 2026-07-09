@@ -20,7 +20,7 @@ verified:
   match_score: 0.0
   evidence: When calling a function, the name can be specified either through an alias
     or fully qualified
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-reference

@@ -30,7 +30,7 @@ verified:
     is true with
 
     [dereferencing](./primitive-types/references#re'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-reference

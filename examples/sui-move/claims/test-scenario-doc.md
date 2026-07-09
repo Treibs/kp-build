@@ -27,7 +27,7 @@ verified:
     using `take_shared` and must be
 
     returned with `return_shared`:'
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: sui-move-book

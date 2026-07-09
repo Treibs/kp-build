@@ -3532,3 +3532,32 @@ vector<T>[e1, ..., en]: vector<T>
 (vector<address>[@0x42, @0x100]: vector<address>);
 ```
 
+
+## FILE: reference/primitive-types/references.md (lines 6-11 intro; 197-215: Ownership — unique mutable borrows)
+
+# References
+
+Move has two types of references: immutable `&` and mutable `&mut`. Immutable references are read
+only, and cannot modify the underlying value (or any of its fields). Mutable references allow for
+modifications via a write through that reference. Move's type system enforces an ownership
+discipline that prevents reference errors.
+
+## Ownership
+
+Both mutable and immutable references can always be copied and extended _even if there are existing
+copies or extensions of the same reference_:
+
+```move
+fun reference_copies(s: &mut S) {
+  let s_copy1 = s; // ok
+  let s_extension = &mut s.f; // also ok
+  let s_copy2 = s; // still ok
+  ...
+}
+```
+
+This might be surprising for programmers familiar with Rust's ownership system, which would reject
+the code above. Move's type system is more permissive in its treatment of
+[copies](./../variables#move-and-copy), but equally strict in ensuring unique ownership of mutable
+references before writes.
+

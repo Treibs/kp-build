@@ -1,0 +1,5 @@
+[package]
+name = "std_mem_swap_green"
+edition = "2024"
+
+[dependencies]
