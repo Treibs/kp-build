@@ -1,0 +1,157 @@
+```move
+module tournament::prize_pool {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+    use sui::balance::{Self, Balance};
+    use std::vector;
+
+    const EAlreadyStarted: u64 = 1;
+    const EIncorrectFee: u64 = 2;
+    const EAlreadyEntered: u64 = 3;
+    const ETooEarly: u64 = 4;
+    const ENotDistinct: u64 = 5;
+    const ENotEntered: u64 = 6;
+    const ETooManyEntrants: u64 = 7;
+    const EAlreadyCompleted: u64 = 8;
+    const EWrongTournament: u64 = 9;
+
+    public struct Tournament has key {
+        id: UID,
+        entry_fee: u64,
+        start_epoch: u64,
+        balance: Balance<SUI>,
+        entrants: vector<address>,
+        entrant_set: Table<address, bool>,
+        completed: bool,
+    }
+
+    public struct OrganizerCap has key, store {
+        id: UID,
+        tournament_id: ID,
+    }
+
+    public fun create_tournament(
+        entry_fee: u64,
+        start_epoch: u64,
+        ctx: &mut TxContext,
+    ): OrganizerCap {
+        let id = object::new(ctx);
+        let tournament_id = object::uid_to_inner(&id);
+        
+        let tournament = Tournament {
+            id,
+            entry_fee,
+            start_epoch,
+            balance: balance::zero(),
+            entrants: vector[],
+            entrant_set: table::new(ctx),
+            completed: false,
+        };
+        
+        let cap = OrganizerCap {
+            id: object::new(ctx),
+            tournament_id,
+        };
+        
+        transfer::share_object(tournament);
+        cap
+    }
+
+    public fun enter(
+        tournament: &mut Tournament,
+        payment: Coin<SUI>,
+        ctx: &TxContext,
+    ) {
+        assert!(!tournament.completed, EAlreadyCompleted);
+        
+        let sender = ctx.sender();
+        let current_epoch = ctx.epoch();
+        
+        assert!(current_epoch < tournament.start_epoch, EAlreadyStarted);
+        assert!(coin::value(&payment) == tournament.entry_fee, EIncorrectFee);
+        assert!(!table::contains(&tournament.entrant_set, sender), EAlreadyEntered);
+        
+        vector::push_back(&mut tournament.entrants, sender);
+        table::add(&mut tournament.entrant_set, sender, true);
+        balance::join(&mut tournament.balance, coin::into_balance(payment));
+    }
+
+    public fun declare_result(
+        cap: &OrganizerCap,
+        tournament: &mut Tournament,
+        first: address,
+        second: address,
+        third: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(cap.tournament_id == object::uid_to_inner(&tournament.id), EWrongTournament);
+        assert!(!tournament.completed, EAlreadyCompleted);
+        
+        let current_epoch = ctx.epoch();
+        
+        assert!(current_epoch >= tournament.start_epoch, ETooEarly);
+        assert!(first != second && second != third && first != third, ENotDistinct);
+        assert!(table::contains(&tournament.entrant_set, first), ENotEntered);
+        assert!(table::contains(&tournament.entrant_set, second), ENotEntered);
+        assert!(table::contains(&tournament.entrant_set, third), ENotEntered);
+        
+        let total_pool = balance::value(&tournament.balance);
+        
+        let first_payout = (total_pool * 50) / 100 + (total_pool % 100);
+        let second_payout = (total_pool * 30) / 100;
+        let third_payout = total_pool - first_payout - second_payout;
+        
+        transfer::public_transfer(
+            coin::from_balance(balance::split(&mut tournament.balance, first_payout), ctx),
+            first,
+        );
+        transfer::public_transfer(
+            coin::from_balance(balance::split(&mut tournament.balance, second_payout), ctx),
+            second,
+        );
+        transfer::public_transfer(
+            coin::from_balance(balance::split(&mut tournament.balance, third_payout), ctx),
+            third,
+        );
+        
+        tournament.completed = true;
+    }
+
+    public fun cancel_tournament(
+        cap: &OrganizerCap,
+        tournament: &mut Tournament,
+        ctx: &mut TxContext,
+    ) {
+        assert!(cap.tournament_id == object::uid_to_inner(&tournament.id), EWrongTournament);
+        assert!(!tournament.completed, EAlreadyCompleted);
+        
+        let current_epoch = ctx.epoch();
+        assert!(current_epoch >= tournament.start_epoch, ETooEarly);
+        
+        assert!(vector::length(&tournament.entrants) < 3, ETooManyEntrants);
+        
+        let mut i = 0;
+        let num_entrants = vector::length(&tournament.entrants);
+        while (i < num_entrants) {
+            let entrant = *vector::borrow(&tournament.entrants, i);
+            let refund = coin::from_balance(
+                balance::split(&mut tournament.balance, tournament.entry_fee),
+                ctx
+            );
+            transfer::public_transfer(refund, entrant);
+            i = i + 1;
+        };
+        
+        tournament.completed = true;
+    }
+
+    public fun pool_amount(tournament: &Tournament): u64 {
+        balance::value(&tournament.balance)
+    }
+
+    public fun entrant_count(tournament: &Tournament): u64 {
+        vector::length(&tournament.entrants)
+    }
+}
+```

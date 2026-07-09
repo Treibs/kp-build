@@ -1,0 +1,185 @@
+```move
+module layaway::layaway {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::object::{Self, UID};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    const EInvalidBuyer: u64 = 0;
+    const EInsufficientPayment: u64 = 1;
+    const EDeadlineNotPassed: u64 = 2;
+    const EInvalidSender: u64 = 3;
+
+    public struct LayawayPlan<T: key + store> has key {
+        id: UID,
+        seller: address,
+        buyer: address,
+        item: T,
+        total_price: u64,
+        cancellation_fee: u64,
+        deadline_interval: u64,
+        accumulated_payment: Balance<SUI>,
+        last_payment_epoch: u64,
+    }
+
+    public fun open<T: key + store>(
+        item: T,
+        buyer: address,
+        total_price: u64,
+        cancellation_fee: u64,
+        deadline_interval: u64,
+        ctx: &mut TxContext,
+    ) {
+        let current_epoch = tx_context::epoch(ctx);
+        
+        let plan = LayawayPlan {
+            id: object::new(ctx),
+            seller: tx_context::sender(ctx),
+            buyer,
+            item,
+            total_price,
+            cancellation_fee,
+            deadline_interval,
+            accumulated_payment: balance::zero(),
+            last_payment_epoch: current_epoch,
+        };
+
+        transfer::share_object(plan);
+    }
+
+    public fun pay<T: key + store>(
+        plan: &mut LayawayPlan<T>,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == plan.buyer, EInvalidBuyer);
+        
+        let payment_balance = coin::into_balance(payment);
+        balance::join(&mut plan.accumulated_payment, payment_balance);
+        plan.last_payment_epoch = tx_context::epoch(ctx);
+    }
+
+    public fun complete<T: key + store>(
+        plan: LayawayPlan<T>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == plan.buyer, EInvalidBuyer);
+        
+        let accumulated = balance::value(&plan.accumulated_payment);
+        assert!(accumulated >= plan.total_price, EInsufficientPayment);
+
+        let LayawayPlan {
+            id,
+            seller,
+            buyer,
+            item,
+            total_price,
+            cancellation_fee: _,
+            deadline_interval: _,
+            accumulated_payment,
+            last_payment_epoch: _,
+        } = plan;
+
+        object::delete(id);
+
+        let overpayment = accumulated - total_price;
+        
+        if (overpayment > 0) {
+            let refund = coin::take(&mut accumulated_payment, overpayment, ctx);
+            transfer::public_transfer(refund, buyer);
+        };
+
+        let seller_funds = coin::take(&mut accumulated_payment, total_price, ctx);
+        transfer::public_transfer(seller_funds, seller);
+        
+        balance::destroy_zero(accumulated_payment);
+        transfer::public_transfer(item, buyer);
+    }
+
+    public fun cancel_by_buyer<T: key + store>(
+        plan: LayawayPlan<T>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == plan.buyer, EInvalidBuyer);
+
+        let LayawayPlan {
+            id,
+            seller,
+            buyer,
+            item,
+            total_price: _,
+            cancellation_fee,
+            deadline_interval: _,
+            accumulated_payment,
+            last_payment_epoch: _,
+        } = plan;
+
+        object::delete(id);
+
+        let accumulated = balance::value(&accumulated_payment);
+        let fee_amount = if (accumulated > cancellation_fee) { cancellation_fee } else { accumulated };
+        
+        let seller_fee = coin::take(&mut accumulated_payment, fee_amount, ctx);
+        transfer::public_transfer(seller_fee, seller);
+
+        let refund_amount = accumulated - fee_amount;
+        if (refund_amount > 0) {
+            let refund = coin::take(&mut accumulated_payment, refund_amount, ctx);
+            transfer::public_transfer(refund, buyer);
+        };
+
+        balance::destroy_zero(accumulated_payment);
+        transfer::public_transfer(item, seller);
+    }
+
+    public fun cancel_by_seller<T: key + store>(
+        plan: LayawayPlan<T>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == plan.seller, EInvalidSender);
+        
+        let current_epoch = tx_context::epoch(ctx);
+        assert!(current_epoch >= plan.last_payment_epoch + plan.deadline_interval, EDeadlineNotPassed);
+
+        let LayawayPlan {
+            id,
+            seller,
+            buyer,
+            item,
+            total_price: _,
+            cancellation_fee,
+            deadline_interval: _,
+            accumulated_payment,
+            last_payment_epoch: _,
+        } = plan;
+
+        object::delete(id);
+
+        let accumulated = balance::value(&accumulated_payment);
+        let fee_amount = if (accumulated > cancellation_fee) { cancellation_fee } else { accumulated };
+        
+        let seller_fee = coin::take(&mut accumulated_payment, fee_amount, ctx);
+        transfer::public_transfer(seller_fee, seller);
+
+        let refund_amount = accumulated - fee_amount;
+        if (refund_amount > 0) {
+            let refund = coin::take(&mut accumulated_payment, refund_amount, ctx);
+            transfer::public_transfer(refund, buyer);
+        };
+
+        balance::destroy_zero(accumulated_payment);
+        transfer::public_transfer(item, seller);
+    }
+
+    public fun remaining_owed<T: key + store>(plan: &LayawayPlan<T>): u64 {
+        let accumulated = balance::value(&plan.accumulated_payment);
+        if (accumulated >= plan.total_price) {
+            0
+        } else {
+            plan.total_price - accumulated
+        }
+    }
+}
+```

@@ -43,3 +43,6 @@ docs/experiments/sui-payload-salience/answers/**/Move.lock
 docs/experiments/sui-payload-salience/answers/**/*.stderr
 docs/deepening/manim-round-1/probe/**/*.stderr
 docs/deepening/manim-round-1/remeasure-runs/**/*.stderr
+docs/experiments/sui-sheet-confirm/answers/**/build/
+docs/experiments/sui-sheet-confirm/answers/**/Move.lock
+docs/experiments/sui-sheet-confirm/answers/**/*.stderr

@@ -1,0 +1,112 @@
+module bottle_deposit::scheme {
+    use sui::balance::{Balance, self};
+    use sui::coin::{Coin, self};
+    use sui::sui::SUI;
+
+    public struct Scheme has key {
+        id: UID,
+        deposit_amount: u64,
+        reservoir: Balance<SUI>,
+        sold_bottles: u64,
+        returned_bottles: u64,
+    }
+
+    public struct DistributorCap has key, store {
+        id: UID,
+        scheme_id: object::ID,
+    }
+
+    public struct Bottle has key {
+        id: UID,
+        scheme_id: object::ID,
+    }
+
+    public fun create_scheme(
+        deposit_amount: u64,
+        ctx: &mut TxContext,
+    ): DistributorCap {
+        let scheme = Scheme {
+            id: object::new(ctx),
+            deposit_amount,
+            reservoir: balance::zero(),
+            sold_bottles: 0,
+            returned_bottles: 0,
+        };
+        let scheme_id = object::id(&scheme);
+        transfer::share_object(scheme);
+        
+        DistributorCap {
+            id: object::new(ctx),
+            scheme_id,
+        }
+    }
+
+    public fun sell_bottle(
+        _cap: &DistributorCap,
+        scheme: &mut Scheme,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Bottle {
+        assert!(coin::value(&payment) == scheme.deposit_amount, 0);
+        
+        let coin_balance = coin::into_balance(payment);
+        balance::join(&mut scheme.reservoir, coin_balance);
+        scheme.sold_bottles = scheme.sold_bottles + 1;
+        
+        Bottle {
+            id: object::new(ctx),
+            scheme_id: object::id(scheme),
+        }
+    }
+
+    public fun return_bottle(
+        scheme: &mut Scheme,
+        bottle: Bottle,
+        ctx: &mut TxContext,
+    ) {
+        assert!(bottle.scheme_id == object::id(scheme), 0);
+        
+        let Bottle { id, scheme_id: _ } = bottle;
+        object::delete(id);
+        
+        let refund = balance::split(&mut scheme.reservoir, scheme.deposit_amount);
+        let refund_coin = coin::from_balance(refund, ctx);
+        transfer::public_transfer(refund_coin, sui::tx_context::sender(ctx));
+        
+        scheme.returned_bottles = scheme.returned_bottles + 1;
+    }
+
+    public fun top_up(
+        _cap: &DistributorCap,
+        scheme: &mut Scheme,
+        amount: Coin<SUI>,
+    ) {
+        let coin_balance = coin::into_balance(amount);
+        balance::join(&mut scheme.reservoir, coin_balance);
+    }
+
+    public fun withdraw(
+        _cap: &DistributorCap,
+        scheme: &mut Scheme,
+        amount: u64,
+        ctx: &mut TxContext,
+    ) {
+        let outstanding = scheme.sold_bottles - scheme.returned_bottles;
+        let liability = outstanding * scheme.deposit_amount;
+        let available = balance::value(&scheme.reservoir) - liability;
+        
+        assert!(amount <= available, 0);
+        
+        let withdrawn = balance::split(&mut scheme.reservoir, amount);
+        let withdrawn_coin = coin::from_balance(withdrawn, ctx);
+        transfer::public_transfer(withdrawn_coin, sui::tx_context::sender(ctx));
+    }
+
+    public fun outstanding_bottles(scheme: &Scheme): u64 {
+        scheme.sold_bottles - scheme.returned_bottles
+    }
+
+    public fun reservoir_balance(scheme: &Scheme): u64 {
+        balance::value(&scheme.reservoir)
+    }
+}

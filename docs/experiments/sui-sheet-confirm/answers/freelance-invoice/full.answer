@@ -1,0 +1,108 @@
+```move
+module contractor_invoice::invoice {
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+    use sui::clock::Clock;
+    use sui::tx_context::sender;
+    use sui::event;
+
+    public struct Invoice has key {
+        id: UID,
+        contractor: address,
+        client: address,
+        amount: u64,
+        late_fee: u64,
+        due_epoch: u64,
+    }
+
+    public struct Receipt has key, store {
+        id: UID,
+        invoice_id: ID,
+        amount_paid: u64,
+    }
+
+    public struct PaymentEvent has copy, drop {
+        invoice_id: ID,
+        amount_paid: u64,
+    }
+
+    public fun create_invoice(
+        client: address,
+        amount: u64,
+        late_fee: u64,
+        due_epoch: u64,
+        ctx: &mut TxContext,
+    ) {
+        let invoice = Invoice {
+            id: object::new(ctx),
+            contractor: sender(ctx),
+            client,
+            amount,
+            late_fee,
+            due_epoch,
+        };
+        transfer::share_object(invoice);
+    }
+
+    public fun amount_owed(invoice: &Invoice, clock: &Clock): u64 {
+        if (clock.timestamp_ms() / 1000 > invoice.due_epoch) {
+            invoice.amount + invoice.late_fee
+        } else {
+            invoice.amount
+        }
+    }
+
+    public fun pay(
+        invoice: Invoice,
+        mut payment: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let invoice_id = object::id(&invoice);
+        let client = sender(ctx);
+        assert!(client == invoice.client);
+        
+        let contractor = invoice.contractor;
+        let amount = invoice.amount;
+        let late_fee = invoice.late_fee;
+        let due_epoch = invoice.due_epoch;
+        
+        let owed = if (clock.timestamp_ms() / 1000 > due_epoch) {
+            amount + late_fee
+        } else {
+            amount
+        };
+        
+        let paid = payment.value();
+        assert!(paid >= owed);
+
+        if (paid > owed) {
+            let overpayment = payment.split(paid - owed, ctx);
+            transfer::public_transfer(overpayment, client);
+        };
+
+        transfer::public_transfer(payment, contractor);
+
+        let receipt = Receipt {
+            id: object::new(ctx),
+            invoice_id,
+            amount_paid: owed,
+        };
+        transfer::transfer(receipt, client);
+
+        event::emit(PaymentEvent {
+            invoice_id,
+            amount_paid: owed,
+        });
+
+        let Invoice { id, contractor: _, client: _, amount: _, late_fee: _, due_epoch: _ } = invoice;
+        object::delete(id);
+    }
+
+    public fun void_invoice(invoice: Invoice, ctx: &TxContext) {
+        assert!(sender(ctx) == invoice.contractor);
+        let Invoice { id, contractor: _, client: _, amount: _, late_fee: _, due_epoch: _ } = invoice;
+        object::delete(id);
+    }
+}
+```

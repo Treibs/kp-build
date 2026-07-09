@@ -1,0 +1,58 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/answer.move:89:37
+   │
+80 │             accumulated_payment,
+   │             ------------------- To use the variable mutably, it must be declared 'mut', e.g. 'mut accumulated_payment'
+   ·
+89 │             let refund = coin::take(&mut accumulated_payment, overpayment, ctx);
+   │                                     ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'accumulated_payment'
+
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/answer.move:93:39
+   │
+80 │             accumulated_payment,
+   │             ------------------- To use the variable mutably, it must be declared 'mut', e.g. 'mut accumulated_payment'
+   ·
+93 │         let seller_funds = coin::take(&mut accumulated_payment, total_price, ctx);
+   │                                       ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'accumulated_payment'
+
+error[E04024]: invalid usage of immutable variable
+    ┌─ ./sources/answer.move:123:37
+    │
+114 │             accumulated_payment,
+    │             ------------------- To use the variable mutably, it must be declared 'mut', e.g. 'mut accumulated_payment'
+    ·
+123 │         let seller_fee = coin::take(&mut accumulated_payment, fee_amount, ctx);
+    │                                     ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'accumulated_payment'
+
+error[E04024]: invalid usage of immutable variable
+    ┌─ ./sources/answer.move:128:37
+    │
+114 │             accumulated_payment,
+    │             ------------------- To use the variable mutably, it must be declared 'mut', e.g. 'mut accumulated_payment'
+    ·
+128 │             let refund = coin::take(&mut accumulated_payment, refund_amount, ctx);
+    │                                     ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'accumulated_payment'
+
+error[E04024]: invalid usage of immutable variable
+    ┌─ ./sources/answer.move:162:37
+    │
+153 │             accumulated_payment,
+    │             ------------------- To use the variable mutably, it must be declared 'mut', e.g. 'mut accumulated_payment'
+    ·
+162 │         let seller_fee = coin::take(&mut accumulated_payment, fee_amount, ctx);
+    │                                     ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'accumulated_payment'
+
+error[E04024]: invalid usage of immutable variable
+    ┌─ ./sources/answer.move:167:37
+    │
+153 │             accumulated_payment,
+    │             ------------------- To use the variable mutably, it must be declared 'mut', e.g. 'mut accumulated_payment'
+    ·
+167 │             let refund = coin::take(&mut accumulated_payment, refund_amount, ctx);
+    │                                     ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'accumulated_payment'
+

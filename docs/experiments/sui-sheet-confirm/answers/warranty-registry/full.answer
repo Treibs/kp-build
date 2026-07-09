@@ -1,0 +1,124 @@
+```move
+module warranty_program::warranty {
+    use std::string::String;
+    use sui::balance::{Balance, self};
+    use sui::clock::Clock;
+    use sui::coin::{self, Coin};
+    use sui::event;
+    use sui::object::{self, ID};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::tx_context::{self, TxContext};
+
+    public struct Registry has key {
+        id: UID,
+        reserve: Balance<SUI>,
+    }
+
+    public struct MerchantCap has key, store {
+        id: UID,
+    }
+
+    public struct Warranty has key, store {
+        id: UID,
+        product: String,
+        expiry_epoch: u64,
+        claimed: bool,
+    }
+
+    public struct Claim has key, store {
+        id: UID,
+        warranty_id: ID,
+        filer: address,
+    }
+
+    public struct ClaimApproved has copy, drop {
+        warranty_id: ID,
+        amount: u64,
+    }
+
+    public struct ClaimRejected has copy, drop {
+        warranty_id: ID,
+    }
+
+    public fun create_registry(coin: Coin<SUI>, ctx: &mut TxContext): MerchantCap {
+        let registry = Registry {
+            id: object::new(ctx),
+            reserve: coin.into_balance(),
+        };
+        transfer::share_object(registry);
+        MerchantCap { id: object::new(ctx) }
+    }
+
+    public fun issue_warranty(
+        _cap: &MerchantCap,
+        product: String,
+        expiry_epoch: u64,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        let warranty = Warranty {
+            id: object::new(ctx),
+            product,
+            expiry_epoch,
+            claimed: false,
+        };
+        transfer::public_transfer(warranty, recipient);
+    }
+
+    public fun file_claim(
+        warranty: &mut Warranty,
+        _registry: &Registry,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ): Claim {
+        let now_epoch = clock.timestamp_ms() / 1000;
+        assert!(now_epoch <= warranty.expiry_epoch, 1);
+        assert!(!warranty.claimed, 2);
+        warranty.claimed = true;
+        Claim {
+            id: object::new(ctx),
+            warranty_id: object::id(warranty),
+            filer: tx_context::sender(ctx),
+        }
+    }
+
+    public fun topup_reserve(registry: &mut Registry, coin: Coin<SUI>) {
+        balance::join(&mut registry.reserve, coin.into_balance());
+    }
+
+    public fun approve_claim(
+        claim: Claim,
+        warranty: Warranty,
+        registry: &mut Registry,
+        reimbursement: u64,
+        ctx: &mut TxContext,
+    ) {
+        let Claim { id: claim_id, warranty_id: _, filer } = claim;
+        let Warranty { id: warranty_id, product: _, expiry_epoch: _, claimed: _ } = warranty;
+        object::delete(claim_id);
+        object::delete(warranty_id);
+        let amount = balance::split(&mut registry.reserve, reimbursement);
+        let coin = coin::from_balance(amount, ctx);
+        transfer::public_transfer(coin, filer);
+        event::emit(ClaimApproved { warranty_id, amount: reimbursement });
+    }
+
+    public fun reject_claim(
+        claim: Claim,
+        warranty: Warranty,
+        _cap: &MerchantCap,
+    ) {
+        let Claim { id: claim_id, warranty_id, filer: _ } = claim;
+        let Warranty { id: warranty_id_inner, product: _, expiry_epoch: _, claimed: _ } = warranty;
+        object::delete(claim_id);
+        object::delete(warranty_id_inner);
+        event::emit(ClaimRejected { warranty_id });
+    }
+
+    public fun is_valid(warranty: &Warranty, clock: &Clock): bool {
+        let now_epoch = clock.timestamp_ms() / 1000;
+        !warranty.claimed && now_epoch <= warranty.expiry_epoch
+    }
+}
+```

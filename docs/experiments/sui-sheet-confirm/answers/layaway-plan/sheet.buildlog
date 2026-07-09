@@ -1,0 +1,21 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/answer.move:52:13
+   │
+52 │         let amount = coin::value(&payment);
+   │             ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/answer.move:53:34
+   │
+53 │         plan.accumulated_amount += amount;
+   │                                  ^
+   │                                  │
+   │                                  Unexpected '='
+   │                                  Expected an expression term
+

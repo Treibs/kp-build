@@ -1,0 +1,156 @@
+module layaway::layaway {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::clock::Clock;
+    use sui::dynamic_field;
+
+    public struct LayawayPlan has key {
+        id: UID,
+        seller: address,
+        buyer: address,
+        total_price: u64,
+        cancellation_fee: u64,
+        deadline_interval: u64,
+        accumulated_amount: u64,
+        last_payment_time: u64,
+    }
+
+    public fun open<T: key + store>(
+        seller: address,
+        buyer: address,
+        total_price: u64,
+        cancellation_fee: u64,
+        deadline_interval: u64,
+        item: T,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ): LayawayPlan {
+        let mut plan = LayawayPlan {
+            id: object::new(ctx),
+            seller,
+            buyer,
+            total_price,
+            cancellation_fee,
+            deadline_interval,
+            accumulated_amount: 0,
+            last_payment_time: clock.timestamp_ms(),
+        };
+        dynamic_field::add(&mut plan.id, b"item", item);
+        plan
+    }
+
+    public fun pay(
+        plan: &mut LayawayPlan,
+        payment: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == plan.buyer, 0);
+        let amount = coin::value(&payment);
+        plan.accumulated_amount += amount;
+        plan.last_payment_time = clock.timestamp_ms();
+        
+        let coin_exists = dynamic_field::exists(&plan.id, b"coin");
+        if (coin_exists) {
+            let mut existing: Coin<SUI> = dynamic_field::remove(&mut plan.id, b"coin");
+            coin::join(&mut existing, payment);
+            dynamic_field::add(&mut plan.id, b"coin", existing);
+        } else {
+            dynamic_field::add(&mut plan.id, b"coin", payment);
+        };
+    }
+
+    public fun complete<T: key + store>(
+        mut plan: LayawayPlan,
+        ctx: &mut TxContext,
+    ): T {
+        assert!(plan.accumulated_amount >= plan.total_price, 0);
+        
+        let item: T = dynamic_field::remove(&mut plan.id, b"item");
+        
+        if (dynamic_field::exists(&plan.id, b"coin")) {
+            let mut accumulated_coin: Coin<SUI> = dynamic_field::remove(&mut plan.id, b"coin");
+            
+            let overpayment = plan.accumulated_amount - plan.total_price;
+            if (overpayment > 0) {
+                let refund = coin::split(&mut accumulated_coin, overpayment, ctx);
+                transfer::public_transfer(refund, plan.buyer);
+            };
+            
+            transfer::public_transfer(accumulated_coin, plan.seller);
+        };
+        
+        let LayawayPlan { id, .. } = plan;
+        object::delete(id);
+        
+        item
+    }
+
+    public fun buyer_cancel<T: key + store>(
+        mut plan: LayawayPlan,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == plan.buyer, 0);
+        
+        let item: T = dynamic_field::remove(&mut plan.id, b"item");
+        
+        if (dynamic_field::exists(&plan.id, b"coin")) {
+            let mut accumulated_coin: Coin<SUI> = dynamic_field::remove(&mut plan.id, b"coin");
+            
+            let refund_amount = plan.accumulated_amount - plan.cancellation_fee;
+            if (refund_amount > 0) {
+                let refund = coin::split(&mut accumulated_coin, refund_amount, ctx);
+                transfer::public_transfer(refund, plan.buyer);
+            };
+            
+            transfer::public_transfer(accumulated_coin, plan.seller);
+        };
+        
+        transfer::public_transfer(item, plan.seller);
+        
+        let LayawayPlan { id, .. } = plan;
+        object::delete(id);
+    }
+
+    public fun seller_cancel<T: key + store>(
+        mut plan: LayawayPlan,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == plan.seller, 0);
+        assert!(
+            clock.timestamp_ms() >= plan.last_payment_time + plan.deadline_interval,
+            0
+        );
+        
+        let item: T = dynamic_field::remove(&mut plan.id, b"item");
+        
+        if (dynamic_field::exists(&plan.id, b"coin")) {
+            let mut accumulated_coin: Coin<SUI> = dynamic_field::remove(&mut plan.id, b"coin");
+            
+            let refund_amount = plan.accumulated_amount - plan.cancellation_fee;
+            if (refund_amount > 0) {
+                let refund = coin::split(&mut accumulated_coin, refund_amount, ctx);
+                transfer::public_transfer(refund, plan.buyer);
+            };
+            
+            transfer::public_transfer(accumulated_coin, plan.seller);
+        };
+        
+        transfer::public_transfer(item, plan.seller);
+        
+        let LayawayPlan { id, .. } = plan;
+        object::delete(id);
+    }
+
+    public fun remaining_owed(plan: &LayawayPlan): u64 {
+        if (plan.accumulated_amount >= plan.total_price) {
+            0
+        } else {
+            plan.total_price - plan.accumulated_amount
+        }
+    }
+}

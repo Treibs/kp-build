@@ -1,0 +1,68 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/answer.move:137:9
+    │  
+ 19 │       public struct MemberStake has store {
+    │                     ----------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·  
+ 29 │           members: VecMap<address, MemberStake>,
+    │                                    ----------- The type 'penalty_jar::jar::MemberStake' does not have the ability 'drop'
+    ·  
+137 │ ╭         if (current_stake >= fine) {
+138 │ │             let fine_amount = balance::split(&mut member_stake.balance, fine);
+139 │ │             balance::join(&mut jar.pot, fine_amount);
+140 │ │ 
+    · │
+147 │ │             let (_member, member_stake_obj) = vec_map::remove(&mut jar.members, &member);
+    │ │                           ---------------- The local variable 'member_stake_obj' might still contain a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    · │
+156 │ │             });
+157 │ │         }
+    │ ╰─────────^ Invalid return
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/answer.move:148:37
+    │
+ 20 │         balance: Balance<SUI>,
+    │                  ------------ The type 'sui::balance::Balance<sui::sui::SUI>' does not have the ability 'copy'
+    ·
+148 │             let remaining_balance = member_stake_obj.balance;
+    │                                     ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'balance' without the 'copy' ability
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:36:15
+    │
+ 36 │ public struct Balance<phantom T> has store {
+    │               ------- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/answer.move:168:23
+    │
+ 20 │         balance: Balance<SUI>,
+    │                  ------------ The type 'sui::balance::Balance<sui::sui::SUI>' does not have the ability 'copy'
+    ·
+168 │         let balance = member_stake_obj.balance;
+    │                       ^^^^^^^^^^^^^^^^^^^^^^^^ Invalid implicit copy of field 'balance' without the 'copy' ability
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:36:15
+    │
+ 36 │ public struct Balance<phantom T> has store {
+    │               ------- To satisfy the constraint, the 'copy' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/answer.move:176:9
+    │
+ 19 │     public struct MemberStake has store {
+    │                   ----------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+ 29 │         members: VecMap<address, MemberStake>,
+    │                                  ----------- The type 'penalty_jar::jar::MemberStake' does not have the ability 'drop'
+    ·
+167 │         let (_member, member_stake_obj) = vec_map::remove(&mut jar.members, &sender);
+    │                       ---------------- The local variable 'member_stake_obj' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+176 │         coin::from_balance(balance, ctx)
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid return
+

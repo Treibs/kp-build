@@ -1,0 +1,28 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E02004]: invalid 'module' declaration
+  ┌─ ./sources/answer.move:1:8
+  │
+1 │ module deposit_scheme {
+  │        ^^^^^^^^^^^^^^ Invalid module declaration. The module does not have a specified address. Either declare it inside of an 'address <address> {' block or declare it with an address 'module <address>::deposit_scheme''
+
+error[E01002]: unexpected token
+   ┌─ ./sources/answer.move:65:30
+   │
+65 │         scheme.sold_bottles += 1;
+   │                              ^
+   │                              │
+   │                              Unexpected '='
+   │                              Expected an expression term
+
+error[E01002]: unexpected token
+   ┌─ ./sources/answer.move:82:34
+   │
+82 │         scheme.returned_bottles += 1;
+   │                                  ^
+   │                                  │
+   │                                  Unexpected '='
+   │                                  Expected an expression term
+

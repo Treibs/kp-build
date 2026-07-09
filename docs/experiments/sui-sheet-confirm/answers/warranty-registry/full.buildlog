@@ -1,0 +1,136 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/answer.move:3:33
+  │
+3 │     use sui::balance::{Balance, self};
+  │                                 ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::balance'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:7:13
+  │
+7 │ module sui::balance;
+  │             ------- Module 'sui::balance' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/answer.move:5:21
+  │
+5 │     use sui::coin::{self, Coin};
+  │                     ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/answer.move:7:23
+  │
+7 │     use sui::object::{self, ID};
+  │                       ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::object'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:5:13
+  │
+5 │ module sui::object;
+  │             ------ Module 'sui::object' declared here
+
+error[E03003]: unbound module member
+   ┌─ ./sources/answer.move:10:27
+   │
+10 │     use sui::tx_context::{self, TxContext};
+   │                           ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::tx_context'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/tx_context.move:4:13
+   │
+ 4 │ module sui::tx_context;
+   │             ---------- Module 'sui::tx_context' declared here
+
+warning[W09002]: unused variable
+   ┌─ ./sources/answer.move:85:30
+   │
+85 │     public fun topup_reserve(registry: &mut Registry, coin: Coin<SUI>) {
+   │                              ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/answer.move:85:55
+   │
+85 │     public fun topup_reserve(registry: &mut Registry, coin: Coin<SUI>) {
+   │                                                       ^^^^ Unused parameter 'coin'. Consider removing or prefixing with an underscore: '_coin'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/answer.move:86:9
+   │
+ 3 │     use sui::balance::{Balance, self};
+   │                        ------- Similarly named defintion found here
+   ·
+86 │         balance::join(&mut registry.reserve, coin.into_balance());
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/answer.move:92:9
+   │
+92 │         registry: &mut Registry,
+   │         ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/answer.move:94:9
+   │
+94 │         ctx: &mut TxContext,
+   │         ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/answer.move:100:13
+    │
+100 │         let amount = balance::split(&mut registry.reserve, reimbursement);
+    │             ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/answer.move:100:22
+    │
+  3 │     use sui::balance::{Balance, self};
+    │                        ------- Similarly named defintion found here
+    ·
+100 │         let amount = balance::split(&mut registry.reserve, reimbursement);
+    │                      ^^^^^^^
+    │                      │
+    │                      Could not resolve the name 'balance'
+    │                      Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/answer.move:101:20
+    │
+  5 │     use sui::coin::{self, Coin};
+    │                           ---- Similarly named defintion found here
+    ·
+101 │         let coin = coin::from_balance(amount, ctx);
+    │                    ^^^^
+    │                    │
+    │                    Could not resolve the name 'coin'
+    │                    Did you mean: 'Coin'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/answer.move:103:37
+    │
+ 22 │         id: UID,
+    │             --- Given: 'sui::object::UID'
+    ·
+ 35 │         warranty_id: ID,
+    │                      -- Expected: 'sui::object::ID'
+    ·
+103 │         event::emit(ClaimApproved { warranty_id, amount: reimbursement });
+    │                                     ^^^^^^^^^^^ Invalid argument for field 'warranty_id' for 'warranty_program::warranty::ClaimApproved'
+
