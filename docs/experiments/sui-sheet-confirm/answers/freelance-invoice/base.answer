@@ -1,0 +1,98 @@
+```move
+module contractor_invoicing::invoice {
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::event;
+
+    public struct Invoice has key {
+        id: UID,
+        contractor: address,
+        client: address,
+        amount: u64,
+        late_fee: u64,
+        due_epoch: u64,
+    }
+
+    public struct Receipt has key, store {
+        id: UID,
+        invoice_id: ID,
+        amount_paid: u64,
+    }
+
+    public struct InvoicePaid has copy, drop {
+        invoice_id: ID,
+        amount_paid: u64,
+    }
+
+    public fun create_invoice(
+        client: address,
+        amount: u64,
+        late_fee: u64,
+        due_epoch: u64,
+        ctx: &mut TxContext,
+    ) {
+        let contractor = tx_context::sender(ctx);
+        let invoice = Invoice {
+            id: object::new(ctx),
+            contractor,
+            client,
+            amount,
+            late_fee,
+            due_epoch,
+        };
+        transfer::share_object(invoice);
+    }
+
+    public fun amount_owed(invoice: &Invoice, current_epoch: u64): u64 {
+        if (current_epoch >= invoice.due_epoch) {
+            invoice.amount + invoice.late_fee
+        } else {
+            invoice.amount
+        }
+    }
+
+    public fun pay_invoice(
+        invoice: Invoice,
+        mut payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let payer = tx_context::sender(ctx);
+        assert!(payer == invoice.client, 0);
+        
+        let current_epoch = tx_context::epoch(ctx);
+        let owed = amount_owed(&invoice, current_epoch);
+        let paid = coin::value(&payment);
+        
+        assert!(paid >= owed, 1);
+        
+        let invoice_id = object::uid_to_inner(&invoice.id);
+        
+        if (paid > owed) {
+            let refund = coin::split(&mut payment, paid - owed, ctx);
+            transfer::public_transfer(refund, payer);
+        };
+        
+        transfer::public_transfer(payment, invoice.contractor);
+        
+        let receipt = Receipt {
+            id: object::new(ctx),
+            invoice_id,
+            amount_paid: paid,
+        };
+        transfer::transfer(receipt, payer);
+        
+        event::emit(InvoicePaid {
+            invoice_id,
+            amount_paid: paid,
+        });
+    }
+
+    public fun void_invoice(invoice: Invoice, ctx: &TxContext) {
+        let sender = tx_context::sender(ctx);
+        assert!(sender == invoice.contractor, 2);
+    }
+}
+```

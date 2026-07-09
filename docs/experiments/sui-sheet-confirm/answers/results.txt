@@ -1,0 +1,18 @@
+warranty-registry base   FAIL error[E02004]: invalid 'module' declaration
+warranty-registry full   FAIL error[E03003]: unbound module member
+warranty-registry sheet  PASS CLEAN
+layaway-plan      base   FAIL error[E04024]: invalid usage of immutable variable
+layaway-plan      full   PASS CLEAN
+layaway-plan      sheet  FAIL error[E01002]: unexpected token
+freelance-invoice base   FAIL error[E06001]: unused value without 'drop'
+freelance-invoice full   PASS WARN2
+freelance-invoice sheet  FAIL error[E04024]: invalid usage of immutable variable
+tournament-prize  base   FAIL error[E01003]: invalid modifier
+tournament-prize  full   PASS CLEAN
+tournament-prize  sheet  FAIL error[E07001]: referential transparency violated
+bottle-deposit    base   FAIL error[Sui E02009]: invalid private transfer call
+bottle-deposit    full   FAIL error[E03003]: unbound module member
+bottle-deposit    sheet  FAIL error[E02004]: invalid 'module' declaration
+penalty-jar       base   FAIL error[E06001]: unused value without 'drop'
+penalty-jar       full   PASS WARN1
+penalty-jar       sheet  FAIL error[E01002]: unexpected token

@@ -1,0 +1,117 @@
+module warranty_system::warranty {
+    use sui::object::{Self, ID, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::event;
+    use sui::clock::Clock;
+    use std::string::String;
+
+    public struct WarrantyRegistry has key, store {
+        id: UID,
+        reserve: Balance<SUI>,
+    }
+
+    public struct MerchantCap has key, store {
+        id: UID,
+    }
+
+    public struct Warranty has key, store {
+        id: UID,
+        product_name: String,
+        expiry_epoch: u64,
+        claim_filed: bool,
+        claim_resolved: bool,
+    }
+
+    public struct ClaimApproved has copy, drop {
+        warranty_id: ID,
+        amount: u64,
+    }
+
+    public fun create_registry(
+        amount: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): (WarrantyRegistry, MerchantCap) {
+        let registry = WarrantyRegistry {
+            id: object::new(ctx),
+            reserve: coin::into_balance(amount),
+        };
+        let cap = MerchantCap {
+            id: object::new(ctx),
+        };
+        (registry, cap)
+    }
+
+    public fun issue_warranty(
+        _cap: &MerchantCap,
+        product_name: String,
+        expiry_epoch: u64,
+        ctx: &mut TxContext,
+    ): Warranty {
+        Warranty {
+            id: object::new(ctx),
+            product_name,
+            expiry_epoch,
+            claim_filed: false,
+            claim_resolved: false,
+        }
+    }
+
+    public fun file_claim(
+        warranty: &mut Warranty,
+        clock: &Clock,
+    ) {
+        let current_epoch = clock.timestamp_ms() / 1000;
+        assert!(current_epoch < warranty.expiry_epoch, 1);
+        assert!(!warranty.claim_filed, 2);
+        warranty.claim_filed = true;
+    }
+
+    public fun approve_claim(
+        registry: &mut WarrantyRegistry,
+        warranty: &mut Warranty,
+        amount: u64,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(warranty.claim_filed, 3);
+        assert!(!warranty.claim_resolved, 5);
+
+        let payment = coin::from_balance(
+            balance::split(&mut registry.reserve, amount),
+            ctx,
+        );
+        transfer::public_transfer(payment, recipient);
+
+        event::emit(ClaimApproved {
+            warranty_id: object::id(warranty),
+            amount,
+        });
+
+        warranty.claim_resolved = true;
+    }
+
+    public fun reject_claim(warranty: &mut Warranty) {
+        assert!(warranty.claim_filed, 4);
+        assert!(!warranty.claim_resolved, 6);
+        warranty.claim_resolved = true;
+    }
+
+    public fun top_up_reserve(
+        registry: &mut WarrantyRegistry,
+        amount: Coin<SUI>,
+    ) {
+        balance::join(&mut registry.reserve, coin::into_balance(amount));
+    }
+
+    public fun is_valid(
+        warranty: &Warranty,
+        clock: &Clock,
+    ): bool {
+        let current_epoch = clock.timestamp_ms() / 1000;
+        current_epoch < warranty.expiry_epoch && !warranty.claim_filed
+    }
+}

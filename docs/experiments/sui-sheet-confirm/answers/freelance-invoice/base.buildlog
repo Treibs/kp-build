@@ -1,0 +1,60 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/answer.move:74:13
+   │
+56 │     public fun pay_invoice(
+   │                ----------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+61 │         let payer = tx_context::sender(ctx);
+   │                     ----------------------- Transaction sender address coming from here
+   ·
+74 │             transfer::public_transfer(refund, payer);
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/answer.move:84:9
+   │
+56 │     public fun pay_invoice(
+   │                ----------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+61 │         let payer = tx_context::sender(ctx);
+   │                     ----------------------- Transaction sender address coming from here
+   ·
+84 │         transfer::transfer(receipt, payer);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/answer.move:89:11
+   │
+ 9 │     public struct Invoice has key {
+   │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+57 │         invoice: Invoice,
+   │         -------  ------- The type 'contractor_invoicing::invoice::Invoice' does not have the ability 'drop'
+   │         │         
+   │         The parameter 'invoice' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+89 │         });
+   │           ^ Invalid return
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/answer.move:94:49
+   │
+ 9 │     public struct Invoice has key {
+   │                   ------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+92 │     public fun void_invoice(invoice: Invoice, ctx: &TxContext) {
+   │                             -------  ------- The type 'contractor_invoicing::invoice::Invoice' does not have the ability 'drop'
+   │                             │         
+   │                             The parameter 'invoice' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+93 │         let sender = tx_context::sender(ctx);
+94 │         assert!(sender == invoice.contractor, 2);
+   │                                                 ^ Invalid return
+
