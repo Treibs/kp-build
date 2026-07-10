@@ -1,0 +1,75 @@
+module star_registry::registry {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+    use std::string::String;
+
+    public struct Star has key, store {
+        id: UID,
+        name: String,
+    }
+
+    public struct ObservatoryCap has key, store {
+        id: UID,
+    }
+
+    public struct Registry has key {
+        id: UID,
+        naming_fee: u64,
+        fee_pool: Balance<SUI>,
+        provenance: Table<ID, vector<address>>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(ObservatoryCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(Registry {
+            id: object::new(ctx),
+            naming_fee: 1_000_000_000,
+            fee_pool: balance::zero(),
+            provenance: table::new(ctx),
+        });
+    }
+
+    public fun mint_star(
+        registry: &mut Registry,
+        name: String,
+        payment: &mut Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Star {
+        let fee = coin::split(payment, registry.naming_fee, ctx);
+        balance::join(&mut registry.fee_pool, coin::into_balance(fee));
+
+        let star = Star { id: object::new(ctx), name };
+        let star_id = object::id(&star);
+        let owners = vector[ctx.sender()];
+        table::add(&mut registry.provenance, star_id, owners);
+        star
+    }
+
+    public fun gift_star(
+        registry: &mut Registry,
+        star: Star,
+        recipient: address,
+    ) {
+        let star_id = object::id(&star);
+        let owners = table::borrow_mut(&mut registry.provenance, star_id);
+        owners.push_back(recipient);
+        transfer::public_transfer(star, recipient);
+    }
+
+    public fun transfer_count(registry: &Registry, star_id: ID): u64 {
+        let owners = table::borrow(&registry.provenance, star_id);
+        owners.length() - 1
+    }
+
+    public fun sweep_fees(
+        _cap: &ObservatoryCap,
+        registry: &mut Registry,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let amount = balance::value(&registry.fee_pool);
+        let swept = balance::split(&mut registry.fee_pool, amount);
+        coin::from_balance(swept, ctx)
+    }
+}

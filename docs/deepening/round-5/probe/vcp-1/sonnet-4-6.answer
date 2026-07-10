@@ -1,0 +1,87 @@
+```move
+module food_truck::loyalty {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::table::{Self, Table};
+
+    public struct TruckOwnerCap has key, store {
+        id: UID,
+    }
+
+    public struct Truck has key {
+        id: UID,
+        price: u64,
+        pool: Balance<SUI>,
+        punches: Table<address, u64>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let cap = TruckOwnerCap { id: object::new(ctx) };
+        let truck = Truck {
+            id: object::new(ctx),
+            price: 1_000_000_000,
+            pool: balance::zero(),
+            punches: table::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+        transfer::share_object(truck);
+    }
+
+    public fun buy_meal(
+        truck: &mut Truck,
+        mut payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let buyer = ctx.sender();
+        assert!(coin::value(&payment) >= truck.price);
+
+        let current = if (table::contains(&truck.punches, buyer)) {
+            *table::borrow(&truck.punches, buyer)
+        } else {
+            0
+        };
+        let new_count = current + 1;
+
+        if (new_count % 5 == 0) {
+            transfer::public_transfer(payment, buyer);
+        } else {
+            let paid = coin::split(&mut payment, truck.price, ctx);
+            balance::join(&mut truck.pool, coin::into_balance(paid));
+            if (coin::value(&payment) > 0) {
+                transfer::public_transfer(payment, buyer);
+            } else {
+                coin::destroy_zero(payment);
+            };
+        };
+
+        if (table::contains(&truck.punches, buyer)) {
+            *table::borrow_mut(&mut truck.punches, buyer) = new_count;
+        } else {
+            table::add(&mut truck.punches, buyer, new_count);
+        };
+    }
+
+    public fun sweep(
+        _cap: &TruckOwnerCap,
+        truck: &mut Truck,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let amount = balance::value(&truck.pool);
+        assert!(amount > 0);
+        coin::from_balance(balance::split(&mut truck.pool, amount), ctx)
+    }
+
+    public fun punch_count(truck: &Truck, buyer: address): u64 {
+        if (table::contains(&truck.punches, buyer)) {
+            *table::borrow(&truck.punches, buyer)
+        } else {
+            0
+        }
+    }
+
+    public fun pool_total(truck: &Truck): u64 {
+        balance::value(&truck.pool)
+    }
+}
+```

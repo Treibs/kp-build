@@ -1,0 +1,68 @@
+module 0x1::loan_desk {
+    use sui::object::{Self, ID, UID};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    public struct Artifact has key, store {
+        id: UID,
+    }
+
+    public struct LoanEntry has store {
+        borrower: address,
+        due_epoch: u64,
+        deposit_amount: u64,
+    }
+
+    public struct LoanDesk has key {
+        id: UID,
+        loans: Table<ID, LoanEntry>,
+        deposit_pool: Coin<SUI>,
+    }
+
+    public fun init_shared_desk(ctx: &mut TxContext) {
+        let desk = LoanDesk {
+            id: object::new(ctx),
+            loans: table::new(ctx),
+            deposit_pool: coin::zero<SUI>(ctx),
+        };
+        transfer::share_object(desk);
+    }
+
+    public fun loan_artifact(
+        desk: &mut LoanDesk,
+        artifact: Artifact,
+        borrower: address,
+        due_epoch: u64,
+        deposit: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let artifact_id = object::id(&artifact);
+        let deposit_amount = coin::value(&deposit);
+
+        table::add(
+            &mut desk.loans,
+            artifact_id,
+            LoanEntry { borrower, due_epoch, deposit_amount }
+        );
+
+        coin::join(&mut desk.deposit_pool, deposit);
+        transfer::public_transfer(artifact, borrower);
+    }
+
+    public fun return_artifact(
+        desk: &mut LoanDesk,
+        artifact: Artifact,
+        ctx: &mut TxContext,
+    ) {
+        let artifact_id = object::id(&artifact);
+        let LoanEntry { borrower, due_epoch: _, deposit_amount } =
+            table::remove(&mut desk.loans, artifact_id);
+
+        let refund = coin::split(&mut desk.deposit_pool, deposit_amount, ctx);
+        transfer::public_transfer(refund, borrower);
+        transfer::public_transfer(artifact, tx_context::sender(ctx));
+    }
+}

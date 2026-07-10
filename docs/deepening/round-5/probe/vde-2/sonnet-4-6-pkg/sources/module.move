@@ -1,0 +1,45 @@
+module card_game::deck {
+    public struct Card has key, store {
+        id: UID,
+        rank: u8,
+        suit: u8,
+    }
+
+    public struct Deck has key {
+        id: UID,
+        cards: vector<Card>,
+    }
+
+    public fun build(ctx: &mut TxContext): Deck {
+        let mut cards = vector[];
+        let mut suit = 0u8;
+        while (suit < 4) {
+            let mut rank = 1u8;
+            while (rank <= 13) {
+                cards.push_back(Card {
+                    id: object::new(ctx),
+                    rank,
+                    suit,
+                });
+                rank = rank + 1;
+            };
+            suit = suit + 1;
+        };
+        Deck { id: object::new(ctx), cards }
+    }
+
+    public fun deal(deck: Deck, players: vector<address>) {
+        let Deck { id, mut cards } = deck;
+        object::delete(id);
+        let n = players.length();
+        assert!(n > 0);
+        let mut i = 0u64;
+        while (cards.length() > 0) {
+            let card = cards.pop_back();
+            let player = *players.borrow(i % n);
+            transfer::public_transfer(card, player);
+            i = i + 1;
+        };
+        cards.destroy_empty();
+    }
+}

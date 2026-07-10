@@ -1,0 +1,33 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:46:13
+   │
+30 │     public fun buy_meal(
+   │                -------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+35 │         let buyer = ctx.sender();
+   │                     ------------ Transaction sender address coming from here
+   ·
+46 │             transfer::public_transfer(payment, buyer);
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:51:17
+   │
+30 │     public fun buy_meal(
+   │                -------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+35 │         let buyer = ctx.sender();
+   │                     ------------ Transaction sender address coming from here
+   ·
+51 │                 transfer::public_transfer(payment, buyer);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+

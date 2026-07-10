@@ -1,0 +1,58 @@
+module attendance::sheet {
+    use sui::table::{Self, Table};
+
+    public struct TeacherCap has key, store {
+        id: UID,
+    }
+
+    public struct AttendanceSheet has key {
+        id: UID,
+        attendance: Table<address, u64>,
+        last_marked_epoch: Table<address, u64>,
+        student_count: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let sheet = AttendanceSheet {
+            id: object::new(ctx),
+            attendance: table::new(ctx),
+            last_marked_epoch: table::new(ctx),
+            student_count: 0,
+        };
+        transfer::share_object(sheet);
+        transfer::transfer(TeacherCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun mark_present(
+        _cap: &TeacherCap,
+        sheet: &mut AttendanceSheet,
+        student: address,
+        ctx: &TxContext,
+    ) {
+        let epoch = ctx.epoch();
+        if (!table::contains(&sheet.last_marked_epoch, student)) {
+            table::add(&mut sheet.last_marked_epoch, student, epoch);
+            table::add(&mut sheet.attendance, student, 1);
+            sheet.student_count = sheet.student_count + 1;
+        } else {
+            let last = *table::borrow(&sheet.last_marked_epoch, student);
+            if (last != epoch) {
+                *table::borrow_mut(&mut sheet.last_marked_epoch, student) = epoch;
+                let current = *table::borrow(&sheet.attendance, student);
+                *table::borrow_mut(&mut sheet.attendance, student) = current + 1;
+            };
+        };
+    }
+
+    public fun attendance_total(sheet: &AttendanceSheet, student: address): u64 {
+        if (table::contains(&sheet.attendance, student)) {
+            *table::borrow(&sheet.attendance, student)
+        } else {
+            0
+        }
+    }
+
+    public fun student_count(sheet: &AttendanceSheet): u64 {
+        sheet.student_count
+    }
+}

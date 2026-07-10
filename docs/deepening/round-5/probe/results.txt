@@ -1,0 +1,34 @@
+# Round-5 probe results (pack-loaded arm, sui 1.74.1-8fc60f1fa966) + import sweep
+
+vcp-1    haiku-4-5   FAIL Failed to build Move modules: Compi import=CORRECT
+vcp-1    sonnet-4-6  PASS WARN2     import=CORRECT
+vcp-2    haiku-4-5   FAIL Failed to build Move modules: Compi import=FAIL absent
+vcp-2    sonnet-4-6  PASS CLEAN     import=CORRECT
+vcp-3    haiku-4-5   PASS WARN1     import=CORRECT
+vcp-3    sonnet-4-6  FAIL Failed to build Move modules: Compi import=CORRECT
+vde-1    haiku-4-5   FAIL Failed to build Move modules: Compi import=CORRECT
+vde-1    sonnet-4-6  PASS CLEAN     import=CORRECT
+vde-2    haiku-4-5   PASS WARN1     import=NA
+vde-2    sonnet-4-6  PASS CLEAN     import=NA
+vde-3    haiku-4-5   PASS CLEAN     import=NA
+vde-3    sonnet-4-6  PASS CLEAN     import=NA
+uid-1    haiku-4-5   PASS CLEAN     import=CORRECT
+uid-1    sonnet-4-6  PASS CLEAN     import=CORRECT
+uid-2    haiku-4-5   PASS WARN1     import=CORRECT
+uid-2    sonnet-4-6  PASS CLEAN     import=CORRECT
+uid-3    haiku-4-5   FAIL Failed to build Move modules: Compi import=CORRECT
+uid-3    sonnet-4-6  PASS CLEAN     import=CORRECT
+ns-1     haiku-4-5   PASS WARN1     import=NA
+ns-1     sonnet-4-6  PASS CLEAN     import=NA
+ns-2     haiku-4-5   FAIL Failed to build Move modules: Compi import=NA
+ns-2     sonnet-4-6  PASS CLEAN     import=NA
+ns-3     haiku-4-5   PASS CLEAN     import=NA
+ns-3     sonnet-4-6  PASS CLEAN     import=NA
+api-1    haiku-4-5   FAIL Failed to build Move modules: Compi import=NA
+api-1    sonnet-4-6  PASS CLEAN     import=NA
+api-2    haiku-4-5   PASS CLEAN     import=CORRECT
+api-2    sonnet-4-6  PASS CLEAN     import=CORRECT
+api-3    haiku-4-5   FAIL Failed to build Move modules: Compi import=CORRECT
+api-3    sonnet-4-6  PASS CLEAN     import=CORRECT
+
+# Import replication sweep (9 coin-bearing tasks): haiku 1/9 FAIL (vcp-2, absent shape), sonnet 0/9

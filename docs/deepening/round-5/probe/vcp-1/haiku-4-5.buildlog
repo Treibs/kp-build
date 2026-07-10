@@ -1,0 +1,35 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:15:15
+   │
+15 │         pool: Coin<SUI>,
+   │               ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:66:38
+   │
+43 │         payment: Coin<SUI>,
+   │         ------- To use the variable mutably, it must be declared 'mut', e.g. 'mut payment'
+   ·
+66 │             let change = coin::split(&mut payment, change_amount, ctx);
+   │                                      ^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'payment'
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:91:9
+   │
+84 │     public fun sweep_pool(
+   │                ---------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+91 │         transfer::public_transfer(pooled, tx_context::sender(ctx));
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                                 │
+   │         │                                 Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

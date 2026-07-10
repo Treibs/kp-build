@@ -1,0 +1,22 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:32:9
+   │
+32 │         let wishlist = dynamic_field::borrow_mut<address, Wishlist>(&mut board.id, reader);
+   │         ^^^
+   │         │
+   │         Unexpected 'let'
+   │         Expected ';'
+
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:65:13
+   │
+59 │         let i = 0;
+   │             - To use the variable mutably, it must be declared 'mut', e.g. 'mut i'
+   ·
+65 │             i = i + 1;
+   │             ^ Invalid assignment of immutable variable 'i'
+

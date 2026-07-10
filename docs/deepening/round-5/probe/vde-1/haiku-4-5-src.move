@@ -1,0 +1,72 @@
+module mailroom::mailroom {
+    use std::vector;
+    use sui::balance::{Balance, Self};
+    use sui::coin::{Coin, Self};
+    use sui::object::{UID, Self};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::tx_context::{TxContext, Self};
+
+    public struct Package has key, store {
+        id: UID,
+        addressee: address,
+    }
+
+    public struct Mailroom has key, store {
+        id: UID,
+        intake: vector<Package>,
+        pool: Balance<SUI>,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        
+        let mailroom = Mailroom {
+            id: object::new(ctx),
+            intake: vector[],
+            pool: balance::zero(),
+        };
+
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
+        transfer::share_object(mailroom);
+    }
+
+    public fun deposit(
+        mailroom: &mut Mailroom,
+        addressee: address,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let package = Package {
+            id: object::new(ctx),
+            addressee,
+        };
+        
+        vector::push_back(&mut mailroom.intake, package);
+        balance::join(&mut mailroom.pool, coin::into_balance(payment));
+    }
+
+    public fun dispatch(
+        mailroom: &mut Mailroom,
+        _cap: &AdminCap,
+    ) {
+        while (!vector::is_empty(&mailroom.intake)) {
+            let package = vector::pop_back(&mut mailroom.intake);
+            transfer::public_transfer(package, package.addressee);
+        };
+    }
+
+    public fun packages_waiting(mailroom: &Mailroom): u64 {
+        vector::length(&mailroom.intake)
+    }
+
+    public fun pool_total(mailroom: &Mailroom): u64 {
+        balance::value(&mailroom.pool)
+    }
+}

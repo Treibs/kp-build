@@ -1,0 +1,87 @@
+module 0x0::barbershop {
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::table::{Self, Table};
+    use sui::balance::{Self, Balance};
+
+    public struct BarberShop has key {
+        id: UID,
+        owner: address,
+        is_barber_in: bool,
+        pool: Balance<SUI>,
+        visits: Table<address, u64>,
+    }
+
+    public struct BarberCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let shop = BarberShop {
+            id: object::new(ctx),
+            owner: ctx.sender(),
+            is_barber_in: false,
+            pool: balance::zero(),
+            visits: table::new(ctx),
+        };
+        transfer::share_object(shop);
+
+        let cap = BarberCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun walk_in(
+        shop: &mut BarberShop,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext
+    ) {
+        let visitor = ctx.sender();
+        
+        if (shop.is_barber_in) {
+            if (table::contains(&shop.visits, visitor)) {
+                let current = table::borrow_mut(&mut shop.visits, visitor);
+                *current = *current + 1;
+            } else {
+                table::add(&mut shop.visits, visitor, 1);
+            };
+            
+            let payment_balance = coin::into_balance(payment);
+            balance::join(&mut shop.pool, payment_balance);
+        } else {
+            transfer::public_transfer(payment, visitor);
+        }
+    }
+
+    public fun mark_in(shop: &mut BarberShop, _cap: &BarberCap) {
+        shop.is_barber_in = true;
+    }
+
+    public fun mark_out(shop: &mut BarberShop, _cap: &BarberCap) {
+        shop.is_barber_in = false;
+    }
+
+    public fun sweep_pool(shop: &mut BarberShop, ctx: &mut TxContext): Coin<SUI> {
+        assert!(ctx.sender() == shop.owner);
+        
+        let amount = balance::value(&shop.pool);
+        let pool_balance = balance::split(&mut shop.pool, amount);
+        coin::from_balance(pool_balance, ctx)
+    }
+
+    public fun get_visit_count(shop: &BarberShop, visitor: address): u64 {
+        if (table::contains(&shop.visits, visitor)) {
+            *table::borrow(&shop.visits, visitor)
+        } else {
+            0
+        }
+    }
+
+    public fun is_barber_in(shop: &BarberShop): bool {
+        shop.is_barber_in
+    }
+}

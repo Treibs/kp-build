@@ -1,0 +1,44 @@
+```move
+module envelope_budget::splitter {
+    use sui::coin::{Self, Coin, split};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use std::vector;
+
+    public struct Envelope {
+        recipient: address,
+        label: vector<u8>,
+        amount: u64,
+    }
+
+    public fun split_budget(
+        budget: Coin<SUI>,
+        envelopes: vector<Envelope>,
+        ctx: &mut TxContext,
+    ) {
+        let budget_amount = coin::value(&budget);
+        let mut total_needed = 0u64;
+        
+        let mut i = 0;
+        while (i < vector::length(&envelopes)) {
+            let envelope = vector::borrow(&envelopes, i);
+            total_needed = total_needed + envelope.amount;
+            i = i + 1;
+        };
+        
+        assert!(total_needed <= budget_amount, 0);
+        
+        let mut current_coin = budget;
+        let mut j = 0;
+        while (j < vector::length(&envelopes)) {
+            let envelope = vector::borrow(&envelopes, j);
+            let envelope_coin = coin::split(&mut current_coin, envelope.amount, ctx);
+            transfer::public_transfer(envelope_coin, envelope.recipient);
+            j = j + 1;
+        };
+        
+        transfer::public_transfer(current_coin, ctx.sender());
+    }
+}
+```

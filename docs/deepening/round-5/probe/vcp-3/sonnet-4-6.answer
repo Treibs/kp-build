@@ -1,0 +1,73 @@
+```move
+module barbershop::shop {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+
+    public struct OwnerCap has key, store { id: UID }
+    public struct BarberCap has key, store { id: UID }
+
+    public struct BarberShop has key {
+        id: UID,
+        barber_in: bool,
+        status_epoch: u64,
+        pool: Balance<SUI>,
+    }
+
+    public struct CustomerCard has key, store {
+        id: UID,
+        visit_count: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(BarberShop {
+            id: object::new(ctx),
+            barber_in: false,
+            status_epoch: 0,
+            pool: balance::zero(),
+        });
+        transfer::transfer(OwnerCap { id: object::new(ctx) }, ctx.sender());
+        transfer::transfer(BarberCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun new_customer_card(ctx: &mut TxContext): CustomerCard {
+        CustomerCard { id: object::new(ctx), visit_count: 0 }
+    }
+
+    public fun clock_in(shop: &mut BarberShop, _cap: &BarberCap, ctx: &TxContext) {
+        shop.barber_in = true;
+        shop.status_epoch = ctx.epoch();
+    }
+
+    public fun clock_out(shop: &mut BarberShop, _cap: &BarberCap) {
+        shop.barber_in = false;
+    }
+
+    public fun walk_in(
+        shop: &mut BarberShop,
+        card: &mut CustomerCard,
+        payment: Coin<SUI>,
+        ctx: &TxContext,
+    ) {
+        if (shop.barber_in && ctx.epoch() == shop.status_epoch) {
+            card.visit_count = card.visit_count + 1;
+            balance::join(&mut shop.pool, coin::into_balance(payment))
+        } else {
+            transfer::public_transfer(payment, ctx.sender())
+        }
+    }
+
+    public fun sweep(shop: &mut BarberShop, _cap: &OwnerCap, ctx: &mut TxContext): Coin<SUI> {
+        let amount = balance::value(&shop.pool);
+        coin::take(&mut shop.pool, amount, ctx)
+    }
+
+    public fun visit_count(card: &CustomerCard): u64 {
+        card.visit_count
+    }
+
+    public fun barber_is_in(shop: &BarberShop, ctx: &TxContext): bool {
+        shop.barber_in && ctx.epoch() == shop.status_epoch
+    }
+}
+```

@@ -1,0 +1,84 @@
+module gym::locker {
+    use sui::balance::Balance;
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+    use sui::event;
+    use std::string::String;
+
+    public struct LOCKER has drop {}
+
+    public struct Locker has key, store {
+        id: UID,
+        number: u64,
+        combination: String,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct LockerManager has key {
+        id: UID,
+        fee_pool: Balance<SUI>,
+    }
+
+    public struct Rekeyed has copy, drop {
+        old_locker_id: ID,
+        new_locker_id: ID,
+        locker_number: u64,
+    }
+
+    fun init(_witness: LOCKER, ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::public_transfer(admin_cap, ctx.sender());
+
+        let manager = LockerManager {
+            id: object::new(ctx),
+            fee_pool: sui::balance::zero(),
+        };
+        transfer::share_object(manager);
+    }
+
+    public fun create_locker(
+        number: u64,
+        combination: String,
+        ctx: &mut TxContext,
+    ): Locker {
+        Locker {
+            id: object::new(ctx),
+            number,
+            combination,
+        }
+    }
+
+    public fun rekey(
+        old_locker: Locker,
+        new_combination: String,
+        manager: &mut LockerManager,
+        fee: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Locker {
+        let Locker { id: old_id, number, combination: _ } = old_locker;
+        let old_locker_id = object::uid_to_inner(&old_id);
+        object::delete(old_id);
+
+        let new_locker = Locker {
+            id: object::new(ctx),
+            number,
+            combination: new_combination,
+        };
+        let new_locker_id = object::uid_to_inner(&new_locker.id);
+
+        event::emit(Rekeyed {
+            old_locker_id,
+            new_locker_id,
+            locker_number: number,
+        });
+
+        sui::balance::join(&mut manager.fee_pool, sui::coin::into_balance(fee));
+
+        new_locker
+    }
+}
