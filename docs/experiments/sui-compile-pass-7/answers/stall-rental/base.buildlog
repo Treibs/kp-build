@@ -1,0 +1,59 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:29:29
+   │
+29 │             rented: vector::empty(),
+   │                             ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:81:13
+   │
+14 │     public struct RentedStall has store {
+   │                   ----------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+22 │         rented: vector<RentedStall>,
+   │                        ----------- The type 'farmers_market::stall_board::RentedStall' does not have the ability 'drop'
+   ·
+81 │         let _ = stall;
+   │             ^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:84:51
+   │
+84 │     public fun stalls_today(board: &MarketBoard): vector<(u64, address)> {
+   │                                                   ^^^^^^^^^^^^^^^^^^^^^^
+   │                                                   │      │
+   │                                                   │      Expected a single non-reference type, but found: '(u64, address)'
+   │                                                   Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:85:26
+   │
+85 │         let mut result = vector::empty();
+   │                          ^^^^^^^^^^^^^^^ Invalid type argument
+   ·
+90 │             vector::push_back(&mut result, (s.number, s.vendor));
+   │                                            -------------------- Expected a single non-reference type, but found: '(u64, address)'
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:85:34
+   │
+85 │         let mut result = vector::empty();
+   │                                  ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:90:13
+   │
+90 │             vector::push_back(&mut result, (s.number, s.vendor));
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │             │                              │
+   │             │                              Expected a single non-reference type, but found: '(u64, address)'
+   │             Invalid type argument
+

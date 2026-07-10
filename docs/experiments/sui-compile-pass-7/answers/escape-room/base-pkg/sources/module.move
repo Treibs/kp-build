@@ -1,0 +1,124 @@
+module escape_room::booking {
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+    use sui::balance::Balance;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{TxContext, sender};
+    use std::vector;
+    use std::string::String;
+
+    public struct Room has key {
+        id: UID,
+        name: String,
+        target_time: u64,
+        bookings: vector<Booking>,
+        pool: Balance<SUI>,
+    }
+
+    public struct Booking has store, copy, drop {
+        team_name: String,
+        epoch: u64,
+        fee: u64,
+        player: address,
+        finish_time: u64,
+        status: u8,
+    }
+
+    public fun create_room(
+        name: String,
+        target_time: u64,
+        ctx: &mut TxContext
+    ) {
+        let room = Room {
+            id: object::new(ctx),
+            name,
+            target_time,
+            bookings: vector::empty(),
+            pool: Balance::zero(),
+        };
+        transfer::share_object(room);
+    }
+
+    public fun book_room(
+        room: &mut Room,
+        team_name: String,
+        epoch: u64,
+        fee: Coin<SUI>,
+        ctx: &mut TxContext
+    ) {
+        let fee_amount = fee.value();
+        let player = sender(ctx);
+        room.pool.join(fee.into_balance());
+        
+        let booking = Booking {
+            team_name,
+            epoch,
+            fee: fee_amount,
+            player,
+            finish_time: 0,
+            status: 0,
+        };
+        vector::push_back(&mut room.bookings, booking);
+    }
+
+    public fun record_finish(
+        room: &mut Room,
+        team_name: String,
+        epoch: u64,
+        finish_time: u64,
+        ctx: &mut TxContext
+    ) {
+        let bookings = &mut room.bookings;
+        let len = vector::length(bookings);
+        let i = 0;
+        
+        while (i < len) {
+            let booking = vector::borrow_mut(bookings, i);
+            if (booking.team_name == team_name && booking.epoch == epoch && booking.status == 0) {
+                booking.finish_time = finish_time;
+                
+                if (finish_time <= room.target_time) {
+                    booking.status = 1;
+                    let refund_amount = booking.fee / 2;
+                    let refund = room.pool.split(refund_amount);
+                    transfer::public_transfer(
+                        Coin { id: object::new(ctx), balance: refund },
+                        booking.player
+                    );
+                } else {
+                    booking.status = 2;
+                };
+                return
+            };
+            i = i + 1;
+        };
+    }
+
+    public fun forfeit_booking(
+        room: &mut Room,
+        team_name: String,
+        epoch: u64,
+    ) {
+        let bookings = &mut room.bookings;
+        let len = vector::length(bookings);
+        let i = 0;
+        
+        while (i < len) {
+            let booking = vector::borrow_mut(bookings, i);
+            if (booking.team_name == team_name && booking.epoch == epoch && booking.status == 0) {
+                booking.status = 3;
+                return
+            };
+            i = i + 1;
+        };
+    }
+
+    public fun view_room_bookings(room: &Room): vector<Booking> {
+        room.bookings
+    }
+
+    public fun view_pool_total(room: &Room): u64 {
+        room.pool.value()
+    }
+}

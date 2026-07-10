@@ -1,0 +1,23 @@
+# Experiment 7 results — compile-pass gate + import sweep
+
+escape-room      base   FAIL error[E03006]: unexpected name in t import=CORRECT
+escape-room      kp110  FAIL error[E03003]: unbound module membe import=FAIL wrong-module
+escape-room      kp128  PASS CLEAN   import=CORRECT
+stall-rental     base   FAIL error[E05001]: ability constraint n import=CORRECT
+stall-rental     kp110  PASS WARN2   import=CORRECT
+stall-rental     kp128  FAIL error[E03002]: unbound module import=CORRECT
+community-fridge base   FAIL error[E05001]: ability constraint n import=NA
+community-fridge kp110  FAIL error[E01002]: unexpected token import=NA
+community-fridge kp128  PASS CLEAN   import=NA
+service-log      base   FAIL error[E03002]: unbound module import=NA
+service-log      kp110  PASS CLEAN   import=NA
+service-log      kp128  PASS CLEAN   import=NA
+card-merge       base   PASS CLEAN   import=NA
+card-merge       kp110  FAIL error[E05001]: ability constraint n import=NA
+card-merge       kp128  PASS CLEAN   import=NA
+charging-station base   PASS WARN1   import=CORRECT
+charging-station kp110  FAIL error[E03006]: unexpected name in t import=CORRECT
+charging-station kp128  PASS WARN2   import=CORRECT
+
+# compile-pass: base 2/6, kp110 2/6, kp128 5/6 | clean-compile: base 1/6, kp110 1/6, kp128 4/6
+# import sweep (3 coin-bearing tasks): base 0/3 fail, kp110 1/3 fail (escape-room wrong-module), kp128 0/3 fail

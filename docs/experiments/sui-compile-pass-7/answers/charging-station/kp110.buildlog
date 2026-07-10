@@ -1,0 +1,146 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:11:15
+   │
+11 │     proceeds: Coin<SUI>,
+   │               ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:16:13
+   │
+16 │     escrow: Coin<SUI>,
+   │             ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:41:17
+   │
+ 2 │   use sui::coin::Coin;
+   │                  ---- Similarly named defintion found here
+   ·
+41 │       proceeds: coin::zero(ctx),
+   │                 ^^^^
+   │                 │
+   │                 Could not resolve the name 'coin'
+   │                 Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:52:13
+   │
+ 2 │   use sui::coin::Coin;
+   │                  ---- Similarly named defintion found here
+   ·
+52 │     assert!(coin::value(&escrow) > 0);
+   │             ^^^^
+   │             │
+   │             Could not resolve the name 'coin'
+   │             Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:62:22
+   │
+ 2 │   use sui::coin::Coin;
+   │                  ---- Similarly named defintion found here
+   ·
+62 │       escrow_amount: coin::value(&session.escrow),
+   │                      ^^^^
+   │                      │
+   │                      Could not resolve the name 'coin'
+   │                      Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:73:5
+   │
+73 │     ctx: &mut TxContext,
+   │     ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:78:25
+   │
+ 2 │   use sui::coin::Coin;
+   │                  ---- Similarly named defintion found here
+   ·
+78 │     let escrow_amount = coin::value(&session.escrow);
+   │                         ^^^^
+   │                         │
+   │                         Could not resolve the name 'coin'
+   │                         Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:82:25
+   │
+ 2 │   use sui::coin::Coin;
+   │                  ---- Similarly named defintion found here
+   ·
+82 │       let refund_coin = coin::split(&mut session.escrow, refund_amount, ctx);
+   │                         ^^^^
+   │                         │
+   │                         Could not resolve the name 'coin'
+   │                         Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:89:5
+   │
+ 2 │   use sui::coin::Coin;
+   │                  ---- Similarly named defintion found here
+   ·
+89 │     coin::join(&mut station.proceeds, session.escrow);
+   │     ^^^^
+   │     │
+   │     Could not resolve the name 'coin'
+   │     Did you mean: 'Coin'
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:90:20
+   │
+15 │     id: UID,
+   │         --- The type 'sui::object::UID' does not have the ability 'copy'
+   ·
+90 │     object::delete(session.id);
+   │                    ^^^^^^^^^^ Invalid implicit copy of field 'id' without the 'copy' ability
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+   │
+81 │ public struct UID has store {
+   │               --- To satisfy the constraint, the 'copy' ability would need to be added here
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:104:9
+    │
+104 │     let amount = coin::value(&station.proceeds);
+    │         ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:104:18
+    │
+  2 │   use sui::coin::Coin;
+    │                  ---- Similarly named defintion found here
+    ·
+104 │     let amount = coin::value(&station.proceeds);
+    │                  ^^^^
+    │                  │
+    │                  Could not resolve the name 'coin'
+    │                  Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:105:5
+    │
+  2 │   use sui::coin::Coin;
+    │                  ---- Similarly named defintion found here
+    ·
+105 │     coin::split(&mut station.proceeds, amount, ctx)
+    │     ^^^^
+    │     │
+    │     Could not resolve the name 'coin'
+    │     Did you mean: 'Coin'
+

@@ -1,0 +1,91 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99007]: struct with id but missing key ability
+   ┌─ ./sources/module.move:10:5
+   │  
+10 │ ╭     public struct Meal has store {
+11 │ │         id: UID,
+12 │ │         label: String,
+13 │ │         stocked_epoch: u64,
+14 │ │     }
+   │ ╰─────^ Struct's first field has an 'id' field of type 'sui::object::UID' but is missing the 'key' ability.
+   │  
+   = This warning can be suppressed with '#[allow(lint(missing_key))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:39:28
+   │
+39 │             meals: vector::empty(),
+   │                            ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:40:35
+   │
+40 │             user_records: vector::empty(),
+   │                                   ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:71:17
+   │
+16 │     public struct UserRecord has store {
+   │                   ---------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+24 │         user_records: vector<UserRecord>,
+   │                              ---------- The type 'community_fridge::fridge::UserRecord' does not have the ability 'drop'
+   ·
+71 │                 vector::remove(&mut fridge.user_records, i);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot ignore values without the 'drop' ability. The value must be used
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:93:21
+   │
+10 │     public struct Meal has store {
+   │                   ---- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+23 │         meals: vector<Meal>,
+   │                       ---- The type 'community_fridge::fridge::Meal' does not have the ability 'drop'
+   ·
+93 │                 let meal = vector::remove(&mut fridge.meals, i);
+   │                     ^^^^
+   │                     │
+   │                     Invalid assignment to variable 'meal'
+   │                     The variable might contain a value due to this assignment. The value does not have the 'drop' ability and must be used before you assign to this variable again
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:95:30
+    │
+ 10 │     public struct Meal has store {
+    │                   ---- To satisfy the constraint, the 'key' ability would need to be added here
+    ·
+ 23 │         meals: vector<Meal>,
+    │                       ---- The type 'community_fridge::fridge::Meal' does not have the ability 'key'
+    ·
+ 95 │                     meal_id: object::id(&meal),
+    │                              ^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:243:18
+    │
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                  --- 'key' constraint declared here
+
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:101:10
+    │
+ 10 │     public struct Meal has store {
+    │                   ---- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+ 23 │         meals: vector<Meal>,
+    │                       ---- The type 'community_fridge::fridge::Meal' does not have the ability 'drop'
+    ·
+ 93 │                 let meal = vector::remove(&mut fridge.meals, i);
+    │                     ---- The local variable 'meal' might still contain a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+101 │         };
+    │          ^ Invalid return
+

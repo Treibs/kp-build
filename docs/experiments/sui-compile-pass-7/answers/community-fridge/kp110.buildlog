@@ -1,0 +1,13 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:88:9
+   │
+88 │         fridge.current_epoch = new_epoch;
+   │         ^^^^^^
+   │         │
+   │         Unexpected 'fridge'
+   │         Expected ';'
+
