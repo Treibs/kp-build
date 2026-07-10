@@ -55,3 +55,6 @@ docs/experiments/manim-render-pass-2/answers/**/*.stderr
 docs/experiments/sui-import-elicitation/answers/**/build/
 docs/experiments/sui-import-elicitation/answers/**/Move.lock
 docs/experiments/sui-import-elicitation/answers/**/*.stderr
+docs/experiments/sui-compile-pass-7/answers/**/build/
+docs/experiments/sui-compile-pass-7/answers/**/Move.lock
+docs/experiments/sui-compile-pass-7/answers/**/*.stderr
