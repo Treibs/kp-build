@@ -1,0 +1,66 @@
+```python
+from manim import *
+import os
+
+class RelayHandoff(MovingCameraScene):
+    def construct(self):
+        # Set frame width to half default
+        self.camera.frame.set(width=config.frame_width / 2)
+        self.add(self.camera.frame)
+        
+        # Load or create sprites
+        if os.path.exists("sprite.png"):
+            from PIL import Image
+            import numpy as np
+            sprite_data = np.array(Image.open("sprite.png"))
+            
+            runner_a = ImageMobject(sprite_data)
+            runner_a.height = 1.5
+            runner_a.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            
+            runner_b = ImageMobject(sprite_data)
+            runner_b.height = 1.5
+            runner_b.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        else:
+            runner_a = Rectangle(width=0.4, height=1.5, color=BLUE, fill_opacity=1)
+            runner_b = Rectangle(width=0.4, height=1.5, color=BLUE, fill_opacity=1)
+        
+        # Create baton
+        baton = Rectangle(width=0.15, height=0.4, color=ORANGE, fill_opacity=1)
+        
+        # Initial positions
+        runner_a.move_to([-4, 0, 0])
+        runner_b.move_to([-4, 0, 0])
+        baton.next_to(runner_a, RIGHT, buff=0.15)
+        
+        # Add to scene
+        self.add(runner_a, baton)
+        
+        # Phase 1: Runner A runs right (3 seconds), camera follows
+        self.camera.frame.add_updater(lambda f: f.move_to(runner_a.get_center()))
+        
+        self.play(
+            runner_a.animate.shift(RIGHT * 8),
+            baton.animate.next_to(runner_a, RIGHT, buff=0.15),
+            run_time=3
+        )
+        
+        self.camera.frame.clear_updaters()
+        
+        # Handoff: Switch to runner B
+        runner_b.move_to(runner_a.get_center())
+        self.add(runner_b)
+        self.remove(runner_a)
+        baton.next_to(runner_b, RIGHT, buff=0.15)
+        
+        # Phase 2: Runner B runs right (3 seconds), camera follows
+        self.camera.frame.add_updater(lambda f: f.move_to(runner_b.get_center()))
+        
+        self.play(
+            runner_b.animate.shift(RIGHT * 8),
+            baton.animate.next_to(runner_b, RIGHT, buff=0.15),
+            run_time=3
+        )
+        
+        self.camera.frame.clear_updaters()
+```

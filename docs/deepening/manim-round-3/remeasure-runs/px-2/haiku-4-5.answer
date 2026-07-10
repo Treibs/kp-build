@@ -1,0 +1,80 @@
+```python
+from manim import *
+import numpy as np
+
+class StarfieldDrift(Scene):
+    def construct(self):
+        frame_w = config.frame_width
+        frame_h = config.frame_height
+        
+        # Load and configure sprite
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.0
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.move_to(ORIGIN)
+        
+        # Cockpit frame
+        cockpit = Rectangle(
+            width=1.6, height=1.6,
+            stroke_color=WHITE, stroke_width=2, fill_opacity=0
+        )
+        cockpit.move_to(ORIGIN)
+        
+        # Far layer stars (small, dim, slow drift)
+        far_stars = VGroup()
+        np.random.seed(42)
+        for _ in range(16):
+            star = Circle(radius=0.04, color=GRAY_A, fill_opacity=0.5)
+            star.move_to([
+                np.random.uniform(-frame_w/2, frame_w/2),
+                np.random.uniform(-frame_h/2, frame_h/2),
+                0
+            ])
+            far_stars.add(star)
+        
+        # Near layer stars (large, bright, fast drift)
+        near_stars = VGroup()
+        for _ in range(8):
+            star = Circle(radius=0.07, color=WHITE, fill_opacity=1)
+            star.move_to([
+                np.random.uniform(-frame_w/2, frame_w/2),
+                np.random.uniform(-frame_h/2, frame_h/2),
+                0
+            ])
+            near_stars.add(star)
+        
+        # Planet crosses at far layer speed
+        planet = Circle(radius=0.7, color=BLUE_C, fill_opacity=0.75)
+        planet.move_to([frame_w/2 + 0.5, 0, 0])
+        
+        # Add in depth order: far stars, planet, near stars, cockpit, sprite
+        self.add(far_stars, planet, near_stars, cockpit, sprite)
+        
+        # Movement speeds for 6-second loop
+        far_speed = 1.33
+        near_speed = 2.13
+        
+        # Drift updater for star layers
+        def make_layer_updater(speed):
+            def updater(mob, dt):
+                mob.shift(LEFT * speed * dt)
+                for obj in mob:
+                    if obj.get_x() < -frame_w/2 - 0.5:
+                        obj.shift(RIGHT * (frame_w + 1))
+            return updater
+        
+        # Apply updaters to layers
+        far_stars.add_updater(make_layer_updater(far_speed))
+        near_stars.add_updater(make_layer_updater(near_speed))
+        
+        # Planet updater
+        def update_planet(mob, dt):
+            mob.shift(LEFT * far_speed * dt)
+            if mob.get_x() < -frame_w/2 - 1:
+                mob.shift(RIGHT * (frame_w + 2))
+        
+        planet.add_updater(update_planet)
+        
+        # Run animation for 6 seconds
+        self.wait(6)
+```

@@ -1,0 +1,92 @@
+```python
+from manim import *
+
+class MarathonMontage(Scene):
+    def construct(self):
+        # === SPRITE ===
+        # Running character stays at center, doesn't move
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.5
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.move_to(ORIGIN)
+        
+        # === GROUND STRIP ===
+        # Long horizontal strip that scrolls beneath the runner
+        ground_strip = Rectangle(
+            width=config.frame_width * 4,
+            height=0.6,
+            fill_color=GREY_BROWN,
+            fill_opacity=1,
+            stroke_width=1,
+            stroke_color=BLACK
+        )
+        ground_y = sprite.get_bottom()[1] - 0.1
+        ground_strip.move_to([0, ground_y, 0])
+        
+        # Add visual pattern to ground for scrolling effect
+        pattern = VGroup()
+        stripe_width = 0.25
+        stripe_spacing = 0.5
+        num_stripes = int(ground_strip.width / stripe_spacing) + 3
+        
+        for i in range(num_stripes):
+            stripe = Rectangle(
+                width=stripe_width,
+                height=ground_strip.height,
+                fill_color=DARK_BROWN,
+                stroke_width=0
+            )
+            x_pos = -ground_strip.width/2 + i * stripe_spacing
+            stripe.move_to([x_pos, ground_y, 0])
+            pattern.add(stripe)
+        
+        # === KILOMETER MARKERS ===
+        # Small numbered signs that scroll with ground
+        # 7 seconds / 1.5 second intervals ≈ 5 markers
+        markers = VGroup()
+        marker_spacing = 2.2  # Units between markers
+        
+        for km_num in range(1, 6):
+            # Marker sign: brown rectangle with yellow number
+            marker_bg = Rectangle(
+                width=0.4,
+                height=0.65,
+                fill_color=DARK_BROWN,
+                fill_opacity=1,
+                stroke_width=1.5,
+                stroke_color=YELLOW
+            )
+            marker_text = Text(
+                str(km_num),
+                font_size=20,
+                color=YELLOW,
+                weight=BOLD
+            )
+            marker_text.move_to(marker_bg.get_center())
+            
+            marker = VGroup(marker_bg, marker_text)
+            
+            # Position off-screen to the left (will scroll in from left)
+            x_start = -config.frame_width/2 - 1 - (km_num - 1) * marker_spacing
+            marker_y = ground_y + 0.5
+            marker.move_to([x_start, marker_y, 0])
+            markers.add(marker)
+        
+        # === ADD TO SCENE ===
+        self.add(sprite, ground_strip, pattern, markers)
+        
+        # === ANIMATION ===
+        # Scroll ground and markers from left to right past the character
+        # Both move at same speed (planted in ground effect)
+        scroll_distance = config.frame_width + 5 * marker_spacing + 1
+        
+        self.play(
+            ground_strip.animate.shift(RIGHT * scroll_distance),
+            pattern.animate.shift(RIGHT * scroll_distance),
+            markers.animate.shift(RIGHT * scroll_distance),
+            run_time=7,
+            rate_func=linear
+        )
+        
+        self.wait(1)
+```

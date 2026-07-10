@@ -1,0 +1,62 @@
+```python
+from manim import *
+import os
+
+class ParallaxStroll(Scene):
+    def construct(self):
+        fw = config.frame_width
+        fh = config.frame_height
+        
+        # Sprite (center, 1.5 units)
+        if os.path.exists("sprite.png"):
+            sprite = ImageMobject("sprite.png")
+            sprite.height = 1.5
+            sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        else:
+            sprite = self.create_sprite()
+        self.add(sprite)
+        
+        # Three parallax layers (back to front): hills, trees, fence
+        hills = self.create_scrolling_layer(self.hills_element, fw, -fh/3, 0.5)
+        trees = self.create_scrolling_layer(self.trees_element, fw, -fh/6, 1.2)
+        fence = self.create_scrolling_layer(self.fence_element, fw, -fh/4, 2.0)
+        
+        self.add_to_back(hills)
+        self.add_to_back(trees)
+        self.add_to_back(fence)
+        
+        self.wait(6)
+    
+    def create_scrolling_layer(self, element_fn, width, y_pos, speed):
+        layer = VGroup()
+        for cycle in range(2):
+            for i in range(4):
+                x = -width/2 + i * width/4 + cycle * width
+                layer.add(element_fn(x, y_pos))
+        layer.add_updater(lambda m, dt: m.shift(LEFT * speed * dt))
+        return layer
+    
+    def hills_element(self, x, y):
+        return Arc(radius=1, angle=PI, color=GREEN_D, fill_opacity=0.7).move_to([x, y, 0])
+    
+    def trees_element(self, x, y):
+        trunk = Rectangle(width=0.2, height=0.6, color="#654321", fill_opacity=0.8)
+        crown = Polygon(
+            np.array([-0.35, 0]), np.array([0.35, 0]), np.array([0, 0.9]),
+            color=GREEN, fill_opacity=0.8
+        )
+        crown.next_to(trunk, UP, buff=0)
+        return VGroup(trunk, crown).move_to([x, y, 0])
+    
+    def fence_element(self, x, y):
+        post = Rectangle(width=0.08, height=0.5, color="#D2B48C", fill_opacity=0.9)
+        rail = Rectangle(width=0.4, height=0.06, color="#D2B48C", fill_opacity=0.9)
+        rail.next_to(post, RIGHT, buff=-0.16)
+        return VGroup(post, rail).move_to([x, y, 0])
+    
+    def create_sprite(self):
+        head = Circle(radius=0.15, color="#FDBCB4", fill_opacity=1)
+        body = Rectangle(width=0.3, height=0.4, color=ORANGE, fill_opacity=1)
+        body.next_to(head, DOWN, buff=0.05)
+        return VGroup(head, body).scale(1.5)
+```
