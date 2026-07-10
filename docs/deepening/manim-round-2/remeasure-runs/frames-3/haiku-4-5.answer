@@ -1,0 +1,32 @@
+```python
+from manim import *
+
+class PixelArtWalkCycle(Scene):
+    def construct(self):
+        # Track elapsed time
+        timer = ValueTracker(0)
+        
+        # Create left character with frame cycling every 0.2 seconds
+        def create_left():
+            sprite = ImageMobject(f"sprite_{int((timer.get_value() / 0.2) % 4)}.png")
+            sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            sprite.height = 2
+            sprite.move_to(LEFT * 2)
+            return sprite
+        
+        # Create right character with frame cycling every 0.4 seconds
+        def create_right():
+            sprite = ImageMobject(f"sprite_{int((timer.get_value() / 0.4) % 4)}.png")
+            sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            sprite.height = 2
+            sprite.move_to(RIGHT * 2)
+            return sprite
+        
+        left_char = always_redraw(create_left)
+        right_char = always_redraw(create_right)
+        
+        self.add(left_char, right_char)
+        
+        # Animate for 4 seconds
+        self.play(timer.animate.set_value(4), run_time=4)
+```

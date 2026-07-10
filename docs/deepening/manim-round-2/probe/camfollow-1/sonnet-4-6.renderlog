@@ -1,0 +1,54 @@
+Manim Community v0.20.1
+
+[07/09/26 21:21:09] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SideScrollingWalk/uncached
+ _00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SideScrollingWalk/uncached
+ _00001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/SideScrollingWalk.mp
+ 4'
+
+ INFO Rendered SideScrollingWalk scene.py:278
+ Played 2 animations
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+/manim/scene.py:35: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ label.set_height(board_side * 0.65)
+/manim/scene.py:41: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ sprite.set_height(1.5)
+
+Animation 0: _MethodAnimation(ImageMobject): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ImageMobject): 24%|██▍ | 22/90 [00:00<00:00, 211.80it/s]
+Animation 0: _MethodAnimation(ImageMobject): 50%|█████ | 45/90 [00:00<00:00, 217.17it/s]
+Animation 0: _MethodAnimation(ImageMobject): 76%|███████▌ | 68/90 [00:00<00:00, 220.50it/s]

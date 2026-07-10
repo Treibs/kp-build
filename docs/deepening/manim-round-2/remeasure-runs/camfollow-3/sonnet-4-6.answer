@@ -1,0 +1,81 @@
+```python
+from manim import *
+
+
+class LadderClimbScene(MovingCameraScene):
+    def construct(self):
+        frame_h = config.frame_height  # 8 units by default
+        ground_y = 0.0
+        ladder_x = 0.0
+        ladder_height = 3 * frame_h  # 24 units tall
+
+        # Ground line
+        ground_line = Line(
+            [-config.frame_width, ground_y, 0],
+            [config.frame_width, ground_y, 0],
+            color=WHITE,
+            stroke_width=3,
+        )
+
+        # Ladder: two thin vertical posts + rungs
+        post_gap = 0.28
+        rung_spacing = 0.5
+        num_rungs = int(ladder_height / rung_spacing) + 1
+
+        left_post = Line(
+            [ladder_x - post_gap, ground_y, 0],
+            [ladder_x - post_gap, ground_y + ladder_height, 0],
+            color=GREY,
+            stroke_width=4,
+        )
+        right_post = Line(
+            [ladder_x + post_gap, ground_y, 0],
+            [ladder_x + post_gap, ground_y + ladder_height, 0],
+            color=GREY,
+            stroke_width=4,
+        )
+        rungs = VGroup(*[
+            Line(
+                [ladder_x - post_gap, ground_y + i * rung_spacing, 0],
+                [ladder_x + post_gap, ground_y + i * rung_spacing, 0],
+                color=GREY,
+                stroke_width=3,
+            )
+            for i in range(num_rungs)
+        ])
+        ladder = VGroup(left_post, right_post, rungs)
+
+        # Pixel-art sprite with nearest-neighbour resampling for crisp edges
+        sprite = ImageMobject("sprite.png")
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.set_height(1.2)
+
+        char_half_h = 0.6  # half of 1.2
+        sprite_start = np.array([ladder_x, ground_y + char_half_h, 0])
+        sprite_end   = np.array([ladder_x, ground_y + ladder_height, 0])
+        sprite.move_to(sprite_start)
+
+        # Camera starts with ground exactly at the bottom of the frame
+        cam_min_y = ground_y + frame_h / 2
+        self.camera.frame.move_to([0, cam_min_y, 0])
+
+        self.add(ground_line, ladder, sprite)
+
+        # Follow the character upward, but never reveal anything below the ground line.
+        # The camera only begins moving once centering on the character would
+        # keep the ground out of frame (char_y >= cam_min_y).
+        def follow(frame):
+            cy = sprite.get_center()[1]
+            frame.move_to([0, max(cam_min_y, cy), 0])
+
+        self.camera.frame.add_updater(follow)
+
+        self.play(
+            sprite.animate.move_to(sprite_end),
+            run_time=6,
+            rate_func=linear,
+        )
+
+        self.camera.frame.remove_updater(follow)
+        self.wait(0.5)
+```

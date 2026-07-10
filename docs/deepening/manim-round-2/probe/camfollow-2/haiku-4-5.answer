@@ -1,0 +1,78 @@
+```python
+from manim import *
+
+class SpriteRunScene(MovingCameraScene):
+    def construct(self):
+        # Load sprite and scale to 1 unit tall
+        sprite = ImageMobject("sprite.png").set_height(1)
+        sprite.to_edge(LEFT)
+        
+        # Create 6 gray rocks scattered across the frame
+        rocks = VGroup()
+        rock_positions = [
+            (-5, 1, 0),
+            (-3, -0.5, 0),
+            (-1, 1.5, 0),
+            (1, -1, 0),
+            (3, 0.5, 0),
+            (5, -0.8, 0),
+        ]
+        
+        for pos in rock_positions:
+            rock = Circle(radius=0.2, color=GRAY, fill_opacity=0.7)
+            rock.move_to(pos)
+            rocks.add(rock)
+        
+        self.add(sprite, rocks)
+        
+        # Save initial camera state
+        self.camera.frame.save_state()
+        
+        # Zoom in on character (frame about a third of default width)
+        self.play(
+            self.camera.frame.animate.scale(1/3).move_to(sprite),
+            run_time=2
+        )
+        
+        # Define S-curve path from left to right
+        start_x = sprite.get_x()
+        end_x = config.frame_width / 2 - 0.5
+        
+        def get_s_curve_point(t):
+            x = start_x + (end_x - start_x) * t
+            y = 0.6 * np.sin(np.pi * t)
+            return np.array([x, y, 0])
+        
+        # Progress tracker for smooth animation
+        progress = ValueTracker(0)
+        
+        # Create updater functions
+        def update_sprite(mob):
+            mob.move_to(get_s_curve_point(progress.get_value()))
+        
+        def update_camera(frame):
+            frame.move_to(get_s_curve_point(progress.get_value()))
+        
+        # Add updaters to sprite and camera
+        sprite.add_updater(update_sprite)
+        self.camera.frame.add_updater(update_camera)
+        
+        # Animate character running through rocks while camera tracks
+        self.play(
+            progress.animate.set_value(1),
+            run_time=4,
+            rate_func=linear
+        )
+        
+        # Remove updaters before camera zoom
+        sprite.remove_updater(update_sprite)
+        self.camera.frame.remove_updater(update_camera)
+        
+        # Zoom out to full frame
+        self.play(
+            self.camera.frame.animate.restore(),
+            run_time=2
+        )
+        
+        self.wait()
+```

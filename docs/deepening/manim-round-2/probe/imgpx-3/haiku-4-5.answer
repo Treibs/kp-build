@@ -1,0 +1,38 @@
+```python
+from manim import *
+
+class HurtEffectScene(Scene):
+    def construct(self):
+        # Load the pixel-art sprite
+        sprite = ImageMobject("sprite.png")
+        
+        # Scale to 3 units tall and center
+        sprite.height = 3
+        sprite.center()
+        
+        self.add(sprite)
+        
+        # Blink effect: visible, invisible, visible, invisible, visible
+        # Each state lasts 0.15 seconds
+        
+        # Initial visible state
+        self.wait(0.15)
+        
+        # First blink
+        self.play(sprite.animate.set_opacity(0), run_time=0.15)
+        self.play(sprite.animate.set_opacity(1), run_time=0.15)
+        
+        # Second blink
+        self.play(sprite.animate.set_opacity(0), run_time=0.15)
+        self.play(sprite.animate.set_opacity(1), run_time=0.15)
+        
+        # Shake effect: left-right-left wiggle
+        shake_distance = 0.3
+        shake_duration = 0.1
+        
+        self.play(sprite.animate.shift(LEFT * shake_distance), run_time=shake_duration)
+        self.play(sprite.animate.shift(RIGHT * shake_distance * 2), run_time=shake_duration)
+        self.play(sprite.animate.shift(LEFT * shake_distance), run_time=shake_duration)
+        
+        self.wait(0.5)
+```

@@ -20,7 +20,7 @@ verified:
   match_score: 0.0
   evidence: "    table\n        A 2D array or list of lists. Content of the table\
     \ has to be a valid input\n        for the callable set in ``element_to_mobject``."
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

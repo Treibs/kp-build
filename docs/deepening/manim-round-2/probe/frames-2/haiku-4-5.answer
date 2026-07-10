@@ -1,0 +1,55 @@
+```python
+from manim import *
+
+class PixelArtWalkScene(Scene):
+    def construct(self):
+        # Load sprite images
+        sprites = []
+        for i in range(4):
+            sprite = ImageMobject(f"sprite_{i}.png")
+            sprite.scale_to_fit_height(2)
+            sprites.append(sprite)
+        
+        # Create group to hold all sprites
+        sprite_group = Group(*sprites)
+        
+        # Calculate positions for start and end
+        start_x = -config.frame_width / 2 + 1.5
+        end_x = config.frame_width / 2 - 1.5
+        sprite_group.move_to([start_x, 0, 0])
+        
+        # Initially show only sprite 0
+        for i, sprite in enumerate(sprites):
+            sprite.set_opacity(1 if i == 0 else 0)
+        
+        # Add to scene
+        self.add(sprite_group)
+        
+        # Track elapsed time for sprite cycling
+        elapsed_time = [0]
+        
+        # Updater to cycle through sprites based on elapsed time
+        def update_walk(mob, dt):
+            elapsed_time[0] += dt
+            frame_index = int(elapsed_time[0] / 0.2) % 4
+            for i, sprite in enumerate(sprites):
+                sprite.set_opacity(1 if i == frame_index else 0)
+        
+        sprite_group.add_updater(update_walk)
+        
+        # Animate movement from left to right over 3 seconds
+        self.play(
+            sprite_group.animate.move_to([end_x, 0, 0]),
+            run_time=3
+        )
+        
+        # Remove the updater to stop sprite cycling
+        sprite_group.remove_updater(update_walk)
+        
+        # Show only the standing pose (sprite_1)
+        for i, sprite in enumerate(sprites):
+            sprite.set_opacity(1 if i == 1 else 0)
+        
+        # Wait for 1 second with the character at rest
+        self.wait(1)
+```

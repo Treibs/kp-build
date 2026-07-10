@@ -1,0 +1,40 @@
+```python
+from manim import *
+
+class CharacterRunsLap(Scene):
+    def construct(self):
+        # Load and scale sprite to 1.5 units tall
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.5
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        
+        # Create rectangular track (10×5 centered)
+        track = Rectangle(width=10, height=5, color=WHITE, stroke_width=2, fill_opacity=0)
+        
+        # Start at bottom-left corner
+        sprite.move_to([-5, -2.5, 0])
+        
+        self.add(track, sprite)
+        
+        # Path around rectangle with constant speed 5 units/sec
+        # Format: (destination, facing_left, duration)
+        segments = [
+            ([5, -2.5, 0], False, 2.0),    # Bottom: 10 units right
+            ([5, 2.5, 0], False, 1.0),     # Right: 5 units up
+            ([-5, 2.5, 0], True, 2.0),     # Top: 10 units left
+            ([-5, -2.5, 0], True, 1.0),    # Left: 5 units down
+        ]
+        
+        facing_left = False
+        
+        for destination, should_face_left, duration in segments:
+            # Flip sprite to face direction
+            if should_face_left != facing_left:
+                sprite.flip(UP)
+                facing_left = should_face_left
+            
+            # Move to next position
+            self.play(sprite.animate.move_to(destination), run_time=duration)
+        
+        self.wait(0.5)
+```

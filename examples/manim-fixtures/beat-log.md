@@ -122,3 +122,43 @@ containment as the runner); fragments pasted from observed container output only
 reds crash before `file_writer.begin_animation` — no hang-class exposure. Corpus extended
 with four passages from the same pinned commit (`1157b746`, tag v0.20.1) to ground the six
 doc claims. Full fixture census: **38** (24 green-gated + 14 red).
+
+## Part VII — deepening round 2 beats (proven 2026-07-09)
+
+All five beats came out of the manim round-2 pixel-sprite probe (operator-chosen domain:
+"a pixel person running through or around a scene, Pokémon style"; provenance, task texts,
+gated answers, hand-check verdicts: `docs/deepening/manim-round-2/` — cross-linked, not
+duplicated). Three are execution beats seeded by observed probe failures; two are render-blind
+(recorded oracle limitation) and ship GREEN + doc-grounding. The image fixtures build their
+pixel art from raw `uint8` numpy arrays, so no binary assets enter the fixture tree.
+
+| beat | red result: exit + fragment observed | green: exit | notes |
+|---|---|---|---|
+| image-resampling | exit 1; `TypeError: Mobject.__init__() got an unexpected keyword argument 'filter_kwargs'` | 0 | The round's headline gap: every task demanded crisp pixels; haiku used no nearest-neighbor technique in any of its 12 PNG-task answers (all 9 of its PNG passes ship blurry — render-blind in the omission form) and hallucinated a scipy-style kwarg once (frames-3, the RED, observed live); sonnet used the CE resampling surface 6/12 (the taught dictionary form only 2×; other argument forms and a constructor kwarg for the rest) plus PIL nearest preprocessing 5/12 — 11/12 crisp by some technique (numbers corrected in review round 1; regenerated from the committed answers). |
+| image-group | exit 1; `Only values of type VMobject can be added as submobjects of VGroup` | 0 | Probe: imgpx-2 haiku, observed live. **Second rule pinned under this message** — `table-labels` pins the strings-vs-mobjects rule with the same fragment; here the rule is images-need-`Group`. Disclosed in both the red claim and the round-2 triage (loaded-rule-adjacent, exp-5 standard). |
+| color-constants | exit 1; `NameError: name 'BROWN' is not defined` | 0 | Probe: camfollow-3 haiku (the same answer used `GREY_BROWN` correctly 12 lines earlier). Single answer, taught anyway: pinnable constant list + documented drift in the surface (0.20 changelog: `YELLOW_C` fix, `PURE_*` additions). |
+| camera-follow | (render-blind — a camera that never follows renders exit 0) | 0 | Both sonnet camera-follow probe tasks failed on video (camera static, subject leaves frame) while passing the gate 15/15 overall. GREEN is the follow-updater on `camera.frame`; the claim explicitly contrasts the one-shot `frame.animate` form the `moving-camera` beat pins. |
+| sprite-facing | (render-blind — any orientation renders clean) | 0 | Haiku's track lap ran upside-down (tangent rotation where mirroring was asked) and its planet orbit was inverted 180°; both observed on video, both render exit 0. GREEN mirrors with `flip(UP)` between opposite `MoveAlongPath` legs. |
+
+All 8 Part VII fixtures proved through the pinned image before commit (same flags and
+containment as the runner); fragments pasted from observed container output only. All three
+reds crash before `file_writer.begin_animation` — no hang-class exposure. The camera-follow
+green attaches its updater to `camera.frame` while animating a *different* mobject (the safe
+side of the `animate-live-updater` hang class — the updater target is structure-stable).
+Corpus extended with four passages from the same pinned commit (`1157b746`, tag v0.20.1) to
+ground the five doc claims. Full fixture census: **46** (29 green-gated + 17 red).
+
+### Part VII correction — camera-follow GREEN (2026-07-09, same day, pre-merge)
+
+The camera-follow GREEN as first committed attached the updater to `camera.frame` but did
+**not** add the frame to the scene — and `camera.frame` updaters never run during `play`
+unless `self.add(self.camera.frame)` happens first. The scene rendered exit 0 with the camera
+sitting still: the beat's own fixture was a live instance of the render-blind failure mode it
+was written to teach. Caught by hand-checking the remeasure videos (all three remeasure
+camera-follow answers reproduced the broken pattern the pack had just taught them — the
+smoking gun that sent the check back to the fixture itself). Fixed by adding
+`self.add(self.camera.frame)`; the fix was verified on the output video (marks scroll, runner
+stays centered) before re-commit, and the green claim now names the `self.add` step as part
+of the idiom. The remeasure was collected against the pre-fix payload — disclosed in the
+round-2 remeasure ledger, which treats its camera-follow rows as evidence of the defect, not
+of the fix.

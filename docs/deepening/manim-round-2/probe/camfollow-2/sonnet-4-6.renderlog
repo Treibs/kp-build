@@ -1,0 +1,70 @@
+Manim Community v0.20.1
+
+[07/09/26 21:23:22] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpriteRunScene/uncached_00
+ 000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpriteRunScene/uncached_00
+ 001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpriteRunScene/uncached_00
+ 002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+[07/09/26 21:23:23] INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpriteRunScene/uncached_00
+ 003.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpriteRunScene/uncached_00
+ 004.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 5 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpriteRunScene/uncached_00
+ 005.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 6 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpriteRunScene/uncached_00
+ 006.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/SpriteRunScene.mp4'
+
+ INFO Rendered SpriteRunScene scene.py:278
+ Played 7 animations
+/manim/scene.py:13: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ sprite.set_height(1.0)
+
+Animation 1: _MethodAnimation(ScreenRectangle): 0%| | 0/30 [00:00<?, ?it/s]
+
+
+Animation 3: _MethodAnimation(ValueTracker): 0%| | 0/60 [00:00<?, ?it/s]
+Animation 3: _MethodAnimation(ValueTracker): 52%|█████▏ | 31/60 [00:00<00:00, 308.40it/s]
+
+
+Animation 5: Restore(ScreenRectangle): 0%| | 0/30 [00:00<?, ?it/s]

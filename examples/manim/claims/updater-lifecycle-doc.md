@@ -19,7 +19,7 @@ verified:
   match_score: 0.0
   evidence: "Update functions, or updaters in short, are functions that are applied\
     \ to the\n        Mobject in every frame."
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

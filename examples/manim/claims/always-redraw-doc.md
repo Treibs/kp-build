@@ -22,7 +22,7 @@ verified:
   evidence: "Redraw the mobject constructed by a function every frame.\n\n    This\
     \ function returns a mobject with an attached updater that\n    continuously regenerates\
     \ the mo"
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

@@ -1,0 +1,76 @@
+```python
+from manim import *
+
+class PixelCharacterScene(Scene):
+    def construct(self):
+        # Create floor (bottom third with checkerboard pattern)
+        floor_color_1 = "#2E7D32"  # Dark green
+        floor_color_2 = "#A5D6A7"  # Light green
+        
+        floor_tiles = []
+        floor_y_top = -2.67
+        
+        for i in range(-6, 7):
+            for j in range(0, 3):
+                x = i * 0.8
+                y = floor_y_top - j * 0.8
+                
+                color = floor_color_1 if (i + j) % 2 == 0 else floor_color_2
+                tile = Rectangle(
+                    width=0.8, height=0.8,
+                    fill_color=color, fill_opacity=1,
+                    stroke_width=0
+                )
+                tile.move_to([x, y, 0])
+                floor_tiles.append(tile)
+        
+        # Add floor to scene (renders behind)
+        for tile in floor_tiles:
+            self.add(tile)
+        
+        # Create character (8x8 pixel grid)
+        character = VGroup()
+        
+        # Define character pixels by (row, col) -> color
+        pixels = {}
+        
+        # Head (golden yellow) - rows 1-2
+        head_color = "#FFD54F"
+        for r in [1, 2]:
+            for c in [3, 4]:
+                pixels[(r, c)] = head_color
+        
+        # Shirt (bright red) - rows 3-5
+        shirt_color = "#F44336"
+        for r in [3, 4, 5]:
+            for c in [2, 3, 4, 5]:
+                pixels[(r, c)] = shirt_color
+        
+        # Legs (brown) - rows 6-7
+        legs_color = "#795548"
+        for r in [6, 7]:
+            for c in [3, 4]:
+                pixels[(r, c)] = legs_color
+        
+        # Create squares and add to group
+        for (row, col), color in pixels.items():
+            x_pos = (col - 3.5) * 0.4
+            y_pos = (3.5 - row) * 0.4 - 1.5
+            
+            sq = Rectangle(
+                width=0.4, height=0.4,
+                fill_color=color, fill_opacity=1,
+                stroke_width=0
+            )
+            sq.move_to([x_pos, y_pos, 0])
+            character.add(sq)
+        
+        # Animate pop-in with stagger
+        grow_anims = [GrowFromCenter(mob) for mob in character]
+        self.play(AnimationGroup(*grow_anims, lag_ratio=0.08))
+        
+        # Animate slide right (as one cohesive unit)
+        self.play(character.animate.shift(RIGHT * 3), run_time=1.5)
+        
+        self.wait(0.5)
+```

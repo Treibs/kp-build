@@ -1,0 +1,82 @@
+```python
+from manim import *
+
+
+class PixelArtScene(Scene):
+    def construct(self):
+        SKIN    = ManimColor("#F4C2A1")
+        SHIRT   = ManimColor("#3A86FF")
+        PANTS   = ManimColor("#5C3D2E")
+        GREEN_L = ManimColor("#66BB6A")
+        GREEN_D = ManimColor("#2E7D32")
+
+        PS = 0.4   # pixel side
+        TS = 0.8   # tile side
+
+        # 8×8 map; 0=absent, 1=skin, 2=shirt, 3=pants; row 0 = top
+        pixel_map = [
+            [0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 2, 2, 2, 2, 2, 2, 0],
+            [2, 2, 2, 2, 2, 2, 2, 2],
+            [0, 2, 2, 2, 2, 2, 2, 0],
+            [0, 3, 3, 0, 0, 3, 3, 0],
+        ]
+        color_map = {1: SKIN, 2: SHIRT, 3: PANTS}
+
+        # Floor: 4 rows of TS-tiles; top edge at y = -4 + 4*TS = -0.8
+        N_FR, N_FC = 4, 20
+        FLOOR_TOP = -4.0 + N_FR * TS   # = -0.8
+
+        floor_tiles = []
+        for r in range(N_FR):
+            for c in range(N_FC):
+                cx = -N_FC * TS / 2.0 + c * TS + TS / 2.0
+                cy = -4.0 + r * TS + TS / 2.0
+                color = GREEN_L if (r + c) % 2 == 0 else GREEN_D
+                sq = (
+                    Square(side_length=TS, fill_color=color, fill_opacity=1, stroke_width=0)
+                    .move_to([cx, cy, 0])
+                )
+                floor_tiles.append(sq)
+
+        floor_group = VGroup(*floor_tiles)
+        floor_group.set_z_index(0)
+        self.add(floor_group)
+
+        # Character: centred at x=0, standing on the floor
+        char_left   = -4.0 * PS          # left edge of 8-pixel grid
+        char_bottom = FLOOR_TOP          # bottom edge of bottom pixel row
+
+        pixels = []
+        for ri, row in enumerate(pixel_map):
+            for ci, cell in enumerate(row):
+                if cell == 0:
+                    continue
+                px = char_left   + ci * PS + PS / 2.0
+                py = char_bottom + (7 - ri) * PS + PS / 2.0
+                sq = (
+                    Square(side_length=PS, fill_color=color_map[cell],
+                           fill_opacity=1, stroke_width=0)
+                    .move_to([px, py, 0])
+                )
+                pixels.append(sq)
+
+        # Staggered pop-in: each pixel grows from its centre, one after another
+        self.play(
+            AnimationGroup(*[GrowFromCenter(p) for p in pixels], lag_ratio=0.08)
+        )
+        self.wait(0.3)
+
+        # Consolidate into one VGroup so the slide is perfectly lock-stepped
+        self.remove(*pixels)
+        char_group = VGroup(*pixels)
+        char_group.set_z_index(1)
+        self.add(char_group)
+
+        # Slide 3 units right as a single rigid unit
+        self.play(char_group.animate.shift(RIGHT * 3.0), run_time=1.2)
+        self.wait(1.0)
+```

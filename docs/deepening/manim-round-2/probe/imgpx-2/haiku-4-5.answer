@@ -1,0 +1,35 @@
+```python
+from manim import *
+
+class SpriteDisplay(Scene):
+    def construct(self):
+        # Load the sprite image
+        sprite_base = ImageMobject("sprite.png")
+        
+        # Create three scaled copies (1x, 2x, 3x)
+        scales = [1, 2, 3]
+        sprites = []
+        
+        for scale in scales:
+            sprite = sprite_base.copy()
+            sprite.scale(scale)
+            sprites.append(sprite)
+        
+        # Arrange sprites horizontally with even spacing
+        sprite_group = VGroup(*sprites)
+        sprite_group.arrange(RIGHT, buff=1.5)
+        
+        # Create and position labels
+        labels = []
+        for sprite, scale in zip(sprites, scales):
+            label = Text(f"{scale}u", font_size=20)
+            label.next_to(sprite, DOWN, buff=0.5)
+            labels.append(label)
+        
+        # Animate sprites popping in one by one
+        for sprite, label in zip(sprites, labels):
+            self.play(GrowFromCenter(sprite), run_time=0.2)
+            self.add(label)
+        
+        self.wait(1)
+```

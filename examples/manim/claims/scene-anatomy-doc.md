@@ -22,7 +22,7 @@ verified:
   evidence: "All animations must reside within the :meth:`~.Scene.construct` method\
     \ of a\n         class derived from :class:`.Scene`.  Other code, such as auxiliary\n\
     \        "
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-tutorials

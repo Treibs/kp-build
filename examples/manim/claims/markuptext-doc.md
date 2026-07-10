@@ -21,7 +21,7 @@ verified:
   evidence: "PangoMarkup is a small markup language like html and it helps you avoid\
     \ using\n    \"range of characters\" while coloring or styling a piece a Text.\
     \ You can use\n  "
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-api-docs

@@ -1,0 +1,29 @@
+Manim Community v0.20.1
+
+[07/09/26 21:09:00] INFO Caching disabled. cairo_renderer.py:83
+[07/09/26 21:09:01] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/WalkCycleScene.mp4'
+
+ INFO Rendered WalkCycleScene scene.py:278
+ Played 2 animations
+/manim/scene.py:15: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ img.set_height(CHAR_HEIGHT)
+
+Waiting 0: 0%| | 0/45 [00:00<?, ?it/s]
+Waiting 0: 58%|█████▊ | 26/45 [00:00<00:00, 258.46it/s]

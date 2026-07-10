@@ -1,0 +1,30 @@
+```python
+from manim import *
+
+class PixelArtWalkCycle(Scene):
+    def construct(self):
+        # Load and scale sprites
+        sprites = []
+        for i in range(4):
+            img = ImageMobject(f"sprite_{i}.png")
+            img.height = 3
+            img.center()
+            sprites.append(img)
+        
+        # Create the current display
+        display = sprites[0].copy()
+        
+        # Elapsed time tracking
+        elapsed_time = [0]
+        
+        def update_sprite(mob, dt):
+            elapsed_time[0] += dt
+            frame_idx = int((elapsed_time[0] / 0.25) % 4)
+            mob.become(sprites[frame_idx].copy())
+        
+        display.add_updater(update_sprite)
+        self.add(display)
+        
+        # Wait for 4 seconds
+        self.wait(4)
+```

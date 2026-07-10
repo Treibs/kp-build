@@ -21,7 +21,7 @@ verified:
   evidence: "Completely rewrite the implementation of the :class:`.Code` mobject\n\
     \   This includes several breaking changes to the interface of the class to make\
     \ it\n   more c"
-  checked: '2026-07-08'
+  checked: '2026-07-09'
 execution: {}
 grounding:
   source: manim-changelog

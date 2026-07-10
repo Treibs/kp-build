@@ -1,0 +1,77 @@
+```python
+from manim import *
+import numpy as np
+
+class SpriteRunningLap(Scene):
+    def construct(self):
+        # Track dimensions
+        track_w = 10.0
+        track_h = 5.0
+        hw = track_w / 2.0
+        hh = track_h / 2.0
+        
+        # Draw track outline
+        track = Rectangle(
+            width=track_w,
+            height=track_h,
+            color=WHITE,
+            stroke_width=2,
+            fill_opacity=0
+        )
+        self.add(track)
+        
+        # Load sprite, scale to 1.5 units tall
+        sprite = ImageMobject("sprite.png")
+        sprite.scale(1.5 / sprite.get_height())
+        
+        # Path segments (clockwise around track)
+        segments = [
+            {"start": np.array([-hw, hh, 0]), "end": np.array([hw, hh, 0]), "flip": False},
+            {"start": np.array([hw, hh, 0]), "end": np.array([hw, -hh, 0]), "flip": False},
+            {"start": np.array([hw, -hh, 0]), "end": np.array([-hw, -hh, 0]), "flip": True},
+            {"start": np.array([-hw, -hh, 0]), "end": np.array([-hw, hh, 0]), "flip": False},
+        ]
+        
+        # Precompute segment distances
+        for seg in segments:
+            seg["dist"] = np.linalg.norm(seg["end"] - seg["start"])
+        
+        total_perimeter = sum(s["dist"] for s in segments)
+        run_time = 6.0
+        
+        # Place sprite at start
+        sprite.move_to(segments[0]["start"])
+        self.add(sprite)
+        
+        # Animation state
+        state = {"elapsed": 0.0, "is_flipped": False}
+        
+        def sprite_update(mob, dt):
+            state["elapsed"] += dt
+            progress = (state["elapsed"] % run_time) / run_time
+            distance = progress * total_perimeter
+            
+            # Find current segment
+            dist_so_far = 0.0
+            current_idx = 0
+            for i, seg in enumerate(segments):
+                if dist_so_far + seg["dist"] >= distance:
+                    current_idx = i
+                    break
+                dist_so_far += seg["dist"]
+            
+            # Interpolate position in segment
+            seg = segments[current_idx]
+            t = (distance - dist_so_far) / seg["dist"]
+            new_pos = seg["start"] + t * (seg["end"] - seg["start"])
+            mob.move_to(new_pos)
+            
+            # Handle horizontal flip
+            target_flip = seg["flip"]
+            if target_flip != state["is_flipped"]:
+                mob.flip(axis=np.array([1, 0, 0]))
+                state["is_flipped"] = target_flip
+        
+        sprite.add_updater(sprite_update)
+        self.wait(run_time + 0.1)
+```

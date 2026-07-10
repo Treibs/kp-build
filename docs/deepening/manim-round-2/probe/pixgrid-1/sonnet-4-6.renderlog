@@ -1,0 +1,44 @@
+Manim Community v0.20.1
+
+[07/09/26 21:31:35] INFO Caching disabled. cairo_renderer.py:83
+[07/09/26 21:31:36] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelArtScene/uncached_000
+ 00.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelArtScene/uncached_000
+ 01.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelArtScene/uncached_000
+ 02.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PixelArtScene/uncached_000
+ 03.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/PixelArtScene.mp4'
+
+ INFO Rendered PixelArtScene scene.py:278
+ Played 4 animations
+
+Animation 0: AnimationGroup(Group): 0%| | 0/67 [00:00<?, ?it/s]
+Animation 0: AnimationGroup(Group): 70%|███████ | 47/67 [00:00<00:00, 462.65it/s]
+
+
+Animation 2: _MethodAnimation(VGroup of 44 submobjects): 0%| | 0/18 [00:00<?, ?it/s]

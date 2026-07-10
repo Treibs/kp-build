@@ -1,0 +1,93 @@
+Manim Community v0.20.1
+
+[07/09/26 21:04:30] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+[07/09/26 21:04:31] INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0003.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0004.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 5 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0005.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 6 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0006.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 7 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0007.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 8 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HurtEffectScene/uncached_0
+ 0008.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/HurtEffectScene.mp4'
+
+ INFO Rendered HurtEffectScene scene.py:278
+ Played 9 animations
+
+Animation 1: _MethodAnimation(ImageMobject): 0%| | 0/3 [00:00<?, ?it/s]
+
+
+Animation 2: _MethodAnimation(ImageMobject): 0%| | 0/3 [00:00<?, ?it/s]
+
+
+Animation 3: _MethodAnimation(ImageMobject): 0%| | 0/3 [00:00<?, ?it/s]
+
+
+Animation 4: _MethodAnimation(ImageMobject): 0%| | 0/3 [00:00<?, ?it/s]
+
+
+Animation 5: _MethodAnimation(ImageMobject): 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 6: _MethodAnimation(ImageMobject): 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 7: _MethodAnimation(ImageMobject): 0%| | 0/2 [00:00<?, ?it/s]

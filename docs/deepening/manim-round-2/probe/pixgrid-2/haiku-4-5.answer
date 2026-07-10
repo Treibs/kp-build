@@ -1,0 +1,130 @@
+```python
+from manim import *
+
+class PixelPersonWalk(Scene):
+    def construct(self):
+        px = 0.35  # Pixel size
+        
+        # Pale blue sky backdrop (full frame)
+        sky = Rectangle(
+            width=config.frame_width,
+            height=config.frame_height,
+            fill_color="#B0E0E6",
+            fill_opacity=1,
+            stroke_width=0
+        )
+        self.add(sky)
+        
+        # Helper to create a single pixel square
+        def make_pixel(x, y, color):
+            return Rectangle(
+                width=px, height=px,
+                fill_color=color, fill_opacity=1,
+                stroke_width=0.01, stroke_color=BLACK
+            ).move_to([x, y, 0])
+        
+        # ===== PERSON (8x8 pixel grid) =====
+        person = VGroup()
+        person_pattern = [
+            [0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 1, 0, 1, 1, 0, 1, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [1, 1, 0, 1, 1, 0, 1, 1],
+            [0, 1, 1, 1, 1, 1, 1, 0],
+            [0, 1, 1, 0, 0, 1, 1, 0],
+            [0, 1, 0, 0, 0, 0, 1, 0],
+        ]
+        
+        for row in range(8):
+            for col in range(8):
+                if person_pattern[row][col]:
+                    if row <= 3:
+                        color = "#FFD9B3"
+                    elif row <= 5:
+                        color = "#FF6B6B"
+                    else:
+                        color = "#4E7CFF"
+                    x = (col - 3.5) * px
+                    y = (3.5 - row) * px
+                    person.add(make_pixel(x, y, color))
+        
+        person.move_to([-5, 0, 0])
+        
+        # ===== TREE =====
+        tree = VGroup()
+        
+        # Trunk: brown, 4 wide × 7 tall
+        for row in range(7):
+            for col in range(4):
+                x = (col - 1.5) * px
+                y = (2.5 - row) * px
+                tree.add(make_pixel(x, y, "#8B4513"))
+        
+        # Canopy: green, larger and above trunk (roughly 2x person height total)
+        canopy_rows = [
+            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        ]
+        
+        for row, pattern_row in enumerate(canopy_rows):
+            for col, filled in enumerate(pattern_row):
+                if filled:
+                    x = (col - 4.5) * px
+                    y = (9 - row) * px
+                    tree.add(make_pixel(x, y, "#228B22"))
+        
+        tree.move_to([0, 0, 0])
+        
+        # Add to scene: sky (back), tree, person (initially front)
+        self.add(tree)
+        self.add(person)
+        
+        # ===== ANIMATION =====
+        start_x = -config.frame_width / 2 + 1
+        end_x = config.frame_width / 2 - 1
+        tree_x = 0
+        tree_half_width = 1.2
+        
+        # Total walk: 5 seconds
+        total_time = 5
+        total_distance = end_x - start_x
+        
+        # Three segments: approach tree, walk through tree, exit tree
+        dist_to_tree = tree_x - tree_half_width - start_x - 0.3
+        dist_through_tree = 2 * tree_half_width + 0.6
+        dist_after_tree = end_x - (tree_x + tree_half_width + 0.3)
+        
+        time_to_tree = total_time * dist_to_tree / total_distance
+        time_through = total_time * dist_through_tree / total_distance
+        time_after = total_time * dist_after_tree / total_distance
+        
+        # Segment 1: Walk to tree (person in front)
+        self.play(
+            person.animate.move_to([tree_x - tree_half_width - 0.3, 0, 0]),
+            run_time=time_to_tree
+        )
+        
+        # Segment 2: Walk through tree (person behind)
+        self.bring_to_back(person)
+        self.play(
+            person.animate.move_to([tree_x + tree_half_width + 0.3, 0, 0]),
+            run_time=time_through
+        )
+        
+        # Segment 3: Walk to right (person in front again)
+        self.bring_to_front(person)
+        self.play(
+            person.animate.move_to([end_x, 0, 0]),
+            run_time=time_after
+        )
+        
+        self.wait(1)
+```

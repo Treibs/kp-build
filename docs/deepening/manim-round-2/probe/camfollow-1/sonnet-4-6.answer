@@ -1,0 +1,64 @@
+```python
+from manim import *
+import numpy as np
+
+
+class SideScrollingWalk(MovingCameraScene):
+    def construct(self):
+        # Zoom camera to half default width (2× zoom in)
+        self.camera.frame.scale(0.5)
+
+        ground_y = -1.8
+        sign_xs = np.linspace(-8, 8, 5)
+        pole_h = 1.2
+        board_side = 0.4
+
+        # Ground line spanning all signposts with margin
+        ground = Line(
+            [-10, ground_y, 0], [10, ground_y, 0],
+            color=WHITE, stroke_width=3
+        )
+        self.add(ground)
+
+        # Five numbered signposts evenly from x=-8 to x=+8
+        for i, x in enumerate(sign_xs):
+            pole = Line(
+                [x, ground_y, 0], [x, ground_y + pole_h, 0],
+                color=YELLOW_D, stroke_width=4
+            )
+            board = Square(
+                side_length=board_side,
+                fill_color=YELLOW, fill_opacity=1.0,
+                stroke_color=YELLOW_D, stroke_width=2
+            )
+            board.move_to([x, ground_y + pole_h + board_side / 2, 0])
+            label = Text(str(i + 1), color=BLACK)
+            label.set_height(board_side * 0.65)
+            label.move_to(board.get_center())
+            self.add(pole, board, label)
+
+        # Pixel-art sprite: 1.5 units tall, feet on the ground
+        sprite = ImageMobject("sprite.png")
+        sprite.set_height(1.5)
+        sprite_y = ground_y + 1.5 / 2
+        sprite.move_to([sign_xs[0], sprite_y, 0])
+        self.add(sprite)
+
+        # Initial camera position: centered horizontally on the character
+        self.camera.frame.move_to([sign_xs[0], 0, 0])
+
+        # Updater keeps camera horizontally centered on sprite every frame
+        self.camera.frame.add_updater(
+            lambda cam: cam.move_to([sprite.get_x(), cam.get_y(), 0])
+        )
+
+        # Walk from first signpost to last in 6 seconds at constant speed
+        self.play(
+            sprite.animate.move_to([sign_xs[-1], sprite_y, 0]),
+            run_time=6,
+            rate_func=linear
+        )
+
+        self.camera.frame.clear_updaters()
+        self.wait(0.5)
+```

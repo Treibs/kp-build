@@ -1,0 +1,52 @@
+```python
+from manim import *
+import numpy as np
+from PIL import Image
+
+
+def _load_sprite(path):
+    img = Image.open(path).convert("RGBA")
+    w, h = img.size
+    img = img.resize((w * 16, h * 16), Image.NEAREST)
+    return np.array(img)
+
+
+class WalkCycleScene(Scene):
+    def construct(self):
+        frames = [_load_sprite(f"sprite_{i}.png") for i in range(4)]
+
+        left_img = (
+            ImageMobject(frames[0].copy())
+            .scale_to_fit_height(2)
+            .move_to(LEFT * 2)
+        )
+        right_img = (
+            ImageMobject(frames[0].copy())
+            .scale_to_fit_height(2)
+            .move_to(RIGHT * 2)
+        )
+        self.add(left_img, right_img)
+
+        left_state = {"frame": 0, "elapsed": 0.0}
+        right_state = {"frame": 0, "elapsed": 0.0}
+
+        def left_updater(mob, dt):
+            left_state["elapsed"] += dt
+            while left_state["elapsed"] >= 0.2:
+                left_state["elapsed"] -= 0.2
+                left_state["frame"] = (left_state["frame"] + 1) % 4
+            mob.pixel_array = frames[left_state["frame"]]
+
+        def right_updater(mob, dt):
+            right_state["elapsed"] += dt
+            while right_state["elapsed"] >= 0.4:
+                right_state["elapsed"] -= 0.4
+                right_state["frame"] = (right_state["frame"] + 1) % 4
+            mob.pixel_array = frames[right_state["frame"]]
+
+        left_img.add_updater(left_updater)
+        right_img.add_updater(right_updater)
+        self.wait(4)
+        left_img.remove_updater(left_updater)
+        right_img.remove_updater(right_updater)
+```

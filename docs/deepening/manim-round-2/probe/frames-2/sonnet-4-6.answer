@@ -1,0 +1,59 @@
+```python
+from manim import *
+
+
+class WalkCycleScene(Scene):
+    def construct(self):
+        NUM_FRAMES = 4
+        FRAME_DURATION = 0.2
+        WALK_DURATION = 3.0
+        CHAR_HEIGHT = 2.0
+
+        # Load all frames with nearest-neighbour resampling for crisp pixels
+        frames = []
+        for i in range(NUM_FRAMES):
+            img = ImageMobject(f"sprite_{i}.png", resampling_algorithm=0)
+            img.set_height(CHAR_HEIGHT)
+            frames.append(img)
+
+        half_w = config.frame_width / 2
+        start_x = -half_w + CHAR_HEIGHT / 2   # left edge flush
+        end_x   =  half_w - CHAR_HEIGHT / 2   # right edge flush
+
+        # Stack all frames at start position; only frame 0 visible
+        for i, f in enumerate(frames):
+            f.move_to([start_x, 0, 0])
+            f.set_opacity(0 if i != 0 else 1)
+
+        char = Group(*frames)
+        self.add(char)
+
+        elapsed = [0.0]
+        cur_idx = [0]
+
+        def walk_updater(mob, dt):
+            elapsed[0] += dt
+            t = min(elapsed[0], WALK_DURATION)
+
+            # Absolute position based on elapsed time
+            new_x = start_x + (t / WALK_DURATION) * (end_x - start_x)
+            mob.move_to([new_x, 0, 0])
+
+            # Cycle sprite frames
+            new_idx = int(elapsed[0] / FRAME_DURATION) % NUM_FRAMES
+            if new_idx != cur_idx[0]:
+                frames[cur_idx[0]].set_opacity(0)
+                frames[new_idx].set_opacity(1)
+                cur_idx[0] = new_idx
+
+        char.add_updater(walk_updater)
+        self.wait(WALK_DURATION)
+        char.remove_updater(walk_updater)   # all animation stops here
+
+        # Switch to standing pose and lock to exact end position
+        for i, f in enumerate(frames):
+            f.set_opacity(1 if i == 1 else 0)
+        char.move_to([end_x, 0, 0])
+
+        self.wait(1.0)
+```

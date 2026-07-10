@@ -1,0 +1,58 @@
+```python
+from manim import *
+import numpy as np
+
+
+class PlanetRunScene(Scene):
+    def construct(self):
+        RADIUS = 3
+        CHAR_HEIGHT = 1.2
+
+        circle = Circle(radius=RADIUS, color=WHITE)
+        self.play(Create(circle), run_time=1)
+
+        # Load sprite and upscale with nearest-neighbor interpolation for crisp pixels
+        from PIL import Image as PILImage
+        try:
+            resample = PILImage.Resampling.NEAREST
+        except AttributeError:
+            resample = PILImage.NEAREST
+        img = PILImage.open("sprite.png").convert("RGBA")
+        img_big = img.resize((img.width * 16, img.height * 16), resample)
+        sprite = ImageMobject(np.array(img_big))
+        sprite.set_height(CHAR_HEIGHT)
+
+        # Character center sits half a character-height above the circle surface
+        r = RADIUS + CHAR_HEIGHT / 2
+
+        # Place at angle=0 (right side) and rotate so feet point toward the origin.
+        # Default sprite "up" is +y; rotating -π/2 makes "up" point in +x (radially
+        # outward at θ=0), so "feet" point in -x toward the center.
+        sprite.move_to(np.array([r, 0.0, 0.0]))
+        sprite.rotate(-PI / 2)
+
+        angle_tracker = ValueTracker(0.0)
+        prev_angle = [0.0]
+
+        def update_sprite(mob):
+            theta = angle_tracker.get_value()
+            delta = theta - prev_angle[0]
+            prev_angle[0] = theta
+            # Move center to new point on orbit, then rotate by the angular delta so
+            # the sprite's "up" always tracks the radially outward direction.
+            mob.move_to(np.array([r * np.cos(theta), r * np.sin(theta), 0.0]))
+            mob.rotate(delta)
+
+        sprite.add_updater(update_sprite)
+        self.add(sprite)
+
+        # Counterclockwise = increasing angle (standard Manim convention)
+        self.play(
+            angle_tracker.animate.set_value(TAU),
+            run_time=6,
+            rate_func=linear,
+        )
+
+        sprite.remove_updater(update_sprite)
+        self.wait(0.5)
+```

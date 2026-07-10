@@ -1,0 +1,35 @@
+```python
+from manim import *
+
+class SpriteShowcase(Scene):
+    def construct(self):
+        heights = [1, 2, 3]
+        labels_text = ["1u", "2u", "3u"]
+        spacing = 3.5
+
+        sprites = []
+        labels = []
+
+        for i, (h, lbl) in enumerate(zip(heights, labels_text)):
+            img = ImageMobject("sprite.png")
+            img.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            img.set_height(h)
+            x = (i - 1) * spacing
+            img.move_to([x, 0, 0])
+
+            label = Text(lbl, font_size=28)
+            label.next_to(img, DOWN, buff=0.2)
+
+            sprites.append(img)
+            labels.append(label)
+
+        for img, label in zip(sprites, labels):
+            group = VGroup(label)
+            self.play(
+                FadeIn(img, scale=0.5),
+                FadeIn(group, scale=0.5),
+                run_time=0.4,
+            )
+
+        self.wait(1)
+```

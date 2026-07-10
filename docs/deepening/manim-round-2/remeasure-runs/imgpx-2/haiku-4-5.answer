@@ -1,0 +1,29 @@
+```python
+from manim import *
+
+class SpriteScene(Scene):
+    def construct(self):
+        sprite_path = "sprite.png"
+        
+        positions = [-2, 0, 2]
+        heights = [1, 2, 3]
+        
+        # Create sprites at scale 0
+        sprites = []
+        for height, pos in zip(heights, positions):
+            sprite = ImageMobject(sprite_path)
+            sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            sprite.height = height
+            sprite.move_to([pos, 0, 0])
+            sprite.scale(0)
+            self.add(sprite)
+            sprites.append(sprite)
+        
+        # Pop-in animations with labels
+        for sprite, height in zip(sprites, heights):
+            self.play(sprite.animate.scale(1), run_time=0.5)
+            label = Text(f"{height}u", font_size=24).next_to(sprite, DOWN, buff=0.3)
+            self.add(label)
+        
+        self.wait()
+```

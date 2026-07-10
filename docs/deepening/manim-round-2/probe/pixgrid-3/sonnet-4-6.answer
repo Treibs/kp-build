@@ -1,0 +1,85 @@
+```python
+from manim import *
+
+
+class PixelHitScene(Scene):
+    def construct(self):
+        SIDE = 0.4
+
+        BG_C  = "#1E1E3E"
+        SKIN  = "#FFD59A"
+        HAIR  = "#3D2B1F"
+        EYE_C = "#111111"
+        SHIRT = "#2196F3"
+        PANT  = "#37474F"
+        SHOE  = "#5D4037"
+
+        pixel_colors = [
+            [BG_C,  BG_C,  HAIR,  HAIR,  HAIR,  HAIR,  BG_C,  BG_C ],
+            [BG_C,  HAIR,  SKIN,  SKIN,  SKIN,  SKIN,  HAIR,  BG_C ],
+            [BG_C,  HAIR,  EYE_C, SKIN,  SKIN,  EYE_C, HAIR,  BG_C ],
+            [BG_C,  HAIR,  SKIN,  SKIN,  SKIN,  SKIN,  HAIR,  BG_C ],
+            [BG_C,  SHIRT, SHIRT, SHIRT, SHIRT, SHIRT, SHIRT, BG_C ],
+            [SKIN,  SHIRT, SHIRT, SHIRT, SHIRT, SHIRT, SHIRT, SKIN ],
+            [BG_C,  PANT,  PANT,  PANT,  PANT,  PANT,  PANT,  BG_C ],
+            [BG_C,  SHOE,  PANT,  BG_C,  BG_C,  PANT,  SHOE,  BG_C ],
+        ]
+
+        pixel_grid = []
+        all_pixels = []
+
+        for r in range(8):
+            row_list = []
+            for c in range(8):
+                sq = Square(
+                    side_length=SIDE,
+                    fill_color=pixel_colors[r][c],
+                    fill_opacity=1,
+                    stroke_width=0,
+                )
+                sq.move_to([(c - 3.5) * SIDE, (3.5 - r) * SIDE, 0])
+                row_list.append(sq)
+                all_pixels.append(sq)
+            pixel_grid.append(row_list)
+
+        self.add(*all_pixels)
+        self.wait(0.5)
+
+        # Flash whole person white twice
+        for _ in range(2):
+            self.play(
+                *[sq.animate.set_fill(WHITE) for sq in all_pixels],
+                run_time=0.12,
+            )
+            self.play(
+                *[pixel_grid[r][c].animate.set_fill(pixel_colors[r][c])
+                  for r in range(8) for c in range(8)],
+                run_time=0.12,
+            )
+            self.wait(0.07)
+
+        self.wait(0.3)
+
+        # 5 pixels break off: left arm, right arm, left shoulder, right shoulder, face pixel
+        break_coords = [(5, 0), (5, 7), (4, 1), (4, 6), (2, 3)]
+        break_pixels = [pixel_grid[r][c] for r, c in break_coords]
+
+        rot_speeds   = [ 4.5, -3.8,  3.2, -4.0,  5.0]
+        fall_speeds  = [ 5.0,  5.5,  4.8,  5.2,  4.6]
+        drift_speeds = [-0.4,  0.4, -0.2,  0.3,  0.1]
+
+        for bp, rs, fs, ds in zip(break_pixels, rot_speeds, fall_speeds, drift_speeds):
+            def make_updater(rot_s, fall_s, drift_s):
+                def updater(mob, dt):
+                    mob.shift(RIGHT * drift_s * dt + DOWN * fall_s * dt)
+                    mob.rotate(rot_s * dt)
+                return updater
+            bp.add_updater(make_updater(rs, fs, ds))
+
+        self.wait(2.3)
+
+        for bp in break_pixels:
+            bp.clear_updaters()
+
+        self.wait(0.5)
+```

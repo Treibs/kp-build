@@ -1,0 +1,33 @@
+# manim round-2 probe results — 15 tasks x {haiku-4-5, sonnet-4-6}, pack-loaded arm
+# PASS = pinned-image render exit 0 (protocol: probe/README.md)
+
+imgpx-1      haiku-4-5   PASS
+imgpx-1      sonnet-4-6  PASS
+imgpx-2      haiku-4-5   FAIL Traceback (most recent call last)
+imgpx-2      sonnet-4-6  PASS
+imgpx-3      haiku-4-5   PASS
+imgpx-3      sonnet-4-6  PASS
+frames-1     haiku-4-5   PASS
+frames-1     sonnet-4-6  PASS
+frames-2     haiku-4-5   PASS
+frames-2     sonnet-4-6  PASS
+frames-3     haiku-4-5   FAIL Traceback (most recent call last)
+frames-3     sonnet-4-6  PASS
+path-1       haiku-4-5   PASS
+path-1       sonnet-4-6  PASS
+path-2       haiku-4-5   PASS
+path-2       sonnet-4-6  PASS
+path-3       haiku-4-5   PASS
+path-3       sonnet-4-6  PASS
+camfollow-1  haiku-4-5   PASS
+camfollow-1  sonnet-4-6  PASS
+camfollow-2  haiku-4-5   PASS
+camfollow-2  sonnet-4-6  PASS
+camfollow-3  haiku-4-5   FAIL Traceback (most recent call last)
+camfollow-3  sonnet-4-6  PASS
+pixgrid-1    haiku-4-5   PASS
+pixgrid-1    sonnet-4-6  PASS
+pixgrid-2    haiku-4-5   PASS
+pixgrid-2    sonnet-4-6  PASS
+pixgrid-3    haiku-4-5   PASS
+pixgrid-3    sonnet-4-6  PASS

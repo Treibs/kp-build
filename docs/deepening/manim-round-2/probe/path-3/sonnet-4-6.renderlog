@@ -1,0 +1,39 @@
+Manim Community v0.20.1
+
+[07/09/26 21:18:29] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PlanetRunScene/uncached_00
+ 000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PlanetRunScene/uncached_00
+ 001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PlanetRunScene/uncached_00
+ 002.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/PlanetRunScene.mp4'
+
+ INFO Rendered PlanetRunScene scene.py:278
+ Played 3 animations
+
+Animation 0: Create(Circle): 0%| | 0/15 [00:00<?, ?it/s]
+
+/manim/scene.py:22: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ sprite.set_height(CHAR_HEIGHT)
+
+Animation 1: _MethodAnimation(ValueTracker): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 1: _MethodAnimation(ValueTracker): 47%|████▋ | 42/90 [00:00<00:00, 415.16it/s]

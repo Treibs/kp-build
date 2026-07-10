@@ -1,0 +1,36 @@
+```python
+from manim import *
+
+class SideScrollingCharacter(MovingCameraScene):
+    def construct(self):
+        # Set camera frame width to half the default
+        self.camera.frame.set_width(config.frame_width / 2)
+        
+        # Ground line
+        ground = Line([-8, 0, 0], [8, 0, 0], color=WHITE, stroke_width=2)
+        self.add(ground)
+        
+        # Signposts with numbers 1-5
+        for i, x_pos in enumerate([-8, -4, 0, 4, 8]):
+            signpost = Text(str(i + 1), font_size=36)
+            signpost.move_to([x_pos, 0.5, 0])
+            self.add(signpost)
+        
+        # Load character sprite
+        character = ImageMobject("sprite.png")
+        character.height = 1.5
+        character.move_to([-8, 0.75, 0])
+        self.add(character)
+        
+        # Initialize camera position
+        self.camera.frame.move_to([-8, 0.75, 0])
+        
+        # Animate character walking and camera following
+        self.play(
+            character.animate.move_to([8, 0.75, 0]),
+            self.camera.frame.animate.move_to([8, 0.75, 0]),
+            run_time=6
+        )
+        
+        self.wait(1)
+```

@@ -1,0 +1,39 @@
+```python
+from manim import *
+import numpy as np
+
+class CharacterRunsAroundPlanet(Scene):
+    def construct(self):
+        # Circle (planet)
+        circle = Circle(radius=3, color=BLUE, stroke_width=2)
+        self.add(circle)
+        
+        # Angle tracker for position around circle
+        angle_tracker = ValueTracker(0)
+        
+        def update_character():
+            angle = angle_tracker.get_value()
+            
+            # Position on circle
+            x = 3 * np.cos(angle)
+            y = 3 * np.sin(angle)
+            
+            # Character sprite
+            char = ImageMobject("sprite.png")
+            char.height = 1.2
+            char.move_to([x, y, 0])
+            
+            # Rotate so feet point toward center (radial inward direction)
+            char.rotate(angle + np.pi)
+            
+            return char
+        
+        character = always_redraw(update_character)
+        self.add(character)
+        
+        # Animate counterclockwise lap (0 to 2π radians in 6 seconds)
+        self.play(
+            angle_tracker.animate.set_value(2 * np.pi),
+            run_time=6
+        )
+```

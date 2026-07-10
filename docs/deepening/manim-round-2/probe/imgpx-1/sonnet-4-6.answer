@@ -1,0 +1,39 @@
+```python
+from manim import *
+from PIL import Image as PILImage
+import numpy as np
+
+class PixelArtSprite(Scene):
+    def construct(self):
+        img = PILImage.open("sprite.png").convert("RGBA")
+        w, h = img.size
+        pixels = np.array(img)
+
+        target_height = 4.0
+        pixel_size = target_height / h
+        pixel_width = (w / h) * target_height / w  # = pixel_size
+
+        squares = VGroup()
+        for row in range(h):
+            for col in range(w):
+                r, g, b, a = pixels[row, col]
+                if a == 0:
+                    continue
+                color = rgb_to_color([r / 255, g / 255, b / 255])
+                sq = Square(
+                    side_length=pixel_size,
+                    fill_color=color,
+                    fill_opacity=a / 255,
+                    stroke_width=0,
+                )
+                x = (col - w / 2 + 0.5) * pixel_size
+                y = (h / 2 - row - 0.5) * pixel_size
+                sq.move_to([x, y, 0])
+                squares.add(sq)
+
+        squares.move_to(ORIGIN)
+
+        self.play(FadeIn(squares))
+        self.wait(1)
+        self.play(squares.animate.shift(RIGHT * 3))
+```

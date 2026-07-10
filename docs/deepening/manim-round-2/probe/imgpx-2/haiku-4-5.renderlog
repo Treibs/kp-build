@@ -1,0 +1,59 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:18 in construct
+
+ 15 sprites.append(sprite)
+ 16
+ 17 # Arrange sprites horizontally with even spacing
+ ❱ 18 sprite_group = VGroup(*sprites)
+ 19 sprite_group.arrange(RIGHT, buff=1.5)
+ 20
+ 21 # Create and position labels
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/types/vectorized_mobjec
+ t.py:2144 in __init__
+
+ 2141 self, *vmobjects: VMobject | Iterable[VMobject], **kwargs: An
+ 2142 ) -> None:
+ 2143 super().__init__(**kwargs)
+ ❱ 2144 self.add(*vmobjects)
+ 2145
+ 2146 def __repr__(self) -> str:
+ 2147 return f"{self.__class__.__name__}({', '.join(str(mob) for mo
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/types/vectorized_mobjec
+ t.py:2259 in add
+
+ 2256 elif isinstance(vmobject, Iterable) and isinstance(
+ 2257 vmobject, (Mobject, OpenGLMobject)
+ 2258 ):
+ ❱ 2259 raise TypeError(
+ 2260 f"{get_type_error_message(vmobject, (i, 0))} "
+ 2261 "You can try adding this value into a Group inste
+ 2262 )
+
+TypeError: Only values of type VMobject can be added as submobjects of VGroup,
+but the value ImageMobject (at index 0 of parameter 0) is of type ImageMobject.
+You can try adding this value into a Group instead.

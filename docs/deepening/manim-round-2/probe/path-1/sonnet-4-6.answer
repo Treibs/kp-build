@@ -1,0 +1,45 @@
+```python
+from manim import *
+import numpy as np
+
+
+class SpriteTrackScene(Scene):
+    def construct(self):
+        W, H = 10.0, 5.0
+
+        track = Rectangle(width=W, height=H, color=WHITE, stroke_width=3)
+        self.add(track)
+
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.5
+        sprite.set_resampling_algorithm(0)  # PIL.Image.NEAREST — crisp pixel art
+
+        half_w, half_h = W / 2, H / 2
+        tl = np.array([-half_w,  half_h, 0])
+        tr = np.array([ half_w,  half_h, 0])
+        br = np.array([ half_w, -half_h, 0])
+        bl = np.array([-half_w, -half_h, 0])
+
+        # Clockwise: top(→), right(↓), bottom(←), left(↑)
+        segments = [(tl, tr), (tr, br), (br, bl), (bl, tl)]
+        seg_lengths = [W, H, W, H]
+
+        perimeter = 2 * (W + H)  # 30 units
+        speed = perimeter / 6.0  # 5 units/sec → 6 s total
+        seg_times = [length / speed for length in seg_lengths]
+
+        sprite.move_to(tl)
+        self.add(sprite)
+
+        is_flipped = False  # sprite.png assumed to face right
+
+        for (start, end), t in zip(segments, seg_times):
+            should_flip = (end[0] - start[0]) < 0  # True when moving left
+
+            if should_flip != is_flipped:
+                # flip(UP) rotates 180° around Y-axis → horizontal mirror
+                sprite.flip(UP)
+                is_flipped = should_flip
+
+            self.play(sprite.animate.move_to(end), run_time=t, rate_func=linear)
+```

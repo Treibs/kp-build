@@ -1,0 +1,57 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:6 in construct
+
+ 3 class WalkCycleScene(Scene):
+ 4 def construct(self):
+ 5 # Load the 4-frame walk cycle
+ ❱ 6 sprites = [ImageMobject(f"sprite_{i}.png", filter_kwargs={"orde
+ 7
+ 8 # Scale all sprites to 2 units tall
+ 9 for sprite in sprites:
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/types/image_mobject.py:
+ 214 in __init__
+
+ 211 np.iinfo(self.pixel_array_dtype).max - self.pixel_arra
+ 212 )
+ 213 self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
+ ❱ 214 super().__init__(scale_to_resolution, **kwargs)
+ 215
+ 216 def get_pixel_array(self) -> PixelArray:
+ 217 """A simple getter method."""
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/types/image_mobject.py:
+ 66 in __init__
+
+ 63 self.pixel_array_dtype = pixel_array_dtype
+ 64 self.scale_to_resolution = scale_to_resolution
+ 65 self.set_resampling_algorithm(resampling_algorithm)
+ ❱ 66 super().__init__(**kwargs)
+ 67
+ 68 def get_pixel_array(self) -> PixelArray:
+ 69 raise NotImplementedError()
+
+TypeError: Mobject.__init__() got an unexpected keyword argument 'filter_kwargs'
