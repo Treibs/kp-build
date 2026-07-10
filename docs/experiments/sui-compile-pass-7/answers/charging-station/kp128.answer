@@ -1,0 +1,72 @@
+```move
+module charging_post::charging {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::clock::Clock;
+    use sui::sui::SUI;
+
+    const COST_PER_EPOCH: u64 = 1;
+
+    public struct ChargingPost has key {
+        id: UID,
+        proceeds: Balance<SUI>,
+    }
+
+    public struct ChargingSession has key {
+        id: UID,
+        start_epoch: u64,
+        escrow_amount: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let post = ChargingPost {
+            id: object::new(ctx),
+            proceeds: balance::zero(),
+        };
+        transfer::share_object(post);
+    }
+
+    public fun plug_in(
+        post: &mut ChargingPost,
+        payment: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ): ChargingSession {
+        let amount = coin::value(&payment);
+        assert!(amount > 0, 0);
+        
+        balance::join(&mut post.proceeds, coin::into_balance(payment));
+        
+        ChargingSession {
+            id: object::new(ctx),
+            start_epoch: clock.timestamp_ms(),
+            escrow_amount: amount,
+        }
+    }
+
+    public fun unplug(
+        post: &mut ChargingPost,
+        session: ChargingSession,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let ChargingSession { id, start_epoch, escrow_amount } = session;
+        
+        let end_epoch = clock.timestamp_ms();
+        let elapsed = end_epoch - start_epoch;
+        let cost = elapsed * COST_PER_EPOCH;
+        
+        object::delete(id);
+        
+        if (cost >= escrow_amount) {
+            let zero_coin = coin::zero<SUI>(ctx);
+            transfer::public_transfer(zero_coin, ctx.sender());
+        } else {
+            let remainder = escrow_amount - cost;
+            let return_balance = balance::split(&mut post.proceeds, remainder);
+            let return_coin = coin::from_balance(return_balance, ctx);
+            transfer::public_transfer(return_coin, ctx.sender());
+        };
+    }
+}
+```

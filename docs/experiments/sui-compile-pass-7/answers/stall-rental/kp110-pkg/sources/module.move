@@ -1,0 +1,118 @@
+module farming_market::market {
+    use sui::coin::{Coin, Self};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+
+    const STALL_ACTIVE: u8 = 0;
+    const STALL_CLEAN: u8 = 1;
+    const STALL_DIRTY: u8 = 2;
+
+    const ENotVendor: u64 = 0;
+    const ENotClean: u64 = 1;
+
+    public struct StallBoard has key {
+        id: UID,
+        stalls: Table<u64, Stall>,
+        deposits: Table<u64, Coin<SUI>>,
+        pool_coin: Coin<SUI>,
+        next_stall_number: u64,
+        stalls_rented: u64,
+    }
+
+    public struct Stall has store {
+        vendor: address,
+        rent: u64,
+        deposit: u64,
+        status: u8,
+    }
+
+    public struct InspectorCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let board = StallBoard {
+            id: object::new(ctx),
+            stalls: table::new(ctx),
+            deposits: table::new(ctx),
+            pool_coin: coin::zero(ctx),
+            next_stall_number: 1,
+            stalls_rented: 0,
+        };
+        transfer::share_object(board);
+
+        let cap = InspectorCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public fun rent_stall(
+        board: &mut StallBoard,
+        rent_coin: Coin<SUI>,
+        deposit_coin: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let stall_number = board.next_stall_number;
+        let rent_amount = coin::value(&rent_coin);
+        let deposit_amount = coin::value(&deposit_coin);
+
+        let stall = Stall {
+            vendor: tx_context::sender(ctx),
+            rent: rent_amount,
+            deposit: deposit_amount,
+            status: STALL_ACTIVE,
+        };
+
+        table::add(&mut board.stalls, stall_number, stall);
+        table::add(&mut board.deposits, stall_number, deposit_coin);
+        coin::join(&mut board.pool_coin, rent_coin);
+
+        board.next_stall_number = board.next_stall_number + 1;
+        board.stalls_rented = board.stalls_rented + 1;
+    }
+
+    public fun mark_clean(
+        board: &mut StallBoard,
+        _cap: &InspectorCap,
+        stall_number: u64,
+    ) {
+        let stall = table::borrow_mut(&mut board.stalls, stall_number);
+        stall.status = STALL_CLEAN;
+    }
+
+    public fun mark_dirty(
+        board: &mut StallBoard,
+        _cap: &InspectorCap,
+        stall_number: u64,
+    ) {
+        let stall = table::borrow_mut(&mut board.stalls, stall_number);
+        stall.status = STALL_DIRTY;
+
+        if (table::contains(&board.deposits, stall_number)) {
+            let deposit = table::remove(&mut board.deposits, stall_number);
+            coin::join(&mut board.pool_coin, deposit);
+        };
+    }
+
+    public fun claim_deposit(
+        board: &mut StallBoard,
+        stall_number: u64,
+        ctx: &mut TxContext,
+    ) {
+        let stall = table::borrow(&board.stalls, stall_number);
+        assert!(stall.vendor == tx_context::sender(ctx), ENotVendor);
+        assert!(stall.status == STALL_CLEAN, ENotClean);
+
+        let deposit = table::remove(&mut board.deposits, stall_number);
+        transfer::public_transfer(deposit, tx_context::sender(ctx));
+    }
+
+    public fun stalls_rented_today(board: &StallBoard): u64 {
+        board.stalls_rented
+    }
+
+    public fun pool_total(board: &StallBoard): u64 {
+        coin::value(&board.pool_coin)
+    }
+}

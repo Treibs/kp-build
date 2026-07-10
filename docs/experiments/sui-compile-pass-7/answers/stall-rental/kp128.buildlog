@@ -1,0 +1,22 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:6:9
+  │
+6 │     use sui::option::{Self, Option};
+  │         ^^^^^^^^^^^ Invalid 'use'. Unbound module: 'sui::option'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:166:29
+    │
+135 │     ): Coin<SUI> {
+    │        --------- Expected: 'sui::coin::Coin<sui::sui::SUI>'
+    ·
+166 │         abort EStallNotFound;
+    │                             ^
+    │                             │
+    │                             Invalid return expression
+    │                             Given: '()'
+

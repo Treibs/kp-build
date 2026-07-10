@@ -1,0 +1,109 @@
+```move
+module charging::station {
+  use sui::coin::Coin;
+  use sui::sui::SUI;
+  use sui::clock::Clock;
+  use sui::event;
+
+  public struct Station has key, store {
+    id: UID,
+    cost_per_epoch: u64,
+    operator: address,
+    proceeds: Coin<SUI>,
+  }
+
+  public struct Session has key, store {
+    id: UID,
+    escrow: Coin<SUI>,
+    start_epoch: u64,
+    driver: address,
+  }
+
+  public struct SessionStarted has copy, drop {
+    escrow_amount: u64,
+    driver: address,
+  }
+
+  public struct SessionEnded has copy, drop {
+    cost: u64,
+    refund: u64,
+    driver: address,
+  }
+
+  public fun create_station(
+    cost_per_epoch: u64,
+    operator: address,
+    ctx: &mut TxContext,
+  ) {
+    let station = Station {
+      id: object::new(ctx),
+      cost_per_epoch,
+      operator,
+      proceeds: coin::zero(ctx),
+    };
+    transfer::share_object(station);
+  }
+
+  public fun start_session(
+    _station: &Station,
+    escrow: Coin<SUI>,
+    clock: &Clock,
+    ctx: &mut TxContext,
+  ): Session {
+    assert!(coin::value(&escrow) > 0);
+    
+    let session = Session {
+      id: object::new(ctx),
+      escrow,
+      start_epoch: clock.timestamp_ms(),
+      driver: ctx.sender(),
+    };
+
+    event::emit(SessionStarted {
+      escrow_amount: coin::value(&session.escrow),
+      driver: session.driver,
+    });
+
+    session
+  }
+
+  public fun end_session(
+    station: &mut Station,
+    mut session: Session,
+    clock: &Clock,
+    ctx: &mut TxContext,
+  ) {
+    let end_epoch = clock.timestamp_ms();
+    let epochs_connected = (end_epoch - session.start_epoch) / 1000;
+    let cost = epochs_connected * station.cost_per_epoch;
+    let escrow_amount = coin::value(&session.escrow);
+    
+    let refund_amount = if (cost < escrow_amount) {
+      let refund_amount = escrow_amount - cost;
+      let refund_coin = coin::split(&mut session.escrow, refund_amount, ctx);
+      transfer::public_transfer(refund_coin, session.driver);
+      refund_amount
+    } else {
+      0
+    };
+
+    coin::join(&mut station.proceeds, session.escrow);
+    object::delete(session.id);
+
+    event::emit(SessionEnded {
+      cost,
+      refund: refund_amount,
+      driver: session.driver,
+    });
+  }
+
+  public fun withdraw_proceeds(
+    station: &mut Station,
+    ctx: &mut TxContext,
+  ): Coin<SUI> {
+    assert!(ctx.sender() == station.operator);
+    let amount = coin::value(&station.proceeds);
+    coin::split(&mut station.proceeds, amount, ctx)
+  }
+}
+```

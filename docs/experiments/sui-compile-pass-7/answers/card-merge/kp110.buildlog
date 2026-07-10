@@ -1,0 +1,55 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:29:52
+    │
+  6 │         id: UID,
+    │             --- The type 'sui::object::UID' does not have the ability 'key'
+    ·
+ 29 │         let card1_address = object::id_to_address(&object::id(&card1.id));
+    │                                                    ^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+    │
+ 81 │ public struct UID has store {
+    │               --- To satisfy the constraint, the 'key' ability would need to be added here
+    ·
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                  --- 'key' constraint declared here
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:30:52
+    │
+  6 │         id: UID,
+    │             --- The type 'sui::object::UID' does not have the ability 'key'
+    ·
+ 30 │         let card2_address = object::id_to_address(&object::id(&card2.id));
+    │                                                    ^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+    │
+ 81 │ public struct UID has store {
+    │               --- To satisfy the constraint, the 'key' ability would need to be added here
+    ·
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                  --- 'key' constraint declared here
+
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:45:55
+    │
+  6 │         id: UID,
+    │             --- The type 'sui::object::UID' does not have the ability 'key'
+    ·
+ 45 │         let new_card_address = object::id_to_address(&object::id(&new_card.id));
+    │                                                       ^^^^^^^^^^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+    │
+ 81 │ public struct UID has store {
+    │               --- To satisfy the constraint, the 'key' ability would need to be added here
+    ·
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                  --- 'key' constraint declared here
+

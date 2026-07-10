@@ -1,0 +1,103 @@
+module community_fridge::fridge {
+    use std::string::String;
+    use std::vector;
+    use std::option::{Self, Option};
+    use sui::event;
+    use sui::object::{Self, ID, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+
+    public struct Meal has store {
+        id: UID,
+        label: String,
+        stocked_epoch: u64,
+    }
+
+    public struct UserRecord has store {
+        taker: address,
+        last_taken_epoch: u64,
+    }
+
+    public struct Fridge has key {
+        id: UID,
+        meals: vector<Meal>,
+        user_records: vector<UserRecord>,
+    }
+
+    public struct MealDiscarded has copy, drop {
+        meal_id: ID,
+        label: String,
+    }
+
+    public struct Coordinator has key {
+        id: UID,
+    }
+
+    public fun new_fridge(ctx: &mut TxContext) {
+        let fridge = Fridge {
+            id: object::new(ctx),
+            meals: vector::empty(),
+            user_records: vector::empty(),
+        };
+        transfer::share_object(fridge);
+    }
+
+    public fun new_coordinator(ctx: &mut TxContext) {
+        let coordinator = Coordinator {
+            id: object::new(ctx),
+        };
+        transfer::transfer(coordinator, tx_context::sender(ctx));
+    }
+
+    public fun stock_meal(fridge: &mut Fridge, label: String, stocked_epoch: u64, ctx: &mut TxContext) {
+        let meal = Meal {
+            id: object::new(ctx),
+            label,
+            stocked_epoch,
+        };
+        vector::push_back(&mut fridge.meals, meal);
+    }
+
+    public fun take_meal(fridge: &mut Fridge, current_epoch: u64, ctx: &mut TxContext): Option<Meal> {
+        let sender = tx_context::sender(ctx);
+        let mut i = 0;
+
+        while (i < vector::length(&fridge.user_records)) {
+            let record = vector::borrow(&fridge.user_records, i);
+            if (record.taker == sender) {
+                if (record.last_taken_epoch == current_epoch) {
+                    return option::none()
+                };
+                vector::remove(&mut fridge.user_records, i);
+                break
+            };
+            i = i + 1;
+        };
+
+        vector::push_back(&mut fridge.user_records, UserRecord {
+            taker: sender,
+            last_taken_epoch: current_epoch,
+        });
+
+        if (!vector::is_empty(&fridge.meals)) {
+            option::some(vector::pop_back(&mut fridge.meals))
+        } else {
+            option::none()
+        }
+    }
+
+    public fun spoilage_sweep(_: &Coordinator, fridge: &mut Fridge, current_epoch: u64) {
+        let mut i = 0;
+        while (i < vector::length(&fridge.meals)) {
+            if (vector::borrow(&fridge.meals, i).stocked_epoch < current_epoch) {
+                let meal = vector::remove(&mut fridge.meals, i);
+                event::emit(MealDiscarded {
+                    meal_id: object::id(&meal),
+                    label: meal.label,
+                });
+            } else {
+                i = i + 1;
+            }
+        };
+    }
+}
