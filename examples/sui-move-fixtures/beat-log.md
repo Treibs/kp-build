@@ -302,3 +302,23 @@ Notes:
 - Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
 
 **Totals:** 45 green fixtures, 38 red fixtures (7 beats grounding-only, unchanged).
+
+## Deepening round 6 — 2 beats (proven 2026-07-10)
+
+Source: the sixth /kp-deepen round (`docs/deepening/round-6/`) — old-way selection by design
+(probe-elicited beats only; the controlled arm for experiment 8's selection-method question).
+Triage: `docs/deepening/round-6/triage.md`. The probe's real finding: all five seeded
+territories clean on their own classes; six of eight failures were loaded rules ignored
+(`use-self` ×3 in one draw). The old-way harvest is two new single-answer classes:
+
+| beat | red form tried | observed (exit + key output) | classification | fragment (expected_error.txt) |
+|---|---|---|---|---|
+| reference-type-argument | `stamp: Option<&Stamp>` parameter | exit 1, `error[E04004]: expected a single non-reference type` | RED/GREEN pair | `Expected a single non-reference type` |
+| vector-contains-by-ref | `vector::contains(blocklist, who)` element by value | exit 1, `error[E04007]: incompatible types` | RED/GREEN pair | `Invalid call of 'std::vector::contains'` |
+
+Notes: the reference-type-argument RED was re-shaped once pre-proof (the struct-field form
+fired E05001 first; the probe's parameter form reproduces the observed E04004). Corpus +2
+excerpts from the same pinned sources (references.md "References Cannot Be Stored";
+std/vector.md contains signature). Greens' Move.lock pin the same framework rev.
+
+**Totals:** 47 green fixtures, 40 red fixtures (7 beats grounding-only, unchanged).

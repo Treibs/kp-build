@@ -1,0 +1,120 @@
+```move
+module my_pkg::post_office {
+    use sui::event;
+    use sui::table::{Self, Table};
+    use sui::tx_context::TxContext;
+    use sui::object::{Self, ID, UID};
+    use sui::transfer;
+
+    public struct ModeratorCap has key, store {
+        id: UID,
+    }
+
+    public struct Letter has key, store {
+        id: UID,
+        recipient: address,
+        sender: address,
+        content: vector<u8>,
+    }
+
+    public struct PostOffice has key {
+        id: UID,
+        blocklist: Table<address, bool>,
+        delivered_count: u64,
+        bounced_count: u64,
+    }
+
+    public struct LetterDelivered has copy, drop {
+        letter_id: ID,
+        recipient: address,
+    }
+
+    public struct LetterBounced has copy, drop {
+        letter_id: ID,
+        sender: address,
+        recipient: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let post_office = PostOffice {
+            id: object::new(ctx),
+            blocklist: table::new(ctx),
+            delivered_count: 0,
+            bounced_count: 0,
+        };
+        
+        let moderator = ModeratorCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(post_office);
+        transfer::transfer(moderator, ctx.sender());
+    }
+
+    public fun add_to_blocklist(
+        post_office: &mut PostOffice,
+        _cap: &ModeratorCap,
+        address: address,
+    ) {
+        table::add(&mut post_office.blocklist, address, true);
+    }
+
+    public fun remove_from_blocklist(
+        post_office: &mut PostOffice,
+        _cap: &ModeratorCap,
+        address: address,
+    ) {
+        table::remove(&mut post_office.blocklist, address);
+    }
+
+    public fun is_blocklisted(post_office: &PostOffice, address: address): bool {
+        table::contains(&post_office.blocklist, address)
+    }
+
+    public fun create_letter(
+        recipient: address,
+        sender: address,
+        content: vector<u8>,
+        ctx: &mut TxContext,
+    ): Letter {
+        Letter {
+            id: object::new(ctx),
+            recipient,
+            sender,
+            content,
+        }
+    }
+
+    public fun process_letter(
+        post_office: &mut PostOffice,
+        letter: Letter,
+    ) {
+        let letter_id = object::uid_to_inner(&letter.id);
+        
+        if (is_blocklisted(post_office, letter.recipient)) {
+            post_office.bounced_count = post_office.bounced_count + 1;
+            event::emit(LetterBounced {
+                letter_id,
+                sender: letter.sender,
+                recipient: letter.recipient,
+            });
+            transfer::public_transfer(letter, letter.sender);
+        } else {
+            post_office.delivered_count = post_office.delivered_count + 1;
+            event::emit(LetterDelivered {
+                letter_id,
+                recipient: letter.recipient,
+            });
+            transfer::public_transfer(letter, letter.recipient);
+        }
+    }
+
+    public fun delivered_count(post_office: &PostOffice): u64 {
+        post_office.delivered_count
+    }
+
+    public fun bounced_count(post_office: &PostOffice): u64 {
+        post_office.bounced_count
+    }
+}
+```

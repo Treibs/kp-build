@@ -1,0 +1,39 @@
+module awards::desk {
+    use sui::event;
+
+    public struct Trophy has key {
+        id: UID,
+        winner: address,
+    }
+
+    public struct Desk has key {
+        id: UID,
+        shipped: u64,
+    }
+
+    public struct Shipped has copy, drop {
+        winner: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(
+            Desk { id: object::new(ctx), shipped: 0 },
+            ctx.sender(),
+        );
+    }
+
+    public fun engrave(_: &Desk, winner: address, ctx: &mut TxContext): Trophy {
+        Trophy { id: object::new(ctx), winner }
+    }
+
+    public fun ship(desk: &mut Desk, trophy: Trophy) {
+        let winner = trophy.winner;
+        transfer::transfer(trophy, winner);
+        desk.shipped = desk.shipped + 1;
+        event::emit(Shipped { winner });
+    }
+
+    public fun shipped(desk: &Desk): u64 {
+        desk.shipped
+    }
+}

@@ -1,0 +1,96 @@
+```move
+module post_office::post_office {
+    use sui::object::ID;
+    use sui::table::{Self, Table};
+    use sui::event;
+
+    public struct Letter has key, store {
+        id: UID,
+        recipient: address,
+        return_address: address,
+    }
+
+    public struct ModeratorCap has key, store {
+        id: UID,
+    }
+
+    public struct PostOffice has key {
+        id: UID,
+        blocklist: Table<address, bool>,
+        delivered: u64,
+        bounced: u64,
+    }
+
+    public struct LetterDelivered has copy, drop {
+        letter_id: ID,
+        recipient: address,
+    }
+
+    public struct LetterBounced has copy, drop {
+        letter_id: ID,
+        recipient: address,
+        return_address: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(ModeratorCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(PostOffice {
+            id: object::new(ctx),
+            blocklist: table::new(ctx),
+            delivered: 0,
+            bounced: 0,
+        });
+    }
+
+    public fun create_letter(
+        recipient: address,
+        return_address: address,
+        ctx: &mut TxContext,
+    ): Letter {
+        Letter { id: object::new(ctx), recipient, return_address }
+    }
+
+    public fun block_address(
+        _cap: &ModeratorCap,
+        office: &mut PostOffice,
+        addr: address,
+    ) {
+        if (!table::contains(&office.blocklist, addr)) {
+            table::add(&mut office.blocklist, addr, true);
+        };
+    }
+
+    public fun unblock_address(
+        _cap: &ModeratorCap,
+        office: &mut PostOffice,
+        addr: address,
+    ) {
+        if (table::contains(&office.blocklist, addr)) {
+            table::remove(&mut office.blocklist, addr);
+        };
+    }
+
+    public fun process_letter(office: &mut PostOffice, letter: Letter) {
+        let letter_id = object::id(&letter);
+        let recipient = letter.recipient;
+        let return_address = letter.return_address;
+        if (table::contains(&office.blocklist, recipient)) {
+            office.bounced = office.bounced + 1;
+            event::emit(LetterBounced { letter_id, recipient, return_address });
+            transfer::public_transfer(letter, return_address);
+        } else {
+            office.delivered = office.delivered + 1;
+            event::emit(LetterDelivered { letter_id, recipient });
+            transfer::public_transfer(letter, recipient);
+        };
+    }
+
+    public fun delivered(office: &PostOffice): u64 { office.delivered }
+
+    public fun bounced(office: &PostOffice): u64 { office.bounced }
+
+    public fun is_blocked(office: &PostOffice, addr: address): bool {
+        table::contains(&office.blocklist, addr)
+    }
+}
+```

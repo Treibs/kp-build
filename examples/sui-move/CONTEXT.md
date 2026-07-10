@@ -92,6 +92,10 @@
     > sui 1.74.1 rejects object::id(&pet.id) with exit 1, error[E05001]: ability constraint not satisfied, The type 'sui::object::UID' does not have the ability 'key'.
 - _finding_ — `let owners = vector::empty();` with no annotation and no later element evidence fails inference on sui 1.74.1: error[E04010] — "Could not infer this type. Try adding an annotation". Same class as the struct-literal `vector[]` shape recorded in round 4. *([sui-move-build], high)*
     > sui 1.74.1 rejects an unannotated vector::empty() whose only use is vector::length, exit 1, error[E04010]: cannot infer type, Could not infer this type. Try adding an annotation.
+- _finding_ — A reference cannot be a type argument: `stamp: Option<&Stamp>` fails on sui 1.74.1 with error[E04004] — "Expected a single non-reference type". References are not first-class values in Move. *([sui-move-build], high)*
+    > sui 1.74.1 rejects Option<&Stamp> as a parameter type with exit 1, error[E04004], Expected a single non-reference type.
+- _finding_ — Passing the element by value fails: `vector::contains(blocklist, who)` is rejected on sui 1.74.1 with error[E04007] — "Invalid call of 'std::vector::contains'" (the parameter is `&Element`). Rust's `Vec::contains` has the same by-reference signature; the slip is not borrowing at the call site. *([sui-move-build], high)*
+    > sui 1.74.1 rejects vector::contains(blocklist, who) with exit 1, error[E04007]: incompatible types, Invalid call of 'std::vector::contains'.
 - _method_ — In Move 2024, declare structs with an explicit visibility modifier: `public struct Counter has key { id: UID, value: u64 }`. `public` is currently the only struct visibility modifier. *([sui-move-build], high)*
     > sui 1.74.1 (edition 2024) builds a module whose struct is declared `public struct Counter has key { id: UID, value: u64 }` with exit 0.
 - _method_ — Move 2024 adds a required visibility modifier to struct declarations; `public` is currently the only available struct visibility modifier, so every struct is written `public struct Name ...`. *([doc-corpus], high)*
@@ -106,11 +110,7 @@
     > The module that defines main storage operations is `sui::transfer`. It is implicitly imported in all packages that depend on the [Sui Framework](./../programmability/sui-framework), so, like other implicitly imported modules (e.g. `std::opt
 - _method_ — A struct with the `key` ability must have `id: UID` as its first field: `public struct Item has key { id: UID, value: u64 }`, with the UID created by `object::new(ctx)`. *([sui-move-build], high)*
     > sui 1.74.1 builds a `key` struct whose first field is `id: UID` (initialized with `object::new(ctx)`) with exit 0.
-- _method_ — A struct with the `key` ability is an object, and the Sui Verifier requires its first field to be named `id` with type `UID`. *([doc-corpus], high)*
-    > A struct with the `key` ability is considered _an object_ and can be used in storage functions. The Sui Verifier requires the first field of the struct to be named `id` and to have the type `UID`.
-- _method_ — Move 2024 requires `let mut` for locals that are reassigned (`let mut total = 0; total = total + x;`), supports single-argument `assert!(cond)` (no abort code needed), and labeled loops (`'scan: loop { ... break 'scan; ... }`). *([sui-move-build], high)*
-    > sui 1.74.1 builds a module using `let mut` locals, single-argument `assert!`, and a labeled loop with exit 0.
-*(+81 more — see `claims/`)*
+*(+87 more — see `claims/`)*
 ## Toolchain + source pins
 
 - **Toolchain:** `sui mainnet-v1.74.1` (version string `sui 1.74.1-8fc60f1fa966`), release binary sha256 `61aafc28e83a8501947a7f0acb97245b8bdb922672895afef504f60c2422d6b3` (operator-checked; the runner verifies the version string, not the hash).

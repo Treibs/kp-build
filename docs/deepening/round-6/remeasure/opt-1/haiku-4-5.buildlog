@@ -1,0 +1,18 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:4:9
+  │
+4 │     use sui::option::{Self, Option};
+  │         ^^^^^^^^^^^ Invalid 'use'. Unbound module: 'sui::option'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:28:14
+   │
+28 │     fun init(witness: SCHEDULER, ctx: &mut TxContext) {
+   │              ^^^^^^^ Unused parameter 'witness'. Consider removing or prefixing with an underscore: '_witness'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

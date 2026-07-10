@@ -1,0 +1,57 @@
+module rain_insurance::rain {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+
+    public struct Pool has key {
+        id: UID,
+        balance: Balance<SUI>,
+        epochs: Table<u64, bool>,
+    }
+
+    public struct OracleCap has key, store {
+        id: UID,
+    }
+
+    public struct Policy has key {
+        id: UID,
+        epoch: u64,
+        premium: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(Pool {
+            id: object::new(ctx),
+            balance: balance::zero(),
+            epochs: table::new(ctx),
+        });
+        transfer::transfer(OracleCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun purchase(pool: &mut Pool, payment: Coin<SUI>, ctx: &mut TxContext): Policy {
+        let premium = coin::value(&payment);
+        coin::put(&mut pool.balance, payment);
+        Policy {
+            id: object::new(ctx),
+            epoch: ctx.epoch(),
+            premium,
+        }
+    }
+
+    public fun mark_epoch(_cap: &OracleCap, pool: &mut Pool, epoch: u64, is_rainy: bool) {
+        table::add(&mut pool.epochs, epoch, is_rainy);
+    }
+
+    public fun settle(pool: &mut Pool, policy: Policy, ctx: &mut TxContext): Coin<SUI> {
+        let Policy { id, epoch, premium } = policy;
+        object::delete(id);
+        assert!(table::contains(&pool.epochs, epoch));
+        let is_rainy = *table::borrow(&pool.epochs, epoch);
+        if (is_rainy) {
+            coin::take(&mut pool.balance, premium * 2, ctx)
+        } else {
+            coin::zero(ctx)
+        }
+    }
+}

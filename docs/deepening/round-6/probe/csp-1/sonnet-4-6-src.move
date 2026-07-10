@@ -1,0 +1,77 @@
+module scholarship::desk {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+
+    public struct Scholarship has key {
+        id: UID,
+        vault: Balance<SUI>,
+        tranche_amount: u64,
+        tranches_remaining: u64,
+        scholar: address,
+    }
+
+    public struct RegistrarCap has key, store {
+        id: UID,
+        scholarship_id: ID,
+    }
+
+    public fun create_scholarship(
+        endowment: Coin<SUI>,
+        num_tranches: u64,
+        scholar: address,
+        registrar: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(num_tranches > 0);
+        let total = endowment.value();
+        let tranche_amount = total / num_tranches;
+        assert!(tranche_amount > 0);
+
+        let uid = object::new(ctx);
+        let scholarship_id = object::uid_to_inner(&uid);
+
+        let scholarship = Scholarship {
+            id: uid,
+            vault: endowment.into_balance(),
+            tranche_amount,
+            tranches_remaining: num_tranches,
+            scholar,
+        };
+
+        let cap = RegistrarCap {
+            id: object::new(ctx),
+            scholarship_id,
+        };
+
+        transfer::share_object(scholarship);
+        transfer::public_transfer(cap, registrar);
+    }
+
+    public fun release_tranche(
+        cap: &RegistrarCap,
+        scholarship: &mut Scholarship,
+        ctx: &mut TxContext,
+    ) {
+        assert!(object::uid_to_inner(&scholarship.id) == cap.scholarship_id);
+        assert!(scholarship.tranches_remaining > 0);
+
+        let amount = if (scholarship.tranches_remaining == 1) {
+            balance::value(&scholarship.vault)
+        } else {
+            scholarship.tranche_amount
+        };
+
+        scholarship.tranches_remaining = scholarship.tranches_remaining - 1;
+        let payout = coin::from_balance(balance::split(&mut scholarship.vault, amount), ctx);
+        transfer::public_transfer(payout, scholarship.scholar);
+    }
+
+    public fun tranches_remaining(scholarship: &Scholarship): u64 {
+        scholarship.tranches_remaining
+    }
+
+    public fun vault_total(scholarship: &Scholarship): u64 {
+        balance::value(&scholarship.vault)
+    }
+}

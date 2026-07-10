@@ -1,0 +1,5 @@
+[package]
+name = "reference_type_argument_red"
+edition = "2024"
+
+[dependencies]

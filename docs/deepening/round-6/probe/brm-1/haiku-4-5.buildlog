@@ -1,0 +1,64 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:50:9
+   │
+50 │         premium: Coin<SUI>,
+   │         ^^^^^^^ Unused parameter 'premium'. Consider removing or prefixing with an underscore: '_premium'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:55:30
+   │
+ 2 │     use sui::coin::Coin;
+   │                    ---- Similarly named defintion found here
+   ·
+55 │         let premium_amount = coin::value(&premium);
+   │                              ^^^^
+   │                              │
+   │                              Could not resolve the name 'coin'
+   │                              Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:56:40
+   │
+ 2 │     use sui::coin::Coin;
+   │                    ---- Similarly named defintion found here
+   ·
+56 │         balance::join(&mut pool.vault, coin::into_balance(premium));
+   │                                        ^^^^
+   │                                        │
+   │                                        Could not resolve the name 'coin'
+   │                                        Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:77:9
+   │
+77 │         pool: &mut Pool,
+   │         ^^^^ Unused parameter 'pool'. Consider removing or prefixing with an underscore: '_pool'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:78:9
+   │
+78 │         ctx: &mut TxContext,
+   │         ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:86:27
+   │
+ 2 │     use sui::coin::Coin;
+   │                    ---- Similarly named defintion found here
+   ·
+86 │         let payout_coin = coin::from_balance(
+   │                           ^^^^
+   │                           │
+   │                           Could not resolve the name 'coin'
+   │                           Did you mean: 'Coin'
+

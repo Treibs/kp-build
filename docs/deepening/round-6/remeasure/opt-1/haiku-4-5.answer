@@ -1,0 +1,94 @@
+```move
+module clinic_scheduler::scheduler {
+    use sui::table::{Self, Table};
+    use sui::event;
+    use sui::option::{Self, Option};
+
+    public struct SCHEDULER has drop {}
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct Schedule has key {
+        id: UID,
+        bookings: Table<u64, address>,
+        max_slots: u64,
+    }
+
+    public struct SlotBooked has copy, drop {
+        slot: u64,
+        patient: address,
+    }
+
+    public struct BookingCancelled has copy, drop {
+        slot: u64,
+        patient: address,
+    }
+
+    fun init(witness: SCHEDULER, ctx: &mut TxContext) {
+        let sender = tx_context::sender(ctx);
+        
+        transfer::transfer(AdminCap {
+            id: object::new(ctx),
+        }, sender);
+        
+        transfer::share_object(Schedule {
+            id: object::new(ctx),
+            bookings: table::new(ctx),
+            max_slots: 100,
+        });
+    }
+
+    public fun book_slot(
+        schedule: &mut Schedule,
+        ctx: &mut TxContext,
+    ): u64 {
+        let patient = tx_context::sender(ctx);
+        
+        let mut slot = 0;
+        while (slot < schedule.max_slots) {
+            if (!table::contains(&schedule.bookings, slot)) {
+                table::add(&mut schedule.bookings, slot, patient);
+                event::emit(SlotBooked { slot, patient });
+                return slot
+            };
+            slot = slot + 1;
+        };
+        
+        abort 1
+    }
+
+    public fun cancel_booking(
+        _admin: &AdminCap,
+        schedule: &mut Schedule,
+        slot: u64,
+    ) {
+        assert!(table::contains(&schedule.bookings, slot), 1);
+        let patient = table::remove(&mut schedule.bookings, slot);
+        event::emit(BookingCancelled { slot, patient });
+    }
+
+    public fun get_patient_at_slot(
+        schedule: &Schedule,
+        slot: u64,
+    ): Option<address> {
+        if (table::contains(&schedule.bookings, slot)) {
+            option::some(*table::borrow(&schedule.bookings, slot))
+        } else {
+            option::none()
+        }
+    }
+
+    public fun next_free_slot(schedule: &Schedule): Option<u64> {
+        let mut slot = 0;
+        while (slot < schedule.max_slots) {
+            if (!table::contains(&schedule.bookings, slot)) {
+                return option::some(slot)
+            };
+            slot = slot + 1;
+        };
+        option::none()
+    }
+}
+```

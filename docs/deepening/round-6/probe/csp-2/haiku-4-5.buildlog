@@ -1,0 +1,13 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:56:45
+   │
+38 │         deposit: Coin<SUI>,
+   │         ------- To use the variable mutably, it must be declared 'mut', e.g. 'mut deposit'
+   ·
+56 │             let landlord_coin = coin::split(&mut deposit, landlord_payout, ctx);
+   │                                             ^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'deposit'
+

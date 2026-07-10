@@ -1,0 +1,20 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99002]: potentially unenforceable custom transfer/share/freeze policy
+   ┌─ ./sources/module.move:62:16
+   │
+62 │     public fun assign_tray(
+   │                ^^^^^^^^^^^ Potential unintended implementation of a custom transfer function.
+63 │         _cap: &CashierCap,
+64 │         mut tray: ChipTray,
+   │             ---- An instance of a module-private type with a 'store' ability to be transferred coming from here
+   ·
+73 │         transfer::transfer(tray, dealer_addr);
+   │                   -------- Instances of a type with a 'store' ability can be transferred using the 'public_transfer' function which often negates the intent of enforcing a custom transfer policy
+   │
+   = A custom transfer policy for a given type is implemented through calling the private 'transfer' function variant in the module defining this type
+   = This warning can be suppressed with '#[allow(lint(custom_state_change))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+

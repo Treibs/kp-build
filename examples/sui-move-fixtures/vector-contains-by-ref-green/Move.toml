@@ -1,0 +1,5 @@
+[package]
+name = "vector_contains_by_ref_green"
+edition = "2024"
+
+[dependencies]

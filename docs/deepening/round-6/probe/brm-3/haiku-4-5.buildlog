@@ -1,0 +1,21 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:19:14
+   │
+19 │         fee: Coin<SUI>,
+   │              ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:92:38
+   │
+80 │         let SubmissionData { candidate, score, fee } = table::remove(&mut bank.submissions, submission_id);
+   │                                                --- To use the variable mutably, it must be declared 'mut', e.g. 'mut fee'
+   ·
+92 │             let charge = coin::split(&mut fee, grading_charge, ctx);
+   │                                      ^^^^^^^^ Invalid mutable borrow of immutable variable 'fee'
+

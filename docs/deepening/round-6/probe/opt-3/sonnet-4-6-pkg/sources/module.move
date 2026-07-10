@@ -1,0 +1,53 @@
+module racing::ghost_track {
+    use std::option;
+
+    public struct GhostRun has key, store {
+        id: UID,
+        driver: address,
+        time_ms: u64,
+    }
+
+    public struct Track has key {
+        id: UID,
+        ghost: Option<GhostRun>,
+    }
+
+    public fun create_track(ctx: &mut TxContext) {
+        transfer::share_object(Track {
+            id: object::new(ctx),
+            ghost: option::none(),
+        });
+    }
+
+    public fun create_run(time_ms: u64, ctx: &mut TxContext): GhostRun {
+        GhostRun {
+            id: object::new(ctx),
+            driver: ctx.sender(),
+            time_ms,
+        }
+    }
+
+    public fun submit(track: &mut Track, new_run: GhostRun) {
+        if (option::is_none(&track.ghost)) {
+            option::fill(&mut track.ghost, new_run);
+        } else {
+            let current_time = option::borrow(&track.ghost).time_ms;
+            if (new_run.time_ms < current_time) {
+                let old_driver = option::borrow(&track.ghost).driver;
+                let old_ghost = option::swap(&mut track.ghost, new_run);
+                transfer::public_transfer(old_ghost, old_driver);
+            } else {
+                let sender = new_run.driver;
+                transfer::public_transfer(new_run, sender);
+            }
+        }
+    }
+
+    public fun record_time(track: &Track): Option<u64> {
+        if (option::is_some(&track.ghost)) {
+            option::some(option::borrow(&track.ghost).time_ms)
+        } else {
+            option::none()
+        }
+    }
+}

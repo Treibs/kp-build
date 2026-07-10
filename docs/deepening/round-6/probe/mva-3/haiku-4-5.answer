@@ -1,0 +1,127 @@
+```move
+module postoffice::moderated_postoffice {
+    use std::vector;
+    use sui::event;
+
+    public struct ModeratorCap has key, store {
+        id: UID,
+    }
+
+    public struct Letter has key {
+        id: UID,
+        recipient: address,
+        sender: address,
+        content: vector<u8>,
+    }
+
+    public struct PostOffice has key {
+        id: UID,
+        blocklist: vector<address>,
+        delivered: u64,
+        bounced: u64,
+    }
+
+    public struct LetterDelivered has copy, drop {
+        letter_id: ID,
+        recipient: address,
+    }
+
+    public struct LetterBounced has copy, drop {
+        letter_id: ID,
+        sender: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let moderator_cap = ModeratorCap {
+            id: object::new(ctx),
+        };
+        
+        let post_office = PostOffice {
+            id: object::new(ctx),
+            blocklist: vector[],
+            delivered: 0,
+            bounced: 0,
+        };
+
+        transfer::transfer(moderator_cap, ctx.sender());
+        transfer::share_object(post_office);
+    }
+
+    public fun create_letter(
+        recipient: address,
+        sender: address,
+        content: vector<u8>,
+        ctx: &mut TxContext,
+    ): Letter {
+        Letter {
+            id: object::new(ctx),
+            recipient,
+            sender,
+            content,
+        }
+    }
+
+    public fun process_letter(
+        post_office: &mut PostOffice,
+        letter: Letter,
+    ) {
+        let Letter { id, recipient, sender, content: _ } = letter;
+        
+        if (is_blocked(post_office, recipient)) {
+            post_office.bounced = post_office.bounced + 1;
+            event::emit(LetterBounced {
+                letter_id: object::uid_to_inner(&id),
+                sender,
+            });
+            object::delete(id);
+        } else {
+            post_office.delivered = post_office.delivered + 1;
+            event::emit(LetterDelivered {
+                letter_id: object::uid_to_inner(&id),
+                recipient,
+            });
+            object::delete(id);
+        };
+    }
+
+    public fun add_to_blocklist(
+        _cap: &ModeratorCap,
+        post_office: &mut PostOffice,
+        address: address,
+    ) {
+        if (!vector::contains(&post_office.blocklist, address)) {
+            vector::push_back(&mut post_office.blocklist, address);
+        }
+    }
+
+    public fun remove_from_blocklist(
+        _cap: &ModeratorCap,
+        post_office: &mut PostOffice,
+        address: address,
+    ) {
+        let mut new_list = vector[];
+        let len = vector::length(&post_office.blocklist);
+        let mut i = 0;
+        while (i < len) {
+            let blocked_addr = vector::borrow(&post_office.blocklist, i);
+            if (*blocked_addr != address) {
+                vector::push_back(&mut new_list, *blocked_addr);
+            };
+            i = i + 1;
+        };
+        post_office.blocklist = new_list;
+    }
+
+    public fun is_blocked(post_office: &PostOffice, addr: address): bool {
+        vector::contains(&post_office.blocklist, addr)
+    }
+
+    public fun delivered_count(post_office: &PostOffice): u64 {
+        post_office.delivered
+    }
+
+    public fun bounced_count(post_office: &PostOffice): u64 {
+        post_office.bounced
+    }
+}
+```

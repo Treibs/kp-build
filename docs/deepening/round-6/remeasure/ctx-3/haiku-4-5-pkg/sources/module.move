@@ -1,0 +1,110 @@
+module casino::prep_station {
+    use sui::coin::{Coin, self};
+    use sui::sui::SUI;
+    use sui::balance::{Balance, self};
+    use sui::transfer;
+    use sui::object::{self, UID};
+    use sui::tx_context::TxContext;
+
+    public struct CashierCap has key {
+        id: UID,
+    }
+
+    public struct ChipTray has key, store {
+        id: UID,
+        balance: Balance<SUI>,
+    }
+
+    public struct Station has key {
+        id: UID,
+        prepared_count: u64,
+        assigned_count: u64,
+        house_balance: Balance<SUI>,
+        tray_float: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(
+            CashierCap { id: object::new(ctx) },
+            ctx.sender(),
+        );
+
+        transfer::share_object(Station {
+            id: object::new(ctx),
+            prepared_count: 0,
+            assigned_count: 0,
+            house_balance: balance::zero(),
+            tray_float: 1000000,
+        });
+    }
+
+    public fun setup_bankroll(
+        _: &CashierCap,
+        station: &mut Station,
+        bankroll: Coin<SUI>,
+    ) {
+        balance::join(&mut station.house_balance, coin::into_balance(bankroll));
+    }
+
+    public fun prepare_tray(
+        _: &CashierCap,
+        station: &mut Station,
+        ctx: &mut TxContext,
+    ): ChipTray {
+        station.prepared_count = station.prepared_count + 1;
+        ChipTray {
+            id: object::new(ctx),
+            balance: balance::zero(),
+        }
+    }
+
+    public fun fill_tray(
+        _: &CashierCap,
+        station: &mut Station,
+        mut tray: ChipTray,
+    ): ChipTray {
+        let available = balance::value(&station.house_balance);
+        let to_fill = if (available >= station.tray_float) {
+            station.tray_float
+        } else {
+            available
+        };
+
+        if (to_fill > 0) {
+            balance::join(
+                &mut tray.balance,
+                balance::split(&mut station.house_balance, to_fill),
+            );
+        };
+
+        tray
+    }
+
+    public fun assign_to_dealer(
+        _: &CashierCap,
+        station: &mut Station,
+        tray: ChipTray,
+        dealer: address,
+    ) {
+        station.assigned_count = station.assigned_count + 1;
+        transfer::public_transfer(tray, dealer);
+    }
+
+    public fun scrap_tray(
+        _: &CashierCap,
+        station: &mut Station,
+        tray: ChipTray,
+    ) {
+        let ChipTray { id, balance: b } = tray;
+        balance::join(&mut station.house_balance, b);
+        object::delete(id);
+    }
+
+    public fun get_prepared_count(station: &Station): u64 {
+        station.prepared_count
+    }
+
+    public fun get_assigned_count(station: &Station): u64 {
+        station.assigned_count
+    }
+}

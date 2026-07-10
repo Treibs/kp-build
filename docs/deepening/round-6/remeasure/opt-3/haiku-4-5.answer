@@ -1,0 +1,59 @@
+```move
+module racing_ghost::track {
+    use std::option::{self, Option};
+    use sui::tx_context::sender;
+
+    public struct GhostRun has key, store {
+        id: UID,
+        driver: address,
+        time: u64,
+    }
+
+    public struct Track has key {
+        id: UID,
+        best_ghost: Option<GhostRun>,
+    }
+
+    public fun create_track(ctx: &mut TxContext) {
+        let track = Track {
+            id: object::new(ctx),
+            best_ghost: option::none(),
+        };
+        transfer::share_object(track);
+    }
+
+    public fun submit_run(
+        track: &mut Track,
+        time: u64,
+        ctx: &mut TxContext,
+    ) {
+        let sender_addr = sender(ctx);
+        let new_run = GhostRun {
+            id: object::new(ctx),
+            driver: sender_addr,
+            time: time,
+        };
+
+        if (option::is_none(&track.best_ghost)) {
+            option::fill(&mut track.best_ghost, new_run);
+        } else {
+            let best_time = option::borrow(&track.best_ghost).time;
+            if (new_run.time < best_time) {
+                let old_ghost = option::swap(&mut track.best_ghost, new_run);
+                transfer::public_transfer(old_ghost, old_ghost.driver);
+            } else {
+                transfer::public_transfer(new_run, sender_addr);
+            }
+        }
+    }
+
+    public fun current_record(track: &Track): Option<u64> {
+        if (option::is_some(&track.best_ghost)) {
+            let ghost = option::borrow(&track.best_ghost);
+            option::some(ghost.time)
+        } else {
+            option::none()
+        }
+    }
+}
+```
