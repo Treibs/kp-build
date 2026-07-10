@@ -23,7 +23,7 @@ verified:
   evidence: 'Convert the none option <code>t</code> to a some option by adding <code>e</code>.
 
     Aborts if <code>t</code> already holds a value'
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-framework-docs

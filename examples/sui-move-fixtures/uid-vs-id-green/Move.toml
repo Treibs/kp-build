@@ -1,0 +1,5 @@
+[package]
+name = "uid_vs_id_green"
+edition = "2024"
+
+[dependencies]

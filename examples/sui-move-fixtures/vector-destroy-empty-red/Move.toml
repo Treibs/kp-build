@@ -1,0 +1,5 @@
+[package]
+name = "vector_destroy_empty_red"
+edition = "2024"
+
+[dependencies]

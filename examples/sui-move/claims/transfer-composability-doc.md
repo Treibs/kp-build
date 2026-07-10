@@ -20,7 +20,7 @@ verified:
   match_score: 0.0
   evidence: You can use the results from one transaction command in any subsequent
     transaction command within the PTB.
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-docs-concepts

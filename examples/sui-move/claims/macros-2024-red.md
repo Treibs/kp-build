@@ -20,7 +20,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: sui-move-build:red_violation cleared
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution:
   tool: sui-move-build
   gate_code: red_violation

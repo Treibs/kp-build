@@ -1,0 +1,1 @@
+The value does not have the 'drop' ability and must be consumed before the function returns

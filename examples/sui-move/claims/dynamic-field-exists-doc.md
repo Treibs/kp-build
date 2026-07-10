@@ -21,7 +21,7 @@ verified:
   match_score: 0.0
   evidence: '<pre><code><b>public</b> <b>fun</b> <a href="../sui/dynamic_field.md#sui_dynamic_field_exists">exists</a>&lt;Name:
     <b>copy</b>, drop, store&gt;(<a href="../sui/'
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-framework-docs

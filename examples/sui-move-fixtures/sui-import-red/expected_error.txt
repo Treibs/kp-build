@@ -1,0 +1,1 @@
+Unbound member 'SUI' in module 'sui::coin'

@@ -20,7 +20,7 @@ verified:
   match_score: 0.0
   evidence: '<pre><code><b>public</b> <b>fun</b> <a href="../std/string.md#std_string_append">append</a>(s:
     &<b>mut</b> <a href="../std/string.md#std_string_String">std::str'
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-framework-docs

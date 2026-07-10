@@ -771,6 +771,132 @@
       "type": "method",
       "confidence": "high",
       "corroborated_by": []
+    },
+    {
+      "id": "sui-import-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "sui-import-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "sui-import-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "uid-to-address-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "uid-to-address-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "uid-to-address-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "value-consumption-paths-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "value-consumption-paths-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "value-consumption-paths-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "vector-destroy-empty-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "vector-destroy-empty-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "vector-destroy-empty-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "uid-vs-id-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "uid-vs-id-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "uid-vs-id-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "empty-vector-annotation-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "empty-vector-annotation-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "empty-vector-annotation-doc",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
     }
   ],
   "open_problems": [],

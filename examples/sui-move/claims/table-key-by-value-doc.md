@@ -21,7 +21,7 @@ verified:
   match_score: 0.0
   evidence: '<pre><code><b>public</b> <b>fun</b> <a href="../sui/table.md#sui_table_contains">contains</a>&lt;K:
     <b>copy</b>, <a href="../sui/table.md#sui_table_drop">drop</'
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-framework-docs

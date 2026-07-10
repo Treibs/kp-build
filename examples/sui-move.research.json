@@ -1281,6 +1281,216 @@
         "source": "sui-framework-docs",
         "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/option.md#std_option_swap\">swap</a>&lt;Element&gt;(t: &<b>mut</b> <a href=\"../std/option.md#std_option_Option\">std::option::Option</a>&lt;Element&gt;, e: Element): Element"
       }
+    },
+    {
+      "id": "sui-import-green",
+      "statement": "The `SUI` coin type is imported from the `sui::sui` module — `use sui::sui::SUI;` alongside `use sui::coin::{Self, Coin};` — even though it is only ever used through `Coin<SUI>`/`Balance<SUI>`.",
+      "supporting_passage": "sui 1.74.1 builds a module importing `use sui::sui::SUI` with Coin/Balance handling, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/sui-import-green"
+      }
+    },
+    {
+      "id": "sui-import-red",
+      "statement": "`SUI` is not a member of `sui::coin`: `use sui::coin::{Self, Coin, SUI}` fails on sui 1.74.1 with error[E03003] unbound module member — \"Unbound member 'SUI' in module 'sui::coin'\". This wrong-module shape is the pack's most-recorded held-out class (×6 across experiments); the absent-import shape fails the same way at the first use site.",
+      "supporting_passage": "sui 1.74.1 rejects `use sui::coin::{Self, Coin, SUI}` with exit 1, error[E03003]: unbound module member, Unbound member 'SUI' in module 'sui::coin'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/sui-import-red"
+      }
+    },
+    {
+      "id": "sui-import-doc",
+      "statement": "The official shared-object example opens with the canonical import block: `use sui::sui::SUI;` then `use sui::coin::{Self, Coin};` then `use sui::balance::{Self, Balance};`.",
+      "supporting_passage": "use sui::sui::SUI;\nuse sui::coin::{Self, Coin};\nuse sui::balance::{Self, Balance};",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-docs-concepts",
+        "supporting_passage": "use sui::sui::SUI;\nuse sui::coin::{Self, Coin};\nuse sui::balance::{Self, Balance};"
+      }
+    },
+    {
+      "id": "uid-to-address-green",
+      "statement": "UID-to-address is `object::uid_to_address(&x.id)`; whole-object-to-address is `object::id_address(&obj)`. Both build green on sui 1.74.1.",
+      "supporting_passage": "sui 1.74.1 builds a module deriving addresses via object::uid_to_address and object::id_address, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/uid-to-address-green"
+      }
+    },
+    {
+      "id": "uid-to-address-red",
+      "statement": "`object::id_to_address` takes an `&ID`, not a `&UID`: `object::id_to_address(&inv.id)` fails on sui 1.74.1 with error[E04007] incompatible types — \"Invalid call of 'sui::object::id_to_address'. Invalid argument for parameter 'id'\".",
+      "supporting_passage": "sui 1.74.1 rejects object::id_to_address(&inv.id) on a UID field with exit 1, error[E04007]: incompatible types, Invalid call of 'sui::object::id_to_address'. Invalid argument for parameter 'id'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/uid-to-address-red"
+      }
+    },
+    {
+      "id": "uid-to-address-doc",
+      "statement": "`id_to_address(id: &ID): address` — the parameter is the copyable `ID`; `uid_to_address` is the `&UID` form.",
+      "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/object.md#sui_object_id_to_address\">id_to_address</a>(<a href=\"../sui/object.md#sui_object_id\">id</a>: &<a href=\"../sui/object.md#sui_object_ID\">sui::object::ID</a>): <b>address</b>",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/object.md#sui_object_id_to_address\">id_to_address</a>(<a href=\"../sui/object.md#sui_object_id\">id</a>: &<a href=\"../sui/object.md#sui_object_ID\">sui::object::ID</a>): <b>address</b>"
+      }
+    },
+    {
+      "id": "value-consumption-paths-green",
+      "statement": "A non-`drop` parameter (e.g. `payment: Coin<SUI>`) must be consumed on EVERY path — including the no-op/losing branch. The composable pattern returns it to the caller (e.g. `Option<Coin<SUI>>`: `none` after consuming, `some(payment)` on the path that doesn't).",
+      "supporting_passage": "sui 1.74.1 builds a module whose losing branch hands the Coin back via option::some, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/value-consumption-paths-green"
+      }
+    },
+    {
+      "id": "value-consumption-paths-red",
+      "statement": "Consuming a `Coin` parameter on only one branch of an `if` fails: sui 1.74.1 rejects it with error[E06001] — \"The parameter 'payment' might still contain a value. The value does not have the 'drop' ability and must be consumed before the function returns\". The same class fires with no branches at all (a parameter that is simply never consumed).",
+      "supporting_passage": "sui 1.74.1 rejects a play function consuming payment only in the winning branch, exit 1, error[E06001]: unused value without 'drop', must be consumed before the function returns.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/value-consumption-paths-red"
+      }
+    },
+    {
+      "id": "value-consumption-paths-doc",
+      "statement": "Only types with the `drop` ability may be left unconsumed; everything else must be used or explicitly destroyed on every control-flow path.",
+      "supporting_passage": "The `drop` ability allows values of types with that ability to be dropped. By dropped, we mean that\nvalue is not transferred and is effectively destroyed as the Move program executes. As such, this",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "The `drop` ability allows values of types with that ability to be dropped. By dropped, we mean that\nvalue is not transferred and is effectively destroyed as the Move program executes. As such, this"
+      }
+    },
+    {
+      "id": "vector-destroy-empty-green",
+      "statement": "A drained `vector<T>` where `T` lacks `drop` is consumed explicitly with `vector::destroy_empty(v)` after the drain loop.",
+      "supporting_passage": "sui 1.74.1 builds a launch_all that pops every element and then vector::destroy_empty's the vector, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/vector-destroy-empty-green"
+      }
+    },
+    {
+      "id": "vector-destroy-empty-red",
+      "statement": "Draining a `vector<T>` (T without `drop`) to empty is not enough — dropping the emptied vector fails on sui 1.74.1 with error[E06001]: \"The parameter 'rockets' still contains a value\" (the ability system does not know the vector is empty). Call `vector::destroy_empty`.",
+      "supporting_passage": "sui 1.74.1 rejects a fully-drained vector<Rocket> left to drop at the closing brace, exit 1, error[E06001], The parameter 'rockets' still contains a value.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/vector-destroy-empty-red"
+      }
+    },
+    {
+      "id": "vector-destroy-empty-doc",
+      "statement": "`destroy_empty` destroys the empty vector `v` — and aborts if `v` is not empty; it is the consumption path for vectors of droplet-less elements.",
+      "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/vector.md#std_vector_destroy_empty\">destroy_empty</a>&lt;Element&gt;(v: <a href=\"../std/vector.md#std_vector\">vector</a>&lt;Element&gt;)",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/vector.md#std_vector_destroy_empty\">destroy_empty</a>&lt;Element&gt;(v: <a href=\"../std/vector.md#std_vector\">vector</a>&lt;Element&gt;)"
+      }
+    },
+    {
+      "id": "uid-vs-id-green",
+      "statement": "The copyable identity of an object comes from `object::id(&obj)` (requires `T: key`) or `object::uid_to_inner(&obj.id)` from its `UID` — both build green.",
+      "supporting_passage": "sui 1.74.1 builds a module deriving ID via object::id(pet) and object::uid_to_inner(&pet.id), exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/uid-vs-id-green"
+      }
+    },
+    {
+      "id": "uid-vs-id-red",
+      "statement": "`object::id` takes `&T` where `T: key` — feeding it the raw `&UID` fails on sui 1.74.1 with error[E05001]: \"The type 'sui::object::UID' does not have the ability 'key'\". A `UID` is not the identity value; convert with `uid_to_inner`.",
+      "supporting_passage": "sui 1.74.1 rejects object::id(&pet.id) with exit 1, error[E05001]: ability constraint not satisfied, The type 'sui::object::UID' does not have the ability 'key'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/uid-vs-id-red"
+      }
+    },
+    {
+      "id": "uid-vs-id-doc",
+      "statement": "`uid_to_inner(uid: &UID): ID` is the UID→ID conversion — the identity carried in events and tables is the copyable `ID`.",
+      "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/object.md#sui_object_uid_to_inner\">uid_to_inner</a>(uid: &<a href=\"../sui/object.md#sui_object_UID\">sui::object::UID</a>): <a href=\"../sui/object.md#sui_object_ID\">sui::object::ID</a>",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../sui/object.md#sui_object_uid_to_inner\">uid_to_inner</a>(uid: &<a href=\"../sui/object.md#sui_object_UID\">sui::object::UID</a>): <a href=\"../sui/object.md#sui_object_ID\">sui::object::ID</a>"
+      }
+    },
+    {
+      "id": "empty-vector-annotation-green",
+      "statement": "An empty vector with no downstream element-type evidence states its type at creation: `let owners = vector<address>[];` (the typed literal) builds green.",
+      "supporting_passage": "sui 1.74.1 builds a function creating vector<address>[] and taking its length, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/empty-vector-annotation-green"
+      }
+    },
+    {
+      "id": "empty-vector-annotation-red",
+      "statement": "`let owners = vector::empty();` with no annotation and no later element evidence fails inference on sui 1.74.1: error[E04010] — \"Could not infer this type. Try adding an annotation\". Same class as the struct-literal `vector[]` shape recorded in round 4.",
+      "supporting_passage": "sui 1.74.1 rejects an unannotated vector::empty() whose only use is vector::length, exit 1, error[E04010]: cannot infer type, Could not infer this type. Try adding an annotation.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/empty-vector-annotation-red"
+      }
+    },
+    {
+      "id": "empty-vector-annotation-doc",
+      "statement": "A vector literal's type is inferred from the element type or the vector's usage; if it cannot be inferred, the type is specified explicitly (e.g. `vector<address>[]`).",
+      "supporting_passage": "In these cases, the type of the `vector` is inferred, either from the element type or from the\nvector's usage. If the type cannot be inferred, or simply for added clarity, the type can be\nspecified explicitly:",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "In these cases, the type of the `vector` is inferred, either from the element type or from the\nvector's usage. If the type cannot be inferred, or simply for added clarity, the type can be\nspecified explicitly:"
+      }
     }
   ]
 }
