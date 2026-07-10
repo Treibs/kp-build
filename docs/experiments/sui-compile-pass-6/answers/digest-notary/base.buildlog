@@ -1,0 +1,51 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:37:12
+   │
+37 │     public entry fun record_digest(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:41:9
+   │
+41 │         clock: &Clock,
+   │         ^^^^^ Unused parameter 'clock'. Consider removing or prefixing with an underscore: '_clock'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:48:25
+   │
+ 7 │     use sui::clock::Clock;
+   │                     ----- Similarly named defintion found here
+   ·
+48 │         let timestamp = clock::timestamp_ms(clock);
+   │                         ^^^^^
+   │                         │
+   │                         Could not resolve the name 'clock'
+   │                         Did you mean: 'Clock'
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:56:31
+   │
+56 │         notary.total_digests += 1;
+   │                               ^
+   │                               │
+   │                               Unexpected '='
+   │                               Expected an expression term
+
+warning[Lint W99010]: unnecessary `entry` on a `public` function
+   ┌─ ./sources/module.move:75:12
+   │
+75 │     public entry fun sweep_fees(
+   │            ^^^^^ `entry` on `public` is meaningless. In conjunction with `public`, `entry` adds no additional permissions or restrictions.
+   │
+   = `public` functions can be called from PTBs. `entry` can be used to allow non-`public` (private or `public(package)`) functions to be called from PTBs, although there will be additional restrictions on the input arguments to such functions.
+   = This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

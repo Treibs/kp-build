@@ -1,0 +1,88 @@
+```python
+from manim import *
+
+class CharacterWalkWithMinimap(Scene):
+    def construct(self):
+        # Parameters
+        SPRITE_HEIGHT = 1.2
+        ANIMATION_DURATION = 6
+        MINIMAP_SCALE = 0.1
+        
+        # Load the character sprite
+        sprite = ImageMobject("sprite.png")
+        sprite.height = SPRITE_HEIGHT
+        
+        # Define the L-shaped path waypoints
+        waypoint_1 = np.array([-2.5, -2, 0])      # Start (bottom-left)
+        waypoint_2 = np.array([2.5, -2, 0])       # End of horizontal segment (bottom-right)
+        waypoint_3 = np.array([2.5, 2, 0])        # End of vertical segment (top-right)
+        
+        waypoints = [waypoint_1, waypoint_2, waypoint_3]
+        
+        # Draw the path on the main scene
+        horizontal_segment = Line(waypoint_1, waypoint_2, stroke_width=2, color=BLUE_A)
+        vertical_segment = Line(waypoint_2, waypoint_3, stroke_width=2, color=BLUE_A)
+        
+        # Create minimap group
+        minimap_anchor = np.array([-6, 3.5, 0])  # Top-left corner
+        
+        # Minimap background
+        minimap_bg = Rectangle(
+            width=1.2, 
+            height=1.2, 
+            fill_opacity=0.15, 
+            fill_color=BLACK,
+            stroke_color=GREY,
+            stroke_width=1
+        )
+        minimap_bg.move_to(minimap_anchor)
+        
+        # Minimap path (scaled)
+        minimap_wp1 = minimap_anchor + waypoint_1 * MINIMAP_SCALE
+        minimap_wp2 = minimap_anchor + waypoint_2 * MINIMAP_SCALE
+        minimap_wp3 = minimap_anchor + waypoint_3 * MINIMAP_SCALE
+        
+        minimap_h_seg = Line(minimap_wp1, minimap_wp2, stroke_width=0.5, color=GREY)
+        minimap_v_seg = Line(minimap_wp2, minimap_wp3, stroke_width=0.5, color=GREY)
+        
+        # Minimap position indicator
+        minimap_dot = Dot(radius=0.05, color=RED)
+        minimap_dot.move_to(minimap_wp1)
+        
+        # Add objects to scene
+        self.add(horizontal_segment, vertical_segment)
+        self.add(sprite)
+        self.add(minimap_bg, minimap_h_seg, minimap_v_seg, minimap_dot)
+        
+        # Path interpolation function
+        def get_path_position(t):
+            """Returns position on L-shaped path for normalized time t in [0, 1]"""
+            if t <= 0.5:
+                # First half: horizontal motion
+                progress = t / 0.5
+                return waypoint_1 + progress * (waypoint_2 - waypoint_1)
+            else:
+                # Second half: vertical motion
+                progress = (t - 0.5) / 0.5
+                return waypoint_2 + progress * (waypoint_3 - waypoint_2)
+        
+        # Update function for sprite position
+        def update_sprite_pos(mob, alpha):
+            new_pos = get_path_position(alpha)
+            mob.move_to(new_pos)
+        
+        # Update function for minimap dot position
+        def update_minimap_dot_pos(mob, alpha):
+            path_pos = get_path_position(alpha)
+            new_minimap_pos = minimap_anchor + path_pos * MINIMAP_SCALE
+            mob.move_to(new_minimap_pos)
+        
+        # Animate the walk
+        self.play(
+            UpdateFromAlphaFunc(sprite, update_sprite_pos),
+            UpdateFromAlphaFunc(minimap_dot, update_minimap_dot_pos),
+            run_time=ANIMATION_DURATION
+        )
+        
+        self.wait()
+```

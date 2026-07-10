@@ -1,0 +1,21 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+    ┌─ ./sources/module.move:67:25
+    │
+  8 │         id: UID,
+    │             --- The type 'sui::object::UID' does not have the ability 'key'
+    ·
+ 67 │         let credit_id = object::id(&id);
+    │                         ^^^^^^^^^^^^^^^ 'key' constraint not satisifed
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:81:15
+    │
+ 81 │ public struct UID has store {
+    │               --- To satisfy the constraint, the 'key' ability would need to be added here
+    ·
+243 │ public fun id<T: key>(obj: &T): ID {
+    │                  --- 'key' constraint declared here
+

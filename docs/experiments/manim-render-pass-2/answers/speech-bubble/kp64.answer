@@ -1,0 +1,46 @@
+```python
+from manim import *
+
+class CharacterWalkingScene(Scene):
+    def construct(self):
+        # Load and setup sprite
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.5
+        sprite.to_edge(LEFT)
+        
+        # Calculate total movement distance
+        total_distance = config.frame_width - sprite.width
+        
+        # Phase 1: Sprite walks alone for 2 seconds
+        self.add(sprite)
+        self.play(sprite.animate.shift(RIGHT * total_distance * 2/5), run_time=2)
+        
+        # Phase 2: Create speech bubble and walk together for 1.5 seconds
+        bubble_rect = RoundedRectangle(
+            corner_radius=0.2,
+            height=0.6,
+            width=0.6,
+            fill_color=WHITE,
+            fill_opacity=1,
+            stroke_color=BLACK,
+            stroke_width=1
+        )
+        bubble_text = Text("!", font_size=24, color=BLACK)
+        bubble_text.move_to(bubble_rect)
+        bubble = VGroup(bubble_rect, bubble_text)
+        bubble.next_to(sprite, UP, buff=0.3)
+        
+        self.add(bubble)
+        self.play(
+            sprite.animate.shift(RIGHT * total_distance * 1.5/5),
+            bubble.animate.shift(RIGHT * total_distance * 1.5/5),
+            run_time=1.5
+        )
+        
+        # Phase 3: Sprite continues walking, bubble fades out for 1.5 seconds
+        self.play(
+            sprite.animate.shift(RIGHT * total_distance * 1.5/5),
+            FadeOut(bubble),
+            run_time=1.5
+        )
+```

@@ -1,0 +1,52 @@
+```python
+from manim import *
+
+class CharacterWalkWithSpeechBubble(Scene):
+    def construct(self):
+        # Setup character sprite
+        character = ImageMobject("sprite.png")
+        character.height = 1.5
+        character.to_edge(LEFT)
+        self.add(character)
+        
+        # Setup speech bubble
+        bubble_rect = RoundedRectangle(
+            width=0.8,
+            height=0.6,
+            corner_radius=0.1,
+            fill_color=WHITE,
+            stroke_color=BLACK
+        )
+        bubble_text = Text("!", font_size=36)
+        bubble = VGroup(bubble_rect, bubble_text)
+        bubble.next_to(character, UP, buff=0.2)
+        
+        # Calculate total walk distance
+        right_x = config.frame_width / 2 - character.width / 2
+        left_x = character.get_x()
+        total_distance = right_x - left_x
+        
+        # 0-2s: Walk without bubble (40% of total distance)
+        self.play(
+            character.animate(run_time=2).shift(RIGHT * total_distance * 0.4),
+            rate_func=linear
+        )
+        
+        # Add bubble at 2s
+        bubble.next_to(character, UP, buff=0.2)
+        self.add(bubble)
+        
+        # 2-3.5s: Walk with bubble visible (30% of total distance)
+        self.play(
+            character.animate(run_time=1.5).shift(RIGHT * total_distance * 0.3),
+            bubble.animate(run_time=1.5).shift(RIGHT * total_distance * 0.3),
+            rate_func=linear
+        )
+        
+        # 3.5-5s: Walk with bubble fading out (30% of total distance)
+        self.play(
+            character.animate(run_time=1.5).shift(RIGHT * total_distance * 0.3),
+            bubble.animate(run_time=1.5).fade_out(),
+            rate_func=linear
+        )
+```

@@ -1,0 +1,82 @@
+```move
+module reservoir::ledger {
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    use sui::clock::Clock;
+
+    public struct Reservoir has key {
+        id: UID,
+        balance: u64,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct WaterRight has key, store {
+        id: UID,
+        allocation: u64,
+        current_epoch: u64,
+        epoch_drawn: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, ctx.sender());
+    }
+
+    public fun create_reservoir(_cap: &AdminCap, ctx: &mut TxContext) {
+        let reservoir = Reservoir {
+            id: object::new(ctx),
+            balance: 0,
+        };
+        transfer::share_object(reservoir);
+    }
+
+    public fun issue_water_right(
+        _cap: &AdminCap,
+        owner: address,
+        allocation: u64,
+        ctx: &mut TxContext,
+    ) {
+        let right = WaterRight {
+            id: object::new(ctx),
+            allocation,
+            current_epoch: 0,
+            epoch_drawn: 0,
+        };
+        transfer::transfer(right, owner);
+    }
+
+    public fun refill(
+        _cap: &AdminCap,
+        reservoir: &mut Reservoir,
+        amount: u64,
+    ) {
+        reservoir.balance = reservoir.balance + amount;
+    }
+
+    public fun draw(
+        right: &mut WaterRight,
+        reservoir: &mut Reservoir,
+        amount: u64,
+        clock: &Clock,
+    ) {
+        let epoch = clock.timestamp_ms() / 86400000;
+        
+        if (right.current_epoch != epoch) {
+            right.current_epoch = epoch;
+            right.epoch_drawn = 0;
+        };
+        
+        assert!(right.epoch_drawn + amount <= right.allocation);
+        assert!(reservoir.balance >= amount);
+        
+        right.epoch_drawn = right.epoch_drawn + amount;
+        reservoir.balance = reservoir.balance - amount;
+    }
+}
+```

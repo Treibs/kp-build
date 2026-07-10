@@ -1,0 +1,23 @@
+```python
+from manim import *
+
+class CharacterPassingScene(Scene):
+    def construct(self):
+        sprite_left = ImageMobject("sprite.png").scale_to_fit_height(1.5)
+        sprite_right = ImageMobject("sprite.png").scale_to_fit_height(1.5)
+        sprite_right.scale(-1, axis=0)
+        
+        sprite_left.to_edge(LEFT)
+        sprite_right.to_edge(RIGHT)
+        
+        self.add(sprite_right)
+        self.add(sprite_left)
+        
+        self.play(
+            sprite_left.animate.to_edge(RIGHT),
+            sprite_right.animate.to_edge(LEFT),
+            run_time=3
+        )
+        
+        self.wait()
+```

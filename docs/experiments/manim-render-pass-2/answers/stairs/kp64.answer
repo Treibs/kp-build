@@ -1,0 +1,60 @@
+```python
+from manim import *
+import numpy as np
+
+class StaircaseClimb(Scene):
+    def construct(self):
+        # Create 5-block staircase
+        blocks = []
+        for i in range(5):
+            x = -3 + i * 1.8
+            y = -2.5 + i * 1.4
+            block = Rectangle(
+                width=1.2,
+                height=1.2,
+                fill_color=GRAY,
+                fill_opacity=0.8,
+                stroke_width=2,
+                stroke_color=BLACK
+            )
+            block.move_to([x, y, 0])
+            blocks.append(block)
+            self.add(block)
+        
+        # Load character sprite (1.2 units tall)
+        try:
+            character = ImageMobject("sprite.png")
+            character.set_height(1.2)
+        except:
+            # Fallback if sprite.png not found
+            character = Rectangle(width=0.25, height=1.2, fill_color=RED, fill_opacity=1)
+        
+        # Starting position: ground level, before first block
+        character.move_to([blocks[0].get_center()[0] - 1.8, blocks[0].get_top()[1], 0])
+        self.add(character)
+        
+        # Climb staircase: 5 distinct hops
+        for i in range(5):
+            block = blocks[i]
+            start_pos = character.get_center().copy()
+            end_pos = np.array([block.get_center()[0], block.get_top()[1], 0])
+            
+            # Create arc path for hop
+            peak_height = (start_pos[1] + end_pos[1]) / 2 + 0.8
+            
+            path = VMobject()
+            points = []
+            for t in np.linspace(0, 1, 50):
+                x = start_pos[0] + t * (end_pos[0] - start_pos[0])
+                y = start_pos[1] + t * (end_pos[1] - start_pos[1])
+                y += 4 * t * (1 - t) * (peak_height - (start_pos[1] + end_pos[1]) / 2)
+                points.append([x, y, 0])
+            
+            path.set_points_as_corners(points)
+            
+            # Animate hop
+            self.play(MoveAlongPath(character, path, run_time=0.8))
+            
+            # Landing pause
+            self.wait(0.3)
+```

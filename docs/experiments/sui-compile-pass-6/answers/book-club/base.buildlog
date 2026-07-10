@@ -1,0 +1,50 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:11:5
+   │
+11 │     struct BookClub has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:19:5
+   │
+19 │     struct LibrarianCap has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:23:5
+   │
+23 │     struct Book has store, copy, drop {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:32:28
+   │
+32 │             shelf: vector::empty(),
+   │                            ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:75:13
+   │
+75 │         let _ = balance::split(&mut club.pool, cost);
+   │             ^ Cannot ignore values without the 'drop' ability. The value must be used
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:36:15
+   │
+36 │ public struct Balance<phantom T> has store {
+   │               ------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+83 │ public fun split<T>(self: &mut Balance<T>, value: u64): Balance<T> {
+   │                                                         ---------- The type 'sui::balance::Balance<sui::sui::SUI>' does not have the ability 'drop'
+

@@ -1,0 +1,77 @@
+Manim Community v0.20.1
+
+[07/10/26 03:09:02] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/CharacterWalkWithSpeechB
+ ubble/uncached_00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/CharacterWalkWithSpeechB
+ ubble/uncached_00001.mp4'
+
+Animation 0: _MethodAnimation(ImageMobject): 0%| | 0/30 [00:00<?, ?it/s]
+
+
+Animation 1: _MethodAnimation(ImageMobject), etc.: 0%| | 0/23 [00:00<?, ?it/s]
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:48 in construct
+
+ 45 # 3.5-5s: Walk with bubble fading out (30% of total distance)
+ 46 self.play(
+ 47 character.animate(run_time=1.5).shift(RIGHT * total_distanc
+ ❱ 48 bubble.animate(run_time=1.5).fade_out(),
+ 49 rate_func=linear
+ 50 )
+ 51
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/mobject.py:3340 in
+ __getattr__
+
+ 3337 return self
+ 3338
+ 3339 def __getattr__(self, method_name) -> types.MethodType:
+ ❱ 3340 method = getattr(self.mobject.target, method_name)
+ 3341 has_overridden_animation = hasattr(method, "_override_animate
+ 3342
+ 3343 if (self.is_chaining and has_overridden_animation) or self.ov
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/mobject.py:760 in
+ __getattr__
+
+ 757 return types.MethodType(setter, self)
+ 758
+ 759 # Unhandled attribute, therefore error
+ ❱ 760 raise AttributeError(f"{type(self).__name__} object has no at
+ 761
+ 762 @property
+ 763 def width(self) -> float:
+
+AttributeError: VGroup object has no attribute 'fade_out'

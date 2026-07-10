@@ -1,0 +1,67 @@
+```python
+from manim import *
+
+class CharacterWalkScene(Scene):
+    def construct(self):
+        # Character sprite (1.2 units tall)
+        character = Rectangle(width=1.2, height=1.2, color=BLUE, fill_opacity=1)
+        character.move_to(np.array([-3, -2, 0]))
+        self.add(character)
+        
+        # Route waypoints
+        start = np.array([-3, -2, 0])
+        corner = np.array([3, -2, 0])
+        end = np.array([3, 2, 0])
+        
+        # Route visualization
+        route = VGroup(
+            Line(start, corner, color=GRAY, stroke_width=1),
+            Line(corner, end, color=GRAY, stroke_width=1)
+        )
+        self.add(route)
+        
+        # Minimap in top-left corner
+        minimap_center = np.array([-6, 3.5, 0])
+        
+        # Minimap frame
+        minimap_frame = Rectangle(
+            width=1.2, height=1.2,
+            stroke_color=BLACK, stroke_width=2,
+            fill_color=WHITE, fill_opacity=0.1
+        )
+        minimap_frame.move_to(minimap_center)
+        self.add(minimap_frame)
+        
+        # Minimap route (1/10 scale, thin polyline)
+        scale = 0.1
+        minimap_route = VGroup(
+            Line(scale * start, scale * corner, color=BLACK, stroke_width=1),
+            Line(scale * corner, scale * end, color=BLACK, stroke_width=1)
+        )
+        minimap_route.move_to(minimap_center)
+        self.add(minimap_route)
+        
+        # Minimap position indicator (follows character at 1/10 scale in real time)
+        minimap_dot = always_redraw(
+            lambda: Circle(radius=0.04, color=RED, fill_opacity=1)
+                   .move_to(minimap_center + scale * character.get_center())
+        )
+        self.add(minimap_dot)
+        
+        # Character walks the L-shaped route over 6 seconds total
+        # Segment 1: right along bottom (3 seconds)
+        self.play(
+            character.animate.move_to(corner),
+            run_time=3,
+            rate_func=linear
+        )
+        
+        # Segment 2: up along right side (3 seconds)
+        self.play(
+            character.animate.move_to(end),
+            run_time=3,
+            rate_func=linear
+        )
+        
+        self.wait(1)
+```

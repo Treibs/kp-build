@@ -1,0 +1,111 @@
+```move
+module notary_service::notary {
+    use sui::clock::Clock;
+    use sui::coin::{Coin, Self};
+    use sui::sui::SUI;
+    use sui::table::{Table, Self};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use std::vector;
+
+    public struct DigestKey has copy, drop, store {
+        v: u256,
+    }
+
+    public struct Record has store {
+        recorder: address,
+        timestamp_ms: u64,
+    }
+
+    public struct Notary has key {
+        id: UID,
+        records: Table<DigestKey, Record>,
+        total_digests: u64,
+        fees: Coin<SUI>,
+    }
+
+    public struct OperatorCap has key, store {
+        id: UID,
+    }
+
+    const RECORD_FEE: u64 = 1_000_000_000;
+
+    fun digest_to_key(digest: vector<u8>): DigestKey {
+        let mut value: u256 = 0;
+        let mut i: u64 = 0;
+        while (i < 32) {
+            let byte = *vector::borrow(&digest, i);
+            value = value * 256 + (byte as u256);
+            i = i + 1;
+        };
+        DigestKey { v: value }
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let notary = Notary {
+            id: object::new(ctx),
+            records: table::new(ctx),
+            total_digests: 0,
+            fees: coin::zero(ctx),
+        };
+
+        let operator_cap = OperatorCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(notary);
+        transfer::transfer(operator_cap, ctx.sender());
+    }
+
+    public fun record(
+        notary: &mut Notary,
+        digest: vector<u8>,
+        payment: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(vector::length(&digest) == 32, 0);
+        
+        let key = digest_to_key(digest);
+        assert!(!table::contains(&notary.records, key), 1);
+        assert!(coin::value(&payment) >= RECORD_FEE, 2);
+
+        let timestamp = clock.timestamp_ms();
+        let record = Record {
+            recorder: ctx.sender(),
+            timestamp_ms: timestamp,
+        };
+
+        table::add(&mut notary.records, key, record);
+        notary.total_digests += 1;
+        
+        coin::put(&mut notary.fees, payment);
+    }
+
+    public fun get_record(
+        notary: &Notary,
+        digest: vector<u8>,
+    ): (address, u64) {
+        assert!(vector::length(&digest) == 32, 0);
+        
+        let key = digest_to_key(digest);
+        assert!(table::contains(&notary.records, key), 3);
+        let record = table::borrow(&notary.records, key);
+        (record.recorder, record.timestamp_ms)
+    }
+
+    public fun total_digests(notary: &Notary): u64 {
+        notary.total_digests
+    }
+
+    public fun sweep_fees(
+        notary: &mut Notary,
+        _cap: &OperatorCap,
+        ctx: &mut TxContext,
+    ) {
+        let amount = coin::value(&notary.fees);
+        let fees = coin::split(&mut notary.fees, amount, ctx);
+        transfer::public_transfer(fees, ctx.sender());
+    }
+}
+```

@@ -1,0 +1,211 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:3:9
+  │
+3 │     use std::table::{Table, Self};
+  │         ^^^^^^^^^^ Invalid 'use'. Unbound module: 'std::table'
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:5:27
+  │
+5 │     use sui::coin::{Coin, SUI};
+  │                           ^^^ Invalid 'use'. Unbound member 'SUI' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:11:23
+   │
+11 │         pool: Balance<SUI>,
+   │                       ^^^
+   │                       │
+   │                       Could not resolve the name 'SUI'
+   │                       Did you mean: 'Book'
+   ·
+18 │     public struct Book has copy, drop, store {
+   │                   ---- Similarly named defintion found here
+
+error[E03004]: unbound type
+   ┌─ ./sources/module.move:13:18
+   │
+13 │         members: Table<address, u64>,
+   │                  ^^^^^ Unbound type 'Table' in current scope
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:32:22
+   │
+32 │             members: table::new(ctx),
+   │                      ^^^^^ Could not resolve the name 'table'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:45:42
+   │
+45 │     public fun join(club: &mut BookClub, payment: Coin<SUI>, ctx: &mut TxContext) {
+   │                                          ^^^^^^^ Unused parameter 'payment'. Consider removing or prefixing with an underscore: '_payment'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:45:56
+   │
+18 │     public struct Book has copy, drop, store {
+   │                   ---- Similarly named defintion found here
+   ·
+45 │     public fun join(club: &mut BookClub, payment: Coin<SUI>, ctx: &mut TxContext) {
+   │                                                        ^^^
+   │                                                        │
+   │                                                        Could not resolve the name 'SUI'
+   │                                                        Did you mean: 'Book'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:46:13
+   │
+46 │         let member = ctx.sender();
+   │             ^^^^^^ Unused local variable 'member'. Consider removing or prefixing with an underscore: '_member'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:47:22
+   │
+ 5 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+47 │         let amount = coin::value(&payment);
+   │                      ^^^^
+   │                      │
+   │                      Could not resolve the name 'coin'
+   │                      Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:52:13
+   │
+52 │         let paid_through = club.current_epoch + epochs_paid;
+   │             ^^^^^^^^^^^^ Unused local variable 'paid_through'. Consider removing or prefixing with an underscore: '_paid_through'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:54:9
+   │
+54 │         table::add(&mut club.members, member, paid_through);
+   │         ^^^^^ Could not resolve the name 'table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:55:39
+   │
+ 5 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+55 │         balance::join(&mut club.pool, coin::into_balance(payment));
+   │                                       ^^^^
+   │                                       │
+   │                                       Could not resolve the name 'coin'
+   │                                       Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:58:44
+   │
+58 │     public fun top_up(club: &mut BookClub, payment: Coin<SUI>, ctx: &mut TxContext) {
+   │                                            ^^^^^^^ Unused parameter 'payment'. Consider removing or prefixing with an underscore: '_payment'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:58
+   │
+18 │     public struct Book has copy, drop, store {
+   │                   ---- Similarly named defintion found here
+   ·
+58 │     public fun top_up(club: &mut BookClub, payment: Coin<SUI>, ctx: &mut TxContext) {
+   │                                                          ^^^
+   │                                                          │
+   │                                                          Could not resolve the name 'SUI'
+   │                                                          Did you mean: 'Book'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:59:13
+   │
+59 │         let member = ctx.sender();
+   │             ^^^^^^ Unused local variable 'member'. Consider removing or prefixing with an underscore: '_member'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:60:22
+   │
+ 5 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+60 │         let amount = coin::value(&payment);
+   │                      ^^^^
+   │                      │
+   │                      Could not resolve the name 'coin'
+   │                      Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:62:29
+   │
+62 │         let current_paid = *table::borrow(&club.members, member);
+   │                             ^^^^^ Could not resolve the name 'table'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:65:13
+   │
+65 │         let new_epoch = current_paid + epochs_paid;
+   │             ^^^^^^^^^ Unused local variable 'new_epoch'. Consider removing or prefixing with an underscore: '_new_epoch'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:66:9
+   │
+66 │         table::remove(&mut club.members, member);
+   │         ^^^^^ Could not resolve the name 'table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:67:9
+   │
+67 │         table::add(&mut club.members, member, new_epoch);
+   │         ^^^^^ Could not resolve the name 'table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:69:39
+   │
+ 5 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+69 │         balance::join(&mut club.pool, coin::into_balance(payment));
+   │                                       ^^^^
+   │                                       │
+   │                                       Could not resolve the name 'coin'
+   │                                       Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:86:29
+   │
+86 │     public fun member_epoch(club: &BookClub, member: address): u64 {
+   │                             ^^^^ Unused parameter 'club'. Consider removing or prefixing with an underscore: '_club'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:86:46
+   │
+86 │     public fun member_epoch(club: &BookClub, member: address): u64 {
+   │                                              ^^^^^^ Unused parameter 'member'. Consider removing or prefixing with an underscore: '_member'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:87:10
+   │
+87 │         *table::borrow(&club.members, member)
+   │          ^^^^^ Could not resolve the name 'table'
+

@@ -1,0 +1,84 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:49:9
+   │
+36 │     public fun init_champion(
+   │                ------------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+49 │         transfer::public_transfer(crown, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                                │
+   │         │                                Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:54:11
+   │
+39 │         payment: Coin<SUI>,
+   │         -------  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'drop'
+   │         │         
+   │         The parameter 'payment' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+54 │         });
+   │           ^ Invalid return
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'drop' ability would need to be added here
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:66:9
+   │  
+61 │           payment: Coin<SUI>,
+   │           -------  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'drop'
+   │           │         
+   │           The parameter 'payment' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·  
+66 │ ╭         if (score > machine.high_score) {
+67 │ │             machine.high_score = score;
+68 │ │             machine.champion = ctx.sender();
+69 │ │             transfer::public_transfer(crown, ctx.sender());
+   · │
+76 │ │             transfer::public_transfer(crown, ctx.sender());
+77 │ │         }
+   │ ╰─────────^ Invalid return
+   │  
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'drop' ability would need to be added here
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:69:13
+   │
+57 │     public fun play(
+   │                ---- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+69 │             transfer::public_transfer(crown, ctx.sender());
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │             │                                │
+   │             │                                Transaction sender address coming from here
+   │             Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:76:13
+   │
+57 │     public fun play(
+   │                ---- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+76 │             transfer::public_transfer(crown, ctx.sender());
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │             │                                │
+   │             │                                Transaction sender address coming from here
+   │             Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

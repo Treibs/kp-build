@@ -1,0 +1,56 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:12 in construct
+
+ 9
+ 10 health = ValueTracker(1.0)
+ 11
+ ❱ 12 bar_filled = always_redraw(lambda:
+ 13 Rectangle(
+ 14 width=2 * health.get_value(),
+ 15 height=0.2,
+
+ /opt/venv/lib/python3.14/site-packages/manim/animation/updaters/mobject_upda
+ te_utils.py:104 in always_redraw
+
+ 101 self.add(ax, sine, point, tangent)
+ 102 self.play(alpha.animate.set_value(1), rate_func=linear
+ 103 """
+ ❱ 104 mob = func()
+ 105 mob.add_updater(lambda _: mob.become(func()))
+ 106 return mob
+ 107
+
+ /manim/scene.py:18 in <lambda>
+
+ 15 height=0.2,
+ 16 fill_color=GREEN,
+ 17 fill_opacity=1,
+ ❱ 18 stroke_color=NONE
+ 19 ).align_to(bar_bg, UP + LEFT)
+ 20 )
+ 21
+
+NameError: name 'NONE' is not defined

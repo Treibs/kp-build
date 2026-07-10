@@ -1,0 +1,97 @@
+Manim Community v0.20.1
+
+[07/10/26 03:16:23] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00003.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00004.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 5 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00005.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 6 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00006.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 7 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00007.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 03:16:24] INFO Animation 8 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00008.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 9 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/StaircaseClimb/uncached_
+ 00009.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/manim/media/videos/scene
+ /480p15/StaircaseClimb.mp4
+ '
+
+ INFO Rendered StaircaseClimb scene.py:278
+ Played 10 animations
+/manim/scene.py:26: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ character.set_height(1.2)
+
+Animation 0: MoveAlongPath(ImageMobject): 0%| | 0/12 [00:00<?, ?it/s]
+
+
+Animation 2: MoveAlongPath(ImageMobject): 0%| | 0/12 [00:00<?, ?it/s]
+
+
+Animation 4: MoveAlongPath(ImageMobject): 0%| | 0/12 [00:00<?, ?it/s]
+
+
+Animation 6: MoveAlongPath(ImageMobject): 0%| | 0/12 [00:00<?, ?it/s]
+
+
+Animation 8: MoveAlongPath(ImageMobject): 0%| | 0/12 [00:00<?, ?it/s]

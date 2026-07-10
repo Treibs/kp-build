@@ -1,0 +1,91 @@
+module carbon_registry::registry {
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::event;
+
+    public struct CarbonCredit has key, store {
+        id: UID,
+        tonnage: u64,
+        issuer: address,
+    }
+
+    public struct IssuerCap has key, store {
+        id: UID,
+    }
+
+    public struct RetirementReceipt has key, store {
+        id: UID,
+        credit_id: ID,
+        tonnage: u64,
+        retired_by: address,
+    }
+
+    public struct Registry has key {
+        id: UID,
+        total_retired: u64,
+    }
+
+    public struct Retired has copy, drop {
+        credit_id: ID,
+        tonnage: u64,
+        retired_by: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let issuer_cap = IssuerCap {
+            id: object::new(ctx),
+        };
+        
+        let registry = Registry {
+            id: object::new(ctx),
+            total_retired: 0,
+        };
+
+        transfer::transfer(issuer_cap, ctx.sender());
+        transfer::share_object(registry);
+    }
+
+    public fun mint(
+        _cap: &IssuerCap,
+        tonnage: u64,
+        ctx: &mut TxContext,
+    ): CarbonCredit {
+        CarbonCredit {
+            id: object::new(ctx),
+            tonnage,
+            issuer: ctx.sender(),
+        }
+    }
+
+    public fun retire(
+        credit: CarbonCredit,
+        registry: &mut Registry,
+        ctx: &mut TxContext,
+    ): RetirementReceipt {
+        let CarbonCredit { id, tonnage, issuer: _ } = credit;
+        let credit_id = object::id(&id);
+        object::delete(id);
+
+        registry.total_retired = registry.total_retired + tonnage;
+
+        let receipt = RetirementReceipt {
+            id: object::new(ctx),
+            credit_id,
+            tonnage,
+            retired_by: ctx.sender(),
+        };
+
+        event::emit(Retired {
+            credit_id,
+            tonnage,
+            retired_by: ctx.sender(),
+        });
+
+        receipt
+    }
+
+    public fun total_retired(registry: &Registry): u64 {
+        registry.total_retired
+    }
+}

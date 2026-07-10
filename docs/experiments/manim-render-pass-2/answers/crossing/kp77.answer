@@ -1,0 +1,33 @@
+```python
+from manim import *
+
+class CharactersPassingScene(Scene):
+    def construct(self):
+        sprite_path = "sprite.png"
+        
+        # Left-starting character (faces right)
+        left_char = ImageMobject(sprite_path)
+        left_char.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        left_char.height = 1.5
+        left_char.move_to([-config.frame_width/2 + 1, 0, 0])
+        
+        # Right-starting character (faces left, mirrored)
+        right_char = ImageMobject(sprite_path)
+        right_char.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        right_char.height = 1.5
+        right_char.flip(UP)
+        right_char.move_to([config.frame_width/2 - 1, 0, 0])
+        
+        # Add right char first (background), left char second (foreground)
+        self.add(right_char)
+        self.add(left_char)
+        
+        # Both walk toward each other and pass
+        self.play(
+            left_char.animate.move_to([config.frame_width/2 - 1, 0, 0]),
+            right_char.animate.move_to([-config.frame_width/2 + 1, 0, 0]),
+            run_time=4
+        )
+        
+        self.wait()
+```

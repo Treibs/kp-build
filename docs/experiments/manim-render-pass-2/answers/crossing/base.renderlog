@@ -1,0 +1,28 @@
+Manim Community v0.20.1
+
+[07/10/26 03:12:14] INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 03:12:15] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/CharacterPassthrough/unc
+ ached_00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/manim/media/videos/scene
+ /480p15/partial_movie_file
+ s/CharacterPassthrough/unc
+ ached_00001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/manim/media/videos/scene
+ /480p15/CharacterPassthrou
+ gh.mp4'
+
+ INFO Rendered CharacterPassthrough scene.py:278
+ Played 2 animations
+
+Animation 0: _MethodAnimation(ImageMobject), etc.: 0%| | 0/60 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ImageMobject), etc.: 50%|█████ | 30/60 [00:00<00:00, 295.43it/s]

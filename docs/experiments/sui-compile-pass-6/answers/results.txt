@@ -1,0 +1,20 @@
+# Experiment 6 results — compile-pass gate (sui 1.74.1-8fc60f1fa966)
+
+book-club        base   FAIL error[E01003]: invalid modifier
+book-club        kp98   FAIL error[E06001]: unused value without 'drop'
+book-club        kp110  FAIL error[E03002]: unbound module
+carbon-retire    base   PASS CLEAN
+carbon-retire    kp98   FAIL error[E05001]: ability constraint not satisfied
+carbon-retire    kp110  FAIL error[E04007]: incompatible types
+passport-stamps  base   PASS WARN2
+passport-stamps  kp98   PASS CLEAN
+passport-stamps  kp110  PASS CLEAN
+water-rights     base   PASS WARN1
+water-rights     kp98   PASS CLEAN
+water-rights     kp110  PASS CLEAN
+arcade-crown     base   FAIL error[E04024]: invalid usage of immutable variable
+arcade-crown     kp98   FAIL error[E03003]: unbound module member
+arcade-crown     kp110  FAIL error[E06001]: unused value without 'drop'
+digest-notary    base   FAIL error[E03006]: unexpected name in this position
+digest-notary    kp98   FAIL error[E01002]: unexpected token
+digest-notary    kp110  FAIL error[E06001]: unused value without 'drop'

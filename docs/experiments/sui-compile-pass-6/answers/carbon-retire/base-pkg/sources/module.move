@@ -1,0 +1,88 @@
+module carbon_registry::registry {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::event;
+    use sui::transfer;
+
+    public struct IssuerCap has key {
+        id: UID,
+    }
+
+    public struct CarbonCredit has key, store {
+        id: UID,
+        tonnage: u64,
+    }
+
+    public struct RetirementReceipt has key, store {
+        id: UID,
+        tonnage: u64,
+        credit_id: address,
+    }
+
+    public struct Registry has key {
+        id: UID,
+        total_retired: u64,
+    }
+
+    public struct CreditRetired has copy, drop {
+        credit_id: address,
+        tonnage: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let issuer_cap = IssuerCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(issuer_cap, tx_context::sender(ctx));
+
+        let registry = Registry {
+            id: object::new(ctx),
+            total_retired: 0,
+        };
+        transfer::share_object(registry);
+    }
+
+    public fun mint(
+        _cap: &IssuerCap,
+        tonnage: u64,
+        ctx: &mut TxContext,
+    ): CarbonCredit {
+        CarbonCredit {
+            id: object::new(ctx),
+            tonnage,
+        }
+    }
+
+    public fun retire(
+        credit: CarbonCredit,
+        registry: &mut Registry,
+        ctx: &mut TxContext,
+    ): RetirementReceipt {
+        let credit_id = object::uid_to_address(&credit.id);
+        let tonnage = credit.tonnage;
+
+        let CarbonCredit { id, tonnage: _ } = credit;
+        object::delete(id);
+
+        registry.total_retired = registry.total_retired + tonnage;
+
+        event::emit(CreditRetired {
+            credit_id,
+            tonnage,
+        });
+
+        RetirementReceipt {
+            id: object::new(ctx),
+            tonnage,
+            credit_id,
+        }
+    }
+
+    public fun total_retired(registry: &Registry): u64 {
+        registry.total_retired
+    }
+
+    public fun credit_tonnage(credit: &CarbonCredit): u64 {
+        credit.tonnage
+    }
+}

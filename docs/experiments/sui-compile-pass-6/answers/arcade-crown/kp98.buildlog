@@ -1,0 +1,175 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:27
+  │
+3 │     use sui::coin::{Coin, SUI};
+  │                           ^^^ Invalid 'use'. Unbound member 'SUI' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:22:23
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+22 │         fees: Balance<SUI>,
+   │                       ^^^
+   │                       │
+   │                       Could not resolve the name 'SUI'
+   │                       Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:39:19
+   │
+ 4 │     use sui::balance::Balance;
+   │                       ------- Similarly named defintion found here
+   ·
+39 │             fees: balance::zero(),
+   │                   ^^^^^^^
+   │                   │
+   │                   Could not resolve the name 'balance'
+   │                   Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:47:27
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+47 │         mut payment: Coin<SUI>,
+   │                           ^^^
+   │                           │
+   │                           Could not resolve the name 'SUI'
+   │                           Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:50:17
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+50 │         assert!(coin::value(&payment) >= game.fee, EInsufficientFee);
+   │                 ^^^^
+   │                 │
+   │                 Could not resolve the name 'coin'
+   │                 Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:52:13
+   │
+52 │         let fee_coin = coin::split(&mut payment, game.fee, ctx);
+   │             ^^^^^^^^ Unused local variable 'fee_coin'. Consider removing or prefixing with an underscore: '_fee_coin'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:52:24
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+52 │         let fee_coin = coin::split(&mut payment, game.fee, ctx);
+   │                        ^^^^
+   │                        │
+   │                        Could not resolve the name 'coin'
+   │                        Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:53:9
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+53 │         coin::put(&mut game.fees, fee_coin);
+   │         ^^^^
+   │         │
+   │         Could not resolve the name 'coin'
+   │         Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:55:13
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+55 │         if (coin::value(&payment) > 0) {
+   │             ^^^^
+   │             │
+   │             Could not resolve the name 'coin'
+   │             Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:13
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+58 │             coin::destroy_zero(payment);
+   │             ^^^^
+   │             │
+   │             Could not resolve the name 'coin'
+   │             Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:88:13
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+88 │     ): Coin<SUI> {
+   │             ^^^
+   │             │
+   │             Could not resolve the name 'SUI'
+   │             Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:90:13
+   │
+90 │         let amount = balance::value(&game.fees);
+   │             ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:90:22
+   │
+ 4 │     use sui::balance::Balance;
+   │                       ------- Similarly named defintion found here
+   ·
+90 │         let amount = balance::value(&game.fees);
+   │                      ^^^^^^^
+   │                      │
+   │                      Could not resolve the name 'balance'
+   │                      Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:91:9
+   │
+ 3 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+91 │         coin::from_balance(balance::split(&mut game.fees, amount), ctx)
+   │         ^^^^
+   │         │
+   │         Could not resolve the name 'coin'
+   │         Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:91:28
+   │
+ 4 │     use sui::balance::Balance;
+   │                       ------- Similarly named defintion found here
+   ·
+91 │         coin::from_balance(balance::split(&mut game.fees, amount), ctx)
+   │                            ^^^^^^^
+   │                            │
+   │                            Could not resolve the name 'balance'
+   │                            Did you mean: 'Balance'
+

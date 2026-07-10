@@ -1,0 +1,52 @@
+module event_passport::passport {
+    use std::vector;
+    
+    public struct Passport has key {
+        id: UID,
+        stamps: vector<address>,
+    }
+    
+    public struct Badge has key {
+        id: UID,
+    }
+    
+    public struct VenueCap has key, store {
+        id: UID,
+        venue: address,
+    }
+    
+    public fun mint_passport(ctx: &mut TxContext): Passport {
+        Passport {
+            id: object::new(ctx),
+            stamps: vector[],
+        }
+    }
+    
+    public fun stamp_passport(passport: &mut Passport, cap: &VenueCap) {
+        let mut i = 0;
+        let len = vector::length(&passport.stamps);
+        while (i < len) {
+            assert!(*vector::borrow(&passport.stamps, i) != cap.venue);
+            i = i + 1;
+        };
+        vector::push_back(&mut passport.stamps, cap.venue);
+    }
+    
+    public fun redeem_for_badge(passport: Passport, ctx: &mut TxContext): Badge {
+        assert!(vector::length(&passport.stamps) == 5);
+        let Passport { id, stamps: _ } = passport;
+        object::delete(id);
+        Badge { id: object::new(ctx) }
+    }
+    
+    public fun create_venue_cap(venue: address, ctx: &mut TxContext): VenueCap {
+        VenueCap {
+            id: object::new(ctx),
+            venue,
+        }
+    }
+    
+    public fun stamp_count(passport: &Passport): u64 {
+        vector::length(&passport.stamps)
+    }
+}

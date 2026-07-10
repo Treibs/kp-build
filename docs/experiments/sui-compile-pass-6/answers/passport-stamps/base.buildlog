@@ -1,0 +1,30 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:22:9
+   │  
+21 │       public fun mint_passport(ctx: &mut TxContext) {
+   │                  ------------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+22 │ ╭         transfer::transfer(
+23 │ │             Passport {
+24 │ │                 id: object::new(ctx),
+25 │ │                 stamps: vec_set::empty(),
+26 │ │             },
+27 │ │             tx_context::sender(ctx),
+   │ │             ----------------------- Transaction sender address coming from here
+28 │ │         )
+   │ ╰─────────^ Transfer of an object to transaction sender address
+   │  
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:50:26
+   │
+50 │         assert!(vec_set::size(&passport.stamps) == 5, 2);
+   │                          ^^^^ The function 'sui::vec_set::size' is deprecated: Renamed to `length` for consistency.
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+

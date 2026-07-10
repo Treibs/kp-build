@@ -1,0 +1,30 @@
+```python
+from manim import *
+
+class CharacterPassthrough(Scene):
+    def construct(self):
+        # Load and configure left-starting sprite
+        sprite_left = ImageMobject("sprite.png")
+        sprite_left.height = 1.5
+        sprite_left.to_edge(LEFT, buff=0.3)
+        sprite_left.z_index = 1
+        
+        # Load and configure right-starting sprite (mirrored to face left)
+        sprite_right = ImageMobject("sprite.png")
+        sprite_right.height = 1.5
+        sprite_right.flip()
+        sprite_right.to_edge(RIGHT, buff=0.3)
+        sprite_right.z_index = 0
+        
+        # Add to scene
+        self.add(sprite_right, sprite_left)
+        
+        # Animate both sprites walking across and passing
+        self.play(
+            sprite_left.animate.to_edge(RIGHT, buff=0.3),
+            sprite_right.animate.to_edge(LEFT, buff=0.3),
+            run_time=4
+        )
+        
+        self.wait(1)
+```
