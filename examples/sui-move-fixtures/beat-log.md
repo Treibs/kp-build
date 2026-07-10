@@ -295,8 +295,9 @@ Notes:
   "might still contain", the drained-vector "still contains"); E04007 pins table-key-by-value,
   type-name, and the id_to_address argument; E05001 reaches five shapes. Message-shape
   disclosure per the round-3 convention.
-- Corpus extended with three excerpts from the SAME pinned commits (object.md identity
-  signatures + std/vector.md destroy_empty from `d9f4797`; no pin change), and the
+- Corpus extended with two FILE sections carrying three doc-claim passages from the SAME
+  pinned commit (object.md identity signatures + std/vector.md destroy_empty from `d9f4797`;
+  no pin change), and the
   sui-import-doc grounds on the donuts example's canonical import block already in the corpus.
 - Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
 

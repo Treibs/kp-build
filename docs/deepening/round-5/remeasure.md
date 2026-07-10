@@ -27,14 +27,18 @@ the committed source before this file was written.
   two runs where the taught class died but a *different loaded rule was ignored* (vcp-1,
   api-1 — both still FAIL), one dodge (api-3), and two self-fixes on deferred classes.
 - **Taught-class recurrence: ZERO.** No round-5 taught class appears in any remeasure log,
-  and the applicable taught shapes are visibly applied (SUI imports correct in all four
-  coin-bearing runs — remeasure import sweep 0 fails; `uid_to_address` in api-1).
+  and the applicable taught shapes are visibly applied (SUI imports correct in all SIX
+  coin-bearing remeasure runs — the committed checker's verdicts are now in
+  `remeasure/*/.import`: 6 CORRECT, 2 NA, 0 FAIL; corrected from "four" in review round 1 —
+  and `uid_to_address` in api-1; `id_address` does not appear, only the one form).
 - **The remeasure's real signal is the ignored-rules ledger:** this round's probe+remeasure
   recorded SIX loaded-rule-ignored events (`param-mut` ×2, `use-self` ×2, `block-statement-
   semicolon`, `key-field-store`) — `use-self` is now the most-ignored rule in the record
   (5 events across draws). Rule application, not rule coverage, remains the pack's binding
   constraint — consistent with four experiments of payload-form results.
-- **Round-6 candidate ledger:** `split-by-value` (×1, NEW — api-argument family),
+- **Round-6 candidate ledger:** `split-by-value` (×1, NEW — api-argument family; the same
+  call site also expects a tuple return from `coin::split` — the split-returns-pair
+  misconception rides along, review round 1's catch),
   `branch-type-mismatch` (×1 carried), `moved-value-arg-order` (×1 carried, self-fixed once),
   plus the standing deferred singles. The value-consumption and destroy-empty corners were
   avoided rather than exercised in their remeasure runs — their taught effect is a tier-2
