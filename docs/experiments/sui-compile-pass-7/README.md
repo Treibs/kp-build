@@ -64,5 +64,7 @@ point) keeps the elicitation mechanism unestablished; what is now measured twice
 Absolute numbers are not comparable across experiments (draw difficulty varies); within this
 draw, both anchor arms tied at 2/6 while kp128 reached 5/6, and the two tasks that flipped
 against kp110's taught-class failures are the two whose classes round 5 taught. Round-6
-ledger: `std-option-path` (×2, promoted), plus the round-5 carried singles
-(`split-by-value` + split-returns-pair, `branch-type-mismatch`, `moved-value-arg-order`).
+ledger: `std-option-path` (×2, promoted) and `branch-type-mismatch` (×2, promoted — the
+abort-semicolon shape here is the family's second answer; line harmonized in review round 2),
+plus the round-5 carried singles (`split-by-value` + split-returns-pair,
+`moved-value-arg-order`).
