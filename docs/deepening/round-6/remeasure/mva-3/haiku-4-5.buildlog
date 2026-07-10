@@ -1,0 +1,22 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06002]: use of unassigned variable
+    ┌─ ./sources/module.move:100:47
+    │
+100 │             transfer::public_transfer(letter, letter.sender);
+    │                                       ------  ^^^^^^^^^^^^^ Invalid usage of previously moved variable 'letter'.
+    │                                       │        
+    │                                       The value of 'letter' was previously moved here.
+    │                                       Suggestion: use 'copy letter' to avoid the move.
+
+error[E06002]: use of unassigned variable
+    ┌─ ./sources/module.move:107:47
+    │
+107 │             transfer::public_transfer(letter, letter.recipient);
+    │                                       ------  ^^^^^^^^^^^^^^^^ Invalid usage of previously moved variable 'letter'.
+    │                                       │        
+    │                                       The value of 'letter' was previously moved here.
+    │                                       Suggestion: use 'copy letter' to avoid the move.
+

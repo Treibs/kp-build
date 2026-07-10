@@ -1,0 +1,6 @@
+[package]
+name = "probe_pkg"
+edition = "2024"
+
+[addresses]
+lease_closeout = "0x0"

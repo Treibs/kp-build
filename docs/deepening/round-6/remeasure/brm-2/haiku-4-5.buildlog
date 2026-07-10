@@ -1,0 +1,141 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:21
+  │
+2 │     use sui::coin::{self, Coin};
+  │                     ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:4:24
+  │
+4 │     use sui::balance::{self, Balance};
+  │                        ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::balance'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:7:13
+  │
+7 │ module sui::balance;
+  │             ------- Module 'sui::balance' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:5:23
+  │
+5 │     use std::option::{self, Option};
+  │                       ^^^^ Invalid 'use'. Unbound member 'self' in module 'std::option'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/option.move:5:13
+  │
+5 │ module std::option;
+  │             ------ Module 'std::option' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:20:22
+   │
+ 4 │     use sui::balance::{self, Balance};
+   │                              ------- Similarly named defintion found here
+   ·
+20 │             balance: balance::zero(),
+   │                      ^^^^^^^
+   │                      │
+   │                      Could not resolve the name 'balance'
+   │                      Did you mean: 'Balance'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:35:9
+   │
+35 │         till: &mut Till,
+   │         ^^^^ Unused parameter 'till'. Consider removing or prefixing with an underscore: '_till'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:39:9
+   │
+39 │         ctx: &mut TxContext,
+   │         ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:49:17
+   │
+ 2 │     use sui::coin::{self, Coin};
+   │                           ---- Similarly named defintion found here
+   ·
+49 │         assert!(coin::value(&payment) >= owed, 1);
+   │                 ^^^^
+   │                 │
+   │                 Could not resolve the name 'coin'
+   │                 Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:57:13
+   │
+57 │         let owed_coin = coin::split(&mut payment, owed, ctx);
+   │             ^^^^^^^^^ Unused local variable 'owed_coin'. Consider removing or prefixing with an underscore: '_owed_coin'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:57:25
+   │
+ 2 │     use sui::coin::{self, Coin};
+   │                           ---- Similarly named defintion found here
+   ·
+57 │         let owed_coin = coin::split(&mut payment, owed, ctx);
+   │                         ^^^^
+   │                         │
+   │                         Could not resolve the name 'coin'
+   │                         Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:9
+   │
+ 4 │     use sui::balance::{self, Balance};
+   │                              ------- Similarly named defintion found here
+   ·
+58 │         balance::join(&mut till.balance, coin::into_balance(owed_coin));
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:42
+   │
+ 2 │     use sui::coin::{self, Coin};
+   │                           ---- Similarly named defintion found here
+   ·
+58 │         balance::join(&mut till.balance, coin::into_balance(owed_coin));
+   │                                          ^^^^
+   │                                          │
+   │                                          Could not resolve the name 'coin'
+   │                                          Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:63:27
+   │
+63 │     public fun till_total(till: &Till): u64 {
+   │                           ^^^^ Unused parameter 'till'. Consider removing or prefixing with an underscore: '_till'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:64:9
+   │
+ 4 │     use sui::balance::{self, Balance};
+   │                              ------- Similarly named defintion found here
+   ·
+64 │         balance::value(&till.balance)
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
