@@ -893,6 +893,87 @@
         "source": "manim-api-docs",
         "supporting_passage": "Flips/Mirrors an mobject about its center."
       }
+    },
+    {
+      "id": "image-scale-height-green",
+      "statement": "An image is sized in scene units with the `height` property (`sprite.height = 2`) or `scale_to_fit_height` — `.scale(n)` multiplies the image's native pixel size, so `.scale(1.5)` on a 16-pixel sprite renders a near-invisible speck (exit 0; only a video check sees it).",
+      "supporting_passage": "manim 0.20.1 renders an ImageMobject sized via the height property to 2 units, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/image-scale-height/green"
+      }
+    },
+    {
+      "id": "image-scale-height-doc",
+      "statement": "`height` is a mobject property — set it to the target size in scene units.",
+      "supporting_passage": "def height(self) -> float:\n        \"\"\"The height of the mobject.",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "def height(self) -> float:\n        \"\"\"The height of the mobject."
+      }
+    },
+    {
+      "id": "rate-func-names-green",
+      "statement": "Rate functions carry qualified names — `rate_functions.ease_out_sine`, `ease_in_sine`, `linear`, `smooth`; a play call takes them via `rate_func=`.",
+      "supporting_passage": "manim 0.20.1 renders a slide eased with rate_functions.ease_out_sine, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/rate-func-names/green"
+      }
+    },
+    {
+      "id": "rate-func-names-red",
+      "statement": "There is no bare `ease_out`: `rate_func=ease_out` fails on manim 0.20.1 with NameError: name 'ease_out' is not defined. The easing family is suffixed (`ease_out_sine`, `ease_out_quad`, …).",
+      "supporting_passage": "manim 0.20.1 rejects rate_func=ease_out with exit 1, NameError: name 'ease_out' is not defined.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "red_violation",
+        "artifact": "manim-fixtures/rate-func-names/red"
+      }
+    },
+    {
+      "id": "rate-func-names-doc",
+      "statement": "The easing functions are defined with direction+curve suffixes — e.g. `ease_out_sine(t)`.",
+      "supporting_passage": "def ease_out_sine(t: float) -> float:\n    val: float = np.sin((t * np.pi) / 2)\n    return val",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "def ease_out_sine(t: float) -> float:\n    val: float = np.sin((t * np.pi) / 2)\n    return val"
+      }
+    },
+    {
+      "id": "frame-fit-green",
+      "statement": "Compositions stay on screen by sizing against `config.frame_height`/`config.frame_width` (e.g. `scale_to_fit_height(config.frame_height - 1)`) — content past the frame edge renders exit 0 and is only caught on video.",
+      "supporting_passage": "manim 0.20.1 renders a tower scaled to fit inside config.frame_height, exit 0.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "manim-render",
+        "gate_code": "render_error",
+        "artifact": "manim-fixtures/frame-fit/green"
+      }
+    },
+    {
+      "id": "frame-fit-doc",
+      "statement": "The frame's dimensions are config properties: `frame_height` returns the frame height in scene units.",
+      "supporting_passage": "def frame_height(self) -> float:\n        \"\"\"Frame height in logical units (no flag).\"\"\"\n        return self._d[\"frame_height\"]",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "manim-api-docs",
+        "supporting_passage": "def frame_height(self) -> float:\n        \"\"\"Frame height in logical units (no flag).\"\"\"\n        return self._d[\"frame_height\"]"
+      }
     }
   ]
 }
