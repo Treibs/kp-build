@@ -63,7 +63,7 @@ the arm that carries them, and the pack arm's failures migrate to adjacent untau
 value-discipline shapes this draw — leaving the primary flat. Three consecutive no-headline
 deepening deltas (rounds 2, 3, 4) against one shipped headline (round 1) is now the recorded
 shape of this pack's deepening curve at n=6 per draw; the standing candidates for what moves
-the number are (a) the conditional-consumption family (×3 in one draw — the largest
+the number are (a) the value-consumption-paths family (3 sites / 2 answers in one draw — the largest
 single-draw untaught cluster since the E05001 family), and (b) the elicitation question on
 SUI-import. Both are round-5 material; nothing here revises round 4's fixtures, which all
 still gate green.
