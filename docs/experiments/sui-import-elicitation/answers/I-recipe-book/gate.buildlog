@@ -1,0 +1,319 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:4:24
+  │
+4 │     use sui::balance::{self, Balance};
+  │                        ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::balance'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:7:13
+  │
+7 │ module sui::balance;
+  │             ------- Module 'sui::balance' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:5:21
+  │
+5 │     use sui::coin::{self, Coin};
+  │                     ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:8:23
+  │
+8 │     use sui::object::{self, UID};
+  │                       ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::object'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:5:13
+  │
+5 │ module sui::object;
+  │             ------ Module 'sui::object' declared here
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:10:22
+   │
+10 │     use sui::table::{self, Table};
+   │                      ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::table'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/table.move:19:13
+   │
+19 │ module sui::table;
+   │             ----- Module 'sui::table' declared here
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:12:27
+   │
+12 │     use sui::tx_context::{self, TxContext};
+   │                           ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::tx_context'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/tx_context.move:4:13
+   │
+ 4 │ module sui::tx_context;
+   │             ---------- Module 'sui::tx_context' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:22
+   │
+10 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+58 │             recipes: table::new(ctx),
+   │                      ^^^^^
+   │                      │
+   │                      Could not resolve the name 'table'
+   │                      Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:60:23
+   │
+ 4 │     use sui::balance::{self, Balance};
+   │                              ------- Similarly named defintion found here
+   ·
+60 │             fee_pool: balance::zero<SUI>(),
+   │                       ^^^^^^^
+   │                       │
+   │                       Could not resolve the name 'balance'
+   │                       Did you mean: 'Balance'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:71:9
+   │
+71 │         fee: Coin<SUI>,
+   │         ^^^ Unused parameter 'fee'. Consider removing or prefixing with an underscore: '_fee'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:74:17
+   │
+ 5 │     use sui::coin::{self, Coin};
+   │                           ---- Similarly named defintion found here
+   ·
+74 │         assert!(coin::value(&fee) >= RECIPE_FEE, ErrInsufficientFee);
+   │                 ^^^^
+   │                 │
+   │                 Could not resolve the name 'coin'
+   │                 Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:79:13
+   │
+79 │         let recipe = Recipe {
+   │             ^^^^^^ Unused local variable 'recipe'. Consider removing or prefixing with an underscore: '_recipe'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:88:9
+   │
+10 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+88 │         table::add(&mut recipe_book.recipes, recipe_id, recipe);
+   │         ^^^^^
+   │         │
+   │         Could not resolve the name 'table'
+   │         Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:90:48
+   │
+10 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+90 │         let ratings_map: Table<address, u64> = table::new(ctx);
+   │                                                ^^^^^
+   │                                                │
+   │                                                Could not resolve the name 'table'
+   │                                                Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:93:9
+   │
+ 4 │     use sui::balance::{self, Balance};
+   │                              ------- Similarly named defintion found here
+   ·
+93 │         balance::join(&mut recipe_book.fee_pool, coin::into_balance(fee));
+   │         ^^^^^^^
+   │         │
+   │         Could not resolve the name 'balance'
+   │         Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:93:50
+   │
+ 5 │     use sui::coin::{self, Coin};
+   │                           ---- Similarly named defintion found here
+   ·
+93 │         balance::join(&mut recipe_book.fee_pool, coin::into_balance(fee));
+   │                                                  ^^^^
+   │                                                  │
+   │                                                  Could not resolve the name 'coin'
+   │                                                  Did you mean: 'Coin'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:114:13
+    │
+114 │         let ratings_map: &mut Table<address, u64> = dynamic_field::borrow_mut(&mut recipe_book.id, recipe_id);
+    │             ^^^^^^^^^^^ Unused local variable 'ratings_map'. Consider removing or prefixing with an underscore: '_ratings_map'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:115:18
+    │
+ 10 │     use sui::table::{self, Table};
+    │                            ----- Similarly named defintion found here
+    ·
+115 │         assert!(!table::contains(ratings_map, rater), ErrAlreadyRated);
+    │                  ^^^^^
+    │                  │
+    │                  Could not resolve the name 'table'
+    │                  Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:116:9
+    │
+ 10 │     use sui::table::{self, Table};
+    │                            ----- Similarly named defintion found here
+    ·
+116 │         table::add(ratings_map, rater, rating);
+    │         ^^^^^
+    │         │
+    │         Could not resolve the name 'table'
+    │         Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:118:35
+    │
+ 10 │     use sui::table::{self, Table};
+    │                            ----- Similarly named defintion found here
+    ·
+118 │         let recipe: &mut Recipe = table::borrow_mut(&mut recipe_book.recipes, recipe_id);
+    │                                   ^^^^^
+    │                                   │
+    │                                   Could not resolve the name 'table'
+    │                                   Did you mean: 'Table'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:129:35
+    │
+129 │     public fun get_average_rating(recipe_book: &RecipeBook, recipe_id: u64): u64 {
+    │                                   ^^^^^^^^^^^ Unused parameter 'recipe_book'. Consider removing or prefixing with an underscore: '_recipe_book'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:129:61
+    │
+129 │     public fun get_average_rating(recipe_book: &RecipeBook, recipe_id: u64): u64 {
+    │                                                             ^^^^^^^^^ Unused parameter 'recipe_id'. Consider removing or prefixing with an underscore: '_recipe_id'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:130:22
+    │
+ 10 │     use sui::table::{self, Table};
+    │                            ----- Similarly named defintion found here
+    ·
+130 │         let recipe = table::borrow(&recipe_book.recipes, recipe_id);
+    │                      ^^^^^
+    │                      │
+    │                      Could not resolve the name 'table'
+    │                      Did you mean: 'Table'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:138:32
+    │
+138 │     public fun get_recipe_info(recipe_book: &RecipeBook, recipe_id: u64): (&String, &u64, address, u64) {
+    │                                ^^^^^^^^^^^ Unused parameter 'recipe_book'. Consider removing or prefixing with an underscore: '_recipe_book'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:138:58
+    │
+138 │     public fun get_recipe_info(recipe_book: &RecipeBook, recipe_id: u64): (&String, &u64, address, u64) {
+    │                                                          ^^^^^^^^^ Unused parameter 'recipe_id'. Consider removing or prefixing with an underscore: '_recipe_id'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:139:22
+    │
+ 10 │     use sui::table::{self, Table};
+    │                            ----- Similarly named defintion found here
+    ·
+139 │         let recipe = table::borrow(&recipe_book.recipes, recipe_id);
+    │                      ^^^^^
+    │                      │
+    │                      Could not resolve the name 'table'
+    │                      Did you mean: 'Table'
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:149:9
+    │
+149 │         recipe_book: &mut RecipeBook,
+    │         ^^^^^^^^^^^ Unused parameter 'recipe_book'. Consider removing or prefixing with an underscore: '_recipe_book'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:151:9
+    │
+151 │         ctx: &mut TxContext,
+    │         ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:153:13
+    │
+153 │         let amount = balance::value(&recipe_book.fee_pool);
+    │             ^^^^^^ Unused local variable 'amount'. Consider removing or prefixing with an underscore: '_amount'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:153:22
+    │
+  4 │     use sui::balance::{self, Balance};
+    │                              ------- Similarly named defintion found here
+    ·
+153 │         let amount = balance::value(&recipe_book.fee_pool);
+    │                      ^^^^^^^
+    │                      │
+    │                      Could not resolve the name 'balance'
+    │                      Did you mean: 'Balance'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:154:9
+    │
+  5 │     use sui::coin::{self, Coin};
+    │                           ---- Similarly named defintion found here
+    ·
+154 │         coin::from_balance(balance::split(&mut recipe_book.fee_pool, amount), ctx)
+    │         ^^^^
+    │         │
+    │         Could not resolve the name 'coin'
+    │         Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:154:28
+    │
+  4 │     use sui::balance::{self, Balance};
+    │                              ------- Similarly named defintion found here
+    ·
+154 │         coin::from_balance(balance::split(&mut recipe_book.fee_pool, amount), ctx)
+    │                            ^^^^^^^
+    │                            │
+    │                            Could not resolve the name 'balance'
+    │                            Did you mean: 'Balance'
+

@@ -1,0 +1,72 @@
+module transit::fare_box {
+    use sui::coin::{Self, Coin, SUI};
+    use sui::clock::Clock;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    const EPOCH_MS: u64 = 24 * 60 * 60 * 1000;
+    const FARE_AMOUNT: u64 = 100_000_000;
+
+    public struct DayTicket has key, store {
+        id: UID,
+        epoch: u64,
+    }
+
+    public struct FareBox has key {
+        id: UID,
+        balance: Coin<SUI>,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let farebox = FareBox {
+            id: object::new(ctx),
+            balance: coin::zero(ctx),
+        };
+        
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(farebox);
+        transfer::transfer(admin_cap, ctx.sender());
+    }
+
+    public fun pay_fare(
+        farebox: &mut FareBox,
+        payment: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ): DayTicket {
+        assert!(coin::value(&payment) == FARE_AMOUNT);
+        
+        let current_time_ms = clock.timestamp_ms();
+        let epoch = current_time_ms / EPOCH_MS;
+
+        coin::join(&mut farebox.balance, payment);
+
+        DayTicket {
+            id: object::new(ctx),
+            epoch,
+        }
+    }
+
+    public fun is_valid(ticket: &DayTicket, clock: &Clock): bool {
+        let current_time_ms = clock.timestamp_ms();
+        let current_epoch = current_time_ms / EPOCH_MS;
+        ticket.epoch == current_epoch
+    }
+
+    public fun sweep(
+        farebox: &mut FareBox,
+        _cap: &AdminCap,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let amount = coin::value(&farebox.balance);
+        coin::split(&mut farebox.balance, amount, ctx)
+    }
+}

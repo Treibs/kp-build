@@ -1,0 +1,40 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:42:13
+    │
+ 42 │             balance::join(&mut ledger.pool, from_balance(payment, ctx));
+    │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::balance::join'. Invalid argument for parameter 'balance'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:140:71
+    │
+140 │ public fun from_balance<T>(balance: Balance<T>, ctx: &mut TxContext): Coin<T> {
+    │                                                                       ------- Given: 'sui::coin::Coin<_>'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:76:52
+    │
+ 76 │ public fun join<T>(self: &mut Balance<T>, balance: Balance<T>): u64 {
+    │                                                    ---------- Expected: 'sui::balance::Balance<sui::sui::SUI>'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:42:45
+    │
+ 35 │         mut payments: vector<Coin<SUI>>,
+    │                              --------- Given: 'sui::coin::Coin<sui::sui::SUI>'
+    ·
+ 42 │             balance::join(&mut ledger.pool, from_balance(payment, ctx));
+    │                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::coin::from_balance'. Invalid argument for parameter 'balance'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:140:37
+    │
+140 │ public fun from_balance<T>(balance: Balance<T>, ctx: &mut TxContext): Coin<T> {
+    │                                     ---------- Expected: 'sui::balance::Balance<_>'
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:42:45
+   │
+42 │             balance::join(&mut ledger.pool, from_balance(payment, ctx));
+   │                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+

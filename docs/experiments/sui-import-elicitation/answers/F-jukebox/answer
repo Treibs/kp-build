@@ -1,0 +1,86 @@
+```move
+module jukebox::jukebox {
+    use sui::object::{Self, UID};
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::table::{Self, Table};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+    use sui::event;
+    use std::string::String;
+
+    public struct Jukebox has key {
+        id: UID,
+        balance: Balance<SUI>,
+        credits: Table<address, u64>,
+    }
+
+    public struct JukeboxCap has key, store {
+        id: UID,
+    }
+
+    public struct SongQueued has copy, drop {
+        song: String,
+        payer: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let jukebox = Jukebox {
+            id: object::new(ctx),
+            balance: balance::zero(),
+            credits: table::new(ctx),
+        };
+        
+        let cap = JukeboxCap {
+            id: object::new(ctx),
+        };
+        
+        transfer::share_object(jukebox);
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public fun buy_credits(
+        jukebox: &mut Jukebox,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let amount = coin::value(&payment);
+        let payer = tx_context::sender(ctx);
+        
+        balance::join(&mut jukebox.balance, coin::into_balance(payment));
+        
+        if (table::contains(&jukebox.credits, payer)) {
+            let credits = table::borrow_mut(&mut jukebox.credits, payer);
+            *credits = *credits + amount;
+        } else {
+            table::add(&mut jukebox.credits, payer, amount);
+        };
+    }
+
+    public fun queue_song(
+        jukebox: &mut Jukebox,
+        song: String,
+        ctx: &mut TxContext,
+    ) {
+        let payer = tx_context::sender(ctx);
+        
+        assert!(table::contains(&jukebox.credits, payer), 1);
+        let credits = table::borrow_mut(&mut jukebox.credits, payer);
+        assert!(*credits > 0, 2);
+        
+        *credits = *credits - 1;
+        event::emit(SongQueued { song, payer });
+    }
+
+    public fun sweep(
+        _cap: &JukeboxCap,
+        jukebox: &mut Jukebox,
+        ctx: &mut TxContext,
+    ) {
+        let amount = balance::value(&jukebox.balance);
+        let coin = coin::from_balance(balance::split(&mut jukebox.balance, amount), ctx);
+        transfer::public_transfer(coin, tx_context::sender(ctx));
+    }
+}
+```

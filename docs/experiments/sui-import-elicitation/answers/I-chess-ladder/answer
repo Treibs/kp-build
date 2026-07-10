@@ -1,0 +1,87 @@
+```move
+module club_ladder::ladder {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::tx_context::TxContext;
+    
+    public struct LADDER has drop {}
+    
+    public struct Rating has key, store {
+        id: UID,
+        player: address,
+        points: u64,
+    }
+    
+    public struct ReporterCap has key, store {
+        id: UID,
+    }
+    
+    public struct Challenge has key, store {
+        id: UID,
+        challenger: address,
+        challengee: address,
+        stake: Coin<SUI>,
+    }
+    
+    fun init(_: LADDER, ctx: &mut TxContext) {
+        transfer::transfer(
+            ReporterCap { id: object::new(ctx) },
+            ctx.sender(),
+        );
+    }
+    
+    public fun create_rating(ctx: &mut TxContext): Rating {
+        Rating {
+            id: object::new(ctx),
+            player: ctx.sender(),
+            points: 1000,
+        }
+    }
+    
+    public fun issue_challenge(
+        stake: Coin<SUI>,
+        challengee: address,
+        ctx: &mut TxContext,
+    ): Challenge {
+        assert!(coin::value(&stake) > 0, 1);
+        
+        Challenge {
+            id: object::new(ctx),
+            challenger: ctx.sender(),
+            challengee,
+            stake,
+        }
+    }
+    
+    public fun report_result(
+        challenge: Challenge,
+        challenger_rating: &mut Rating,
+        challengee_rating: &mut Rating,
+        challenger_won: bool,
+        _cap: &ReporterCap,
+    ) {
+        let Challenge { id, challenger, challengee, stake } = challenge;
+        object::delete(id);
+        
+        if (challenger_won) {
+            challenger_rating.points = challenger_rating.points + 10;
+            if (challengee_rating.points >= 10) {
+                challengee_rating.points = challengee_rating.points - 10;
+            } else {
+                challengee_rating.points = 0;
+            };
+            transfer::public_transfer(stake, challenger);
+        } else {
+            challengee_rating.points = challengee_rating.points + 10;
+            if (challenger_rating.points >= 10) {
+                challenger_rating.points = challenger_rating.points - 10;
+            } else {
+                challenger_rating.points = 0;
+            };
+            transfer::public_transfer(stake, challengee);
+        }
+    }
+}
+```

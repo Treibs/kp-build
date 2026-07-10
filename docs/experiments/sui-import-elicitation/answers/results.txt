@@ -1,0 +1,20 @@
+# Elicitation experiment results — import metric (committed checker) + gate context
+
+F-laundromat         import=CORRECT            gate=PASS WARN1
+F-photo-booth        import=CORRECT            gate=PASS WARN1
+F-jukebox            import=CORRECT            gate=PASS WARN1
+F-wishing-well       import=CORRECT            gate=PASS CLEAN
+F-bus-fare           import=FAIL wrong-module  gate=FAIL error[E03003]: unbound module member
+F-car-wash           import=CORRECT            gate=PASS CLEAN
+F-exact-change       import=CORRECT            gate=PASS CLEAN
+F-karma-boost        import=CORRECT            gate=PASS CLEAN
+I-chess-ladder       import=CORRECT            gate=PASS WARN1
+I-community-garden   import=FAIL wrong-module  gate=FAIL error[E03003]: unbound module member
+I-pet-daycare        import=CORRECT            gate=FAIL error[E05001]: ability constraint not satisfied
+I-quest-board        import=FAIL wrong-module  gate=FAIL error[E03003]: unbound module member
+I-recipe-book        import=CORRECT            gate=FAIL error[E03003]: unbound module member
+I-lost-pet-poster    import=CORRECT            gate=PASS WARN1
+I-marathon           import=FAIL wrong-module  gate=FAIL error[E03003]: unbound module member
+I-carpool-log        import=CORRECT            gate=FAIL error[E04007]: incompatible types
+
+# import-fail: F 1/8, I 3/8 (all wrong-module; corroborated E03003 'Unbound member SUI in sui::coin')
