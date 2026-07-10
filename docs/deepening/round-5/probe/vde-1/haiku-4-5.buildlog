@@ -1,0 +1,13 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06002]: use of unassigned variable
+   ┌─ ./sources/module.move:61:48
+   │
+61 │             transfer::public_transfer(package, package.addressee);
+   │                                       -------  ^^^^^^^^^^^^^^^^^ Invalid usage of previously moved variable 'package'.
+   │                                       │         
+   │                                       The value of 'package' was previously moved here.
+   │                                       Suggestion: use 'copy package' to avoid the move.
+

@@ -1,0 +1,53 @@
+module party::door_list {
+    use std::vector;
+    use sui::object::UID;
+    use sui::tx_context::TxContext;
+
+    public struct Invitation has key, store {
+        id: UID,
+        used: bool,
+    }
+
+    public struct CheckInEntry has store, copy, drop {
+        invitation_id: address,
+        guest_address: address,
+    }
+
+    public struct DoorLog has key {
+        id: UID,
+        entries: vector<CheckInEntry>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let log = DoorLog {
+            id: object::new(ctx),
+            entries: vector[],
+        };
+        transfer::share_object(log);
+    }
+
+    public fun create_invitation(ctx: &mut TxContext): Invitation {
+        Invitation {
+            id: object::new(ctx),
+            used: false,
+        }
+    }
+
+    public fun check_in(mut invitation: Invitation, log: &mut DoorLog, ctx: &mut TxContext) {
+        assert!(!invitation.used, 0);
+        
+        let entry = CheckInEntry {
+            invitation_id: object::id_to_address(&invitation.id),
+            guest_address: ctx.sender(),
+        };
+        
+        vector::push_back(&mut log.entries, entry);
+        invitation.used = true;
+        
+        transfer::transfer(invitation, ctx.sender());
+    }
+
+    public fun get_check_in_count(log: &DoorLog): u64 {
+        vector::length(&log.entries)
+    }
+}

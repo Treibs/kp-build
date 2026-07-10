@@ -1,0 +1,80 @@
+module mailroom::mailroom {
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::balance::{Self, Balance};
+    use std::vector;
+
+    public struct Package has key, store {
+        id: UID,
+        addressee: address,
+        contents: vector<u8>,
+    }
+
+    public struct Mailroom has key {
+        id: UID,
+        intake: vector<Package>,
+        pool: Balance<SUI>,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let mailroom = Mailroom {
+            id: object::new(ctx),
+            intake: vector[],
+            pool: balance::zero(),
+        };
+        transfer::share_object(mailroom);
+
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
+    }
+
+    public fun create_package(
+        addressee: address,
+        contents: vector<u8>,
+        ctx: &mut TxContext,
+    ): Package {
+        Package {
+            id: object::new(ctx),
+            addressee,
+            contents,
+        }
+    }
+
+    public fun deposit(
+        mailroom: &mut Mailroom,
+        package: Package,
+        payment: Coin<SUI>,
+    ) {
+        vector::push_back(&mut mailroom.intake, package);
+        let coin_balance = coin::into_balance(payment);
+        balance::join(&mut mailroom.pool, coin_balance);
+    }
+
+    public fun dispatch(
+        mailroom: &mut Mailroom,
+        _admin_cap: &AdminCap,
+    ) {
+        while (vector::length(&mailroom.intake) > 0) {
+            let package = vector::pop_back(&mut mailroom.intake);
+            let addressee = package.addressee;
+            transfer::public_transfer(package, addressee);
+        };
+    }
+
+    public fun packages_waiting(mailroom: &Mailroom): u64 {
+        vector::length(&mailroom.intake)
+    }
+
+    public fun pool_total(mailroom: &Mailroom): u64 {
+        balance::value(&mailroom.pool)
+    }
+}

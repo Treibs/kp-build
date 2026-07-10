@@ -1,0 +1,6 @@
+[package]
+name = "probe_pkg"
+edition = "2024"
+
+[addresses]
+medication_tracker = "0x0"

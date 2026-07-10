@@ -1,0 +1,56 @@
+module party_door::door {
+    use std::vector;
+
+    public struct Invitation has key, store {
+        id: UID,
+        used: bool,
+    }
+
+    public struct CheckInRecord has copy, drop {
+        invitation_address: address,
+        guest_address: address,
+    }
+
+    public struct DoorLog has key {
+        id: UID,
+        records: vector<CheckInRecord>,
+    }
+
+    public fun create_invitation(ctx: &mut TxContext): Invitation {
+        Invitation {
+            id: object::new(ctx),
+            used: false,
+        }
+    }
+
+    public fun create_door(ctx: &mut TxContext) {
+        let log = DoorLog {
+            id: object::new(ctx),
+            records: vector[],
+        };
+        transfer::share_object(log);
+    }
+
+    public fun check_in(
+        invitation: &mut Invitation,
+        log: &mut DoorLog,
+        ctx: &TxContext,
+    ) {
+        assert!(!invitation.used, 0);
+        
+        let invitation_addr = object::uid_to_address(&invitation.id);
+        let guest_addr = ctx.sender();
+        
+        let record = CheckInRecord {
+            invitation_address: invitation_addr,
+            guest_address: guest_addr,
+        };
+        
+        vector::push_back(&mut log.records, record);
+        invitation.used = true;
+    }
+
+    public fun get_checked_in_count(log: &DoorLog): u64 {
+        vector::length(&log.records)
+    }
+}

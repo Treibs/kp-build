@@ -21,7 +21,7 @@ verified:
   evidence: "macro fun n_times($n: u64, $body: |u64| -> ()) {\n    let n = $n;\n \
     \   let mut i = 0;\n    while (i < n) {\n        $body(i);\n        i = i + 1;\n\
     \    }"
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-move-reference

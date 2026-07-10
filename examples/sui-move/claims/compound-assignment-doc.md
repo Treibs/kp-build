@@ -19,7 +19,7 @@ verified:
   match_score: 0.0
   evidence: "    while (i < n) {\n        if (&v[i] == target) return option::some(i);\n\
     \        i = i + 1\n    };"
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-move-reference

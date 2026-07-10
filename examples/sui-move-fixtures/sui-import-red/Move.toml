@@ -1,0 +1,5 @@
+[package]
+name = "sui_import_red"
+edition = "2024"
+
+[dependencies]

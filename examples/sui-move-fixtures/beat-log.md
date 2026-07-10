@@ -265,3 +265,40 @@ Notes:
 **Totals:** 39 green fixtures, 32 red fixtures (7 beats grounding-only: implicit-imports,
 entry-vs-public, capability, test-scenario, dynamic-field-exists, transfer-composability,
 vector-literal).
+
+## Deepening round 5 — 6 beats (proven 2026-07-10)
+
+Source: the fifth /kp-deepen round (`docs/deepening/round-5/`) — the first designed by its own
+mechanism experiment (`docs/experiments/sui-import-elicitation/`: incidental-shaped probes;
+the sui-import beat pre-decided from the experiment's observed REDs). A pre-freeze adversarial
+reviewer pass on the task audit is now a standing step (it returned REVISE and two drafts were
+replaced BEFORE the freeze). Triage: `docs/deepening/round-5/triage.md`.
+
+| beat | red form tried | observed (exit + key output) | classification | fragment (expected_error.txt) |
+|---|---|---|---|---|
+| sui-import | `use sui::coin::{Self, Coin, SUI}` | exit 1, `error[E03003]: unbound module member` | RED/GREEN pair | `Unbound member 'SUI' in module 'sui::coin'` |
+| uid-to-address | `object::id_to_address(&inv.id)` on a `&UID` | exit 1, `error[E04007]: incompatible types` | RED/GREEN pair | `Invalid call of 'sui::object::id_to_address'. Invalid argument for parameter 'id'` |
+| value-consumption-paths | `Coin` parameter consumed only in the winning branch of an `if` | exit 1, `error[E06001]: unused value without 'drop'` ("might still contain a value") | RED/GREEN pair | `The value does not have the 'drop' ability and must be consumed before the function returns` |
+| vector-destroy-empty | drained `vector<Rocket>` left to drop at the closing brace | exit 1, `error[E06001]` ("still contains a value") | RED/GREEN pair | `The parameter 'rockets' still contains a value` |
+| uid-vs-id | `object::id(&pet.id)` on the raw `UID` | exit 1, `error[E05001]: ability constraint not satisfied` | RED/GREEN pair | `The type 'sui::object::UID' does not have the ability 'key'` |
+| empty-vector-annotation | `let owners = vector::empty();` with only `vector::length` downstream | exit 1, `error[E04010]: cannot infer type` | RED/GREEN pair | `Could not infer this type. Try adding an annotation` |
+
+Notes:
+- Two beats (`sui-import`, `uid-vs-id`) teach from held-out observed REDs under the frequency
+  rule — their territories probed clean twice (round-4 focal, round-5 incidental); the rate
+  ceiling (clean n=6 bounds p < ~0.3) is disclosed wherever those clean probes are cited.
+- Both round-5 GREEN drafts initially violated the pack's own taught rules (a W99001
+  transfer-to-sender and a deprecated `vector::empty()`) and were corrected to the pack
+  idioms (Option-return; typed literal) before proving — the pack's rules now gate its own
+  fixtures.
+- The E06001 family now pins THREE shapes (option-field-fill's mutation, the branch-path
+  "might still contain", the drained-vector "still contains"); E04007 pins table-key-by-value,
+  type-name, and the id_to_address argument; E05001 reaches five shapes. Message-shape
+  disclosure per the round-3 convention.
+- Corpus extended with two FILE sections carrying three doc-claim passages from the SAME
+  pinned commit (object.md identity signatures + std/vector.md destroy_empty from `d9f4797`;
+  no pin change), and the
+  sui-import-doc grounds on the donuts example's canonical import block already in the corpus.
+- Greens' `Move.lock` pin the same framework rev `b124567746b3a78a7e294ac2de265f693401ec9d`.
+
+**Totals:** 45 green fixtures, 38 red fixtures (7 beats grounding-only, unchanged).

@@ -1,0 +1,25 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:51:9
+   │  
+51 │ ╭         if (shop.barber_in && ctx.epoch() == shop.status_epoch) {
+52 │ │             card.visit_count = card.visit_count + 1;
+53 │ │             balance::join(&mut shop.pool, coin::into_balance(payment))
+54 │ │         } else {
+55 │ │             transfer::public_transfer(payment, ctx.sender())
+56 │ │         }
+   │ ╰─────────^ Incompatible branches
+   │  
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:76:65
+   │
+76 │ public fun join<T>(self: &mut Balance<T>, balance: Balance<T>): u64 {
+   │                                                                 --- Found: 'u64'. It is not compatible with the other type.
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/transfer.move:63:12
+   │
+63 │ public fun public_transfer<T: key + store>(obj: T, recipient: address) {
+   │            --------------- Found: '()'. It is not compatible with the other type.
+

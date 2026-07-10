@@ -1,0 +1,114 @@
+module parking_garage::garage {
+    use sui::coin::{Coin, self};
+    use sui::balance::{self, Balance};
+    use sui::event;
+
+    public struct GarageTicket has key, store {
+        id: UID,
+        entry_epoch: u64,
+    }
+
+    public struct ValidatorCap has key, store {
+        id: UID,
+    }
+
+    public struct OperatorCap has key, store {
+        id: UID,
+    }
+
+    public struct FeePool has key {
+        id: UID,
+        balance: Balance<SUI>,
+    }
+
+    public struct TicketIssued has copy, drop {
+        ticket_id: ID,
+        entry_epoch: u64,
+    }
+
+    public struct TicketValidated has copy, drop {
+        ticket_id: ID,
+    }
+
+    public struct PaymentProcessed has copy, drop {
+        ticket_id: ID,
+        charge: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let validator_cap = ValidatorCap {
+            id: object::new(ctx),
+        };
+        let operator_cap = OperatorCap {
+            id: object::new(ctx),
+        };
+        let fee_pool = FeePool {
+            id: object::new(ctx),
+            balance: balance::zero(),
+        };
+
+        transfer::transfer(validator_cap, ctx.sender());
+        transfer::transfer(operator_cap, ctx.sender());
+        transfer::share_object(fee_pool);
+    }
+
+    public fun take_ticket(entry_epoch: u64, ctx: &mut TxContext): GarageTicket {
+        let ticket = GarageTicket {
+            id: object::new(ctx),
+            entry_epoch,
+        };
+        
+        event::emit(TicketIssued {
+            ticket_id: object::id(&ticket),
+            entry_epoch,
+        });
+
+        ticket
+    }
+
+    public fun validate(_cap: &ValidatorCap, ticket: &mut GarageTicket) {
+        event::emit(TicketValidated {
+            ticket_id: object::id(ticket),
+        });
+    }
+
+    public fun exit_validated(ticket: GarageTicket, payment: Coin<SUI>, ctx: &mut TxContext) {
+        let GarageTicket { id, entry_epoch: _ } = ticket;
+        object::delete(id);
+        transfer::public_transfer(payment, ctx.sender());
+    }
+
+    public fun exit_unvalidated(
+        ticket: GarageTicket,
+        mut payment: Coin<SUI>,
+        current_epoch: u64,
+        hourly_rate: u64,
+        fee_pool: &mut FeePool,
+        ctx: &mut TxContext,
+    ) {
+        let ticket_id = object::id(&ticket);
+        let GarageTicket { id, entry_epoch } = ticket;
+        
+        let epochs_elapsed = current_epoch - entry_epoch;
+        let charge = hourly_rate * epochs_elapsed;
+        
+        assert!(coin::value(&payment) >= charge, 1);
+        
+        let fee_coin = coin::split(&mut payment, charge, ctx);
+        balance::join(&mut fee_pool.balance, coin::into_balance(fee_coin));
+        
+        transfer::public_transfer(payment, ctx.sender());
+        object::delete(id);
+        
+        event::emit(PaymentProcessed {
+            ticket_id,
+            charge,
+        });
+    }
+
+    public fun sweep_fees(_cap: &OperatorCap, fee_pool: &mut FeePool, ctx: &mut TxContext): Coin<SUI> {
+        let amount = balance::value(&fee_pool.balance);
+        let taken_balance = balance::split(&mut fee_pool.balance, amount);
+        coin::from_balance(taken_balance, ctx)
+    }
+}

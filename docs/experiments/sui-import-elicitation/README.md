@@ -80,3 +80,9 @@ support; if not, this was noise and the record will say so.
   "every use covered" phrasing); nested `use sui::{...}` groups, block comments, and `as`
   aliases are invisible to it. No source in this corpus hits any of these; the holes are
   recorded for reuse of the checker.
+
+## Replication outcome pointer (added with round 5)
+
+The named replication test ran in round 5's probe: import-fail **1/9** (haiku) against this
+experiment's incidental arm 3/8 — recorded as **non-replication** per the commitment above;
+the salience mechanism stays unestablished. Full record: `docs/deepening/round-5/triage.md`.

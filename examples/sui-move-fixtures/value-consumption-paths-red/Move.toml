@@ -1,0 +1,5 @@
+[package]
+name = "value_consumption_paths_red"
+edition = "2024"
+
+[dependencies]

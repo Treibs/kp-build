@@ -4751,3 +4751,84 @@ Create an empty vector.
 
 </details>
 
+
+## FILE: crates/sui-framework/docs/sui/object.md (id_to_address, uid_to_inner, uid_to_address, id_address signatures)
+
+<a name="sui_object_id_to_address"></a>
+
+## Function `id_to_address`
+
+Get the inner bytes of <code><a href="../sui/object.md#sui_object_id">id</a></code> as an address.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/object.md#sui_object_id_to_address">id_to_address</a>(<a href="../sui/object.md#sui_object_id">id</a>: &<a href="../sui/object.md#sui_object_ID">sui::object::ID</a>): <b>address</b>
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+<a name="sui_object_uid_to_inner"></a>
+
+## Function `uid_to_inner`
+
+Get the raw bytes of a <code>uid</code>'s inner <code><a href="../sui/object.md#sui_object_ID">ID</a></code>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/object.md#sui_object_uid_to_inner">uid_to_inner</a>(uid: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>): <a href="../sui/object.md#sui_object_ID">sui::object::ID</a>
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+<a name="sui_object_uid_to_address"></a>
+
+## Function `uid_to_address`
+
+Get the inner bytes of <code><a href="../sui/object.md#sui_object_id">id</a></code> as an address.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/object.md#sui_object_uid_to_address">uid_to_address</a>(uid: &<a href="../sui/object.md#sui_object_UID">sui::object::UID</a>): <b>address</b>
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+<a name="sui_object_id_address"></a>
+
+## Function `id_address`
+
+Get the inner bytes for the underlying <code><a href="../sui/object.md#sui_object_ID">ID</a></code> of <code>obj</code>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../sui/object.md#sui_object_id_address">id_address</a>&lt;T: key&gt;(obj: &T): <b>address</b>
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+## FILE: crates/sui-framework/docs/std/vector.md (destroy_empty)
+
+<a name="std_vector_destroy_empty"></a>
+
+## Function `destroy_empty`
+
+Destroy the vector <code>v</code>.
+Aborts if <code>v</code> is not empty.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../std/vector.md#std_vector_destroy_empty">destroy_empty</a>&lt;Element&gt;(v: <a href="../std/vector.md#std_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+

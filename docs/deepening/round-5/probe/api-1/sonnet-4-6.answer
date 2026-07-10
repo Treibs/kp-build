@@ -1,0 +1,47 @@
+```move
+module party::door {
+    public struct Invitation has key {
+        id: UID,
+        used: bool,
+    }
+
+    public struct CheckInEntry has store {
+        invitation_address: address,
+        guest_address: address,
+    }
+
+    public struct DoorLog has key {
+        id: UID,
+        entries: vector<CheckInEntry>,
+    }
+
+    public fun create_door_log(ctx: &mut TxContext) {
+        transfer::share_object(DoorLog {
+            id: object::new(ctx),
+            entries: vector[],
+        });
+    }
+
+    public fun create_invitation(recipient: address, ctx: &mut TxContext) {
+        transfer::transfer(Invitation {
+            id: object::new(ctx),
+            used: false,
+        }, recipient);
+    }
+
+    public fun check_in(log: &mut DoorLog, invitation: &mut Invitation, ctx: &TxContext) {
+        assert!(!invitation.used);
+        let inv_addr = object::uid_to_address(&invitation.id);
+        let guest_addr = ctx.sender();
+        log.entries.push_back(CheckInEntry {
+            invitation_address: inv_addr,
+            guest_address: guest_addr,
+        });
+        invitation.used = true;
+    }
+
+    public fun checked_in_count(log: &DoorLog): u64 {
+        log.entries.length()
+    }
+}
+```

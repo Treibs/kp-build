@@ -1,0 +1,98 @@
+```move
+module observatory::star_registry {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::dynamic_field;
+    use std::string::String;
+    use std::vector;
+
+    const EInsufficientFee: u64 = 1;
+
+    public struct Star has key, store {
+        id: UID,
+        name: String,
+    }
+
+    public struct Registry has key {
+        id: UID,
+        fee_amount: u64,
+        balance: Coin<SUI>,
+    }
+
+    public struct ObservatoryCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let registry = Registry {
+            id: object::new(ctx),
+            fee_amount: 1_000_000_000,
+            balance: coin::zero(ctx),
+        };
+        transfer::share_object(registry);
+
+        let cap = ObservatoryCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public fun mint_star(
+        registry: &mut Registry,
+        name: String,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Star {
+        let sender = tx_context::sender(ctx);
+        
+        assert!(coin::value(&payment) >= registry.fee_amount, EInsufficientFee);
+        coin::join(&mut registry.balance, payment);
+
+        let star = Star {
+            id: object::new(ctx),
+            name,
+        };
+
+        let star_id = object::id(&star);
+        let mut owners = vector::empty();
+        vector::push_back(&mut owners, sender);
+        dynamic_field::add(&mut registry.id, star_id, owners);
+
+        star
+    }
+
+    public fun gift_star(
+        registry: &mut Registry,
+        star: Star,
+        recipient: address,
+    ) {
+        let star_id = object::id(&star);
+        let mut owners: vector<address> = dynamic_field::remove(&mut registry.id, star_id);
+        vector::push_back(&mut owners, recipient);
+        dynamic_field::add(&mut registry.id, star_id, owners);
+
+        transfer::public_transfer(star, recipient);
+    }
+
+    public fun get_transfer_count(
+        registry: &Registry,
+        star: &Star,
+    ): u64 {
+        let star_id = object::id(star);
+        let owners = dynamic_field::borrow(&registry.id, star_id);
+        vector::length(owners)
+    }
+
+    public fun sweep_balance(
+        _cap: &ObservatoryCap,
+        registry: &mut Registry,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let amount = coin::value(&registry.balance);
+        coin::split(&mut registry.balance, amount, ctx)
+    }
+}
+```

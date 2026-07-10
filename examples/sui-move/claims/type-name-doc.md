@@ -17,7 +17,7 @@ verified:
   canonical_title: ''
   match_score: 0.0
   evidence: 'public native fun get<T>(): TypeName;'
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-move-book

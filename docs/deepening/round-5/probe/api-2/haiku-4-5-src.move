@@ -1,0 +1,90 @@
+module club::badge {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::event;
+
+    public struct BadgeMinted has copy, drop {
+        badge_number: u64,
+    }
+
+    public struct Treasury has key {
+        id: UID,
+        funds: Balance<SUI>,
+        engraver_fee: u64,
+        engraver_address: address,
+        badges_minted: u64,
+    }
+
+    public struct MinterCap has key, store {
+        id: UID,
+    }
+
+    public struct Badge has key, store {
+        id: UID,
+        number: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let treasury = Treasury {
+            id: object::new(ctx),
+            funds: balance::zero(),
+            engraver_fee: 0,
+            engraver_address: @0x0,
+            badges_minted: 0,
+        };
+
+        let cap = MinterCap { id: object::new(ctx) };
+
+        transfer::share_object(treasury);
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public fun setup(
+        treasury: &mut Treasury,
+        engraver: address,
+        fee: u64,
+    ) {
+        treasury.engraver_address = engraver;
+        treasury.engraver_fee = fee;
+    }
+
+    public fun deposit(treasury: &mut Treasury, payment: Coin<SUI>) {
+        let coin_balance = coin::into_balance(payment);
+        balance::join(&mut treasury.funds, coin_balance);
+    }
+
+    public fun mint(
+        treasury: &mut Treasury,
+        _cap: &MinterCap,
+        ctx: &mut TxContext,
+    ): Badge {
+        assert!(balance::value(&treasury.funds) >= treasury.engraver_fee, 0);
+        
+        let payout_balance = balance::split(&mut treasury.funds, treasury.engraver_fee);
+        let payout = coin::from_balance(payout_balance, ctx);
+        transfer::public_transfer(payout, treasury.engraver_address);
+        
+        treasury.badges_minted = treasury.badges_minted + 1;
+
+        let badge = Badge {
+            id: object::new(ctx),
+            number: treasury.badges_minted,
+        };
+
+        event::emit(BadgeMinted { badge_number: treasury.badges_minted });
+
+        badge
+    }
+
+    public fun badges_minted(treasury: &Treasury): u64 {
+        treasury.badges_minted
+    }
+
+    public fun treasury_balance(treasury: &Treasury): u64 {
+        balance::value(&treasury.funds)
+    }
+}

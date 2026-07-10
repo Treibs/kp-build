@@ -21,7 +21,7 @@ verified:
   match_score: 0.0
   evidence: '<pre><code><b>public</b> <b>fun</b> <a href="../std/option.md#std_option_swap">swap</a>&lt;Element&gt;(t:
     &<b>mut</b> <a href="../std/option.md#std_option_Optio'
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-framework-docs

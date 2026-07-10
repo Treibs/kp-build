@@ -1,0 +1,5 @@
+[package]
+name = "empty_vector_annotation_red"
+edition = "2024"
+
+[dependencies]

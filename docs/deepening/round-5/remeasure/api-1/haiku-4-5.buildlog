@@ -1,0 +1,14 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:16:18
+   │
+16 │         records: vector<CheckInRecord>,
+   │                  ^^^^^^^^^^^^^^^^^^^^^
+   │                  │      │
+   │                  │      The type 'vector<party_door::door::CheckInRecord>' can have the ability 'store' but the type argument 'party_door::door::CheckInRecord' does not have the required ability 'store'
+   │                  Invalid field type. The struct was declared with the ability 'key' so all fields require the ability 'store'
+   │                  The type 'vector<party_door::door::CheckInRecord>' does not have the ability 'store'
+

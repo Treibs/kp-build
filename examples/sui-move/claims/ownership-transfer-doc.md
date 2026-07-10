@@ -27,7 +27,7 @@ verified:
     the module that defines the
 
     `T`, and has a type constraint `T: key`. While `public_transfe'
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: sui-move-book

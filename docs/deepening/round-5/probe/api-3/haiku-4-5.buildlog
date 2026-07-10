@@ -1,0 +1,47 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:2:33
+  │
+2 │     use sui::coin::{Self, Coin, split};
+  │                                 ^^^^^ Unused 'use' of alias 'split'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09009]: unused struct field
+   ┌─ ./sources/module.move:10:9
+   │
+10 │         label: vector<u8>,
+   │         ^^^^^ The 'label' field of the 'Envelope' type is unused
+   │
+   = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:40:9
+   │
+14 │     public fun split_budget(
+   │                ------------ Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+40 │         transfer::public_transfer(current_coin, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                                       │
+   │         │                                       Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:40:62
+   │
+16 │         envelopes: vector<Envelope>,
+   │         ---------  ----------------
+   │         │          │      │
+   │         │          │      The type 'vector<envelope_budget::splitter::Envelope>' can have the ability 'drop' but the type argument 'envelope_budget::splitter::Envelope' does not have the required ability 'drop'
+   │         │          The type 'vector<envelope_budget::splitter::Envelope>' does not have the ability 'drop'
+   │         The parameter 'envelopes' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+40 │         transfer::public_transfer(current_coin, ctx.sender());
+   │                                                              ^ Invalid return
+

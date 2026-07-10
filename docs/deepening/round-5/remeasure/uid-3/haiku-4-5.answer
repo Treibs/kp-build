@@ -1,0 +1,93 @@
+```move
+module stars::registry {
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::sui::SUI;
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::table::{Self, Table};
+    use std::string::String;
+    use std::vector;
+
+    public struct Star has key, store {
+        id: UID,
+        name: String,
+    }
+
+    public struct Observatory has key {
+        id: UID,
+        fees: Balance<SUI>,
+        provenance: Table<ID, vector<address>>,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, ctx.sender());
+
+        let observatory = Observatory {
+            id: object::new(ctx),
+            fees: balance::zero(),
+            provenance: table::new(ctx),
+        };
+        transfer::share_object(observatory);
+    }
+
+    public fun mint(
+        observatory: &mut Observatory,
+        name: String,
+        fee: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Star {
+        let fee_amount = coin::value(&fee);
+        assert!(fee_amount > 0, 0);
+        
+        balance::join(&mut observatory.fees, coin::into_balance(fee));
+        
+        let sender = ctx.sender();
+        let star = Star {
+            id: object::new(ctx),
+            name,
+        };
+        
+        let star_id = object::uid_to_inner(&star.id);
+        table::add(&mut observatory.provenance, star_id, vector[sender]);
+        
+        star
+    }
+
+    public fun gift(
+        observatory: &mut Observatory,
+        star: Star,
+        recipient: address,
+    ) {
+        let star_id = object::uid_to_inner(&star.id);
+        let history = table::borrow_mut(&mut observatory.provenance, star_id);
+        vector::push_back(history, recipient);
+        
+        transfer::public_transfer(star, recipient);
+    }
+
+    public fun owner_count(
+        observatory: &Observatory,
+        star_id: ID,
+    ): u64 {
+        vector::length(table::borrow(&observatory.provenance, star_id))
+    }
+
+    public fun sweep_fees(
+        _cap: &AdminCap,
+        observatory: &mut Observatory,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let amount = balance::value(&observatory.fees);
+        coin::from_balance(balance::split(&mut observatory.fees, amount), ctx)
+    }
+}
+```

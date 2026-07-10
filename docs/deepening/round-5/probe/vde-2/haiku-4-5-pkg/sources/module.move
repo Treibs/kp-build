@@ -1,0 +1,32 @@
+module card_game::deck {
+    use std::vector;
+    
+    public struct Card has key, store {
+        id: UID,
+        rank: u8,
+        suit: u8,
+    }
+    
+    public fun deal_deck(players: vector<address>, ctx: &mut TxContext) {
+        let mut card_index = 0;
+        let mut current_player = 0;
+        let num_players = vector::length(&players);
+        
+        while (card_index < 52) {
+            let rank = (card_index % 13) as u8;
+            let suit = (card_index / 13) as u8;
+            
+            let card = Card {
+                id: object::new(ctx),
+                rank,
+                suit,
+            };
+            
+            let player = *vector::borrow(&players, current_player);
+            transfer::public_transfer(card, player);
+            
+            current_player = (current_player + 1) % num_players;
+            card_index = card_index + 1;
+        };
+    }
+}

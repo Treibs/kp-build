@@ -1,0 +1,62 @@
+module book_wishlist::board {
+    use std::string::String;
+    use sui::table::{Self, Table};
+
+    public struct Board has key {
+        id: UID,
+        lists: Table<address, vector<String>>,
+        reader_count: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(Board {
+            id: object::new(ctx),
+            lists: table::new(ctx),
+            reader_count: 0,
+        });
+    }
+
+    public fun add_title(board: &mut Board, title: String, ctx: &mut TxContext) {
+        let reader = ctx.sender();
+        if (!board.lists.contains(reader)) {
+            board.lists.add(reader, vector[]);
+            board.reader_count = board.reader_count + 1;
+        };
+        board.lists.borrow_mut(reader).push_back(title);
+    }
+
+    public fun strike_title(board: &mut Board, title: String, ctx: &mut TxContext) {
+        let reader = ctx.sender();
+        assert!(board.lists.contains(reader));
+        let mut titles = board.lists.remove(reader);
+        let len = titles.length();
+        let mut i = 0;
+        let mut found_idx = len;
+        while (i < len) {
+            if (*titles.borrow(i) == title) {
+                found_idx = i;
+                break
+            };
+            i = i + 1;
+        };
+        assert!(found_idx < len);
+        titles.remove(found_idx);
+        if (titles.is_empty()) {
+            board.reader_count = board.reader_count - 1;
+        } else {
+            board.lists.add(reader, titles);
+        };
+    }
+
+    public fun wish_count(board: &Board, reader: address): u64 {
+        if (!board.lists.contains(reader)) {
+            0
+        } else {
+            board.lists.borrow(reader).length()
+        }
+    }
+
+    public fun reader_count(board: &Board): u64 {
+        board.reader_count
+    }
+}
