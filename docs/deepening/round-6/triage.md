@@ -20,9 +20,9 @@ pack size — experiment 8 makes the comparison formally.
 
 | task / model | observed | verdict | reason |
 |---|---|---|---|
-| opt-1 / haiku | E03003 — `use std::option::{self, Option}` lowercase group-`self` | **not beat-worthy** | round-1 `use-self` **ignored while loaded** (event ~6 of the series). NOTE: the std::option *path* is correct — the territory's own class did not fire |
+| opt-1 / haiku | E03003 ×3 — lowercase group-`self` in THREE imports (`std::option`, `sui::object`, `sui::table`) **plus two further independent classes the first triage missed** (review round 1's whole-log catch): `Table<(u64,u64), …>` with tuple locals (E04004 + E04005 ×4 — **`tuple-bleed`, a new probe-elicited class that was beat-eligible under this round's own rule and was MISSED**; round-7 top candidate with the miss disclosed) and `public fun init` (Sui E02003, adjacent to the taught `otw-init` shape) | **not beat-worthy** (self) / **missed beat** (tuple-bleed) | `use-self` ignored (event ~6). The std::option *path* is correct — the territory's own class did not fire |
 | opt-3 / haiku | E03003 — same lowercase `self` shape in `std::option` | **not beat-worthy** | `use-self` ignored again (event ~7) |
-| ctx-3 / haiku | E03003 ×2 + 6 cascades — `use sui::balance::{self, …}` | **not beat-worthy** | `use-self` ignored again (event ~8 — three events in ONE draw) |
+| ctx-3 / haiku | E03003 ×2 + 6 cascades — `use sui::balance::{self, …}` (two lowercase-self imports in this answer) | **not beat-worthy** | `use-self` ignored again (event ~8; the three-shapes-in-one-answer case is opt-1's, corrected in review round 1) |
 | brm-1 / haiku | E03006 ×3 — `coin::value(…)` with only `use sui::coin::Coin` bound | **not beat-worthy** | round-3 `missing-module-import` ignored while loaded |
 | brm-3 / haiku | E04024 — `let SubmissionData { candidate, score, fee } = …` then `&mut fee` (binding not `mut`) | **not beat-worthy** | the taught `param-mut` rule's own doc claim names destructuring bindings; ignored while loaded (destructure shape) |
 | csp-2 / haiku | E04024 — `deposit: Coin<SUI>` param mutated without `mut` | **not beat-worthy** | `param-mut` ignored while loaded (exact taught shape). NOTE: the split itself is written correctly (`coin::split(&mut deposit, amt, ctx)`) — the territory's misconceptions did not fire |
@@ -39,11 +39,14 @@ pack size — experiment 8 makes the comparison formally.
   branches or matching types; no E04007-branch or abort-semicolon shape anywhere.
 - **coin-split-shapes: clean** — every split site in passing (and failing) answers is the
   correct `coin::split(&mut …, amount, ctx)`; neither by-value nor pair-return fired.
-- **moved-value-arg-order: clean** — mva-1/mva-2 hoist the recorded address before the move
-  (`let winner = trophy.winner;` verbatim in both models).
-- **api-arity-ctx: clean-with-avoidance** — every empty-value site used `balance::zero()`
-  (correctly nullary, and the pack-idiomatic W99003-avoiding choice); the `coin::zero(ctx)`
-  corner was never reached. Recorded as avoidance, not knowledge.
+- **moved-value-arg-order: clean on the gate** — mva-1 hoists in both models and mva-2/sonnet
+  hoists; mva-2/haiku never moves a parcel at all (scalar-parameter redesign — the task's
+  delivery is unimplemented but compiles; corner unexercised there; corrected in review
+  round 1).
+- **api-arity-ctx: clean-with-avoidance** — the ctx tasks' empty-value sites used
+  `balance::zero()` (correctly nullary, the pack-idiomatic choice); one off-territory answer
+  (brm-1/sonnet) used `coin::zero(ctx)` correctly (sentence corrected in review round 1).
+  Recorded as avoidance on the ctx tasks, not knowledge.
 
 ## Import sweep (replication point #4)
 
@@ -61,3 +64,14 @@ the un-confounded points remain the experiment (3/8, 1/8) and the round-5 sweep 
 Deliberately NOT taught this round despite ledger strength (the design's controlled cost):
 `std-option-path` (×2 held-out), `branch-type-mismatch` (×2), `split-by-value`/pair (×1/×1),
 plus every ignored-rule event above. All carry to the round-7 ledger unchanged.
+
+
+## Corrections (review round 1)
+
+- opt-1's log was not fully root-caused in the first version: it carries `use-self` ×3 (the
+  actual three-in-one-draw case, misattributed to ctx-3), plus two missed independent
+  classes — `tuple-bleed` (E04004/E04005, **beat-eligible under this round's own old-way
+  rule and missed**; carried to round 7 with the miss disclosed rather than taught
+  post-freeze) and an `init`-shape Sui E02003 (otw-init-adjacent).
+- The api-arity and mva clean-corner sentences were tightened against greps (brm-1/sonnet's
+  correct `coin::zero(ctx)`; mva-2/haiku's unexercised corner).
