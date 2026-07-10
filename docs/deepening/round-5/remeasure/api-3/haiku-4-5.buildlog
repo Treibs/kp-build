@@ -1,0 +1,27 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09009]: unused struct field
+  ┌─ ./sources/module.move:8:9
+  │
+8 │         label: vector<u8>,
+  │         ^^^^^ The 'label' field of the 'Envelope' type is unused
+  │
+  = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:36:9
+   │
+13 │     public fun split_budget(
+   │                ------------ Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+36 │         transfer::public_transfer(budget, ctx.sender());
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │                                 │
+   │         │                                 Transaction sender address coming from here
+   │         Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+
