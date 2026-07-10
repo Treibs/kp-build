@@ -2,8 +2,8 @@
 
 **Verdict: NO HEADLINE (ship-rule branch 3).** kp134 3/6 vs kp128 5/6 compile-pass (base
 4/6); clean-compile tied 2/6 = 2/6 = 2/6. Branch 1 does not fire; the pack arm sits *below*
-its predecessor this draw — attributed below to untaught-class draw variance, not to the
-round-6 beats.
+its predecessor this draw — see the attribution section: harm and draw variance are
+indistinguishable at this n (verdict line harmonized in review round 1).
 
 Pre-registered at `4247c97` before any answer (arms, full payload SHAs, frozen rule, the
 declined-class observational analysis, the per-class carrier map; six tasks through a
