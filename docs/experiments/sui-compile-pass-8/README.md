@@ -35,7 +35,7 @@ fires, not the selection criterion.
 | task | base | kp128 | kp134 |
 |---|---|---|---|
 | wine-cellar | PASS WARN3 | PASS CLEAN | PASS CLEAN |
-| plant-clinic | PASS CLEAN | FAIL E03002 — `use std::table` (**`std-table-path`, ×2 cumulative → promoted round-7 candidate**) +11 cascades | FAIL E04004 — `Option<(vector<u8>, vector<u8>)>`: a TUPLE as a type argument in return position — **`tuple-bleed`** (the round-6 review's missed-beat class; correction, review round 1: this task was NOT its pre-registered carrier — the class was pre-registered observationally, the carrier map named only quilt-bee) |
+| plant-clinic | PASS CLEAN | FAIL E03002 — `use std::table` (**`std-table-path`, ×2 cumulative → promoted round-7 candidate**) + 10 cascades + one independent E03003 (lowercase group-`self` — `use-self` ledger event ~12; review round 2's catch) | FAIL E04004 — `Option<(vector<u8>, vector<u8>)>`: a TUPLE as a type argument in return position — **`tuple-bleed`** (the round-6 review's missed-beat class; correction, review round 1: this task was NOT its pre-registered carrier — the class was pre-registered observationally, the carrier map named only quilt-bee) |
 | ferry-manifest | FAIL E01002 (parse at the capacity `if`) +7 | PASS WARN2 | FAIL E04007 — `coin::take(&mut toll_payment, …)` on a `Coin` (take operates on `Balance`) — the api-argument family round 5 seeded and round 6 probed clean |
 | quilt-bee | PASS WARN5 | PASS WARN1 | FAIL E04004 ×2 (+21 cascades) — `vector<(address, Square)>`: **`tuple-bleed` through its one pre-registered carrier — and (review round 1's catch) this storage shape is covered by kp134's own loaded doc claim** ("References (and tuples) are the only types that cannot be stored as struct field values"), so this firing scores **loaded-rule-ignored at doc tier**, not untaught |
 | tide-tables | PASS CLEAN | PASS CLEAN | PASS CLEAN |
@@ -58,8 +58,9 @@ fires, not the selection criterion.
   storage prohibition, so quilt-bee/kp134 is a doc-tier loaded-rule-ignored event, and
   plant-clinic's return-position tuple is untaught in both arms. Further, a **steering
   hypothesis is live and cannot be excluded at n=1 per cell**: on plant-clinic, both
-  beat-less arms chose `Option<ID>` (the round-6 GREEN's exact guidance) and compiled, while
-  the arm carrying that guidance abandoned it for the tuple and failed — consistent with the
+  beat-less arms chose `Option<ID>` (the round-6 GREEN's exact guidance), which drew no
+  error (kp128's task still failed on the unrelated `std::table` import), while the arm
+  carrying that guidance abandoned it for the tuple and failed — consistent with the
   reference-type-argument beats redirecting answers into the untaught tuple sibling. The
   honest statement: **harm and draw variance are indistinguishable here**; what is
   established is only that round 6 added nothing measurable while the classes it left
@@ -70,7 +71,7 @@ fires, not the selection criterion.
   top candidate), `std-table-path` (×2, promoted), `balance-api-on-coin` (`coin::take`/`put`
   on `Coin`, ×2, promoted), `std-option-path` (×3, carried), `moved-value-arg-order` (×2,
   carried), `branch-type-mismatch` (×2, carried), plus the ignored-rule ledger (`use-self`
-  ~11 events) which no beat can address.
+  ~12 events, incl. plant-clinic/kp128's — review round 2) which no beat can address.
 
 ## Reading
 
