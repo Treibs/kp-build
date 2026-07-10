@@ -1,0 +1,71 @@
+module plant_clinic::clinic {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::table::{Self, Table};
+    use std::string::String;
+    use sui::transfer;
+    use std::option::{Self, Option};
+
+    public struct PlantCase has key {
+        id: UID,
+        gardener: address,
+        species: String,
+        symptom: String,
+    }
+
+    public struct Clinic has key {
+        id: UID,
+        open_cases: Table<address, ID>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let clinic = Clinic {
+            id: object::new(ctx),
+            open_cases: table::new(ctx),
+        };
+        transfer::share_object(clinic);
+    }
+
+    public fun open_case(
+        clinic: &mut Clinic,
+        species: String,
+        symptom: String,
+        ctx: &mut TxContext,
+    ) {
+        let gardener = tx_context::sender(ctx);
+        assert!(!table::contains(&clinic.open_cases, gardener), 1);
+
+        let case = PlantCase {
+            id: object::new(ctx),
+            gardener,
+            species,
+            symptom,
+        };
+
+        let case_id = object::id(&case);
+        table::add(&mut clinic.open_cases, gardener, case_id);
+        transfer::transfer(case, gardener);
+    }
+
+    public fun close_case(
+        clinic: &mut Clinic,
+        case: PlantCase,
+    ) {
+        let PlantCase { id, gardener, species: _, symptom: _ } = case;
+        assert!(table::contains(&clinic.open_cases, gardener), 2);
+        let _ = table::remove(&mut clinic.open_cases, gardener);
+        object::delete(id);
+    }
+
+    public fun get_gardener_case(clinic: &Clinic, gardener: address): Option<ID> {
+        if (table::contains(&clinic.open_cases, gardener)) {
+            option::some(*table::borrow(&clinic.open_cases, gardener))
+        } else {
+            option::none()
+        }
+    }
+
+    public fun count_open_cases(clinic: &Clinic): u64 {
+        table::length(&clinic.open_cases)
+    }
+}

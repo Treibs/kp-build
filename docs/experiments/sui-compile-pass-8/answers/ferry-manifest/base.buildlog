@@ -1,0 +1,75 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:59:9
+   │
+59 │         if (ferry.space_used + deck_space > ferry.capacity) {
+   │         ^^
+   │         │
+   │         Unexpected 'if'
+   │         Expected ';'
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:64:9
+   │
+64 │         let required_toll = deck_space * ferry.toll_rate;
+   │         ^^^
+   │         │
+   │         Unexpected 'let'
+   │         Expected ';'
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:72:9
+   │
+72 │         ferry.space_used = ferry.space_used + deck_space;
+   │         ^^^^^
+   │         │
+   │         Unexpected 'ferry'
+   │         Expected ';'
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:79:9
+   │
+79 │         if (paid > required_toll) {
+   │         ^^
+   │         │
+   │         Unexpected 'if'
+   │         Expected ';'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:80:26
+    │
+ 51 │         payment: Coin<SUI>,
+    │                  --------- Given: 'sui::coin::Coin<sui::sui::SUI>'
+    ·
+ 80 │             let change = coin::take(&mut payment, paid - required_toll, ctx);
+    │                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::coin::take'. Invalid argument for parameter 'balance'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:153:34
+    │
+153 │ public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    │                                  ---------- Expected: 'sui::balance::Balance<_>'
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:80:26
+   │
+80 │             let change = coin::take(&mut payment, paid - required_toll, ctx);
+   │                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:84:9
+   │
+84 │         coin::burn_for_free(payment);
+   │         ^^^^
+   │         │
+   │         Unexpected 'coin'
+   │         Expected ';'
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:84:9
+   │
+84 │         coin::burn_for_free(payment);
+   │         ^^^^^^^^^^^^^^^^^^^ Invalid module access. Unbound function 'burn_for_free' in module 'sui::coin'
+

@@ -1,0 +1,124 @@
+```move
+module ferry::manifest {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::dynamic_field;
+    use sui::event;
+    use std::string::String;
+
+    public struct Vehicle has key, store {
+        id: UID,
+        plate: String,
+        deck_space: u64,
+        owner: address,
+    }
+
+    public struct Ferry has key {
+        id: UID,
+        toll_rate: u64,
+        capacity: u64,
+        space_used: u64,
+        collected: Balance<SUI>,
+    }
+
+    public struct PurserCap has key, store {
+        id: UID,
+    }
+
+    public struct Boarded has copy, drop {
+        vehicle_id: ID,
+        owner: address,
+        deck_space: u64,
+    }
+
+    public struct Disembarked has copy, drop {
+        vehicle_id: ID,
+        owner: address,
+    }
+
+    public fun create_ferry(
+        capacity: u64,
+        toll_rate: u64,
+        ctx: &mut TxContext,
+    ): (Ferry, PurserCap) {
+        let ferry = Ferry {
+            id: object::new(ctx),
+            toll_rate,
+            capacity,
+            space_used: 0,
+            collected: balance::zero(),
+        };
+        let cap = PurserCap {
+            id: object::new(ctx),
+        };
+        (ferry, cap)
+    }
+
+    public fun board(
+        ferry: &mut Ferry,
+        vehicle: Vehicle,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let owner = vehicle.owner;
+        let deck_space = vehicle.deck_space;
+        let required_toll = deck_space * ferry.toll_rate;
+        let payment_value = coin::value(&payment);
+
+        let is_closed = ferry.space_used >= ferry.capacity;
+        let would_overshoot = ferry.space_used + deck_space > ferry.capacity;
+        let insufficient_payment = payment_value < required_toll;
+
+        if (is_closed || would_overshoot || insufficient_payment) {
+            transfer::public_transfer(payment, ctx.sender());
+            transfer::public_transfer(vehicle, owner);
+            return
+        };
+
+        let vehicle_id = object::uid_to_inner(&vehicle.id);
+        ferry.space_used = ferry.space_used + deck_space;
+        
+        let payment_balance = coin::into_balance(payment);
+        balance::join(&mut ferry.collected, payment_balance);
+
+        dynamic_field::add(&mut ferry.id, vehicle_id, vehicle);
+
+        event::emit(Boarded {
+            vehicle_id,
+            owner,
+            deck_space,
+        });
+    }
+
+    public fun disembark(
+        _cap: &PurserCap,
+        ferry: &mut Ferry,
+        vehicle_id: ID,
+    ) {
+        let vehicle: Vehicle = dynamic_field::remove(&mut ferry.id, vehicle_id);
+        let owner = vehicle.owner;
+        let deck_space = vehicle.deck_space;
+        
+        ferry.space_used = ferry.space_used - deck_space;
+        transfer::public_transfer(vehicle, owner);
+
+        event::emit(Disembarked {
+            vehicle_id,
+            owner,
+        });
+    }
+
+    public fun space_remaining(ferry: &Ferry): u64 {
+        if (ferry.capacity > ferry.space_used) {
+            ferry.capacity - ferry.space_used
+        } else {
+            0
+        }
+    }
+
+    public fun tolls_collected(ferry: &Ferry): u64 {
+        balance::value(&ferry.collected)
+    }
+}
+```

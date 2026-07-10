@@ -1,0 +1,90 @@
+```move
+module harbor::tide_board {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+    use sui::event;
+
+    public struct Harbormaster has key {
+        id: UID,
+    }
+
+    public struct TideBoard has key {
+        id: UID,
+        current_epoch: u64,
+        high_tide_level: u64,
+        posted_this_epoch: bool,
+    }
+
+    public struct Mooring has key, store {
+        id: UID,
+        draft_depth: u64,
+    }
+
+    public struct TideLevelPosted has copy, drop {
+        epoch: u64,
+        level: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let harbormaster = Harbormaster {
+            id: object::new(ctx),
+        };
+        
+        let tide_board = TideBoard {
+            id: object::new(ctx),
+            current_epoch: 0,
+            high_tide_level: 0,
+            posted_this_epoch: false,
+        };
+
+        transfer::transfer(harbormaster, tx_context::sender(ctx));
+        transfer::share_object(tide_board);
+    }
+
+    public fun post_tide_level(
+        _harbormaster: &Harbormaster,
+        tide_board: &mut TideBoard,
+        level: u64,
+        ctx: &mut TxContext,
+    ) {
+        let current_epoch = tx_context::epoch(ctx);
+
+        if (tide_board.current_epoch != current_epoch) {
+            tide_board.current_epoch = current_epoch;
+            tide_board.posted_this_epoch = false;
+        };
+
+        assert!(!tide_board.posted_this_epoch, 1);
+
+        tide_board.high_tide_level = level;
+        tide_board.posted_this_epoch = true;
+
+        event::emit(TideLevelPosted {
+            epoch: current_epoch,
+            level,
+        });
+    }
+
+    public fun can_sail(mooring: &Mooring, tide_board: &TideBoard, ctx: &TxContext): bool {
+        let current_epoch = tx_context::epoch(ctx);
+
+        if (tide_board.current_epoch != current_epoch || !tide_board.posted_this_epoch) {
+            return false
+        };
+
+        mooring.draft_depth <= tide_board.high_tide_level
+    }
+
+    public fun get_current_level(tide_board: &TideBoard): u64 {
+        tide_board.high_tide_level
+    }
+
+    public fun create_mooring(draft_depth: u64, ctx: &mut TxContext): Mooring {
+        Mooring {
+            id: object::new(ctx),
+            draft_depth,
+        }
+    }
+}
+```

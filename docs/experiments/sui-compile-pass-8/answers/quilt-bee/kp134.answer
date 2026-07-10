@@ -1,0 +1,122 @@
+```move
+module quilting_bee::bee {
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    use sui::event;
+    use std::vector;
+    use std::string::String;
+
+    public struct Square has copy, drop, store {
+        pattern: String,
+    }
+
+    public struct Quilt has key, store {
+        id: UID,
+    }
+
+    public struct QuiltingBee has key {
+        id: UID,
+        contributions: vector<(address, Square)>,
+        stitched: bool,
+    }
+
+    public struct Stitched has copy, drop {
+        contributor: address,
+        square_count: u64,
+    }
+
+    public struct OrganizerCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let cap = OrganizerCap {
+            id: object::new(ctx),
+        };
+        transfer::public_transfer(cap, ctx.sender());
+    }
+
+    public fun new_bee(ctx: &mut TxContext): QuiltingBee {
+        QuiltingBee {
+            id: object::new(ctx),
+            contributions: vector[],
+            stitched: false,
+        }
+    }
+
+    public fun contribute(
+        bee: &mut QuiltingBee,
+        square: Square,
+        contributor: address,
+    ) {
+        assert!(vector::length(&bee.contributions) < 9, 1);
+        vector::push_back(&mut bee.contributions, (contributor, square));
+    }
+
+    public fun stitch(
+        bee: &mut QuiltingBee,
+        recipient: address,
+        _cap: &OrganizerCap,
+        ctx: &mut TxContext,
+    ) {
+        assert!(vector::length(&bee.contributions) == 9, 2);
+        assert!(!bee.stitched, 3);
+
+        bee.stitched = true;
+
+        let mut processed = vector[];
+        let mut i = 0;
+        while (i < 9) {
+            let (contributor, _) = vector::borrow(&bee.contributions, i);
+
+            let mut skip = false;
+            let mut j = 0;
+            while (j < vector::length(&processed)) {
+                if (*vector::borrow(&processed, j) == *contributor) {
+                    skip = true;
+                };
+                j = j + 1;
+            };
+
+            if (!skip) {
+                vector::push_back(&mut processed, *contributor);
+                let count = count_contributor(&bee.contributions, *contributor);
+                event::emit(Stitched {
+                    contributor: *contributor,
+                    square_count: count,
+                });
+            };
+
+            i = i + 1;
+        };
+
+        while (vector::length(&bee.contributions) > 0) {
+            let _ = vector::pop_back(&mut bee.contributions);
+        };
+        vector::destroy_empty(processed);
+
+        let quilt = Quilt {
+            id: object::new(ctx),
+        };
+        transfer::public_transfer(quilt, recipient);
+    }
+
+    fun count_contributor(contributions: &vector<(address, Square)>, addr: address): u64 {
+        let mut count = 0;
+        let mut i = 0;
+        while (i < vector::length(contributions)) {
+            let (contributor, _) = vector::borrow(contributions, i);
+            if (*contributor == addr) {
+                count = count + 1;
+            };
+            i = i + 1;
+        };
+        count
+    }
+
+    public fun squares_needed(bee: &QuiltingBee): u64 {
+        9 - vector::length(&bee.contributions)
+    }
+}
+```

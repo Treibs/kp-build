@@ -1,0 +1,112 @@
+```move
+module apple_press::press {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use std::vector;
+    
+    public struct Deposit has copy, drop {
+        household: address,
+        weight: u64,
+    }
+    
+    public struct ApplePress has key {
+        id: UID,
+        keeper: address,
+        yield_rate: u64,
+        total_weight: u64,
+        pressed: bool,
+        deposits: vector<Deposit>,
+    }
+    
+    public struct CiderJug has key {
+        id: UID,
+        amount: u64,
+    }
+    
+    public fun create_press(
+        yield_rate: u64,
+        ctx: &mut TxContext,
+    ): ApplePress {
+        ApplePress {
+            id: object::new(ctx),
+            keeper: tx_context::sender(ctx),
+            yield_rate,
+            total_weight: 0,
+            pressed: false,
+            deposits: vector::empty(),
+        }
+    }
+    
+    public fun deposit_crates(
+        press: &mut ApplePress,
+        weight: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(!press.pressed, 1);
+        
+        let sender = tx_context::sender(ctx);
+        let mut found = false;
+        
+        let mut i = 0;
+        while (i < vector::length(&press.deposits)) {
+            let deposit = vector::borrow_mut(&mut press.deposits, i);
+            if (deposit.household == sender) {
+                deposit.weight = deposit.weight + weight;
+                found = true;
+                break;
+            };
+            i = i + 1;
+        };
+        
+        if (!found) {
+            vector::push_back(&mut press.deposits, Deposit { household: sender, weight });
+        };
+        
+        press.total_weight = press.total_weight + weight;
+    }
+    
+    public fun press(
+        press: &mut ApplePress,
+        ctx: &mut TxContext,
+    ) {
+        assert!(!press.pressed, 1);
+        assert!(tx_context::sender(ctx) == press.keeper, 2);
+        assert!(press.total_weight > 0, 3);
+        
+        press.pressed = true;
+        
+        let total_cider = (press.total_weight as u128) * (press.yield_rate as u128);
+        let mut distributed = 0u128;
+        
+        let mut i = 0;
+        while (i < vector::length(&press.deposits)) {
+            let deposit = vector::borrow(&press.deposits, i);
+            let household_share = (deposit.weight as u128 * total_cider) / (press.total_weight as u128);
+            let jug = CiderJug {
+                id: object::new(ctx),
+                amount: (household_share as u64),
+            };
+            transfer::transfer(jug, deposit.household);
+            distributed = distributed + household_share;
+            i = i + 1;
+        };
+        
+        let remainder = ((total_cider - distributed) as u64);
+        let keeper_jug = CiderJug {
+            id: object::new(ctx),
+            amount: remainder,
+        };
+        transfer::transfer(keeper_jug, press.keeper);
+    }
+    
+    public fun weight_waiting(press: &ApplePress): u64 {
+        assert!(!press.pressed, 1);
+        press.total_weight
+    }
+    
+    public fun is_pressed(press: &ApplePress): bool {
+        press.pressed
+    }
+}
+```

@@ -1,0 +1,109 @@
+```move
+module wine_cellar::cellar {
+    use std::string::{Self, String};
+    use std::vector;
+    use std::option::{Self, Option};
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+
+    public struct Bottle has store {
+        vintage: u64,
+        label: String,
+    }
+
+    public struct BottleInfo has copy, drop {
+        vintage: u64,
+        label_bytes: vector<u8>,
+    }
+
+    public struct SommeCap has key, store {
+        id: UID,
+    }
+
+    public struct WineCellar has key {
+        id: UID,
+        bottles: vector<Bottle>,
+        reserve_list: vector<u64>,
+    }
+
+    public struct CELLAR has drop {}
+
+    fun init(_otw: CELLAR, ctx: &mut TxContext) {
+        let cellar = WineCellar {
+            id: object::new(ctx),
+            bottles: vector[],
+            reserve_list: vector[],
+        };
+        
+        let cap = SommeCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(cellar);
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun rack_bottle(
+        cellar: &mut WineCellar,
+        vintage: u64,
+        label: String,
+    ) {
+        vector::push_back(&mut cellar.bottles, Bottle { vintage, label });
+    }
+
+    public fun unrack_bottle(
+        cellar: &mut WineCellar,
+        index: u64,
+    ): Bottle {
+        vector::remove(&mut cellar.bottles, index)
+    }
+
+    public fun is_reserved(cellar: &WineCellar, vintage: u64): bool {
+        vector::contains(&cellar.reserve_list, &vintage)
+    }
+
+    public fun add_to_reserve(
+        _cap: &SommeCap,
+        cellar: &mut WineCellar,
+        vintage: u64,
+    ) {
+        if (!vector::contains(&cellar.reserve_list, &vintage)) {
+            vector::push_back(&mut cellar.reserve_list, vintage);
+        }
+    }
+
+    public fun get_oldest(cellar: &WineCellar): Option<BottleInfo> {
+        if (vector::is_empty(&cellar.bottles)) {
+            return option::none()
+        };
+        
+        let mut oldest_index = 0;
+        let mut oldest_vintage = vector::borrow(&cellar.bottles, 0).vintage;
+        let mut i = 1;
+        
+        while (i < vector::length(&cellar.bottles)) {
+            let bottle = vector::borrow(&cellar.bottles, i);
+            if (bottle.vintage < oldest_vintage) {
+                oldest_vintage = bottle.vintage;
+                oldest_index = i;
+            };
+            i = i + 1;
+        };
+        
+        let bottle = vector::borrow(&cellar.bottles, oldest_index);
+        let label_bytes_ref = string::as_bytes(&bottle.label);
+        let mut label_bytes = vector[];
+        let mut j = 0;
+        while (j < vector::length(label_bytes_ref)) {
+            vector::push_back(&mut label_bytes, *vector::borrow(label_bytes_ref, j));
+            j = j + 1;
+        };
+        
+        option::some(BottleInfo {
+            vintage: bottle.vintage,
+            label_bytes,
+        })
+    }
+}
+```

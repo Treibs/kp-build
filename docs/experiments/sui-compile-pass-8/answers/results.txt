@@ -1,0 +1,23 @@
+# Experiment 8 results — compile-pass gate + import sweep
+
+wine-cellar     base   PASS WARN3   import=NA
+wine-cellar     kp128  PASS CLEAN   import=NA
+wine-cellar     kp134  PASS CLEAN   import=NA
+plant-clinic    base   PASS CLEAN   import=NA
+plant-clinic    kp128  FAIL error[E03002]: unbound module import=NA
+plant-clinic    kp134  FAIL error[E04004]: expected a sing import=NA
+ferry-manifest  base   FAIL error[E01002]: unexpected toke import=CORRECT
+ferry-manifest  kp128  PASS WARN2   import=CORRECT
+ferry-manifest  kp134  FAIL error[E04007]: incompatible ty import=CORRECT
+quilt-bee       base   PASS WARN5   import=NA
+quilt-bee       kp128  PASS WARN1   import=NA
+quilt-bee       kp134  FAIL error[E04004]: expected a sing import=NA
+tide-tables     base   PASS CLEAN   import=NA
+tide-tables     kp128  PASS CLEAN   import=NA
+tide-tables     kp134  PASS CLEAN   import=NA
+apple-press     base   FAIL error[E05001]: ability constra import=NA
+apple-press     kp128  PASS WARN1   import=NA
+apple-press     kp134  PASS WARN1   import=NA
+
+# compile-pass: base 4/6, kp128 5/6, kp134 3/6 | clean-compile: base 2/6, kp128 2/6, kp134 2/6
+# import sweep: 0 fails (ferry CORRECT x3; others NA - only ferry bears SUI)

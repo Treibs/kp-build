@@ -1,0 +1,197 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:2:9
+  │
+2 │     use std::table::{Self, Table};
+  │         ^^^^^^^^^^ Invalid 'use'. Unbound module: 'std::table'
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:31
+  │
+3 │     use std::option::{Option, self};
+  │                               ^^^^ Invalid 'use'. Unbound member 'self' in module 'std::option'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/option.move:5:13
+  │
+5 │ module std::option;
+  │             ------ Module 'std::option' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:14:25
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+14 │         gardener_cases: Table<address, ID>,
+   │                         ^^^^^
+   │                         │
+   │                         Could not resolve the name 'Table'
+   │                         Did you mean: 'Case'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:20:29
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+20 │             gardener_cases: table::new(ctx),
+   │                             ^^^^^
+   │                             │
+   │                             Could not resolve the name 'table'
+   │                             Did you mean: 'Case'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:26:9
+   │
+26 │         registry: &mut CaseRegistry,
+   │         ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:32:18
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+32 │         assert!(!table::contains(&registry.gardener_cases, gardener), 1);
+   │                  ^^^^^
+   │                  │
+   │                  Could not resolve the name 'table'
+   │                  Did you mean: 'Case'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:40:13
+   │
+40 │         let case_id = object::uid_to_inner(&case.id);
+   │             ^^^^^^^ Unused local variable 'case_id'. Consider removing or prefixing with an underscore: '_case_id'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:41:9
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+41 │         table::add(&mut registry.gardener_cases, gardener, case_id);
+   │         ^^^^^
+   │         │
+   │         Could not resolve the name 'table'
+   │         Did you mean: 'Case'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:46:9
+   │
+46 │         registry: &mut CaseRegistry,
+   │         ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:49:13
+   │
+49 │         let gardener = case.gardener;
+   │             ^^^^^^^^ Unused local variable 'gardener'. Consider removing or prefixing with an underscore: '_gardener'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:50:17
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+50 │         assert!(table::contains(&registry.gardener_cases, gardener), 2);
+   │                 ^^^^^
+   │                 │
+   │                 Could not resolve the name 'table'
+   │                 Did you mean: 'Case'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:52:25
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+52 │         let stored_id = table::borrow(&registry.gardener_cases, gardener);
+   │                         ^^^^^
+   │                         │
+   │                         Could not resolve the name 'table'
+   │                         Did you mean: 'Case'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:55:17
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+55 │         let _ = table::remove(&mut registry.gardener_cases, gardener);
+   │                 ^^^^^
+   │                 │
+   │                 Could not resolve the name 'table'
+   │                 Did you mean: 'Case'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:61:34
+   │
+61 │     public fun case_for_gardener(registry: &CaseRegistry, gardener: address): Option<ID> {
+   │                                  ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:61:59
+   │
+61 │     public fun case_for_gardener(registry: &CaseRegistry, gardener: address): Option<ID> {
+   │                                                           ^^^^^^^^ Unused parameter 'gardener'. Consider removing or prefixing with an underscore: '_gardener'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:62:13
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+62 │         if (table::contains(&registry.gardener_cases, gardener)) {
+   │             ^^^^^
+   │             │
+   │             Could not resolve the name 'table'
+   │             Did you mean: 'Case'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:63:27
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+63 │             option::some(*table::borrow(&registry.gardener_cases, gardener))
+   │                           ^^^^^
+   │                           │
+   │                           Could not resolve the name 'table'
+   │                           Did you mean: 'Case'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:69:27
+   │
+69 │     public fun case_count(registry: &CaseRegistry): u64 {
+   │                           ^^^^^^^^ Unused parameter 'registry'. Consider removing or prefixing with an underscore: '_registry'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:70:9
+   │
+ 5 │     public struct Case has key {
+   │                   ---- Similarly named defintion found here
+   ·
+70 │         table::length(&registry.gardener_cases)
+   │         ^^^^^
+   │         │
+   │         Could not resolve the name 'table'
+   │         Did you mean: 'Case'
+
