@@ -3,7 +3,8 @@
 Probe: 15 incidental-shaped tasks × 2 models, kp128 loaded (sha `d9e414e7…`), pinned
 `sui 1.74.1-8fc60f1fa966`, import checker on every answer. **haiku 7/15, sonnet 15/15**
 ([probe/results.txt](probe/results.txt)). Eight failing runs, all haiku; every log
-root-caused in full.
+root-caused in full as corrected by review round 1 (the opt-1 log's full causes were
+restored post-review — see Corrections below).
 
 ## The round's headline finding (before the table)
 
