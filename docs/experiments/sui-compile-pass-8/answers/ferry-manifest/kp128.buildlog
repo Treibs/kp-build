@@ -1,0 +1,27 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09009]: unused struct field
+   ┌─ ./sources/module.move:11:9
+   │
+11 │         plate: String,
+   │         ^^^^^ The 'plate' field of the 'Vehicle' type is unused
+   │
+   = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:73:13
+   │
+57 │     public fun board(
+   │                ----- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+73 │             transfer::public_transfer(payment, ctx.sender());
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │             │                                  │
+   │             │                                  Transaction sender address coming from here
+   │             Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+

@@ -1,0 +1,47 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:40:30
+   │
+40 │             squares: vector::empty(),
+   │                              ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:80:57
+   │
+80 │         let mut contributors: vector<address> = vector::empty();
+   │                                                         ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:81:47
+   │
+81 │         let mut counts: vector<u64> = vector::empty();
+   │                                               ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09004]: unnecessary trailing semicolon
+   ┌─ ./sources/module.move:96:26
+   │
+96 │                     break;
+   │                     -----^
+   │                     │    │
+   │                     │    Invalid trailing ';'
+   │                     │    A trailing ';' in an expression block implicitly adds a '()' value after the semicolon. That '()' value will not be reachable
+   │                     Any code after this expression will not be reached
+   │
+   = This warning can be suppressed with '#[allow(unused_trailing_semi)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+    ┌─ ./sources/module.move:118:41
+    │
+118 │         let mut quilt_squares = vector::empty();
+    │                                         ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+    │
+    = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

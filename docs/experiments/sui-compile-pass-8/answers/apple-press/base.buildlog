@@ -1,0 +1,34 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:18:19
+   │
+18 │         deposits: vector<Deposit>,
+   │                   ^^^^^^^^^^^^^^^
+   │                   │      │
+   │                   │      The type 'vector<apple_press::press::Deposit>' can have the ability 'store' but the type argument 'apple_press::press::Deposit' does not have the required ability 'store'
+   │                   Invalid field type. The struct was declared with the ability 'key' so all fields require the ability 'store'
+   │                   The type 'vector<apple_press::press::Deposit>' does not have the ability 'store'
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:36:31
+   │
+36 │             deposits: vector::empty(),
+   │                               ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09004]: unnecessary trailing semicolon
+   ┌─ ./sources/module.move:56:22
+   │
+56 │                 break;
+   │                 -----^
+   │                 │    │
+   │                 │    Invalid trailing ';'
+   │                 │    A trailing ';' in an expression block implicitly adds a '()' value after the semicolon. That '()' value will not be reachable
+   │                 Any code after this expression will not be reached
+   │
+   = This warning can be suppressed with '#[allow(unused_trailing_semi)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

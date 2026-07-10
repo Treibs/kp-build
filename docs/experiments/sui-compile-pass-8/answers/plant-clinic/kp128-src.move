@@ -1,0 +1,72 @@
+module plant_clinic::clinic {
+    use std::table::{Self, Table};
+    use std::option::{Option, self};
+
+    public struct Case has key {
+        id: UID,
+        species: vector<u8>,
+        symptom: vector<u8>,
+        gardener: address,
+    }
+
+    public struct CaseRegistry has key {
+        id: UID,
+        gardener_cases: Table<address, ID>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let registry = CaseRegistry {
+            id: object::new(ctx),
+            gardener_cases: table::new(ctx),
+        };
+        transfer::share_object(registry);
+    }
+
+    public fun open_case(
+        registry: &mut CaseRegistry,
+        species: vector<u8>,
+        symptom: vector<u8>,
+        ctx: &mut TxContext,
+    ) {
+        let gardener = ctx.sender();
+        assert!(!table::contains(&registry.gardener_cases, gardener), 1);
+        
+        let case = Case {
+            id: object::new(ctx),
+            species,
+            symptom,
+            gardener,
+        };
+        let case_id = object::uid_to_inner(&case.id);
+        table::add(&mut registry.gardener_cases, gardener, case_id);
+        transfer::share_object(case);
+    }
+
+    public fun close_case(
+        registry: &mut CaseRegistry,
+        case: Case,
+    ) {
+        let gardener = case.gardener;
+        assert!(table::contains(&registry.gardener_cases, gardener), 2);
+        
+        let stored_id = table::borrow(&registry.gardener_cases, gardener);
+        assert!(object::uid_to_inner(&case.id) == *stored_id, 3);
+        
+        let _ = table::remove(&mut registry.gardener_cases, gardener);
+        
+        let Case { id, species: _, symptom: _, gardener: _ } = case;
+        object::delete(id);
+    }
+
+    public fun case_for_gardener(registry: &CaseRegistry, gardener: address): Option<ID> {
+        if (table::contains(&registry.gardener_cases, gardener)) {
+            option::some(*table::borrow(&registry.gardener_cases, gardener))
+        } else {
+            option::none()
+        }
+    }
+
+    public fun case_count(registry: &CaseRegistry): u64 {
+        table::length(&registry.gardener_cases)
+    }
+}

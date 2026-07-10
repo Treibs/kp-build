@@ -1,0 +1,93 @@
+module wine_cellar::cellar {
+    use std::vector;
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    
+    public struct Bottle has key, store {
+        id: UID,
+        vintage_year: u64,
+        label: vector<u8>,
+        owner: address,
+    }
+    
+    public struct WineCellar has key {
+        id: UID,
+        bottles: vector<Bottle>,
+        reserve_years: vector<u64>,
+    }
+    
+    public struct SommelierCap has key, store {
+        id: UID,
+    }
+    
+    fun init(ctx: &mut TxContext) {
+        let cellar = WineCellar {
+            id: object::new(ctx),
+            bottles: vector[],
+            reserve_years: vector[],
+        };
+        transfer::share_object(cellar);
+        
+        let cap = SommelierCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+    
+    public fun rack_bottle(
+        cellar: &mut WineCellar,
+        vintage_year: u64,
+        label: vector<u8>,
+        ctx: &mut TxContext,
+    ) {
+        let bottle = Bottle {
+            id: object::new(ctx),
+            vintage_year,
+            label,
+            owner: ctx.sender(),
+        };
+        vector::push_back(&mut cellar.bottles, bottle);
+    }
+    
+    public fun unrack_bottle(
+        cellar: &mut WineCellar,
+        index: u64,
+        ctx: &mut TxContext,
+    ): Bottle {
+        let bottle = vector::remove(&mut cellar.bottles, index);
+        assert!(bottle.owner == ctx.sender(), 1);
+        bottle
+    }
+    
+    public fun add_reserve_year(
+        _cap: &SommelierCap,
+        cellar: &mut WineCellar,
+        year: u64,
+    ) {
+        if (!vector::contains(&cellar.reserve_years, &year)) {
+            vector::push_back(&mut cellar.reserve_years, year);
+        }
+    }
+    
+    public fun is_reserve(cellar: &WineCellar, vintage_year: u64): bool {
+        vector::contains(&cellar.reserve_years, &vintage_year)
+    }
+    
+    public fun oldest_bottle(cellar: &WineCellar): (u64, vector<u8>) {
+        assert!(vector::length(&cellar.bottles) > 0, 2);
+        
+        let mut oldest_year = 999999;
+        let mut oldest_label: vector<u8> = vector[];
+        let mut i = 0;
+        while (i < vector::length(&cellar.bottles)) {
+            let bottle = vector::borrow(&cellar.bottles, i);
+            if (bottle.vintage_year < oldest_year) {
+                oldest_year = bottle.vintage_year;
+                oldest_label = bottle.label;
+            };
+            i = i + 1;
+        };
+        (oldest_year, oldest_label)
+    }
+}

@@ -1,0 +1,18 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:65:20
+    │
+ 52 │         toll_payment: Coin<SUI>,
+    │                       --------- Given: 'sui::coin::Coin<sui::sui::SUI>'
+    ·
+ 65 │         let toll = coin::take(&mut toll_payment, required, ctx);
+    │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::coin::take'. Invalid argument for parameter 'balance'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:153:34
+    │
+153 │ public fun take<T>(balance: &mut Balance<T>, value: u64, ctx: &mut TxContext): Coin<T> {
+    │                                  ---------- Expected: 'sui::balance::Balance<_>'
+

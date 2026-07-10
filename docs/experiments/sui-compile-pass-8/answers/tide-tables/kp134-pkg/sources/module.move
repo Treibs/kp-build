@@ -1,0 +1,68 @@
+module tideboardtest::tideboard {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct TideBoard has key {
+        id: UID,
+        posted_epoch: u64,
+        level: u64,
+    }
+
+    public struct Mooring has key, store {
+        id: UID,
+        draft: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let board = TideBoard {
+            id: object::new(ctx),
+            posted_epoch: 0,
+            level: 0,
+        };
+        transfer::share_object(board);
+
+        let cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun post_tide(
+        _cap: &AdminCap,
+        board: &mut TideBoard,
+        level: u64,
+        ctx: &TxContext,
+    ) {
+        let epoch = tx_context::epoch(ctx);
+        assert!(epoch > board.posted_epoch, 1);
+        
+        board.posted_epoch = epoch;
+        board.level = level;
+    }
+
+    public fun can_sail(board: &TideBoard, mooring: &Mooring, ctx: &TxContext): bool {
+        let current_epoch = tx_context::epoch(ctx);
+        if (current_epoch == board.posted_epoch) {
+            board.level >= mooring.draft
+        } else {
+            false
+        }
+    }
+
+    public fun get_last_posted_level(board: &TideBoard): u64 {
+        assert!(board.posted_epoch > 0, 2);
+        board.level
+    }
+
+    public fun new_mooring(draft: u64, ctx: &mut TxContext): Mooring {
+        Mooring {
+            id: object::new(ctx),
+            draft,
+        }
+    }
+}

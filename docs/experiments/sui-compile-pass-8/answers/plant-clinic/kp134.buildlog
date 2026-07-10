@@ -1,0 +1,31 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:63:8
+   │
+63 │     ): Option<(vector<u8>, vector<u8>)> {
+   │        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │        │      │
+   │        │      Expected a single non-reference type, but found: '(vector<u8>, vector<u8>)'
+   │        Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:66:13
+   │
+66 │             option::some((case_data.species, case_data.symptom))
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │             │            │
+   │             │            Expected a single non-reference type, but found: '(vector<u8>, vector<u8>)'
+   │             Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:68:13
+   │
+66 │             option::some((case_data.species, case_data.symptom))
+   │                          -------------------------------------- Expected a single non-reference type, but found: '(vector<u8>, vector<u8>)'
+67 │         } else {
+68 │             option::none()
+   │             ^^^^^^^^^^^^^^ Invalid type argument
+

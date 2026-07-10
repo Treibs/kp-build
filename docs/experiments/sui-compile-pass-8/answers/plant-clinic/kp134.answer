@@ -1,0 +1,77 @@
+```move
+module plant_clinic::clinic {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::dynamic_field;
+    use std::option::{Self, Option};
+
+    public struct ClinicianCap has key, store {
+        id: UID,
+    }
+
+    public struct CaseData has store, copy, drop {
+        species: vector<u8>,
+        symptom: vector<u8>,
+    }
+
+    public struct Clinic has key {
+        id: UID,
+        case_count: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let clinic = Clinic {
+            id: object::new(ctx),
+            case_count: 0,
+        };
+        transfer::share_object(clinic);
+
+        let cap = ClinicianCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public fun open_case(
+        clinic: &mut Clinic,
+        species: vector<u8>,
+        symptom: vector<u8>,
+        ctx: &mut TxContext,
+    ) {
+        let gardener = tx_context::sender(ctx);
+        assert!(!dynamic_field::exists<address>(&clinic.id, gardener), 1);
+        
+        let case_data = CaseData { species, symptom };
+        dynamic_field::add(&mut clinic.id, gardener, case_data);
+        clinic.case_count = clinic.case_count + 1;
+    }
+
+    public fun close_case(
+        clinic: &mut Clinic,
+        gardener: address,
+        _cap: &ClinicianCap,
+    ) {
+        assert!(dynamic_field::exists<address>(&clinic.id, gardener), 2);
+        
+        let _: CaseData = dynamic_field::remove(&mut clinic.id, gardener);
+        clinic.case_count = clinic.case_count - 1;
+    }
+
+    public fun get_gardener_case(
+        clinic: &Clinic,
+        gardener: address,
+    ): Option<(vector<u8>, vector<u8>)> {
+        if (dynamic_field::exists<address>(&clinic.id, gardener)) {
+            let case_data = dynamic_field::borrow<address, CaseData>(&clinic.id, gardener);
+            option::some((case_data.species, case_data.symptom))
+        } else {
+            option::none()
+        }
+    }
+
+    public fun get_case_count(clinic: &Clinic): u64 {
+        clinic.case_count
+    }
+}
+```

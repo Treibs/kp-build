@@ -1,0 +1,35 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:28:30
+   │
+28 │             bottles: vector::empty(),
+   │                              ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:36:35
+   │
+36 │             reserve_list: vector::empty(),
+   │                                   ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:64:9
+   │
+56 │     public fun unrack_bottle(
+   │                ------------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+61 │         let sender = tx_context::sender(ctx);
+   │                      ----------------------- Transaction sender address coming from here
+   ·
+64 │         transfer::transfer(bottle, sender);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+

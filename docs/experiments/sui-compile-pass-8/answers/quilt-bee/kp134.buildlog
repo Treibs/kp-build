@@ -1,0 +1,197 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:19:24
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                        │      │
+   │                        │      Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   │                        Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:42:28
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   ·
+42 │             contributions: vector[],
+   │                            ^^^^^^^^ Invalid 'vector' type
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:52:17
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   ·
+52 │         assert!(vector::length(&bee.contributions) < 9, 1);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:53:9
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   ·
+53 │         vector::push_back(&mut bee.contributions, (contributor, square));
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:62:17
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   ·
+62 │         assert!(vector::length(&bee.contributions) == 9, 2);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:67:29
+   │
+67 │         let mut processed = vector[];
+   │                             ^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:70:17
+   │
+70 │             let (contributor, _) = vector::borrow(&bee.contributions, i);
+   │                 ^^^^^^^^^^^^^^^^
+   │                 │
+   │                 Invalid value for binding
+   │                 Expected: '(_, _)'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/vector.move:34:65
+   │
+34 │ public native fun borrow<Element>(v: &vector<Element>, i: u64): &Element;
+   │                                                                 -------- Given: '&(address, quilting_bee::bee::Square)'
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:70:36
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   ·
+70 │             let (contributor, _) = vector::borrow(&bee.contributions, i);
+   │                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:74:24
+   │
+74 │             while (j < vector::length(&processed)) {
+   │                        ^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:75:21
+   │
+75 │                 if (*vector::borrow(&processed, j) == *contributor) {
+   │                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:75:22
+   │
+75 │                 if (*vector::borrow(&processed, j) == *contributor) {
+   │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:75:55
+   │
+75 │                 if (*vector::borrow(&processed, j) == *contributor) {
+   │                                                       ^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:82:17
+   │
+82 │                 vector::push_back(&mut processed, *contributor);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:82:51
+   │
+82 │                 vector::push_back(&mut processed, *contributor);
+   │                                                   ^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:93:16
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   ·
+93 │         while (vector::length(&bee.contributions) > 0) {
+   │                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:94:17
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single type, but found expression list type: '(address, quilting_bee::bee::Square)'
+   ·
+94 │             let _ = vector::pop_back(&mut bee.contributions);
+   │                 ^ Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:94:21
+   │
+19 │         contributions: vector<(address, Square)>,
+   │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+   ·
+94 │             let _ = vector::pop_back(&mut bee.contributions);
+   │                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:96:9
+   │
+96 │         vector::destroy_empty(processed);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:104:43
+    │
+104 │     fun count_contributor(contributions: &vector<(address, Square)>, addr: address): u64 {
+    │                                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+    │                                           │      │
+    │                                           │      Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+    │                                           Invalid type argument
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:107:20
+    │
+104 │     fun count_contributor(contributions: &vector<(address, Square)>, addr: address): u64 {
+    │                                                  ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+    ·
+107 │         while (i < vector::length(contributions)) {
+    │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:108:17
+    │
+108 │             let (contributor, _) = vector::borrow(contributions, i);
+    │                 ^^^^^^^^^^^^^^^^
+    │                 │
+    │                 Invalid value for binding
+    │                 Expected: '(_, _)'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/vector.move:34:65
+    │
+ 34 │ public native fun borrow<Element>(v: &vector<Element>, i: u64): &Element;
+    │                                                                 -------- Given: '&(address, quilting_bee::bee::Square)'
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:108:36
+    │
+104 │     fun count_contributor(contributions: &vector<(address, Square)>, addr: address): u64 {
+    │                                                  ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+    ·
+108 │             let (contributor, _) = vector::borrow(contributions, i);
+    │                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:118:13
+    │
+ 19 │         contributions: vector<(address, Square)>,
+    │                               ----------------- Expected a single non-reference type, but found: '(address, quilting_bee::bee::Square)'
+    ·
+118 │         9 - vector::length(&bee.contributions)
+    │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
