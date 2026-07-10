@@ -1,0 +1,70 @@
+```move
+module 0xA::checkout {
+    use sui::coin::{Self, Coin, split};
+    use sui::sui::SUI;
+    use std::option::{Self, Option};
+    use std::vector;
+
+    public struct Till has key {
+        id: UID,
+        collected: vector<Coin<SUI>>,
+        stamps_issued: u64,
+    }
+
+    public struct Stamp has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(Till {
+            id: object::new(ctx),
+            collected: vector[],
+            stamps_issued: 0,
+        });
+    }
+
+    public fun issue_stamp(till: &mut Till, ctx: &mut TxContext): Stamp {
+        till.stamps_issued = till.stamps_issued + 1;
+        Stamp {
+            id: object::new(ctx),
+        }
+    }
+
+    public fun checkout(
+        till: &mut Till,
+        item_price: u64,
+        mut payment: Coin<SUI>,
+        stamp: Option<&Stamp>,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let has_stamp = option::is_some(&stamp);
+        let owed = if (has_stamp) {
+            item_price
+        } else {
+            item_price + (item_price * 20 / 100)
+        };
+
+        assert!(coin::value(&payment) >= owed, 1);
+
+        let payment_for_till = split(&mut payment, owed, ctx);
+        vector::push_back(&mut till.collected, payment_for_till);
+
+        payment
+    }
+
+    public fun till_total(till: &Till): u64 {
+        let mut total = 0u64;
+        let mut i = 0;
+        let len = vector::length(&till.collected);
+        while (i < len) {
+            total = total + coin::value(vector::borrow(&till.collected, i));
+            i = i + 1;
+        };
+        total
+    }
+
+    public fun stamps_issued(till: &Till): u64 {
+        till.stamps_issued
+    }
+}
+```

@@ -1,0 +1,63 @@
+module 0x0::scholarship {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct Scholarship has key {
+        id: UID,
+        vault: Coin<SUI>,
+        tranche_amount: u64,
+        tranches_remaining: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, ctx.sender());
+    }
+
+    public fun create(coin: Coin<SUI>, num_tranches: u64, ctx: &mut TxContext) {
+        assert!(num_tranches > 0, 0);
+        let amount = coin::value(&coin);
+        let tranche_amount = amount / num_tranches;
+        
+        let scholarship = Scholarship {
+            id: object::new(ctx),
+            vault: coin,
+            tranche_amount,
+            tranches_remaining: num_tranches,
+        };
+        
+        transfer::share_object(scholarship);
+    }
+
+    public fun release_tranche(
+        cap: &AdminCap,
+        scholarship: &mut Scholarship,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        assert!(scholarship.tranches_remaining > 0, 1);
+        
+        let amount = if (scholarship.tranches_remaining == 1) {
+            coin::value(&scholarship.vault)
+        } else {
+            scholarship.tranche_amount
+        };
+        
+        scholarship.tranches_remaining = scholarship.tranches_remaining - 1;
+        
+        coin::split(&mut scholarship.vault, amount, ctx)
+    }
+
+    public fun tranches_remaining(scholarship: &Scholarship): u64 {
+        scholarship.tranches_remaining
+    }
+
+    public fun vault_total(scholarship: &Scholarship): u64 {
+        coin::value(&scholarship.vault)
+    }
+}

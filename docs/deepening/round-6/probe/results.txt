@@ -1,0 +1,34 @@
+# Round-6 probe results (kp128 loaded, sui 1.74.1) + import sweep
+
+opt-1   haiku-4-5   FAIL Failed to build Move modules:  import=NA
+opt-1   sonnet-4-6  PASS CLEAN    import=NA
+opt-2   haiku-4-5   PASS WARN1    import=NA
+opt-2   sonnet-4-6  PASS CLEAN    import=NA
+opt-3   haiku-4-5   FAIL Failed to build Move modules:  import=NA
+opt-3   sonnet-4-6  PASS CLEAN    import=NA
+brm-1   haiku-4-5   FAIL Failed to build Move modules:  import=CORRECT
+brm-1   sonnet-4-6  PASS CLEAN    import=CORRECT
+brm-2   haiku-4-5   FAIL Failed to build Move modules:  import=CORRECT
+brm-2   sonnet-4-6  PASS CLEAN    import=CORRECT
+brm-3   haiku-4-5   FAIL Failed to build Move modules:  import=CORRECT
+brm-3   sonnet-4-6  PASS CLEAN    import=CORRECT
+csp-1   haiku-4-5   PASS WARN2    import=CORRECT
+csp-1   sonnet-4-6  PASS CLEAN    import=CORRECT
+csp-2   haiku-4-5   FAIL Failed to build Move modules:  import=CORRECT
+csp-2   sonnet-4-6  PASS CLEAN    import=CORRECT
+csp-3   haiku-4-5   PASS CLEAN    import=CORRECT
+csp-3   sonnet-4-6  PASS CLEAN    import=CORRECT
+mva-1   haiku-4-5   PASS CLEAN    import=NA
+mva-1   sonnet-4-6  PASS CLEAN    import=NA
+mva-2   haiku-4-5   PASS CLEAN    import=NA
+mva-2   sonnet-4-6  PASS CLEAN    import=NA
+mva-3   haiku-4-5   FAIL Failed to build Move modules:  import=NA
+mva-3   sonnet-4-6  PASS CLEAN    import=NA
+ctx-1   haiku-4-5   PASS CLEAN    import=CORRECT
+ctx-1   sonnet-4-6  PASS CLEAN    import=CORRECT
+ctx-2   haiku-4-5   PASS CLEAN    import=CORRECT
+ctx-2   sonnet-4-6  PASS CLEAN    import=CORRECT
+ctx-3   haiku-4-5   FAIL Failed to build Move modules:  import=CORRECT
+ctx-3   sonnet-4-6  PASS WARN1    import=CORRECT
+
+# haiku 7/15, sonnet 15/15 | import sweep: 0 fails (18 CORRECT, 12 NA) - replication point 4

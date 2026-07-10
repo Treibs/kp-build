@@ -1,0 +1,88 @@
+```move
+module exam::examiner {
+    use sui::sui::SUI;
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+
+    public struct Examiner has key {
+        id: UID,
+        cutoff: u64,
+        grading_charge: u64,
+        bank: Balance<SUI>,
+        certificates_issued: u64,
+    }
+
+    public struct GraderCap has key, store {
+        id: UID,
+    }
+
+    public struct Certificate has key {
+        id: UID,
+        recipient: address,
+        score: u64,
+    }
+
+    public struct Submission has key {
+        id: UID,
+        candidate: address,
+        score: u64,
+        fee: Balance<SUI>,
+    }
+
+    public fun create(cutoff: u64, grading_charge: u64, ctx: &mut TxContext): GraderCap {
+        let examiner = Examiner {
+            id: object::new(ctx),
+            cutoff,
+            grading_charge,
+            bank: balance::zero(),
+            certificates_issued: 0,
+        };
+        transfer::share_object(examiner);
+        GraderCap { id: object::new(ctx) }
+    }
+
+    public fun submit(score: u64, fee: Coin<SUI>, ctx: &mut TxContext) {
+        assert!(score <= 100);
+        let submission = Submission {
+            id: object::new(ctx),
+            candidate: ctx.sender(),
+            score,
+            fee: coin::into_balance(fee),
+        };
+        transfer::share_object(submission);
+    }
+
+    public fun grade(
+        _cap: &GraderCap,
+        examiner: &mut Examiner,
+        submission: Submission,
+        ctx: &mut TxContext,
+    ) {
+        let Submission { id, candidate, score, mut fee } = submission;
+        object::delete(id);
+
+        if (score >= examiner.cutoff) {
+            balance::join(&mut examiner.bank, fee);
+            examiner.certificates_issued = examiner.certificates_issued + 1;
+            let cert = Certificate {
+                id: object::new(ctx),
+                recipient: candidate,
+                score,
+            };
+            transfer::transfer(cert, candidate);
+        } else {
+            let charge = balance::split(&mut fee, examiner.grading_charge);
+            balance::join(&mut examiner.bank, charge);
+            transfer::public_transfer(coin::from_balance(fee, ctx), candidate);
+        }
+    }
+
+    public fun certificates_issued(examiner: &Examiner): u64 {
+        examiner.certificates_issued
+    }
+
+    public fun bank_total(examiner: &Examiner): u64 {
+        balance::value(&examiner.bank)
+    }
+}
+```

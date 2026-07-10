@@ -1,0 +1,101 @@
+```move
+module lease_closeout::desk {
+    use sui::sui::SUI;
+    use sui::coin::{Self, Coin};
+    use sui::table::{Self, Table};
+    use sui::event;
+
+    public struct InspectorCap has key, store {
+        id: UID,
+    }
+
+    public struct CloseoutDesk has key {
+        id: UID,
+        assessments: Table<address, u64>,
+        closeouts_processed: u64,
+    }
+
+    public struct CloseoutEvent has copy, drop {
+        unit: address,
+        deposit_amount: u64,
+        assessed_damages: u64,
+        landlord_share: u64,
+        tenant_share: u64,
+        tenant: address,
+        landlord: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(CloseoutDesk {
+            id: object::new(ctx),
+            assessments: table::new(ctx),
+            closeouts_processed: 0,
+        });
+        transfer::transfer(InspectorCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun record_assessment(
+        _cap: &InspectorCap,
+        desk: &mut CloseoutDesk,
+        unit: address,
+        damages: u64,
+    ) {
+        if (table::contains(&desk.assessments, unit)) {
+            *table::borrow_mut(&mut desk.assessments, unit) = damages;
+        } else {
+            table::add(&mut desk.assessments, unit, damages);
+        };
+    }
+
+    public fun process_closeout(
+        desk: &mut CloseoutDesk,
+        deposit: Coin<SUI>,
+        unit: address,
+        tenant: address,
+        landlord: address,
+        ctx: &mut TxContext,
+    ) {
+        let deposit_amount = coin::value(&deposit);
+
+        let assessed = if (table::contains(&desk.assessments, unit)) {
+            *table::borrow(&desk.assessments, unit)
+        } else {
+            0
+        };
+
+        let landlord_share = if (assessed >= deposit_amount) {
+            deposit_amount
+        } else {
+            assessed
+        };
+        let tenant_share = deposit_amount - landlord_share;
+
+        if (landlord_share == deposit_amount) {
+            transfer::public_transfer(deposit, landlord);
+        } else if (landlord_share == 0) {
+            transfer::public_transfer(deposit, tenant);
+        } else {
+            let mut dep = deposit;
+            let landlord_coin = coin::split(&mut dep, landlord_share, ctx);
+            transfer::public_transfer(landlord_coin, landlord);
+            transfer::public_transfer(dep, tenant);
+        };
+
+        desk.closeouts_processed = desk.closeouts_processed + 1;
+
+        event::emit(CloseoutEvent {
+            unit,
+            deposit_amount,
+            assessed_damages: assessed,
+            landlord_share,
+            tenant_share,
+            tenant,
+            landlord,
+        });
+    }
+
+    public fun closeouts_processed(desk: &CloseoutDesk): u64 {
+        desk.closeouts_processed
+    }
+}
+```

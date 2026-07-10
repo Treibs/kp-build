@@ -1,0 +1,106 @@
+module dental_clinic::scheduler {
+  use std::option::{self, Option};
+  use sui::object::{self, UID};
+  use sui::tx_context::TxContext;
+  use sui::table::{self, Table};
+
+  const SLOTS_PER_EPOCH: u64 = 100;
+
+  public struct Clinic has key {
+    id: UID,
+    bookings: Table<(u64, u64), Option<address>>,
+  }
+
+  public struct AdminCap has key, store {
+    id: UID,
+  }
+
+  public fun init(ctx: &mut TxContext) {
+    let clinic = Clinic {
+      id: object::new(ctx),
+      bookings: table::new(ctx),
+    };
+    transfer::share_object(clinic);
+    
+    let cap = AdminCap {
+      id: object::new(ctx),
+    };
+    transfer::transfer(cap, ctx.sender());
+  }
+
+  public fun book_slot(
+    clinic: &mut Clinic,
+    epoch: u64,
+    ctx: &mut TxContext,
+  ): Option<u64> {
+    let patient = ctx.sender();
+    
+    let mut i = 0u64;
+    while (i < SLOTS_PER_EPOCH) {
+      let key = (epoch, i);
+      
+      if (!table::contains(&clinic.bookings, key)) {
+        table::add(&mut clinic.bookings, key, option::none());
+      };
+      
+      let slot = table::borrow_mut(&mut clinic.bookings, key);
+      if (option::is_none(slot)) {
+        option::fill(slot, patient);
+        return option::some(i);
+      };
+      
+      i = i + 1;
+    };
+    
+    option::none()
+  }
+
+  public fun get_slot_holder(
+    clinic: &Clinic,
+    epoch: u64,
+    slot: u64,
+  ): Option<address> {
+    let key = (epoch, slot);
+    if (!table::contains(&clinic.bookings, key)) {
+      option::none()
+    } else {
+      *table::borrow(&clinic.bookings, key)
+    }
+  }
+
+  public fun next_free_slot(
+    clinic: &Clinic,
+    epoch: u64,
+  ): Option<u64> {
+    let mut i = 0u64;
+    while (i < SLOTS_PER_EPOCH) {
+      let key = (epoch, i);
+      let is_free = if (table::contains(&clinic.bookings, key)) {
+        option::is_none(table::borrow(&clinic.bookings, key))
+      } else {
+        true
+      };
+      
+      if (is_free) {
+        return option::some(i);
+      };
+      
+      i = i + 1;
+    };
+    
+    option::none()
+  }
+
+  public fun cancel_booking(
+    clinic: &mut Clinic,
+    _cap: &AdminCap,
+    epoch: u64,
+    slot: u64,
+  ) {
+    let key = (epoch, slot);
+    if (table::contains(&clinic.bookings, key)) {
+      let slot_opt = table::borrow_mut(&mut clinic.bookings, key);
+      *slot_opt = option::none();
+    };
+  }
+}

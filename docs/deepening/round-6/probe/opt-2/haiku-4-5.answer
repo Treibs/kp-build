@@ -1,0 +1,106 @@
+```move
+module mentorship::registry {
+    use std::option::{Self, Option};
+    use sui::table::{Self, Table};
+    use sui::event;
+
+    public struct REGISTRY has drop {}
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct Registry has key {
+        id: UID,
+        mentees: Table<address, Option<address>>,
+        matched_count: u64,
+    }
+
+    public struct MenteeEnrolled has copy, drop {
+        mentee: address,
+    }
+
+    public struct MentorMatched has copy, drop {
+        mentee: address,
+        mentor: address,
+    }
+
+    public struct MentorUnmatched has copy, drop {
+        mentee: address,
+    }
+
+    fun init(witness: REGISTRY, ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
+
+        let registry = Registry {
+            id: object::new(ctx),
+            mentees: table::new(ctx),
+            matched_count: 0,
+        };
+        transfer::share_object(registry);
+    }
+
+    public fun enroll_mentee(
+        registry: &mut Registry,
+        mentee: address,
+    ) {
+        if (!table::contains(&registry.mentees, mentee)) {
+            table::add(&mut registry.mentees, mentee, option::none());
+            event::emit(MenteeEnrolled { mentee });
+        }
+    }
+
+    public(package) fun match_mentor(
+        _cap: &AdminCap,
+        registry: &mut Registry,
+        mentee: address,
+        mentor: address,
+    ) {
+        assert!(table::contains(&registry.mentees, mentee), 0);
+        let slot = table::borrow_mut(&mut registry.mentees, mentee);
+        
+        let was_matched = option::is_some(slot);
+        
+        if (was_matched) {
+            option::extract(slot);
+        };
+        
+        option::fill(slot, mentor);
+        
+        if (!was_matched) {
+            registry.matched_count = registry.matched_count + 1;
+        };
+        event::emit(MentorMatched { mentee, mentor });
+    }
+
+    public(package) fun unmatch_mentor(
+        _cap: &AdminCap,
+        registry: &mut Registry,
+        mentee: address,
+    ) {
+        assert!(table::contains(&registry.mentees, mentee), 0);
+        let slot = table::borrow_mut(&mut registry.mentees, mentee);
+        
+        if (option::is_some(slot)) {
+            option::extract(slot);
+            registry.matched_count = registry.matched_count - 1;
+        };
+        event::emit(MentorUnmatched { mentee });
+    }
+
+    public fun get_mentor(registry: &Registry, mentee: address): Option<address> {
+        if (table::contains(&registry.mentees, mentee)) {
+            *table::borrow(&registry.mentees, mentee)
+        } else {
+            option::none()
+        }
+    }
+
+    public fun matched_count(registry: &Registry): u64 {
+        registry.matched_count
+    }
+}
+```

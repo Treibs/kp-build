@@ -1,0 +1,55 @@
+```move
+module onboarding::team {
+    use sui::sui::SUI;
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+
+    public struct CaptainCap has key, store {
+        id: UID,
+    }
+
+    public struct Registry has key {
+        id: UID,
+        members_onboarded: u64,
+    }
+
+    public struct Wallet has key, store {
+        id: UID,
+        jersey_number: u64,
+        balance: Balance<SUI>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::public_transfer(CaptainCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(Registry { id: object::new(ctx), members_onboarded: 0 });
+    }
+
+    public fun onboard(
+        _cap: &CaptainCap,
+        registry: &mut Registry,
+        jersey_number: u64,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        registry.members_onboarded = registry.members_onboarded + 1;
+        let wallet = Wallet {
+            id: object::new(ctx),
+            jersey_number,
+            balance: balance::zero(),
+        };
+        transfer::public_transfer(wallet, recipient);
+    }
+
+    public fun top_up(wallet: &mut Wallet, coin: Coin<SUI>) {
+        balance::join(&mut wallet.balance, coin::into_balance(coin));
+    }
+
+    public fun balance(wallet: &Wallet): u64 {
+        balance::value(&wallet.balance)
+    }
+
+    public fun members_onboarded(registry: &Registry): u64 {
+        registry.members_onboarded
+    }
+}
+```

@@ -1,0 +1,288 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:21
+  │
+2 │   use std::option::{self, Option};
+  │                     ^^^^ Invalid 'use'. Unbound member 'self' in module 'std::option'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/option.move:5:13
+  │
+5 │ module std::option;
+  │             ------ Module 'std::option' declared here
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:21
+  │
+3 │   use sui::object::{self, UID};
+  │                     ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::object'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:5:13
+  │
+5 │ module sui::object;
+  │             ------ Module 'sui::object' declared here
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:5:20
+   │
+ 5 │   use sui::table::{self, Table};
+   │                    ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::table'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/table.move:19:13
+   │
+19 │ module sui::table;
+   │             ----- Module 'sui::table' declared here
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:11:15
+   │
+11 │     bookings: Table<(u64, u64), Option<address>>,
+   │               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │               │     │
+   │               │     Expected a single non-reference type, but found: '(u64, u64)'
+   │               Invalid type argument
+
+error[Sui E02003]: invalid 'init' function
+   ┌─ ./sources/module.move:18:14
+   │
+18 │   public fun init(ctx: &mut TxContext) {
+   │   ------     ^^^^ Invalid 'init' function declaration
+   │   │           
+   │   'init' functions must be internal to their module
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:21:17
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+21 │       bookings: table::new(ctx),
+   │                 ^^^^^
+   │                 │
+   │                 Could not resolve the name 'table'
+   │                 Did you mean: 'Table'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:32:5
+   │
+32 │     clinic: &mut Clinic,
+   │     ^^^^^^ Unused parameter 'clinic'. Consider removing or prefixing with an underscore: '_clinic'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:40:11
+   │
+40 │       let key = (epoch, i);
+   │           ^^^ Unused local variable 'key'. Consider removing or prefixing with an underscore: '_key'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:40:11
+   │
+40 │       let key = (epoch, i);
+   │           ^^^   ---------- Expected a single type, but found expression list type: '(u64, u64)'
+   │           │      
+   │           Invalid type for local
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:42:12
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+42 │       if (!table::contains(&clinic.bookings, key)) {
+   │            ^^^^^
+   │            │
+   │            Could not resolve the name 'table'
+   │            Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:43:9
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+43 │         table::add(&mut clinic.bookings, key, option::none());
+   │         ^^^^^
+   │         │
+   │         Could not resolve the name 'table'
+   │         Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:46:18
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+46 │       let slot = table::borrow_mut(&mut clinic.bookings, key);
+   │                  ^^^^^
+   │                  │
+   │                  Could not resolve the name 'table'
+   │                  Did you mean: 'Table'
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:47:11
+   │
+47 │       if (option::is_none(slot)) {
+   │           ^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:59:5
+   │
+59 │     clinic: &Clinic,
+   │     ^^^^^^ Unused parameter 'clinic'. Consider removing or prefixing with an underscore: '_clinic'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:63:9
+   │
+63 │     let key = (epoch, slot);
+   │         ^^^ Unused local variable 'key'. Consider removing or prefixing with an underscore: '_key'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:63:9
+   │
+63 │     let key = (epoch, slot);
+   │         ^^^   ------------- Expected a single type, but found expression list type: '(u64, u64)'
+   │         │      
+   │         Invalid type for local
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:64:10
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+64 │     if (!table::contains(&clinic.bookings, key)) {
+   │          ^^^^^
+   │          │
+   │          Could not resolve the name 'table'
+   │          Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:67:8
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+67 │       *table::borrow(&clinic.bookings, key)
+   │        ^^^^^
+   │        │
+   │        Could not resolve the name 'table'
+   │        Did you mean: 'Table'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:72:5
+   │
+72 │     clinic: &Clinic,
+   │     ^^^^^^ Unused parameter 'clinic'. Consider removing or prefixing with an underscore: '_clinic'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:77:11
+   │
+77 │       let key = (epoch, i);
+   │           ^^^ Unused local variable 'key'. Consider removing or prefixing with an underscore: '_key'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:77:11
+   │
+77 │       let key = (epoch, i);
+   │           ^^^   ---------- Expected a single type, but found expression list type: '(u64, u64)'
+   │           │      
+   │           Invalid type for local
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:78:25
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+78 │       let is_free = if (table::contains(&clinic.bookings, key)) {
+   │                         ^^^^^
+   │                         │
+   │                         Could not resolve the name 'table'
+   │                         Did you mean: 'Table'
+
+error[E04010]: cannot infer type
+   ┌─ ./sources/module.move:79:9
+   │
+79 │         option::is_none(table::borrow(&clinic.bookings, key))
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:79:25
+   │
+ 5 │   use sui::table::{self, Table};
+   │                          ----- Similarly named defintion found here
+   ·
+79 │         option::is_none(table::borrow(&clinic.bookings, key))
+   │                         ^^^^^
+   │                         │
+   │                         Could not resolve the name 'table'
+   │                         Did you mean: 'Table'
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:95:5
+   │
+95 │     clinic: &mut Clinic,
+   │     ^^^^^^ Unused parameter 'clinic'. Consider removing or prefixing with an underscore: '_clinic'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+    ┌─ ./sources/module.move:100:9
+    │
+100 │     let key = (epoch, slot);
+    │         ^^^ Unused local variable 'key'. Consider removing or prefixing with an underscore: '_key'
+    │
+    = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E04005]: expected a single type
+    ┌─ ./sources/module.move:100:9
+    │
+100 │     let key = (epoch, slot);
+    │         ^^^   ------------- Expected a single type, but found expression list type: '(u64, u64)'
+    │         │      
+    │         Invalid type for local
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:101:9
+    │
+  5 │   use sui::table::{self, Table};
+    │                          ----- Similarly named defintion found here
+    ·
+101 │     if (table::contains(&clinic.bookings, key)) {
+    │         ^^^^^
+    │         │
+    │         Could not resolve the name 'table'
+    │         Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+    ┌─ ./sources/module.move:102:22
+    │
+  5 │   use sui::table::{self, Table};
+    │                          ----- Similarly named defintion found here
+    ·
+102 │       let slot_opt = table::borrow_mut(&mut clinic.bookings, key);
+    │                      ^^^^^
+    │                      │
+    │                      Could not resolve the name 'table'
+    │                      Did you mean: 'Table'
+
+error[E04010]: cannot infer type
+    ┌─ ./sources/module.move:103:19
+    │
+103 │       *slot_opt = option::none();
+    │                   ^^^^^^^^^^^^^^ Could not infer this type. Try adding an annotation
+

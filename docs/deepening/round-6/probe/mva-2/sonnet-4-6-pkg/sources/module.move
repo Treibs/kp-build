@@ -1,0 +1,51 @@
+module my_pkg::courier {
+
+    public struct Parcel has key, store {
+        id: UID,
+        destination: address,
+        declared_value: u64,
+    }
+
+    public struct CourierCap has key, store {
+        id: UID,
+    }
+
+    public struct Manifest has key {
+        id: UID,
+        delivered_count: u64,
+        insured_total: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(Manifest {
+            id: object::new(ctx),
+            delivered_count: 0,
+            insured_total: 0,
+        });
+        transfer::transfer(CourierCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun create_parcel(
+        destination: address,
+        declared_value: u64,
+        ctx: &mut TxContext,
+    ): Parcel {
+        Parcel { id: object::new(ctx), destination, declared_value }
+    }
+
+    public fun deliver(_cap: &CourierCap, parcel: Parcel, manifest: &mut Manifest) {
+        let destination = parcel.destination;
+        let value = parcel.declared_value;
+        manifest.insured_total = manifest.insured_total + value;
+        manifest.delivered_count = manifest.delivered_count + 1;
+        transfer::public_transfer(parcel, destination);
+    }
+
+    public fun delivered_today(manifest: &Manifest): u64 {
+        manifest.delivered_count
+    }
+
+    public fun insured_total(manifest: &Manifest): u64 {
+        manifest.insured_total
+    }
+}

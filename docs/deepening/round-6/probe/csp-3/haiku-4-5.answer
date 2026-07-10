@@ -1,0 +1,83 @@
+```move
+module returns_counter::counter {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::event;
+
+    public struct Counter has key {
+        id: UID,
+        float: Balance<SUI>,
+        refunds_processed: u64,
+    }
+
+    public struct Receipt has key, store {
+        id: UID,
+        price_paid: u64,
+        processed: bool,
+    }
+
+    public struct RestockLogged has copy, drop {
+        receipt_id: address,
+        refund_amount: u64,
+    }
+
+    public struct RefundProcessed has copy, drop {
+        refund_amount: u64,
+        new_float_balance: u64,
+    }
+
+    public fun create_counter(initial_float: Coin<SUI>, ctx: &mut TxContext) {
+        let counter = Counter {
+            id: object::new(ctx),
+            float: coin::into_balance(initial_float),
+            refunds_processed: 0,
+        };
+        transfer::share_object(counter);
+    }
+
+    public fun create_receipt(price_paid: u64, ctx: &mut TxContext): Receipt {
+        Receipt {
+            id: object::new(ctx),
+            price_paid,
+            processed: false,
+        }
+    }
+
+    public fun process_return(
+        counter: &mut Counter,
+        receipt: &mut Receipt,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        assert!(!receipt.processed, 1);
+        
+        let refund_amount = (receipt.price_paid * 80) / 100;
+        
+        let refund_balance = balance::split(&mut counter.float, refund_amount);
+        let refund_coin = coin::from_balance(refund_balance, ctx);
+        
+        receipt.processed = true;
+        counter.refunds_processed = counter.refunds_processed + 1;
+        
+        event::emit(RestockLogged {
+            receipt_id: object::uid_to_address(&receipt.id),
+            refund_amount,
+        });
+
+        event::emit(RefundProcessed {
+            refund_amount,
+            new_float_balance: balance::value(&counter.float),
+        });
+        
+        refund_coin
+    }
+
+    public fun refunds_processed(counter: &Counter): u64 {
+        counter.refunds_processed
+    }
+
+    public fun float_balance(counter: &Counter): u64 {
+        balance::value(&counter.float)
+    }
+}
+```

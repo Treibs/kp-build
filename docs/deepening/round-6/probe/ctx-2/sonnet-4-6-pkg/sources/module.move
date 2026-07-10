@@ -1,0 +1,65 @@
+module petty_cash::office {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+
+    public struct FacilitiesCap has key, store {
+        id: UID,
+    }
+
+    public struct Drawer has key {
+        id: UID,
+        number: u64,
+        balance: Balance<SUI>,
+    }
+
+    public struct Registry has key {
+        id: UID,
+        drawers_opened: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(FacilitiesCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(Registry { id: object::new(ctx), drawers_opened: 0 });
+    }
+
+    public fun open_drawer(
+        _cap: &FacilitiesCap,
+        registry: &mut Registry,
+        number: u64,
+        ctx: &mut TxContext,
+    ) {
+        registry.drawers_opened = registry.drawers_opened + 1;
+        transfer::share_object(Drawer {
+            id: object::new(ctx),
+            number,
+            balance: balance::zero<SUI>(),
+        });
+    }
+
+    public fun fund(drawer: &mut Drawer, payment: Coin<SUI>) {
+        balance::join(&mut drawer.balance, coin::into_balance(payment));
+    }
+
+    public fun transfer_between(
+        _cap: &FacilitiesCap,
+        from: &mut Drawer,
+        to: &mut Drawer,
+        amount: u64,
+    ) {
+        let moved = balance::split(&mut from.balance, amount);
+        balance::join(&mut to.balance, moved);
+    }
+
+    public fun drawer_balance(drawer: &Drawer): u64 {
+        balance::value(&drawer.balance)
+    }
+
+    public fun drawers_opened(registry: &Registry): u64 {
+        registry.drawers_opened
+    }
+
+    public fun drawer_number(drawer: &Drawer): u64 {
+        drawer.number
+    }
+}

@@ -1,0 +1,22 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:36:16
+   │
+36 │         stamp: Option<&Stamp>,
+   │                ^^^^^^^^^^^^^^
+   │                │      │
+   │                │      Expected a single non-reference type, but found: '&0xA::checkout::Stamp'
+   │                Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:39:25
+   │
+36 │         stamp: Option<&Stamp>,
+   │                       ------ Expected a single non-reference type, but found: '&0xA::checkout::Stamp'
+   ·
+39 │         let has_stamp = option::is_some(&stamp);
+   │                         ^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+

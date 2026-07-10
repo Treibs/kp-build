@@ -1,0 +1,31 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+   ┌─ ./sources/module.move:91:14
+   │
+89 │         address: address,
+   │                  ------- Given: 'address'
+90 │     ) {
+91 │         if (!vector::contains(&post_office.blocklist, address)) {
+   │              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'std::vector::contains'. Invalid argument for parameter 'e'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/vector.move:87:54
+   │
+87 │ public fun contains<Element>(v: &vector<Element>, e: &Element): bool {
+   │                                                      -------- Expected: '&address'
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:115:9
+    │
+114 │     public fun is_blocked(post_office: &PostOffice, addr: address): bool {
+    │                                                           ------- Given: 'address'
+115 │         vector::contains(&post_office.blocklist, addr)
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'std::vector::contains'. Invalid argument for parameter 'e'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/move-stdlib/sources/vector.move:87:54
+    │
+ 87 │ public fun contains<Element>(v: &vector<Element>, e: &Element): bool {
+    │                                                      -------- Expected: '&address'
+
