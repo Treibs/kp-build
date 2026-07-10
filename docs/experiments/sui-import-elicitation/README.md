@@ -36,7 +36,9 @@ support; if not, this was noise and the record will say so.
    the observed RED evidence (wrong-module shape; the exact E03003 fragment above).
 3. Standing correction to clean-territory claims: a clean probe at n≈6 bounds a class's
    per-answer rate at roughly p < 0.3, nothing stronger — and says nothing at all about
-   differently-shaped elicitation.
+   differently-shaped elicitation. (Attribution note, review round 2: this bound is frozen
+   as branch 2's action text; it is branch-independent arithmetic and is adopted here as a
+   standing caution alongside branch 1's two actions.)
 
 ## Context (observational, outside the metric)
 
