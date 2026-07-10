@@ -57,5 +57,10 @@ Grep-verified mechanism fields (per README hand-check protocol):
   6/6 cf answers (both models, all three tasks; one occurrence each). First
   post-correction measurement of the round-2 camera-follow fixture fix: full
   source-level adoption, and cf-1/cf-2 videos confirm the camera actually moves.
-- sprite-scale collapse: `.scale(1.5)` present in exactly the three visual-fail
-  answers (cf-3, px-2, px-3 haiku); passing answers set `.height` instead.
+- sprite-scale collapse: each of the three visual-fail answers sizes its sprite
+  ONLY with a relative `.scale(n)` call and no absolute-height sizing — cf-3
+  `.scale(1.5)` x2, px-2 `.scale(1)`, px-3 `.scale(1.5)` (haiku). The sonnet
+  counterparts of the same three tasks all size absolutely with `set_height(...)`
+  (cf-3 `set_height(1.5)` x2, px-2 `set_height(1.0)`, px-3 `set_height(1.5)`).
+  sl-3 haiku also scales relatively (`.scale(2)`) — its visual failure is the
+  frame-fit class, recorded separately.

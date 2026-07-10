@@ -22,7 +22,7 @@ Artifacts: `remeasure-runs/<task>/haiku-4-5.{answer,renderlog,result}`.
 ## Reading (trend only)
 
 - **Sprite-scale class (image-scale-height beat): 4/4 flipped.** Every answer that
-  previously sized with `.scale(1.5)` now sets absolute size via the taught `.height`
+  previously sized with a relative `.scale(n)` call now sets absolute size via the taught `.height`
   property (grep hits above regenerated from the committed answers in this ledger), and
   every video shows a readable sprite. Source-level and visual-level adoption.
 - **fb-3 / px-1: FAIL→FAIL, but both original corners avoided.** Neither taught/covered

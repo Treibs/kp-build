@@ -2,11 +2,11 @@
   "schema": "wikillm/1",
   "topic": "Manim CE scene authoring (v0.20.1, community edition)",
   "scope": "",
-  "built": "2026-07-09",
+  "built": "2026-07-10",
   "stats": {
     "papers_verified": 0,
     "papers_total": 0,
-    "claims": 77,
+    "claims": 84,
     "open_problems": 0,
     "debates": 0,
     "benchmarks": 0,

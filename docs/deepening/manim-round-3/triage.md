@@ -14,9 +14,15 @@ Sonnet: 15/15 gate-pass, 0 visual fails (1 partial, 1 pass-with-note — see bel
 | fb-3 | haiku | `NameError: name 'ease_out' is not defined` | **beat-worthy** | Invented rate-function name. Manim 0.20.1 exposes `rate_functions.ease_out_sine` / `ease_out_quad` etc.; there is no bare `ease_out`. Wrong parametric API-surface knowledge → **rate-func-names** beat (green + red + doc; RED `expected_error.txt` pasted from the observed oracle output). |
 | px-1 | haiku | `NameError: name 'DARK_GREEN' is not defined` | not beat-worthy (loaded-rule-adjacent) | Invented color constant. The pack already teaches the class — the color-constants beat (bare `BROWN` NameError + "the color-constant surface drifts across releases"). Same mechanism, different constant; a rule restated is not a new rule. Recorded as an invented-constant recurrence in the ledger. |
 | cf-3 | haiku | visual: sprite rendered as a speck (`.scale(1.5)` on a 16-px `ImageMobject`) | **beat-worthy** (×3, same class) | Sprite-scale collapse: the model treats `.scale(1.5)` as "make it sprite-sized," but `.scale()` multiplies the current (tiny, pixel-derived) size. Correct idiom sets absolute size: `sprite.height = 2`. New class this round, fired 3/13 haiku passes → **image-scale-height** beat (green + doc; no RED — the failure exits 0, and RED fragments come only from observed oracle error output). |
-| px-2 | haiku | visual: pilot sprite speck (same `.scale(1.5)` shape) | beat-worthy (same class as cf-3) | Counted under image-scale-height; no separate beat. |
-| px-3 | haiku | visual: runner sprite speck (same `.scale(1.5)` shape) | beat-worthy (same class as cf-3) | Counted under image-scale-height; no separate beat. |
+| px-2 | haiku | visual: pilot sprite speck (same relative-`.scale(n)` shape — `pilot.scale(1)`) | beat-worthy (same class as cf-3) | Counted under image-scale-height; no separate beat. |
+| px-3 | haiku | visual: runner sprite speck (same relative-`.scale(n)` shape — `.scale(1.5)`) | beat-worthy (same class as cf-3) | Counted under image-scale-height; no separate beat. |
 | sl-3 | haiku | visual: Ken-Burns zoom target far exceeds frame bounds; focused frame mostly off-screen | **beat-worthy** | The model scales content against invented dimensions instead of the config frame. Correct idiom fits to the actual frame: `scale_to_fit_height(config.frame_height - 1)` → **frame-fit** beat (green + doc; exits 0, so no RED). |
+
+**Scope note (rate-func-names vs the exclusion list):** `territories.md` lists rate
+functions among the round's deliberate territory exclusions — the round did not *probe*
+them. The beat is legitimate anyway under the triage standard: the failure was observed
+live in an in-scope frame-bounds probe answer (fb-3 chose `rate_func=ease_out` unprompted),
+and measured failures outrank the exclusion of a territory nobody probed.
 
 ## Clean / notable territories
 
