@@ -18,8 +18,8 @@ three differs-clauses). Model: claude-haiku-4-5, all arms. Gate: pinned
 
 | task | base | kp110 | kp128 |
 |---|---|---|---|
-| escape-room | FAIL E03006 (`Coin` instantiated directly — "can only be instantiated within its defining module") | FAIL E03003 — `use sui::coin::{Self, Coin, SUI}`: **the round-5 taught `sui-import` class, exact pinned message, in the arm without the beat**; the import sweep flags the same run | **PASS CLEAN** |
-| stall-rental | FAIL E05001 ×2 (+2 cascades) | PASS WARN2 | FAIL E03002 — `use sui::option`: `Option` lives in `std::option` (untaught `std-option-path`, ×2 cumulative with experiment 4's rental answer) |
+| escape-room | FAIL E03006 (`Balance::zero()` parsed as enum construction) + E04001 (`Coin { … }` built directly — "can only be instantiated within its defining module"; error/message pairing corrected in review round 1) | FAIL E03003 — `use sui::coin::{Self, Coin, SUI}`: **the round-5 taught `sui-import` class, exact pinned message, in the arm without the beat**; the import sweep flags the same run | **PASS CLEAN** |
+| stall-rental | FAIL E05001 ×1 + E04004 ×3 (split corrected in review round 1) | PASS WARN2 | FAIL E03002 — `use sui::option`: `Option` lives in `std::option` (untaught `std-option-path`, ×2 cumulative with experiment 4's rental answer) **plus an independent E04007** (review round 1's catch): `abort ECode;` with a trailing semicolon makes the block yield `()` where `Coin<SUI>` was expected — the `branch-type-mismatch` family's second answer. Fixing the import alone would not flip this task |
 | community-fridge | FAIL E05001 ×2 (+2) | FAIL E01002 "Expected ';'" — round-2 taught `block-statement-semicolon` **ignored while loaded** | **PASS CLEAN** |
 | service-log | FAIL E03002 — `use sui::vector` (std/sui namespace confusion, the round-5 territory-4 family) + 6 cascades | PASS CLEAN | **PASS CLEAN** |
 | card-merge | PASS CLEAN | FAIL E05001 — `object::id(&card1.id)` on a raw `UID`: **the round-5 taught `uid-vs-id` class in the arm without the beat** | **PASS CLEAN** |
@@ -35,12 +35,16 @@ three differs-clauses). Model: claude-haiku-4-5, all arms. Gate: pinned
   first time since experiment 3, the primary moved with it.
 - **Zero round-5 taught-class recurrence in kp128** (grep across all six kp128 buildlogs for
   every taught fragment: empty).
-- **kp128's single failure is untaught:** `use sui::option` — the reverse-direction namespace
-  confusion (`std` module imported from `sui`), sibling of round-5's territory-4 but a
-  different pinned path; ×2 cumulative (experiment 4 rental/kp61) → **round-6 candidate
-  `std-option-path`, promoted on recurrence.**
+- **kp128's one failing task carries two independent untaught causes** (corrected from
+  "single failure" in review round 1): `use sui::option` (×2 cumulative, experiment 4
+  rental/kp61) → **round-6 candidate `std-option-path`, promoted** — and the
+  abort-with-semicolon block-typing E04007, the `branch-type-mismatch` family's second
+  answer → **also promoted**. Beat-writing note for round 6: the kp128 payload references
+  `std::option::swap`/`fill` in loaded claim text, so the correct path is implied but never
+  pinned as a RED — the strict standard still scores it untaught.
 - **Two loaded-rule-ignored events in kp110** (block-statement-semicolon, missing-module-
-  import) — the standing phenomenon, present as always; kp128's draw happened not to ignore
+  import) — the standing phenomenon; charging-station/kp110's cascade count also folds in one
+  independent E05001 `object::delete` implicit-copy (review round 1's note); kp128's draw happened not to ignore
   any loaded rule, which at n=6 is within the draw variance the round-5 remeasure documented
   (rule application remains draw-variable; this experiment does not claim otherwise).
 - **Base-arm composition:** the classic unaided classes (E05001 ability discipline ×2 tasks,
