@@ -162,3 +162,32 @@ stays centered) before re-commit, and the green claim now names the `self.add` s
 of the idiom. The remeasure was collected against the pre-fix payload — disclosed in the
 round-2 remeasure ledger, which treats its camera-follow rows as evidence of the defect, not
 of the fix.
+
+## Part VIII — deepening round 3 beats (proven 2026-07-10)
+
+All three beats came out of the manim round-3 gap-seeded probe (five sprite-animation
+territories: orbit, camera-follow, frame-bounds, sheet-slicing, parallax; per-territory
+scaffold mounts — the sheet-slicing tasks were given ONLY `sprite_sheet.png`; provenance,
+task texts, gated answers, hand-check verdicts: `docs/deepening/manim-round-3/` —
+cross-linked, not duplicated). One is an execution beat seeded by an observed NameError;
+two are render-blind classes caught only by the standing hand-check-every-PASS protocol
+and ship GREEN + doc-grounding. Fixture sprites are raw `uint8` numpy arrays as in Part VII.
+
+| beat | red result: exit + fragment observed | green: exit | notes |
+|---|---|---|---|
+| rate-func-names | exit 1; `NameError: name 'ease_out' is not defined` | 0 | Probe: fb-3 haiku, observed live. The invented-constant family's third member (`filter_kwargs`, `BROWN`, now `ease_out`): manim 0.20.1's easing family is suffixed (`rate_functions.ease_out_sine`, `ease_out_quad`, …); there is no bare `ease_out`. |
+| image-scale-height | (render-blind — a speck-sized sprite renders exit 0) | 0 | The round's headline class, fired ×3 in haiku's gate-passing renders (cf-3, px-2, px-3 — grep-verified `.scale(1.5)` in exactly the three failing answers): `.scale(n)` on a pixel-derived `ImageMobject` multiplies its already-tiny intrinsic size. GREEN sets absolute size via the `height` property (`sprite.height = 2`); passing probe answers used the same idiom. |
+| frame-fit | (render-blind — off-frame content renders exit 0) | 0 | Probe: sl-3 haiku — a Ken-Burns zoom scaled against invented dimensions and pushed the focused frame mostly off-screen. GREEN sizes against the actual frame: `scale_to_fit_height(config.frame_height - 1)`. |
+
+Also observed, not taught: `NameError: name 'DARK_GREEN' is not defined` (px-1 haiku) —
+loaded-rule-adjacent under the Part VII `color-constants` beat (same class, different
+constant; a rule restated is not a new rule — exp-5 standard). Round-2 corrections measured
+as landed this round: the corrected camera-follow idiom (`self.add(self.camera.frame)`)
+appears in 6/6 follow answers across both models (grep-verified in the round ledger) and the
+viewed videos actually track; the round-2 orbit-phase class did not recur under a
+purpose-built inverted-phase diagnostic (orb-2, both models correct). All 4 Part VIII
+fixtures proved through the pinned image before commit; the RED fragment pasted from
+observed container output only; all crash-free greens exit clean before any hang-class
+exposure. Corpus extended with three passages from the same pinned commit (`1157b746`,
+tag v0.20.1) to ground the three doc claims. Full fixture census: **50** (32 green-gated
++ 18 red).

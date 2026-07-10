@@ -19,7 +19,7 @@ verified:
   match_score: 0.0
   evidence: "    code_file\n        The path to the code file to display.\n    code_string\n\
     \        Alternatively, the code string to display."
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: manim-api-docs

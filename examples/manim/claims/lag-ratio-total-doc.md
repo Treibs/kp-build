@@ -28,7 +28,7 @@ verified:
   evidence: "    lag_ratio\n        Defines the delay after which the animation is\
     \ applied to submobjects. A lag_ratio of\n        ``n.nn`` means the next animation\
     \ will play "
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: manim-api-docs
