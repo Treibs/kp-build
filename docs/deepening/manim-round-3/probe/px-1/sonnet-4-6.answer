@@ -1,0 +1,137 @@
+```python
+from manim import *
+import numpy as np
+
+
+class ParallaxStrollScene(Scene):
+    def construct(self):
+        fw = config.frame_width
+        fh = config.frame_height
+        ground_y = -2.5
+
+        # Sky
+        sky = Rectangle(
+            width=fw + 2, height=fh + 2,
+            fill_color="#87CEEB", fill_opacity=1, stroke_width=0,
+        )
+        self.add(sky)
+
+        # Ground strip
+        ground = Rectangle(
+            width=fw + 2, height=fh / 2 + ground_y,
+            fill_color="#4A7C35", fill_opacity=1, stroke_width=0,
+        )
+        ground.move_to(np.array([0.0, (ground_y - fh / 2) / 2, 0.0]))
+        self.add(ground)
+
+        tile_w = fw + 1.0
+
+        hills = self._scroll(lambda: self._hills(tile_w, ground_y), tile_w, speed=1.0)
+        trees = self._scroll(lambda: self._trees(tile_w, ground_y), tile_w, speed=2.5)
+        fence = self._scroll(lambda: self._fence(tile_w, ground_y), tile_w, speed=4.5)
+        self.add(hills, trees, fence)
+
+        sprite = ImageMobject("sprite.png")
+        sprite.set_height(1.5)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.move_to(np.array([0.0, ground_y + 0.75, 0.0]))
+        self.add(sprite)
+
+        walk_t = [0.0]
+        base_y = ground_y + 0.75
+
+        def bob(mob, dt):
+            walk_t[0] += dt
+            mob.move_to(np.array([0.0, base_y + 0.05 * abs(np.sin(walk_t[0] * 10.0)), 0.0]))
+
+        sprite.add_updater(bob)
+        self.wait(6.0)
+        sprite.remove_updater(bob)
+
+    # ------------------------------------------------------------------ helpers
+
+    def _scroll(self, make_fn, tile_w, speed):
+        copy0 = make_fn()
+        copy1 = make_fn()
+        copy1.shift(RIGHT * tile_w)
+        layer = VGroup(copy0, copy1)
+        off = [0.0]
+
+        def upd(mob, dt):
+            delta = speed * dt
+            off[0] += delta
+            mob.shift(LEFT * delta)
+            if off[0] >= tile_w:
+                off[0] -= tile_w
+                mob.shift(RIGHT * tile_w)
+
+        layer.add_updater(upd)
+        return layer
+
+    def _hills(self, tile_w, ground_y):
+        widths  = [4.2, 5.5, 3.8, 4.8, 3.5, 5.0]
+        heights = [1.4, 1.8, 1.2, 2.0, 1.5, 1.6]
+        colors  = ["#6B8F4E", "#5A7A3F", "#7BA05B", "#4E7036", "#6B8F4E", "#5A7A3F"]
+        n = len(widths)
+        group = VGroup()
+        for i in range(n):
+            x = -tile_w / 2 + (i + 0.5) * tile_w / n
+            h = heights[i]
+            hill = Ellipse(
+                width=widths[i], height=h,
+                fill_color=colors[i], fill_opacity=1, stroke_width=0,
+            )
+            hill.move_to(np.array([x, ground_y + h * 0.3, 0.0]))
+            group.add(hill)
+        return group
+
+    def _trees(self, tile_w, ground_y):
+        tree_heights = [2.2, 3.0, 1.8, 2.8, 2.4, 3.2, 2.0, 2.6]
+        n = len(tree_heights)
+        group = VGroup()
+        for i in range(n):
+            x = -tile_w / 2 + (i + 0.5) * tile_w / n
+            th = tree_heights[i]
+            trunk_h = 0.45
+            trunk = Rectangle(
+                width=0.22, height=trunk_h,
+                fill_color="#5C3A1E", fill_opacity=1, stroke_width=0,
+            )
+            trunk.move_to(np.array([x, ground_y + trunk_h / 2, 0.0]))
+            foliage = Polygon(
+                np.array([x - 0.7, ground_y + trunk_h, 0.0]),
+                np.array([x + 0.7, ground_y + trunk_h, 0.0]),
+                np.array([x, ground_y + trunk_h + th, 0.0]),
+                fill_color="#2D6A2D", fill_opacity=1, stroke_width=0,
+            )
+            group.add(trunk, foliage)
+        return group
+
+    def _fence(self, tile_w, ground_y):
+        group = VGroup()
+        n_posts = 14
+        post_h = 0.85
+        spacing = tile_w / n_posts
+
+        # Two horizontal rails spanning the full tile width
+        for frac in [0.72, 0.38]:
+            rail = Rectangle(
+                width=tile_w, height=0.08,
+                fill_color="#C8A97E", fill_opacity=1, stroke_width=0,
+            )
+            rail.move_to(np.array([0.0, ground_y + post_h * frac, 0.0]))
+            group.add(rail)
+
+        # Evenly-spaced posts (gap between last post and tile edge = one spacing,
+        # so the seam between copies is gap-free and uniform)
+        for i in range(n_posts):
+            x = -tile_w / 2 + (i + 0.5) * spacing
+            post = Rectangle(
+                width=0.13, height=post_h,
+                fill_color="#A07850", fill_opacity=1, stroke_width=0,
+            )
+            post.move_to(np.array([x, ground_y + post_h / 2, 0.0]))
+            group.add(post)
+
+        return group
+```

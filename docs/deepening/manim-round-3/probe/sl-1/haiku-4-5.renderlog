@@ -1,0 +1,22 @@
+Manim Community v0.20.1
+
+[07/10/26 20:55:42] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ SpritesheetWalkCycle/uncac
+ hed_00000.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/SpritesheetWalkCycle
+ .mp4'
+
+ INFO Rendered SpritesheetWalkCycle scene.py:278
+ Played 1 animations
+
+Animation 0: _MethodAnimation(ValueTracker): 0%| | 0/60 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ValueTracker): 48%|████▊ | 29/60 [00:00<00:00, 282.30it/s]
+Animation 0: _MethodAnimation(ValueTracker): 100%|██████████| 60/60 [00:00<00:00, 294.44it/s]

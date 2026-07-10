@@ -1,0 +1,61 @@
+```python
+from manim import *
+
+class RelayHandoff(MovingCameraScene):
+    def construct(self):
+        # Set camera frame to half default width
+        self.camera.frame.set_width(config.frame_width / 2)
+        self.add(self.camera.frame)
+        
+        # Load sprite A with crisp rendering
+        sprite_a = ImageMobject("sprite.png").scale(1.5)
+        sprite_a.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite_a.move_to([-3, 0, 0])
+        
+        # Create orange baton (small rectangle)
+        baton = Rectangle(width=0.3, height=0.8, color=ORANGE, fill_opacity=1)
+        baton.move_to(sprite_a.get_right())
+        
+        # Track which runner holds the baton
+        holder = [sprite_a]
+        
+        # Add initial mobjects to scene
+        self.add(sprite_a, baton)
+        
+        # Updater to keep baton at holder's right side
+        def update_baton(b):
+            b.move_to(holder[0].get_right())
+        
+        # Updater to keep camera centered on holder
+        def follow_baton(frame):
+            frame.move_to(holder[0].get_center())
+        
+        self.camera.frame.add_updater(follow_baton)
+        baton.add_updater(update_baton)
+        
+        # Runner A runs rightward for 3 seconds with baton
+        self.play(
+            sprite_a.animate.shift(RIGHT * 6),
+            run_time=3
+        )
+        
+        # Handoff: create sprite B at A's current position
+        sprite_b = ImageMobject("sprite.png").scale(1.5)
+        sprite_b.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite_b.move_to(sprite_a.get_center())
+        
+        # Switch baton to runner B
+        self.add(sprite_b)
+        self.remove(sprite_a)
+        holder[0] = sprite_b
+        
+        # Runner B runs rightward for 3 seconds with baton
+        self.play(
+            sprite_b.animate.shift(RIGHT * 6),
+            run_time=3
+        )
+        
+        # Clean up updaters
+        self.camera.frame.remove_updater(follow_baton)
+        baton.remove_updater(update_baton)
+```

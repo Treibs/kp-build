@@ -1,0 +1,127 @@
+```python
+from manim import *
+
+
+class TrainCrossingScene(Scene):
+    def construct(self):
+        fw = config.frame_width
+        fh = config.frame_height
+
+        ground_y = -2.2
+        track_y  = -2.0
+        rail_gap = 0.18
+
+        sky = Rectangle(
+            width=fw, height=fh,
+            fill_color=BLUE_E, fill_opacity=0.55,
+            stroke_width=0,
+        )
+        ground = Rectangle(
+            width=fw, height=ground_y + fh / 2,
+            fill_color=GREEN_E, fill_opacity=1,
+            stroke_width=0,
+        ).align_to(sky, DOWN)
+
+        rail_hi = Line(
+            [-fw / 2, track_y + rail_gap, 0],
+            [ fw / 2, track_y + rail_gap, 0],
+            color=LIGHT_GRAY, stroke_width=6,
+        )
+        rail_lo = Line(
+            [-fw / 2, track_y - rail_gap, 0],
+            [ fw / 2, track_y - rail_gap, 0],
+            color=LIGHT_GRAY, stroke_width=6,
+        )
+        ties = VGroup(*[
+            Rectangle(
+                width=0.14, height=0.70,
+                fill_color=DARK_BROWN, fill_opacity=1,
+                stroke_width=0,
+            ).move_to([k * 0.85, track_y, 0])
+            for k in range(-9, 10)
+        ])
+
+        sx = -1.5
+        sb = ground_y
+        pole = Line([sx, sb, 0], [sx, sb + 2.5, 0], color=WHITE, stroke_width=7)
+        bx, by = sx, sb + 2.2
+        arm1 = Line([bx - 0.8, by - 0.4, 0], [bx + 0.8, by + 0.4, 0],
+                    color=WHITE, stroke_width=10)
+        arm2 = Line([bx - 0.8, by + 0.4, 0], [bx + 0.8, by - 0.4, 0],
+                    color=WHITE, stroke_width=10)
+        crossing_sign = VGroup(pole, arm1, arm2)
+
+        char = ImageMobject("sprite.png")
+        char.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        char.height = 1.2
+        char.move_to([sx - 1.8, ground_y + 0.6, 0])
+
+        n_cars = 5
+        car_w  = 3.0 * fw / n_cars
+        car_h  = 2.1
+        wh_sz  = 0.38
+
+        def build_car(w, h, ws):
+            g = VGroup()
+            body = Rectangle(
+                width=w - 0.12, height=h,
+                fill_color="#2B2B2B", fill_opacity=1,
+                stroke_color="#595959", stroke_width=2,
+            )
+            g.add(body)
+            g.add(
+                Rectangle(
+                    width=w - 0.12, height=h * 0.12,
+                    fill_color="#464646", fill_opacity=1,
+                    stroke_width=0,
+                ).move_to([0, h / 2 - h * 0.06, 0])
+            )
+            for i in range(3):
+                g.add(
+                    Rectangle(
+                        width=w * 0.10, height=h * 0.26,
+                        fill_color=BLUE_C, fill_opacity=0.80,
+                        stroke_color="#AAAAAA", stroke_width=1,
+                    ).move_to([-w * 0.28 + i * w * 0.28, h * 0.10, 0])
+                )
+            g.add(
+                Rectangle(
+                    width=w - 0.12, height=h * 0.10,
+                    fill_color="#111111", fill_opacity=1,
+                    stroke_width=0,
+                ).next_to(body, DOWN, buff=0)
+            )
+            for wx in [-w * 0.30, w * 0.30]:
+                g.add(
+                    Square(
+                        side_length=ws,
+                        fill_color=DARK_GRAY, fill_opacity=1,
+                        stroke_color="#666666", stroke_width=1,
+                    ).move_to([wx, -h / 2 - ws / 2, 0])
+                )
+            return g
+
+        train = VGroup()
+        for i in range(n_cars):
+            car = build_car(car_w, car_h, wh_sz)
+            car.move_to([(i - (n_cars - 1) / 2) * car_w, 0, 0])
+            train.add(car)
+
+        train.shift([0, (track_y + rail_gap) - train.get_bottom()[1], 0])
+
+        train_span = n_cars * car_w
+        x_start    =  fw / 2 + train_span / 2
+        x_end      = -fw / 2 - train_span / 2
+        train.shift([x_start, 0, 0])
+
+        self.add(sky, ground, ties, rail_lo, rail_hi)
+        self.add(train)
+        self.add(crossing_sign, char)
+
+        self.play(
+            train.animate.shift([x_end - x_start, 0, 0]),
+            run_time=6,
+            rate_func=linear,
+        )
+        self.wait(0.5)
+```

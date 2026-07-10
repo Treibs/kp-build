@@ -1,0 +1,81 @@
+```python
+from manim import *
+
+class PlanetWithMoons(Scene):
+    def construct(self):
+        # Load sprite image with crisp pixel rendering
+        sprite = ImageMobject("sprite.png")
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.scale_to_fit_height(2)
+        
+        # Create visible orbit rings
+        orbit1 = Circle(radius=2, color=GRAY_B, stroke_width=0.5)
+        orbit2 = Circle(radius=3, color=GRAY_B, stroke_width=0.5)
+        
+        # Create moons as small circles
+        moon1 = Circle(radius=0.12, color=YELLOW, fill_opacity=1)
+        moon2 = Circle(radius=0.10, color=YELLOW, fill_opacity=1)
+        
+        # Create flag triangles (thin, pointing outward from planet)
+        flag1 = Polygon(
+            np.array([0.12, 0, 0]),
+            np.array([-0.04, 0.03, 0]),
+            np.array([-0.04, -0.03, 0])
+        )
+        flag1.set_color(RED)
+        flag1.set_fill(RED, opacity=0.8)
+        
+        flag2 = Polygon(
+            np.array([0.10, 0, 0]),
+            np.array([-0.03, 0.025, 0]),
+            np.array([-0.03, -0.025, 0])
+        )
+        flag2.set_color(RED)
+        flag2.set_fill(RED, opacity=0.8)
+        
+        # Time tracker drives animation
+        time_tracker = ValueTracker(0)
+        
+        # Moon 1 updater: orbit radius 2, period 6 seconds
+        def update_moon1(mob):
+            t = time_tracker.get_value()
+            angle = 2 * PI * t / 6
+            pos = np.array([2 * np.cos(angle), 2 * np.sin(angle), 0])
+            mob.move_to(pos)
+        
+        # Moon 2 updater: orbit radius 3, period 8 seconds
+        def update_moon2(mob):
+            t = time_tracker.get_value()
+            angle = 2 * PI * t / 8
+            pos = np.array([3 * np.cos(angle), 3 * np.sin(angle), 0])
+            mob.move_to(pos)
+        
+        # Flag 1 updater: position and rotation to point away from planet
+        def update_flag1(mob):
+            t = time_tracker.get_value()
+            angle = 2 * PI * t / 6
+            pos = np.array([2 * np.cos(angle), 2 * np.sin(angle), 0])
+            mob.move_to(pos)
+            mob.set_angle(angle)
+        
+        # Flag 2 updater: position and rotation to point away from planet
+        def update_flag2(mob):
+            t = time_tracker.get_value()
+            angle = 2 * PI * t / 8
+            pos = np.array([3 * np.cos(angle), 3 * np.sin(angle), 0])
+            mob.move_to(pos)
+            mob.set_angle(angle)
+        
+        # Attach updaters
+        moon1.add_updater(update_moon1)
+        moon2.add_updater(update_moon2)
+        flag1.add_updater(update_flag1)
+        flag2.add_updater(update_flag2)
+        
+        # Add to scene
+        self.add(orbit1, orbit2, sprite, moon1, moon2, flag1, flag2)
+        
+        # Animate orbits for 6 seconds
+        self.play(time_tracker.animate.set_value(6), run_time=6)
+        self.wait(1)
+```

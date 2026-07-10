@@ -1,0 +1,80 @@
+```python
+from manim import *
+import numpy as np
+
+
+class BeanstalkClimbScene(Scene):
+    def construct(self):
+        H = config.frame_height   # 8 units
+        stalk_h = 5 * H           # 40 units — total beanstalk length
+        stalk_w = 0.4
+        char_y = 0.0              # character is fixed at frame centre
+
+        # ── Beanstalk: built centred at origin, then shifted into start position ──
+
+        stem = Rectangle(
+            width=stalk_w,
+            height=stalk_h,
+            fill_color="#2d6a4f",
+            fill_opacity=1,
+            stroke_color="#1b4332",
+            stroke_width=1.5,
+        )
+
+        leaves = VGroup()
+        spacing = 1.8
+        n = int(stalk_h / spacing) + 1
+        for i in range(n):
+            y = i * spacing - stalk_h / 2   # offset from stem centre
+            side = 1 if i % 2 == 0 else -1
+            leaf = Ellipse(
+                width=1.3,
+                height=0.5,
+                fill_color="#52b788",
+                fill_opacity=1,
+                stroke_width=0,
+            )
+            leaf.rotate(side * 30 * DEGREES)
+            leaf.move_to([side * (stalk_w / 2 + 0.55), y, 0])
+            leaves.add(leaf)
+
+        beanstalk = Group(stem, leaves)
+        # Shift so the bottom of the stalk sits exactly at char_y
+        # (character begins at the base of the beanstalk)
+        beanstalk.shift(UP * (stalk_h / 2 + char_y))
+
+        # ── Character sprite ──────────────────────────────────────────────────────
+
+        sprite = ImageMobject("sprite.png")
+        sprite.set_height(1.0)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.move_to([0, char_y, 0])
+        sprite.set_z_index(1)
+
+        self.add(beanstalk, sprite)
+
+        # ── Climbing-bob updater: character stays in frame, just bobs in place ───
+
+        acc = [0.0]
+
+        def climbing_bob(mob, dt):
+            acc[0] += dt
+            phase = (acc[0] * 3.0) % 1.0     # 3 footsteps per second
+            dy = 0.08 * np.sin(phase * PI)
+            mob.move_to([0, char_y + dy, 0])
+
+        sprite.add_updater(climbing_bob)
+
+        # ── Core illusion: beanstalk scrolls DOWN past the stationary climber ────
+        # Shift equals the full stalk height → character moves from base to tip
+        # relative to the stalk, while remaining fixed in the frame.
+        self.play(
+            beanstalk.animate.shift(DOWN * stalk_h),
+            run_time=6,
+            rate_func=linear,
+        )
+
+        sprite.remove_updater(climbing_bob)
+        sprite.move_to([0, char_y, 0])
+        self.wait(0.5)
+```

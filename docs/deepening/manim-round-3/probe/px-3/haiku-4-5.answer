@@ -1,0 +1,44 @@
+```python
+from manim import *
+
+class MarathonMontage(Scene):
+    def construct(self):
+        # Load sprite with crisp rendering
+        sprite = ImageMobject("sprite.png")
+        sprite.scale(1.5)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        
+        # Create ground strip
+        ground = Rectangle(width=20, height=1, color=DARK_BROWN, fill_opacity=0.5)
+        ground.move_to([0, -2, 0])
+        
+        # Create kilometer markers (pass every 1.5 seconds at 1 unit/second speed)
+        markers = VGroup()
+        for i in range(1, 6):
+            marker = Text(str(i), font_size=24, color=BLACK)
+            marker.move_to([i * 1.5, -2, 0])
+            markers.add(marker)
+        
+        # Add to scene
+        self.add(sprite, ground, markers)
+        
+        # Sprite running animation (bobbing in place)
+        elapsed_time = [0]
+        
+        def sprite_bobber(mob, dt):
+            elapsed_time[0] += dt
+            bob = 0.2 * np.sin(2 * np.pi * 2 * elapsed_time[0])
+            mob.set_y(bob)
+        
+        sprite.add_updater(sprite_bobber)
+        
+        # Animate: markers pass every 1.5 seconds for 7 seconds total
+        # Markers spaced 1.5 units apart, speed 1 unit/sec = 7 units total travel
+        self.play(
+            ground.animate.shift(LEFT * 7),
+            markers.animate.shift(LEFT * 7),
+            run_time=7
+        )
+        
+        sprite.remove_updater(sprite_bobber)
+```

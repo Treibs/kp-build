@@ -1,0 +1,31 @@
+Manim Community v0.20.1
+
+[07/10/26 22:52:59] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ TrainCrossingScene/uncache
+ d_00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ TrainCrossingScene/uncache
+ d_00001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/TrainCrossingScene.m
+ p4'
+
+ INFO Rendered TrainCrossingScene scene.py:278
+ Played 2 animations
+
+Animation 0: _MethodAnimation(VGroup of 5 submobjects): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(VGroup of 5 submobjects): 22%|██▏ | 20/90 [00:00<00:00, 194.00it/s]
+Animation 0: _MethodAnimation(VGroup of 5 submobjects): 46%|████▌ | 41/90 [00:00<00:00, 198.44it/s]
+Animation 0: _MethodAnimation(VGroup of 5 submobjects): 68%|██████▊ | 61/90 [00:00<00:00, 197.41it/s]
+Animation 0: _MethodAnimation(VGroup of 5 submobjects): 90%|█████████ | 81/90 [00:00<00:00, 198.21it/s]

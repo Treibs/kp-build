@@ -1,0 +1,58 @@
+```python
+from manim import *
+from PIL import Image
+import numpy as np
+
+class CharacterSelect(Scene):
+    def construct(self):
+        # Load and process sprite sheet
+        sprite_sheet = Image.open("sprite_sheet.png")
+        sprite_array = np.array(sprite_sheet)
+        
+        # Extract four 16x16 frames from 64x16 sprite sheet
+        frames = []
+        for i in range(4):
+            frame_array = sprite_array[:, i*16:(i+1)*16, :]
+            frames.append(frame_array)
+        
+        # Create scene elements
+        frame_mobjects = []
+        target_height = 1.5
+        spacing = 0.5
+        
+        for i, frame_array in enumerate(frames):
+            # Create ImageMobject from frame
+            frame_mob = ImageMobject(frame_array)
+            frame_mob.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            
+            # Scale to 1.5 units tall
+            frame_mob.height = target_height
+            
+            # Position in row with spacing
+            x = (i - 1.5) * (target_height + spacing)
+            frame_mob.move_to([x, 0, 0])
+            
+            frame_mobjects.append(frame_mob)
+        
+        # Add all frames to scene
+        all_frames = Group(*frame_mobjects)
+        self.add(all_frames)
+        
+        # Create and animate selection box
+        box = Rectangle(
+            width=target_height + 0.2,
+            height=target_height + 0.2,
+            color=YELLOW,
+            fill_opacity=0,
+            stroke_width=3
+        )
+        
+        # Cycle selection through each frame
+        for i in range(4):
+            x = (i - 1.5) * (target_height + spacing)
+            box.move_to([x, 0, 0])
+            self.add(box)
+            self.wait(0.5)
+            if i < 3:
+                self.remove(box)
+```

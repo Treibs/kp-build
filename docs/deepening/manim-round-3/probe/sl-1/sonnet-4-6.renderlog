@@ -1,0 +1,122 @@
+Manim Community v0.20.1
+
+[07/10/26 22:53:12] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 003.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 004.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 5 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 005.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 6 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 006.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 7 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 007.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 8 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 008.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 9 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 009.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 10 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 010.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 11 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 011.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 12 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 012.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 13 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 013.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 14 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 014.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 15 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WalkCycleScene/uncached_00
+ 015.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/WalkCycleScene.mp4'
+
+ INFO Rendered WalkCycleScene scene.py:278
+ Played 16 animations

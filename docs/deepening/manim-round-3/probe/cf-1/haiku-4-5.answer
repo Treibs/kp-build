@@ -1,0 +1,88 @@
+```python
+from manim import *
+
+class WindowShoppingStroll(MovingCameraScene):
+    def construct(self):
+        # Set camera frame to half default width
+        self.camera.frame.set_width(config.frame_width / 2)
+        self.add(self.camera.frame)
+        
+        # Street background
+        street = Rectangle(
+            width=24,
+            height=2,
+            color=GREY_BROWN,
+            fill_opacity=0.15,
+            stroke_width=0
+        )
+        self.add(street)
+        
+        # Five shopfronts with varied colors
+        shop_x = [-8, -4, 0, 4, 8]
+        shop_colors = [BLUE, PINK, YELLOW, RED, GREEN]
+        
+        for x, color in zip(shop_x, shop_colors):
+            building = Rectangle(
+                width=2.8,
+                height=2.8,
+                color=color,
+                fill_opacity=0.85,
+                stroke_width=2,
+                stroke_color=BLACK
+            ).move_to([x, 0.3, 0])
+            
+            awning = Rectangle(
+                width=3.2,
+                height=0.35,
+                color=DARK_BROWN,
+                fill_opacity=1,
+                stroke_width=1,
+                stroke_color=BLACK
+            ).move_to([x, 1.65, 0])
+            
+            self.add(building, awning)
+        
+        # Character sprite
+        try:
+            sprite = ImageMobject("sprite.png")
+            sprite.set_height(1.5)
+            sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        except:
+            sprite = VGroup(
+                Rectangle(width=0.35, height=0.8, color=ORANGE, fill_opacity=1),
+                Circle(radius=0.22, color=ORANGE, fill_opacity=1).shift(UP * 0.55)
+            )
+        
+        sprite.move_to([-11, 0, 0])
+        self.add(sprite)
+        self.camera.frame.move_to(sprite.get_center())
+        
+        # Walk past shops 1-2 (normal pace)
+        self.play(
+            sprite.animate.move_to([-1.5, 0, 0]),
+            self.camera.frame.animate.move_to([-1.5, 0, 0]),
+            run_time=3.5,
+            rate_func=linear
+        )
+        
+        # Approach shop 3
+        self.play(
+            sprite.animate.move_to([0, 0, 0]),
+            self.camera.frame.animate.move_to([0, 0, 0]),
+            run_time=0.5,
+            rate_func=linear
+        )
+        
+        # Stop for full second at window
+        self.wait(1)
+        
+        # Sprint past shops 4-5 (fast)
+        self.play(
+            sprite.animate.move_to([10, 0, 0]),
+            self.camera.frame.animate.move_to([10, 0, 0]),
+            run_time=1.2,
+            rate_func=linear
+        )
+        
+        self.wait(0.5)
+```

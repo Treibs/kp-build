@@ -1,0 +1,22 @@
+Manim Community v0.20.1
+
+[07/10/26 20:53:15] INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 20:53:16] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ TrainCrossing/uncached_000
+ 00.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/TrainCrossing.mp4'
+
+ INFO Rendered TrainCrossing scene.py:278
+ Played 1 animations
+/manim/scene.py:26: DeprecationWarning: This method is not guaranteed to stay around. Please prefer getting the attribute normally.
+ train_width = train.get_width()
+
+Animation 0: _MethodAnimation(Group): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(Group): 52%|█████▏ | 47/90 [00:00<00:00, 455.60it/s]

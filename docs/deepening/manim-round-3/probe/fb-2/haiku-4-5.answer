@@ -1,0 +1,58 @@
+```python
+from manim import *
+
+class TrainCrossing(Scene):
+    def construct(self):
+        frame_width = config.frame_width
+        frame_height = config.frame_height
+        
+        # Create train: 5 box cars, total width = 3 * frame_width
+        car_width = 3 * frame_width / 5
+        
+        cars = [
+            Rectangle(
+                width=car_width,
+                height=car_width,
+                fill_color=GREY_BROWN,
+                fill_opacity=1,
+                stroke_color=BLACK,
+                stroke_width=2
+            )
+            for _ in range(5)
+        ]
+        
+        train = Group(*cars).arrange(RIGHT, buff=0)
+        
+        # Position train at right edge, ready to cross
+        train_width = train.get_width()
+        train.shift(RIGHT * (frame_width / 2 + train_width / 2))
+        
+        # Character sprite (1.2 units, crisp pixel art)
+        try:
+            character = ImageMobject("sprite.png")
+            character.scale_to_fit_width(1.2)
+            character.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        except:
+            character = Rectangle(width=1.2, height=1.2, fill_color=BLUE, fill_opacity=1)
+        
+        # Position character in lower foreground, fully visible
+        character.move_to([0, -frame_height / 2 + 1.5, 0])
+        
+        # Create crossing sign
+        sign = Rectangle(
+            width=0.4,
+            height=1.0,
+            fill_color=RED,
+            fill_opacity=1,
+            stroke_color=BLACK,
+            stroke_width=1
+        )
+        sign.next_to(character, LEFT, buff=0.3)
+        
+        # Add all elements to scene
+        self.add(train, character, sign)
+        
+        # Animate train crossing from right to left over 6 seconds
+        crossing_distance = frame_width + train_width
+        self.play(train.animate.shift(LEFT * crossing_distance), run_time=6)
+```

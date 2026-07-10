@@ -1,0 +1,30 @@
+```python
+from manim import *
+import numpy as np
+from PIL import Image
+
+class SpritesheetWalkCycle(Scene):
+    def construct(self):
+        img = Image.open("sprite_sheet.png")
+        sheet_array = np.array(img)
+        
+        frames = []
+        for i in range(4):
+            frame_array = sheet_array[:, i*16:(i+1)*16, :]
+            frames.append(frame_array)
+        
+        frame_index = ValueTracker(0)
+        
+        def get_sprite():
+            idx = int(frame_index.get_value()) % 4
+            img_mob = ImageMobject(frames[idx])
+            img_mob.height = 2
+            img_mob.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            img_mob.move_to(ORIGIN)
+            return img_mob
+        
+        sprite = always_redraw(get_sprite)
+        self.add(sprite)
+        
+        self.play(frame_index.animate.set_value(16), run_time=4)
+```

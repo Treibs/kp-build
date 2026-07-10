@@ -1,0 +1,29 @@
+Manim Community v0.20.1
+
+[07/10/26 22:52:21] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HamsterWheelRun/uncached_0
+ 0000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HamsterWheelRun/uncached_0
+ 0001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/HamsterWheelRun.mp4'
+
+ INFO Rendered HamsterWheelRun scene.py:278
+ Played 2 animations
+/manim/scene.py:20: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ sprite.set_height(sprite_height)
+
+Animation 0: _MethodAnimation(ValueTracker): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ValueTracker): 56%|█████▌ | 50/90 [00:00<00:00, 484.82it/s]

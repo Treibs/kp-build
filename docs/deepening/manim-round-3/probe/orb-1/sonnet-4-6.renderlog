@@ -1,0 +1,33 @@
+Manim Community v0.20.1
+
+[07/10/26 22:52:14] INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 22:52:15] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FerrisWheelScene/uncached_
+ 00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FerrisWheelScene/uncached_
+ 00001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/FerrisWheelScene.mp4
+ '
+
+ INFO Rendered FerrisWheelScene scene.py:278
+ Played 2 animations
+/manim/scene.py:57: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ sprite.set_height(0.70)
+
+Animation 0: _MethodAnimation(ValueTracker): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ValueTracker): 19%|█▉ | 17/90 [00:00<00:00, 164.67it/s]
+Animation 0: _MethodAnimation(ValueTracker): 40%|████ | 36/90 [00:00<00:00, 178.54it/s]
+Animation 0: _MethodAnimation(ValueTracker): 61%|██████ | 55/90 [00:00<00:00, 180.13it/s]
+Animation 0: _MethodAnimation(ValueTracker): 82%|████████▏ | 74/90 [00:00<00:00, 176.04it/s]

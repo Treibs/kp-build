@@ -1,0 +1,98 @@
+```python
+from manim import *
+import numpy as np
+
+
+class MineCartDescent(MovingCameraScene):
+    def construct(self):
+        fw = config.frame_width
+        fh = config.frame_height
+
+        # Track spanning 3 frame widths diagonally, upper-left to lower-right
+        p0 = np.array([-1.5 * fw,  fh, 0])
+        p1 = np.array([ 1.5 * fw, -fh, 0])
+        diff = p1 - p0
+        unit = diff / np.linalg.norm(diff)
+        angle = np.arctan2(diff[1], diff[0])
+
+        # Perpendicular that points "up" (away from the ground side)
+        perp = np.array([-unit[1], unit[0], 0])
+        if perp[1] < 0:
+            perp = -perp
+
+        wr = 0.22   # wheel radius
+        ch = 0.60   # cart body height
+        cw = 1.70   # cart body width
+        sh = 1.20   # sprite height
+
+        # Cross-ties (drawn behind rails)
+        n_ties = 55
+        ties = VGroup(*[
+            Line(
+                p0 + (i / n_ties) * diff + perp * 0.45,
+                p0 + (i / n_ties) * diff - perp * 0.45,
+                color=DARK_BROWN, stroke_width=7,
+            )
+            for i in range(n_ties + 1)
+        ])
+
+        # Two rails
+        r1 = Line(p0 + perp * 0.22, p1 + perp * 0.22, color=GREY, stroke_width=5)
+        r2 = Line(p0 - perp * 0.22, p1 - perp * 0.22, color=GREY, stroke_width=5)
+
+        # Cart body — rotated rectangle aligned to the track
+        cart_body = Rectangle(width=cw, height=ch, color=LIGHT_BROWN, fill_opacity=1)
+        cart_body.rotate(angle)
+
+        # Wheels
+        w1 = Circle(radius=wr, color=GREY, fill_opacity=1)
+        w2 = Circle(radius=wr, color=GREY, fill_opacity=1)
+
+        # Sprite (crisp nearest-neighbour scaling)
+        sprite = ImageMobject("sprite.png")
+        sprite.set_height(sh)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+
+        # Fixed offsets from the track-centerline anchor point
+        body_off   =  perp * (2 * wr + ch / 2)
+        w1_off     =  unit * (cw / 2 - wr * 1.1) + perp * wr
+        w2_off     = -unit * (cw / 2 - wr * 1.1) + perp * wr
+        sprite_off =  perp * (2 * wr + ch + sh / 2)
+
+        tracker = ValueTracker(0.0)
+
+        def cart_pos():
+            return p0 + tracker.get_value() * diff
+
+        # Initial placement at t = 0
+        cp = p0.copy()
+        cart_body.move_to(cp + body_off)
+        w1.move_to(cp + w1_off)
+        w2.move_to(cp + w2_off)
+        sprite.move_to(cp + sprite_off)
+
+        # Camera: half the default width, centred on the cart body
+        self.camera.frame.set_width(fw / 2)
+        self.camera.frame.move_to(cp + body_off)
+        # Must add the frame to the scene so its updaters execute during play
+        self.add(self.camera.frame)
+
+        # Build scene back-to-front
+        self.add(ties, r1, r2, w1, w2, cart_body, sprite)
+
+        # Continuous updaters — each piece tracks the ValueTracker
+        cart_body.add_updater(lambda m: m.move_to(cart_pos() + body_off))
+        w1.add_updater(lambda m: m.move_to(cart_pos() + w1_off))
+        w2.add_updater(lambda m: m.move_to(cart_pos() + w2_off))
+        sprite.add_updater(lambda m: m.move_to(cart_pos() + sprite_off))
+        self.camera.frame.add_updater(lambda f: f.move_to(cart_pos() + body_off))
+
+        # Descend over 7 seconds
+        self.play(tracker.animate.set_value(1.0), run_time=7, rate_func=linear)
+
+        for mob in (cart_body, w1, w2, sprite):
+            mob.clear_updaters()
+        self.camera.frame.clear_updaters()
+
+        self.wait(0.5)
+```

@@ -1,0 +1,30 @@
+Manim Community v0.20.1
+
+[07/10/26 20:45:39] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PlanetWithMoons/uncached_0
+ 0000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ PlanetWithMoons/uncached_0
+ 0001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/PlanetWithMoons.mp4'
+
+ INFO Rendered PlanetWithMoons scene.py:278
+ Played 2 animations
+
+Animation 0: _MethodAnimation(ValueTracker): 0%| | 0/90 [00:00<?, ?it/s]/manim/scene.py:58: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ mob.set_angle(angle)
+/manim/scene.py:66: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ mob.set_angle(angle)
+

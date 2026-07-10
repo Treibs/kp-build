@@ -1,0 +1,38 @@
+```python
+from manim import *
+import numpy as np
+from PIL import Image
+
+
+class CharacterSelectScene(Scene):
+    def construct(self):
+        sheet = Image.open("sprite_sheet.png").convert("RGBA")
+        sheet_arr = np.array(sheet)
+
+        sprites = []
+        for i in range(4):
+            frame_arr = sheet_arr[:, i * 16:(i + 1) * 16, :]
+            img = ImageMobject(frame_arr)
+            img.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            img.set_height(1.5)
+            sprites.append(img)
+
+        sprite_group = Group(*sprites)
+        sprite_group.arrange(RIGHT, buff=1.0)
+        self.add(sprite_group)
+
+        sel_box = Rectangle(
+            width=sprites[0].width + 0.25,
+            height=sprites[0].height + 0.25,
+            color=YELLOW,
+            stroke_width=4,
+            fill_opacity=0,
+        )
+        sel_box.move_to(sprites[0].get_center())
+        self.add(sel_box)
+
+        self.wait(0.5)
+        for i in range(1, 4):
+            self.play(sel_box.animate.move_to(sprites[i].get_center()), run_time=0.15)
+            self.wait(0.5)
+```

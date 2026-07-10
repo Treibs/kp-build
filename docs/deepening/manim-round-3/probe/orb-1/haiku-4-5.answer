@@ -1,0 +1,53 @@
+```python
+from manim import *
+import numpy as np
+
+class FerrisWheelScene(Scene):
+    def construct(self):
+        # Load sprite image (16x16 pixels, scaled to 1 unit tall)
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        
+        # Create Ferris wheel circle
+        wheel_radius = 3
+        wheel = Circle(radius=wheel_radius, color=WHITE, stroke_width=2, fill_opacity=0)
+        
+        # Create 4 gondolas at cardinal positions
+        gondola_radius = 0.25
+        gondola_positions = [
+            np.array([0, wheel_radius, 0]),        # Top
+            np.array([wheel_radius, 0, 0]),        # Right
+            np.array([0, -wheel_radius, 0]),       # Bottom
+            np.array([-wheel_radius, 0, 0]),       # Left
+        ]
+        
+        gondolas = VGroup()
+        for pos in gondola_positions:
+            gondola = Circle(radius=gondola_radius, color=YELLOW, fill_opacity=0.8).move_to(pos)
+            gondolas.add(gondola)
+        
+        self.add(wheel, gondolas)
+        
+        # Angle tracker for animation
+        angle_tracker = ValueTracker(PI / 2)  # Start at top
+        
+        # Update function to position sprite around the wheel
+        def update_sprite_position(mob):
+            angle = angle_tracker.get_value()
+            x = wheel_radius * np.cos(angle)
+            y = wheel_radius * np.sin(angle)
+            mob.move_to([x, y, 0])
+        
+        sprite.add_updater(update_sprite_position)
+        self.add(sprite)
+        
+        # Animate: one full revolution (2π radians) in 6 seconds, keeping sprite upright
+        self.play(
+            angle_tracker.animate.set_value(PI / 2 + TAU),
+            run_time=6
+        )
+        
+        sprite.remove_updater(update_sprite_position)
+        self.wait(1)
+```

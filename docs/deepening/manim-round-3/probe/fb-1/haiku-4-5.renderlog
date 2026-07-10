@@ -1,0 +1,26 @@
+Manim Community v0.20.1
+
+[07/10/26 20:52:05] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ BeanstalkClimb/uncached_00
+ 000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ BeanstalkClimb/uncached_00
+ 001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/BeanstalkClimb.mp4'
+
+ INFO Rendered BeanstalkClimb scene.py:278
+ Played 2 animations
+
+Animation 0: _MethodAnimation(Rectangle): 0%| | 0/90 [00:00<?, ?it/s]

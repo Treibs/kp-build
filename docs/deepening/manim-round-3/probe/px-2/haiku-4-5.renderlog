@@ -1,0 +1,34 @@
+Manim Community v0.20.1
+
+[07/10/26 21:00:57] INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 21:00:58] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ StarfieldDrift/uncached_00
+ 000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ StarfieldDrift/uncached_00
+ 001.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/StarfieldDrift.mp4'
+
+ INFO Rendered StarfieldDrift scene.py:278
+ Played 2 animations
+
+Animation 0: _MethodAnimation(ValueTracker): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ValueTracker): 12%|█▏ | 11/90 [00:00<00:00, 100.40it/s]
+Animation 0: _MethodAnimation(ValueTracker): 24%|██▍ | 22/90 [00:00<00:00, 102.03it/s]
+Animation 0: _MethodAnimation(ValueTracker): 37%|███▋ | 33/90 [00:00<00:00, 104.79it/s]
+Animation 0: _MethodAnimation(ValueTracker): 49%|████▉ | 44/90 [00:00<00:00, 103.67it/s]
+Animation 0: _MethodAnimation(ValueTracker): 61%|██████ | 55/90 [00:00<00:00, 103.75it/s]
+Animation 0: _MethodAnimation(ValueTracker): 73%|███████▎ | 66/90 [00:00<00:00, 103.09it/s]
+Animation 0: _MethodAnimation(ValueTracker): 86%|████████▌ | 77/90 [00:00<00:00, 102.98it/s]
+Animation 0: _MethodAnimation(ValueTracker): 98%|█████████▊| 88/90 [00:00<00:00, 103.23it/s]

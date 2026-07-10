@@ -1,0 +1,114 @@
+```python
+from manim import *
+import numpy as np
+
+class StarfieldDrift(Scene):
+    def construct(self):
+        w = config.frame_width
+        h = config.frame_height
+        
+        # Cockpit frame (simple rectangles)
+        outer_rect = Rectangle(
+            width=w - 0.4,
+            height=h - 0.4,
+            stroke_color=WHITE,
+            stroke_width=2,
+            fill_opacity=0
+        )
+        inner_rect = Rectangle(
+            width=w - 1.2,
+            height=h - 1.2,
+            stroke_color=GREY,
+            stroke_width=1,
+            fill_opacity=0
+        )
+        cockpit = VGroup(outer_rect, inner_rect)
+        
+        # Dim stars (small, slow drift)
+        dim_stars = VGroup()
+        dim_data = []
+        np.random.seed(42)
+        for _ in range(50):
+            x = np.random.uniform(-w/2 - 0.5, w/2 + 0.5)
+            y = np.random.uniform(-h/2, h/2)
+            star = Circle(radius=0.05, color=GREY_C, fill_opacity=0.3)
+            star.move_to([x, y, 0])
+            dim_stars.add(star)
+            dim_data.append([star, x, y])
+        
+        # Bright stars (large, fast drift)
+        bright_stars = VGroup()
+        bright_data = []
+        for _ in range(30):
+            x = np.random.uniform(-w/2 - 0.5, w/2 + 0.5)
+            y = np.random.uniform(-h/2, h/2)
+            star = Circle(radius=0.1, color=YELLOW, fill_opacity=0.8)
+            star.move_to([x, y, 0])
+            bright_stars.add(star)
+            bright_data.append([star, x, y])
+        
+        # Planet (large circle, moves at bright star speed)
+        planet_x, planet_y = -1.5, 0.5
+        planet = Circle(radius=0.5, color=ORANGE, fill_opacity=0.6)
+        planet.move_to([planet_x, planet_y, 0])
+        
+        # Pilot sprite (crisp pixel art)
+        pilot = ImageMobject("sprite.png")
+        pilot.scale(1)
+        pilot.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        pilot.move_to(ORIGIN)
+        
+        # Add in depth order: back to front
+        self.add(dim_stars)
+        self.add(planet)
+        self.add(bright_stars)
+        self.add(cockpit)
+        self.add(pilot)
+        
+        # Animation progress tracker
+        progress = ValueTracker(0)
+        
+        # Updater for dim stars (slow)
+        def update_dim_stars(obj):
+            t = progress.get_value()
+            offset = t * w
+            for star, orig_x, orig_y in dim_data:
+                new_x = orig_x - offset
+                while new_x < -w/2 - 0.5:
+                    new_x += w + 1
+                star.move_to([new_x, orig_y, 0])
+        
+        # Updater for bright stars (fast)
+        def update_bright_stars(obj):
+            t = progress.get_value()
+            offset = t * w * 2
+            for star, orig_x, orig_y in bright_data:
+                new_x = orig_x - offset
+                while new_x < -w/2 - 0.5:
+                    new_x += w + 1
+                star.move_to([new_x, orig_y, 0])
+        
+        # Updater for planet (bright star speed)
+        def update_planet(obj):
+            t = progress.get_value()
+            offset = t * w * 2
+            new_x = planet_x - offset
+            while new_x < -w/2 - 0.5:
+                new_x += w + 1
+            obj.move_to([new_x, planet_y, 0])
+        
+        # Attach updaters
+        dim_stars.add_updater(update_dim_stars)
+        bright_stars.add_updater(update_bright_stars)
+        planet.add_updater(update_planet)
+        
+        # Animate over 6 seconds
+        self.play(progress.animate.set_value(1), run_time=6, rate_func=linear)
+        
+        # Cleanup updaters
+        dim_stars.remove_updater(update_dim_stars)
+        bright_stars.remove_updater(update_bright_stars)
+        planet.remove_updater(update_planet)
+        
+        self.wait()
+```

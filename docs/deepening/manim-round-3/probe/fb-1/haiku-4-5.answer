@@ -1,0 +1,28 @@
+```python
+from manim import *
+
+class BeanstalkClimb(Scene):
+    def construct(self):
+        sprite = ImageMobject("sprite.png")
+        sprite.scale_to_fit_height(1)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.move_to(ORIGIN)
+        
+        beanstalk_height = 5 * config.frame_height
+        beanstalk = Rectangle(
+            width=0.3,
+            height=beanstalk_height,
+            color=GREEN,
+            fill_opacity=0.7
+        )
+        beanstalk.move_to([0, 2 * config.frame_height, 0])
+        
+        self.add(sprite, beanstalk)
+        
+        self.play(
+            beanstalk.animate.shift(DOWN * 4 * config.frame_height),
+            run_time=6
+        )
+        
+        self.wait()
+```

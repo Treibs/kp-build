@@ -1,0 +1,70 @@
+```python
+from manim import *
+
+
+class RelayHandoff(MovingCameraScene):
+    def construct(self):
+        # Half default frame width (2x zoom)
+        self.camera.frame.set_width(config.frame_width / 2)
+
+        # Runner A
+        runner_a = ImageMobject("sprite.png")
+        runner_a.set_height(1.5)
+        runner_a.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        runner_a.move_to(ORIGIN)
+
+        # Runner B pre-positioned at the handoff point
+        run_distance = 6.0  # 2 units/sec × 3 sec
+        runner_b = ImageMobject("sprite.png")
+        runner_b.set_height(1.5)
+        runner_b.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        runner_b.move_to(RIGHT * run_distance)
+
+        # Baton: small orange rectangle
+        baton = Rectangle(
+            width=0.35, height=0.12,
+            color=ORANGE, fill_color=ORANGE, fill_opacity=1,
+        )
+        baton.next_to(runner_a, RIGHT, buff=0.05)
+
+        # Must add camera.frame to scene before attaching updaters,
+        # otherwise updaters are never called during play.
+        self.add(self.camera.frame)
+        self.camera.frame.move_to(runner_a.get_center())
+
+        self.add(runner_a, runner_b, baton)
+
+        # Phase 1: camera and baton track runner A
+        def cam_follow_a(f):
+            f.move_to(runner_a.get_center())
+
+        def baton_on_a(b):
+            b.next_to(runner_a, RIGHT, buff=0.05)
+
+        self.camera.frame.add_updater(cam_follow_a)
+        baton.add_updater(baton_on_a)
+
+        self.play(runner_a.animate.shift(RIGHT * run_distance), run_time=3)
+
+        # Handoff: drop A's updaters, snap baton to B
+        self.camera.frame.remove_updater(cam_follow_a)
+        baton.remove_updater(baton_on_a)
+        baton.next_to(runner_b, RIGHT, buff=0.05)
+
+        # Phase 2: camera and baton track runner B
+        def cam_follow_b(f):
+            f.move_to(runner_b.get_center())
+
+        def baton_on_b(b):
+            b.next_to(runner_b, RIGHT, buff=0.05)
+
+        self.camera.frame.add_updater(cam_follow_b)
+        baton.add_updater(baton_on_b)
+
+        self.play(runner_b.animate.shift(RIGHT * run_distance), run_time=3)
+
+        self.camera.frame.remove_updater(cam_follow_b)
+        baton.remove_updater(baton_on_b)
+
+        self.wait(0.5)
+```
