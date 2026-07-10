@@ -4832,3 +4832,20 @@ Aborts if <code>v</code> is not empty.
 <details>
 <summary>Implementation</summary>
 
+
+## FILE: crates/sui-framework/docs/std/vector.md (contains signature)
+
+<a name="std_vector_contains"></a>
+
+## Function `contains`
+
+Return true if <code>e</code> is in the vector <code>v</code>.
+Otherwise, returns false.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="../std/vector.md#std_vector_contains">contains</a>&lt;Element&gt;(v: &<a href="../std/vector.md#std_vector">vector</a>&lt;Element&gt;, e: &Element): <a href="../std/bool.md#std_bool">bool</a>
+</code></pre>
+
+
+
+<details>

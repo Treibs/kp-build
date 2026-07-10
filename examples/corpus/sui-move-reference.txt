@@ -3561,3 +3561,18 @@ the code above. Move's type system is more permissive in its treatment of
 [copies](./../variables#move-and-copy), but equally strict in ensuring unique ownership of mutable
 references before writes.
 
+
+## FILE: reference/primitive-types/references.md (lines 216-227: References Cannot Be Stored)
+
+### References Cannot Be Stored
+
+References and tuples are the _only_ types that cannot be stored as a field value of structs, which
+also means that they cannot exist in storage or [objects](./../abilities/object). All references
+created during program execution will be destroyed when a Move program terminates; they are entirely
+ephemeral. This also applies to all types without the `store` ability: any value of a non-`store`
+type must be destroyed before the program terminates.
+
+This is another difference between Move and Rust, which allows references to be stored inside of
+structs.
+
+One could imagine a fancier, more expressive, type system that would allow references to be stored

@@ -1491,6 +1491,76 @@
         "source": "sui-move-reference",
         "supporting_passage": "In these cases, the type of the `vector` is inferred, either from the element type or from the\nvector's usage. If the type cannot be inferred, or simply for added clarity, the type can be\nspecified explicitly:"
       }
+    },
+    {
+      "id": "reference-type-argument-green",
+      "statement": "References are never stored or passed as type arguments — hold the copyable `ID` (`Option<ID>`, `object::id(&obj)`) and borrow at the point of use.",
+      "supporting_passage": "sui 1.74.1 builds a module storing Option<ID> and recording via object::id, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/reference-type-argument-green"
+      }
+    },
+    {
+      "id": "reference-type-argument-red",
+      "statement": "A reference cannot be a type argument: `stamp: Option<&Stamp>` fails on sui 1.74.1 with error[E04004] — \"Expected a single non-reference type\". References are not first-class values in Move.",
+      "supporting_passage": "sui 1.74.1 rejects Option<&Stamp> as a parameter type with exit 1, error[E04004], Expected a single non-reference type.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/reference-type-argument-red"
+      }
+    },
+    {
+      "id": "reference-type-argument-doc",
+      "statement": "References (and tuples) are the only types that cannot be stored as struct field values — they cannot exist in storage or objects.",
+      "supporting_passage": "References and tuples are the _only_ types that cannot be stored as a field value of structs, which\nalso means that they cannot exist in storage or",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "References and tuples are the _only_ types that cannot be stored as a field value of structs, which\nalso means that they cannot exist in storage or"
+      }
+    },
+    {
+      "id": "vector-contains-by-ref-green",
+      "statement": "`vector::contains` takes the probe element by reference: `vector::contains(blocklist, &who)` builds green.",
+      "supporting_passage": "sui 1.74.1 builds a blocked() using vector::contains(blocklist, &who), exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/vector-contains-by-ref-green"
+      }
+    },
+    {
+      "id": "vector-contains-by-ref-red",
+      "statement": "Passing the element by value fails: `vector::contains(blocklist, who)` is rejected on sui 1.74.1 with error[E04007] — \"Invalid call of 'std::vector::contains'\" (the parameter is `&Element`). Rust's `Vec::contains` has the same by-reference signature; the slip is not borrowing at the call site.",
+      "supporting_passage": "sui 1.74.1 rejects vector::contains(blocklist, who) with exit 1, error[E04007]: incompatible types, Invalid call of 'std::vector::contains'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/vector-contains-by-ref-red"
+      }
+    },
+    {
+      "id": "vector-contains-by-ref-doc",
+      "statement": "`contains<Element>(v: &vector<Element>, e: &Element): bool` — the element parameter is a reference.",
+      "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/vector.md#std_vector_contains\">contains</a>&lt;Element&gt;(v: &<a href=\"../std/vector.md#std_vector\">vector</a>&lt;Element&gt;, e: &Element): <a href=\"../std/bool.md#std_bool\">bool</a>\n",
+      "claim_type": "method",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/vector.md#std_vector_contains\">contains</a>&lt;Element&gt;(v: &<a href=\"../std/vector.md#std_vector\">vector</a>&lt;Element&gt;, e: &Element): <a href=\"../std/bool.md#std_bool\">bool</a>\n"
+      }
     }
   ]
 }
