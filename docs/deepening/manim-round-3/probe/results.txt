@@ -1,0 +1,66 @@
+# Round-3 probe gate results (pinned oracle: manim 0.20.1 Docker digest, see probe/README.md)
+# Verdict = first line of <model>.result (generated from the .result files, not prose)
+
+task   haiku-4-5  sonnet-4-6
+orb-1  PASS       PASS
+orb-2  PASS       PASS
+orb-3  PASS       PASS
+cf-1   PASS       PASS
+cf-2   PASS       PASS
+cf-3   PASS       PASS
+fb-1   PASS       PASS
+fb-2   PASS       PASS
+fb-3   FAIL       PASS
+sl-1   PASS       PASS
+sl-2   PASS       PASS
+sl-3   PASS       PASS
+px-1   FAIL       PASS
+px-2   PASS       PASS
+px-3   PASS       PASS
+
+haiku:  13/15 gate-pass
+sonnet: 15/15 gate-pass
+
+FAIL error lines (verbatim from renderlogs):
+fb-3 haiku: NameError: name 'ease_out' is not defined
+px-1 haiku: NameError: name 'DARK_GREEN' is not defined
+
+# Hand-check (every gate-PASS re-rendered with media kept; every video viewed
+# as contact sheets — standing rule since the round-2 camera-follow fixture bug)
+
+task   haiku hand-check                          sonnet hand-check
+orb-1  OK — moons orbit on visible rings          OK — moons orbit, distinct radii/speeds
+orb-2  OK — inverted-phase diagnostic CORRECT     OK — phase correct
+orb-3  PARTIAL — flags unresolvable at 480p       PARTIAL — flags unresolvable at 480p
+cf-1   OK — follows walk-stop-sprint              OK — updater-based follow, tracks subject
+cf-2   OK — cart is plain slab (note), follow OK  OK — wheeled cart on sleepered track, camera locked
+cf-3   VISUAL FAIL — sprite-scale collapse        OK — uses .height, sprite readable
+fb-1   OK — climber in frame throughout           OK — beanstalk climb, in frame
+fb-2   OK — train slab (note), demands met        OK — train + sign + character all visible
+fb-3   (gate FAIL, not rendered)                  OK — bursts bloom fully in frame over skyline
+sl-1   OK — sheet-sliced walk cycle               OK — distinct poses per frame
+sl-2   OK — sheet browser, highlight steps        OK — highlight steps frames
+sl-3   VISUAL FAIL — zoom overshoots frame        OK — focused frame fills view; neighbor
+       bounds, sprite mostly off-screen              clipping mid-pan inherent to the pan, accepted
+px-1   (gate FAIL, not rendered)                  OK w/ NOTE — layers/speeds/wrap correct; fence
+                                                     rail renders in FRONT of character's legs
+                                                     (task asked fence behind character) — minor
+                                                     depth-order defect, not counted as fail
+px-2   VISUAL FAIL — pilot sprite-scale collapse  OK — planet passes behind window, depth holds
+px-3   VISUAL FAIL — runner sprite-scale collapse OK — signposts scroll, runner in place
+
+haiku:  8 OK + 1 partial + 4 visual-fail (of 13 gate-passes) → 8/15 fully good
+sonnet: 13 OK + 1 partial + 1 OK-with-note → 14/15 fully good, 0 fails
+
+Grep-verified mechanism fields (per README hand-check protocol):
+- camera-follow idiom: `self.add(self.camera.frame)` / `self.add(frame)` present in
+  6/6 cf answers (both models, all three tasks; one occurrence each). First
+  post-correction measurement of the round-2 camera-follow fixture fix: full
+  source-level adoption, and cf-1/cf-2 videos confirm the camera actually moves.
+- sprite-scale collapse: each of the three visual-fail answers sizes its sprite
+  ONLY with a relative `.scale(n)` call and no absolute-height sizing — cf-3
+  `.scale(1.5)` x2, px-2 `.scale(1)`, px-3 `.scale(1.5)` (haiku). The sonnet
+  counterparts of the same three tasks all size absolutely with `set_height(...)`
+  (cf-3 `set_height(1.5)` x2, px-2 `set_height(1.0)`, px-3 `set_height(1.5)`).
+  sl-3 haiku also scales relatively (`.scale(2)`) — its visual failure is the
+  frame-fit class, recorded separately.

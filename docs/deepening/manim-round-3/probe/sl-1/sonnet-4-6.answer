@@ -1,0 +1,23 @@
+```python
+from manim import *
+import numpy as np
+from PIL import Image
+
+
+class WalkCycleScene(Scene):
+    def construct(self):
+        sheet = Image.open("sprite_sheet.png").convert("RGBA")
+        frames = []
+        for i in range(4):
+            crop = np.array(sheet.crop((i * 16, 0, (i + 1) * 16, 16)))
+            img = ImageMobject(crop)
+            img.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            img.scale_to_fit_height(2)
+            frames.append(img)
+
+        for i in range(16):  # 16 × 0.25 s = 4 s
+            if i > 0:
+                self.remove(frames[(i - 1) % 4])
+            self.add(frames[i % 4])
+            self.wait(0.25)
+```

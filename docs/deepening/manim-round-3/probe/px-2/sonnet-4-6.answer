@@ -1,0 +1,114 @@
+```python
+from manim import *
+import numpy as np
+
+
+class StarfieldDriftScene(Scene):
+    def construct(self):
+        fw = config.frame_width
+        fh = config.frame_height
+        rng = np.random.default_rng(42)
+
+        slow_spd = 2.0   # far layer: dim stars + planet (units/sec)
+        fast_spd = 4.5   # near layer: bright stars
+
+        # ── Layer 1: far dim stars ────────────────────────────────────────
+        dim_dots = [
+            Dot(
+                point=[rng.uniform(-fw / 2, fw / 2), rng.uniform(-fh / 2, fh / 2), 0],
+                radius=0.03,
+                color=WHITE,
+                fill_opacity=0.35,
+            )
+            for _ in range(70)
+        ]
+        dim_layer = Group(*dim_dots)
+
+        # ── Planet (far speed; depth: dim ← planet ← bright) ─────────────
+        planet = Circle(radius=1.1, stroke_width=0)
+        planet.set_fill("#3a6ea8", opacity=1.0)
+        planet.move_to([fw / 2 + 1.4, -1.0, 0])
+
+        # ── Layer 2: near bright stars ────────────────────────────────────
+        bright_dots = [
+            Dot(
+                point=[rng.uniform(-fw / 2, fw / 2), rng.uniform(-fh / 2, fh / 2), 0],
+                radius=0.08,
+                color=WHITE,
+                fill_opacity=0.95,
+            )
+            for _ in range(35)
+        ]
+        bright_layer = Group(*bright_dots)
+
+        # ── Pixel cockpit frame (rectangles only) ─────────────────────────
+        hull_c   = "#16213e"
+        panel_c  = "#0f3460"
+        accent_c = "#533483"
+
+        cw, ch, bt = 4.2, 3.0, 0.45   # outer width/height, border thickness
+        hw = (cw - bt) / 2             # half-width to bar centres
+        hh = (ch - bt) / 2             # half-height to bar centres
+
+        bars = VGroup(
+            Rectangle(width=cw,        height=bt,          fill_color=hull_c,  fill_opacity=1, stroke_width=0).move_to([0,   hh, 0]),
+            Rectangle(width=cw,        height=bt,          fill_color=hull_c,  fill_opacity=1, stroke_width=0).move_to([0,  -hh, 0]),
+            Rectangle(width=bt,        height=ch - 2 * bt, fill_color=hull_c,  fill_opacity=1, stroke_width=0).move_to([-hw,  0, 0]),
+            Rectangle(width=bt,        height=ch - 2 * bt, fill_color=hull_c,  fill_opacity=1, stroke_width=0).move_to([ hw,  0, 0]),
+        )
+        corners = VGroup(*[
+            Square(side_length=bt, fill_color=panel_c, fill_opacity=1, stroke_width=0)
+            .move_to([sx * hw, sy * hh, 0])
+            for sx, sy in [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        ])
+        n_acc = 7
+        step = (cw - 2 * bt) / n_acc
+        top_accents = VGroup(*[
+            Rectangle(width=0.15, height=0.15, fill_color=accent_c, fill_opacity=1, stroke_width=0)
+            .move_to([(-cw / 2 + bt) + (i + 0.5) * step, hh, 0])
+            for i in range(n_acc)
+        ])
+        side_vents = VGroup(*[
+            Rectangle(width=bt * 0.45, height=0.10, fill_color=accent_c, fill_opacity=1, stroke_width=0)
+            .move_to([sx * hw, sy * 0.3, 0])
+            for sx in (-1, 1) for sy in (-0.6, 0.0, 0.6)
+        ])
+        cockpit = VGroup(bars, corners, top_accents, side_vents)
+
+        # ── Pilot sprite (crisp nearest-neighbour, 1 unit tall) ───────────
+        pilot = ImageMobject("sprite.png")
+        pilot.set_height(1.0)
+        pilot.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        pilot.move_to(ORIGIN)
+
+        # ── Compose: dim → planet → bright → pilot → cockpit ─────────────
+        self.add(dim_layer, planet, bright_layer, pilot, cockpit)
+
+        # ── Scrolling updaters ────────────────────────────────────────────
+        margin = 0.15
+
+        def dim_upd(mob, dt):
+            for d in dim_dots:
+                d.shift(LEFT * slow_spd * dt)
+                if d.get_center()[0] < -fw / 2 - margin:
+                    d.move_to([fw / 2 + margin, d.get_center()[1], 0])
+
+        def bright_upd(mob, dt):
+            for d in bright_dots:
+                d.shift(LEFT * fast_spd * dt)
+                if d.get_center()[0] < -fw / 2 - margin:
+                    d.move_to([fw / 2 + margin, d.get_center()[1], 0])
+
+        def planet_upd(mob, dt):
+            mob.shift(LEFT * slow_spd * dt)
+
+        dim_layer.add_updater(dim_upd)
+        bright_layer.add_updater(bright_upd)
+        planet.add_updater(planet_upd)
+
+        self.wait(6)
+
+        dim_layer.remove_updater(dim_upd)
+        bright_layer.remove_updater(bright_upd)
+        planet.remove_updater(planet_upd)
+```

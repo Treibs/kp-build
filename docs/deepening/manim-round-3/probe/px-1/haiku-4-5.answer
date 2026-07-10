@@ -1,0 +1,69 @@
+```python
+from manim import *
+
+class ParallaxStroll(Scene):
+    def construct(self):
+        # Load sprite or use placeholder
+        try:
+            sprite = ImageMobject("sprite.png")
+            sprite.scale_to_fit_height(1.5)
+            sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        except FileNotFoundError:
+            sprite = Rectangle(height=1.5, width=0.75, color=BLUE, fill_opacity=0.5)
+        
+        sprite.move_to(ORIGIN)
+        
+        # Create background layers - each with seamless wrapping
+        hills = self.create_hills()
+        trees = self.create_trees()
+        fence = self.create_fence()
+        
+        # Layer order: hills (back) → trees → fence → character (front)
+        self.add(hills, trees, fence, sprite)
+        
+        # Animate parallax for 6 seconds with different scroll speeds
+        self.play(
+            hills.animate.shift(LEFT * 6),       # Slowest - distant hills
+            trees.animate.shift(LEFT * 12),      # Medium - tree line
+            fence.animate.shift(LEFT * 12),      # Fastest - fence line
+            run_time=6
+        )
+        
+        self.wait()
+    
+    def create_hills(self):
+        """Distant hills layer (slowest parallax)"""
+        hills = Group()
+        for i in range(-2, 8):
+            hill = Arc(radius=0.4, angle=PI, color=LIGHT_GRAY, stroke_width=2)
+            hill.shift(RIGHT * i * 3 + DOWN * 2.5)
+            hills.add(hill)
+        return hills
+    
+    def create_trees(self):
+        """Tree line layer (medium parallax)"""
+        trees = Group()
+        for i in range(-2, 12):
+            tree = Group()
+            trunk = Rectangle(height=0.25, width=0.08, color=DARK_BROWN, fill_opacity=1)
+            crown = Polygon(
+                [0, 0, 0],
+                [0.25, -0.45, 0],
+                [-0.25, -0.45, 0],
+                color=DARK_GREEN,
+                fill_opacity=0.8
+            )
+            tree.add(trunk, crown)
+            tree.shift(RIGHT * i * 1.5 + DOWN * 0.8)
+            trees.add(tree)
+        return trees
+    
+    def create_fence(self):
+        """Fence layer (fastest parallax, in front of hills/trees but behind character)"""
+        fence = Group()
+        for i in range(-2, 15):
+            post = Line(UP * 0.18, DOWN * 0.18, stroke_width=3, color=LIGHT_BROWN)
+            post.shift(RIGHT * i + UP * 0.2)
+            fence.add(post)
+        return fence
+```

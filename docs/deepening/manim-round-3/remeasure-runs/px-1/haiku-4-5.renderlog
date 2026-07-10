@@ -1,0 +1,99 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:20 in construct
+
+ 17
+ 18 # Three parallax layers (back to front): hills, trees, fence
+ 19 hills = self.create_scrolling_layer(self.hills_element, fw, -fh
+ ❱ 20 trees = self.create_scrolling_layer(self.trees_element, fw, -fh
+ 21 fence = self.create_scrolling_layer(self.fence_element, fw, -fh
+ 22
+ 23 self.add_to_back(hills)
+
+ /manim/scene.py:34 in create_scrolling_layer
+
+ 31 for cycle in range(2):
+ 32 for i in range(4):
+ 33 x = -width/2 + i * width/4 + cycle * width
+ ❱ 34 layer.add(element_fn(x, y_pos))
+ 35 layer.add_updater(lambda m, dt: m.shift(LEFT * speed * dt))
+ 36 return layer
+ 37
+
+ /manim/scene.py:43 in trees_element
+
+ 40
+ 41 def trees_element(self, x, y):
+ 42 trunk = Rectangle(width=0.2, height=0.6, color="#654321", fill_
+ ❱ 43 crown = Polygon(
+ 44 np.array([-0.35, 0]), np.array([0.35, 0]), np.array([0, 0.9
+ 45 color=GREEN, fill_opacity=0.8
+ 46 )
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/geometry/polygram.py:33
+ 3 in __init__
+
+ 330 """
+ 331
+ 332 def __init__(self, *vertices: Point3DLike, **kwargs: Any) -> None:
+ ❱ 333 super().__init__(vertices, **kwargs)
+ 334
+ 335
+ 336 class RegularPolygram(Polygram):
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/geometry/polygram.py:97
+ in __init__
+
+ 94 first_vertex, *vertices = vertices
+ 95 first_vertex = np.array(first_vertex)
+ 96
+ ❱ 97 self.start_new_path(first_vertex)
+ 98 self.add_points_as_corners(
+ 99 [*(np.array(vertex) for vertex in vertices), first_ver
+ 100 )
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/types/vectorized_mobjec
+ t.py:886 in start_new_path
+
+ 883 closure = [last_anchor] * (nppc - (n_points % nppc))
+ 884 self.append_points(closure + [point])
+ 885 else:
+ ❱ 886 self.append_points([point])
+ 887 return self
+ 888
+ 889 def add_cubic_bezier_curve(
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/types/vectorized_mobjec
+ t.py:855 in append_points
+
+ 852 n = len(self.points)
+ 853 points = np.empty((n + len(new_points), self.dim))
+ 854 points[:n] = self.points
+ ❱ 855 points[n:] = new_points
+ 856 self.points = points
+ 857 return self
+ 858
+
+ValueError: could not broadcast input array from shape (1,2) into shape (1,3)

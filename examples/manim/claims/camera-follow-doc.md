@@ -22,7 +22,7 @@ verified:
   evidence: "class ChangingCameraWidthAndRestore(MovingCameraScene):\n        def\
     \ construct(self):\n            text = Text(\"Hello World\").set_color(BLUE)\n\
     \            self.add"
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: manim-api-docs

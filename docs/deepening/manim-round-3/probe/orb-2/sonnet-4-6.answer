@@ -1,0 +1,59 @@
+```python
+from manim import *
+import numpy as np
+
+
+class HamsterWheelRun(Scene):
+    def construct(self):
+        wheel_radius = 3.0
+        sprite_height = 1.2
+        # Sprite center sits half a sprite-height inside the rim
+        inner_radius = wheel_radius - sprite_height / 2
+
+        # Visible wheel
+        wheel = Circle(radius=wheel_radius, color=WHITE, stroke_width=5)
+        hub = Dot(ORIGIN, color=WHITE, radius=0.08)
+        self.add(wheel, hub)
+
+        # Sprite — crisp nearest-neighbour scaling
+        sprite = ImageMobject("sprite.png")
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.set_height(sprite_height)
+
+        # Start at θ = 0 (right side of wheel).
+        # Required rotation at angle θ so head points inward: θ + π/2.
+        # At θ=0: rotate π/2 CCW → sprite's +y (head) maps to −x (inward).
+        start_angle = 0.0
+        sprite.move_to(np.array([inner_radius, 0.0, 0.0]))
+        sprite.rotate(PI / 2)
+
+        angle_tracker = ValueTracker(start_angle)
+        state = {"prev_theta": start_angle}
+
+        def update_sprite(mob):
+            theta = angle_tracker.get_value()
+            delta = theta - state["prev_theta"]
+            # Reposition along inner rim
+            mob.move_to(
+                np.array([inner_radius * np.cos(theta),
+                           inner_radius * np.sin(theta),
+                           0.0])
+            )
+            # Rotate by the same delta so feet stay pressed outward;
+            # cumulative rotation equals θ + π/2 (derived from initial setup).
+            mob.rotate(delta)
+            state["prev_theta"] = theta
+
+        sprite.add_updater(update_sprite)
+        self.add(sprite)
+
+        # One full clockwise lap (θ decreases by 2π) in 6 seconds
+        self.play(
+            angle_tracker.animate.set_value(start_angle - 2 * PI),
+            run_time=6,
+            rate_func=linear,
+        )
+
+        sprite.remove_updater(update_sprite)
+        self.wait(0.5)
+```

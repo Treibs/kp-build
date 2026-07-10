@@ -1,0 +1,45 @@
+```python
+from manim import *
+
+class MineCartDescent(MovingCameraScene):
+    def construct(self):
+        # Load sprite with crisp rendering
+        sprite = ImageMobject("sprite.png")
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.scale_to_fit_height(1.2)
+        
+        # Define diagonal track: upper-left to lower-right, spanning 3 frame widths
+        track_width = config.frame_width * 3
+        track_height = config.frame_height * 2
+        
+        start_pos = np.array([-track_width / 2, track_height / 2, 0])
+        end_pos = np.array([track_width / 2, -track_height / 2, 0])
+        
+        # Create track
+        track = Line(start_pos, end_pos, stroke_width=12, color=DARK_BROWN)
+        
+        # Position sprite at start
+        sprite.move_to(start_pos)
+        
+        # Add to scene
+        self.add(track, sprite)
+        
+        # Camera setup: zoom to half default width
+        self.camera.frame.set_width(config.frame_width / 2)
+        self.add(self.camera.frame)
+        
+        # Camera follows sprite
+        def camera_follow(frame):
+            frame.move_to(sprite.get_center())
+        
+        self.camera.frame.add_updater(camera_follow)
+        
+        # Animate 7-second descent
+        self.play(
+            sprite.animate.move_to(end_pos),
+            run_time=7,
+            rate_func=linear
+        )
+        
+        self.camera.frame.remove_updater(camera_follow)
+```

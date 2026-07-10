@@ -23,7 +23,7 @@ verified:
   evidence: "    def surround(\n        self,\n        mobject: Mobject,\n       \
     \ dim_to_match: int = 0,\n        stretch: bool = False,\n        buffer_factor:\
     \ float = 1.2,\n    "
-  checked: '2026-07-09'
+  checked: '2026-07-10'
 execution: {}
 grounding:
   source: manim-api-docs

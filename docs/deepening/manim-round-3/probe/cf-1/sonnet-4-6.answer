@@ -1,0 +1,97 @@
+```python
+from manim import *
+
+
+class WindowShoppingStroll(MovingCameraScene):
+    def construct(self):
+        ground_y = -1.8
+
+        # Background: sky and sidewalk spanning the full journey
+        sky = Rectangle(width=50, height=14, color=BLUE_B, fill_opacity=1, stroke_width=0)
+        sky.move_to([2, 2, 0])
+        sidewalk = Rectangle(width=50, height=1.0, color=GREY, fill_opacity=1, stroke_width=0)
+        sidewalk.move_to([2, ground_y - 0.1, 0])
+        self.add(sky, sidewalk)
+
+        # Five varied shopfronts: (width, height, body_color, awning_color)
+        shop_defs = [
+            (2.0, 2.8, BLUE_D,   YELLOW),
+            (2.0, 2.2, RED_D,    TEAL_D),
+            (2.2, 3.0, GREEN_D,  MAROON_B),   # the interesting one
+            (1.8, 2.5, ORANGE,   PURPLE_B),
+            (2.0, 2.8, PURPLE_D, GOLD),
+        ]
+
+        shop_centers = []
+        all_shops = VGroup()
+        x = -5.0
+        for sw, sh, bc, ac in shop_defs:
+            cx = x + sw / 2
+            shop_centers.append(cx)
+
+            body = Rectangle(width=sw, height=sh, color=bc, fill_opacity=1,
+                             stroke_color=GREY_D, stroke_width=1)
+            body.move_to([cx, ground_y + sh / 2, 0])
+
+            aw_h = 0.35
+            awning = Rectangle(width=sw + 0.4, height=aw_h, color=ac,
+                               fill_opacity=1, stroke_width=0)
+            awning.move_to([cx, ground_y + sh + aw_h / 2, 0])
+
+            # Simple window
+            win = Rectangle(width=sw * 0.45, height=sh * 0.28,
+                            color=WHITE, fill_opacity=0.6, stroke_width=0)
+            win.move_to([cx, ground_y + sh * 0.58, 0])
+
+            all_shops.add(body, win, awning)
+            x += sw + 0.5
+
+        self.add(all_shops)
+
+        # Sprite: 1.5 units tall, nearest-neighbor for crisp pixels
+        sprite_height = 1.5
+        sprite_y = ground_y + sprite_height / 2
+        start_x = shop_centers[0] - 3.5
+
+        sprite = ImageMobject("sprite.png")
+        sprite.set_height(sprite_height)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.move_to([start_x, sprite_y, 0])
+        self.add(sprite)
+
+        # Camera frame at half default width — must be added to scene for updaters to run
+        frame = self.camera.frame
+        frame.scale(0.5)
+        self.add(frame)
+        frame.move_to(sprite.get_center())
+
+        def track(f):
+            f.move_to(sprite.get_center())
+
+        frame.add_updater(track)
+
+        stop_x = shop_centers[2]               # center of shop 3
+        end_x = shop_centers[4] + 2.5          # past shop 5
+
+        # Walk past shops 1 & 2 at normal pace (~2 units/sec)
+        walk_dist = stop_x - start_x
+        self.play(
+            sprite.animate.move_to([stop_x, sprite_y, 0]),
+            run_time=walk_dist / 2.0,
+            rate_func=linear,
+        )
+
+        # Full stop for 1 second at shop 3
+        self.wait(1.0)
+
+        # Sprint past shops 4 & 5 (~5 units/sec — much faster)
+        sprint_dist = end_x - stop_x
+        self.play(
+            sprite.animate.move_to([end_x, sprite_y, 0]),
+            run_time=sprint_dist / 5.0,
+            rate_func=linear,
+        )
+
+        self.wait(0.5)
+        frame.remove_updater(track)
+```

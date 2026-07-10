@@ -1,0 +1,67 @@
+Manim Community v0.20.1
+
+[07/10/26 22:53:26] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 22:53:27] INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0003.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 22:53:28] INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0004.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/FilmStripViewer.mp4'
+
+ INFO Rendered FilmStripViewer scene.py:278
+ Played 5 animations
+/manim/scene.py:21: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ mob.set_height(frame_w)
+/manim/scene.py:47: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ self.camera.frame.set_width(strip_w * 1.05)
+
+Animation 1: _MethodAnimation(ScreenRectangle): 0%| | 0/15 [00:00<?, ?it/s]
+Animation 1: _MethodAnimation(ScreenRectangle): 67%|██████▋ | 10/15 [00:00<00:00, 88.37it/s]
+
+
+Animation 2: _MethodAnimation(ScreenRectangle): 0%| | 0/23 [00:00<?, ?it/s]
+Animation 2: _MethodAnimation(ScreenRectangle): 35%|███▍ | 8/23 [00:00<00:00, 74.57it/s]
+Animation 2: _MethodAnimation(ScreenRectangle): 70%|██████▉ | 16/23 [00:00<00:00, 73.89it/s]
+
+
+Animation 3: _MethodAnimation(ScreenRectangle): 0%| | 0/23 [00:00<?, ?it/s]
+Animation 3: _MethodAnimation(ScreenRectangle): 35%|███▍ | 8/23 [00:00<00:00, 70.19it/s]
+Animation 3: _MethodAnimation(ScreenRectangle): 70%|██████▉ | 16/23 [00:00<00:00, 69.31it/s]
+
+
+Animation 4: _MethodAnimation(ScreenRectangle): 0%| | 0/23 [00:00<?, ?it/s]
+Animation 4: _MethodAnimation(ScreenRectangle): 35%|███▍ | 8/23 [00:00<00:00, 73.50it/s]
+Animation 4: _MethodAnimation(ScreenRectangle): 70%|██████▉ | 16/23 [00:00<00:00, 74.23it/s]

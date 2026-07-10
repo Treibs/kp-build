@@ -1,0 +1,21 @@
+Manim Community v0.20.1
+
+[07/10/26 20:44:38] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ HamsterWheelRun/uncached_0
+ 0000.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/HamsterWheelRun.mp4'
+
+ INFO Rendered HamsterWheelRun scene.py:278
+ Played 1 animations
+
+Animation 0: _MethodAnimation(ValueTracker): 0%| | 0/90 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ValueTracker): 50%|█████ | 45/90 [00:00<00:00, 434.13it/s]
+Animation 0: _MethodAnimation(ValueTracker): 99%|█████████▉| 89/90 [00:00<00:00, 437.49it/s]

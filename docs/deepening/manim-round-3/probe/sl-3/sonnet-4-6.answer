@@ -1,0 +1,69 @@
+```python
+from manim import *
+import numpy as np
+from PIL import Image
+
+
+class FilmStripViewer(MovingCameraScene):
+    def construct(self):
+        # Load sprite sheet and slice into four 16×16 frames
+        img = Image.open("sprite_sheet.png").convert("RGBA")
+        sheet = np.array(img)  # (16, 64, 4)
+
+        frame_w = 2.5   # display size of each (square) frame in scene units
+        sep = 0.10      # thin dark separator between frames
+        border = 0.12   # film-strip edge border
+
+        frame_mobs = []
+        for i in range(4):
+            arr = sheet[:, i * 16:(i + 1) * 16, :].copy()
+            mob = ImageMobject(arr)
+            mob.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            mob.set_height(frame_w)
+            frame_mobs.append(mob)
+
+        # Strip geometry
+        strip_w = 4 * frame_w + 3 * sep + 2 * border
+        strip_h = frame_w + 2 * border
+
+        # Dark backing — the gaps between frames read as thin separators
+        bg = Rectangle(
+            width=strip_w,
+            height=strip_h,
+            fill_color="#111111",
+            fill_opacity=1,
+            stroke_width=0,
+        )
+        bg.move_to(ORIGIN)
+
+        # Place frames inside the backing
+        x_start = -(strip_w / 2) + border + frame_w / 2
+        for i, mob in enumerate(frame_mobs):
+            mob.move_to([x_start + i * (frame_w + sep), 0, 0])
+
+        strip = Group(bg, *frame_mobs)
+        self.add(strip)
+
+        # ── Phase 0: wide view of the full strip (0.5 s) ─────────────────
+        self.camera.frame.set_width(strip_w * 1.05)
+        self.camera.frame.move_to(ORIGIN)
+        self.wait(0.5)
+
+        centers = [mob.get_center() for mob in frame_mobs]
+        zoom_h = frame_w * 1.15  # frame fills ~87 % of view height
+
+        # ── Phase 1: zoom into frame 1 (1.0 s) ───────────────────────────
+        self.play(
+            self.camera.frame.animate.set_height(zoom_h).move_to(centers[0]),
+            run_time=1.0,
+        )
+
+        # ── Phase 2: pan across frames 2 → 3 → 4 (1.5 s each = 4.5 s) ───
+        for c in centers[1:]:
+            self.play(
+                self.camera.frame.animate.move_to(c),
+                run_time=1.5,
+            )
+
+        # Total: 0.5 + 1.0 + 3 × 1.5 = 6.0 s
+```

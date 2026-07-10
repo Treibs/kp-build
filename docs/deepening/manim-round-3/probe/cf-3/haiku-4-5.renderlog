@@ -1,0 +1,31 @@
+Manim Community v0.20.1
+
+[07/10/26 20:48:54] INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 20:48:55] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ RelayHandoff/uncached_0000
+ 0.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ RelayHandoff/uncached_0000
+ 1.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/RelayHandoff.mp4'
+
+ INFO Rendered RelayHandoff scene.py:278
+ Played 2 animations
+/manim/scene.py:6: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ self.camera.frame.set_width(config.frame_width / 2)
+
+Animation 0: _MethodAnimation(ImageMobject): 0%| | 0/45 [00:00<?, ?it/s]
+
+
+Animation 1: _MethodAnimation(ImageMobject): 0%| | 0/45 [00:00<?, ?it/s]

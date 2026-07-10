@@ -1,0 +1,44 @@
+Manim Community v0.20.1
+
+[07/10/26 22:52:46] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ RelayHandoff/uncached_0000
+ 0.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ RelayHandoff/uncached_0000
+ 1.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ RelayHandoff/uncached_0000
+ 2.mp4'
+[07/10/26 22:52:47] INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/RelayHandoff.mp4'
+
+ INFO Rendered RelayHandoff scene.py:278
+ Played 3 animations
+/manim/scene.py:7: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ self.camera.frame.set_width(config.frame_width / 2)
+/manim/scene.py:11: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ runner_a.set_height(1.5)
+/manim/scene.py:18: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ runner_b.set_height(1.5)
+
+Animation 0: _MethodAnimation(ImageMobject): 0%| | 0/45 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ImageMobject): 78%|███████▊ | 35/45 [00:00<00:00, 349.33it/s]
+
+
+Animation 1: _MethodAnimation(ImageMobject): 0%| | 0/45 [00:00<?, ?it/s]
+Animation 1: _MethodAnimation(ImageMobject): 78%|███████▊ | 35/45 [00:00<00:00, 341.86it/s]

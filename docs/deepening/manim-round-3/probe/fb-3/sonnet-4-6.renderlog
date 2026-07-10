@@ -1,0 +1,136 @@
+Manim Community v0.20.1
+
+[07/10/26 22:53:05] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 22:53:06] INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0003.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0004.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 5 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0005.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 6 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0006.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 7 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0007.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 8 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0008.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 9 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0009.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 10 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0010.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 11 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0011.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 12 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FireworksFinale/uncached_0
+ 0012.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/FireworksFinale.mp4'
+
+ INFO Rendered FireworksFinale scene.py:278
+ Played 13 animations
+
+Animation 0: Create(Line): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 1: FadeOut(Dot): 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 2: AnimationGroup(Group): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 3: FadeOut(VGroup of 2 submobjects): 0%| | 0/11 [00:00<?, ?it/s]
+
+
+Animation 4: Create(Line): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 5: FadeOut(Dot): 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 6: AnimationGroup(Group): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 7: FadeOut(VGroup of 2 submobjects): 0%| | 0/11 [00:00<?, ?it/s]
+
+
+Animation 8: Create(Line): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 9: FadeOut(Dot): 0%| | 0/2 [00:00<?, ?it/s]
+
+
+Animation 10: AnimationGroup(Group): 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 11: FadeOut(VGroup of 2 submobjects): 0%| | 0/11 [00:00<?, ?it/s]

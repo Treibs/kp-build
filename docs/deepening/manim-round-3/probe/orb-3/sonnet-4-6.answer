@@ -1,0 +1,76 @@
+```python
+from manim import *
+import numpy as np
+
+
+class OrbitingMoonsScene(Scene):
+    def construct(self):
+        # Orbit rings, drawn behind the planet
+        orbit1 = Circle(radius=2, color=BLUE_E, stroke_opacity=0.5, stroke_width=1.5)
+        orbit2 = Circle(radius=3, color=BLUE_E, stroke_opacity=0.5, stroke_width=1.5)
+        self.add(orbit1, orbit2)
+
+        # Planet: crisp pixel sprite, 2 units tall, centered
+        planet = ImageMobject("sprite.png")
+        planet.set_height(2)
+        planet.move_to(ORIGIN)
+        planet.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        self.add(planet)
+
+        # Moons
+        moon1 = Circle(radius=0.15, color=GREY, fill_opacity=1, stroke_width=0)
+        moon2 = Circle(radius=0.12, color=LIGHT_GREY, fill_opacity=1, stroke_width=0)
+
+        # Flags: thin triangles with base center at origin, tip pointing +y (up).
+        # Updater rotates so tip always points radially outward from planet.
+        def make_flag(color):
+            return Polygon(
+                np.array([0.0, 0.22, 0.0]),
+                np.array([-0.045, 0.0, 0.0]),
+                np.array([0.045, 0.0, 0.0]),
+                color=color,
+                fill_opacity=1,
+                stroke_width=0,
+            )
+
+        flag1 = make_flag(YELLOW)
+        flag2 = make_flag(RED)
+        # Save initial state (tip up, base at ORIGIN) so each updater frame resets cleanly
+        flag1.save_state()
+        flag2.save_state()
+
+        r1, r2 = 2.0, 3.0
+        omega1 = TAU / 3.5   # inner moon: ~3.5 s per orbit
+        omega2 = TAU / 6.5   # outer moon: ~6.5 s per orbit
+
+        t = ValueTracker(0)
+
+        def moon1_upd(mob):
+            a = t.get_value() * omega1
+            mob.move_to(np.array([r1 * np.cos(a), r1 * np.sin(a), 0.0]))
+
+        def moon2_upd(mob):
+            a = t.get_value() * omega2
+            mob.move_to(np.array([r2 * np.cos(a), r2 * np.sin(a), 0.0]))
+
+        def flag1_upd(mob):
+            mob.restore()                          # reset: tip at (0, 0.22), base center at ORIGIN
+            a = t.get_value() * omega1
+            # rotate about ORIGIN: base stays at ORIGIN, tip swings to radial direction
+            mob.rotate(a - PI / 2, about_point=ORIGIN)
+            mob.shift(np.array([r1 * np.cos(a), r1 * np.sin(a), 0.0]))
+
+        def flag2_upd(mob):
+            mob.restore()
+            a = t.get_value() * omega2
+            mob.rotate(a - PI / 2, about_point=ORIGIN)
+            mob.shift(np.array([r2 * np.cos(a), r2 * np.sin(a), 0.0]))
+
+        moon1.add_updater(moon1_upd)
+        moon2.add_updater(moon2_upd)
+        flag1.add_updater(flag1_upd)
+        flag2.add_updater(flag2_upd)
+
+        self.add(moon1, moon2, flag1, flag2)
+        self.play(t.animate.set_value(6), run_time=6, rate_func=linear)
+```

@@ -1,0 +1,45 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:17 in construct
+
+ 14
+ 15 # Create background layers - each with seamless wrapping
+ 16 hills = self.create_hills()
+ ❱ 17 trees = self.create_trees()
+ 18 fence = self.create_fence()
+ 19
+ 20 # Layer order: hills (back) → trees → fence → character (front)
+
+ /manim/scene.py:52 in create_trees
+
+ 49 [0, 0, 0],
+ 50 [0.25, -0.45, 0],
+ 51 [-0.25, -0.45, 0],
+ ❱ 52 color=DARK_GREEN,
+ 53 fill_opacity=0.8
+ 54 )
+ 55 tree.add(trunk, crown)
+
+NameError: name 'DARK_GREEN' is not defined

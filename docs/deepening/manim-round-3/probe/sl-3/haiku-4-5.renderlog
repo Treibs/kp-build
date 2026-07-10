@@ -1,0 +1,56 @@
+Manim Community v0.20.1
+
+[07/10/26 20:57:44] INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 20:57:45] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ FilmStripViewer/uncached_0
+ 0003.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/FilmStripViewer.mp4'
+
+ INFO Rendered FilmStripViewer scene.py:278
+ Played 4 animations
+
+Animation 0: _MethodAnimation(ScreenRectangle): 0%| | 0/23 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ScreenRectangle): 87%|████████▋ | 20/23 [00:00<00:00, 179.89it/s]
+
+
+Animation 1: _MethodAnimation(ScreenRectangle): 0%| | 0/23 [00:00<?, ?it/s]
+Animation 1: _MethodAnimation(ScreenRectangle): 39%|███▉ | 9/23 [00:00<00:00, 87.34it/s]
+Animation 1: _MethodAnimation(ScreenRectangle): 83%|████████▎ | 19/23 [00:00<00:00, 91.50it/s]
+
+
+Animation 2: _MethodAnimation(ScreenRectangle): 0%| | 0/23 [00:00<?, ?it/s]
+Animation 2: _MethodAnimation(ScreenRectangle): 39%|███▉ | 9/23 [00:00<00:00, 87.23it/s]
+Animation 2: _MethodAnimation(ScreenRectangle): 78%|███████▊ | 18/23 [00:00<00:00, 88.37it/s]
+
+
+Animation 3: _MethodAnimation(ScreenRectangle): 0%| | 0/23 [00:00<?, ?it/s]
+Animation 3: _MethodAnimation(ScreenRectangle): 39%|███▉ | 9/23 [00:00<00:00, 89.85it/s]
+Animation 3: _MethodAnimation(ScreenRectangle): 78%|███████▊ | 18/23 [00:00<00:00, 89.52it/s]

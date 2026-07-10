@@ -1,0 +1,55 @@
+```python
+from manim import *
+from PIL import Image
+import numpy as np
+
+class FilmStripViewer(MovingCameraScene):
+    def construct(self):
+        # Load sprite sheet and extract individual 16×16 frames
+        sprite_sheet = Image.open("sprite_sheet.png")
+        img_array = np.array(sprite_sheet)
+        
+        frames = []
+        for i in range(4):
+            frame_data = img_array[:, i*16:(i+1)*16, :]
+            img = ImageMobject(frame_data)
+            img.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            img.scale(2)
+            frames.append(img)
+        
+        # Create thin dark separators
+        separator_width = 0.2
+        separators = [
+            Rectangle(width=separator_width, height=frames[0].height,
+                     fill_color=BLACK, stroke_width=0)
+            for _ in range(3)
+        ]
+        
+        # Build horizontal strip: frame, separator, frame, separator, ...
+        strip_parts = []
+        for i in range(4):
+            strip_parts.append(frames[i])
+            if i < 3:
+                strip_parts.append(separators[i])
+        
+        strip = Group(*strip_parts).arrange(RIGHT, buff=0)
+        self.add(strip)
+        
+        # Calculate center x-position of each frame
+        frame_centers = []
+        x = -strip.width / 2
+        for i in range(4):
+            x += frames[i].width / 2
+            frame_centers.append(np.array([x, 0, 0]))
+            x += frames[i].width / 2
+            if i < 3:
+                x += separator_width
+        
+        # Ken-Burns zoom: each frame fills most of view for 1.5 seconds
+        target_width = frames[0].width * 1.2
+        for center in frame_centers:
+            self.play(
+                self.camera.frame.animate.set(width=target_width).move_to(center),
+                run_time=1.5
+            )
+```

@@ -1,0 +1,105 @@
+```python
+from manim import *
+import numpy as np
+
+
+class MarathonMontageScene(Scene):
+    def construct(self):
+        SPEED = 3.0           # units/sec — ground scroll and marker speed
+        GROUND_Y_TOP = -2.0   # y of the ground surface
+        GROUND_H = 1.5
+        FRAME_W = config.frame_width
+        FRAME_H = config.frame_height
+
+        # Sky
+        sky = Rectangle(
+            width=FRAME_W + 2, height=FRAME_H + 2,
+            fill_color=BLUE_D, fill_opacity=1, stroke_width=0,
+        )
+        self.add(sky)
+
+        # Two ground tiles for seamless horizontal loop
+        tile_w = FRAME_W + 1.0
+        ground_cy = GROUND_Y_TOP - GROUND_H / 2
+
+        def make_tile():
+            base = Rectangle(
+                width=tile_w, height=GROUND_H,
+                fill_color=DARK_BROWN, fill_opacity=1, stroke_width=0,
+            )
+            grass = Rectangle(
+                width=tile_w, height=0.18,
+                fill_color=GREEN_D, fill_opacity=1, stroke_width=0,
+            )
+            grass.align_to(base, UP)
+            return VGroup(base, grass)
+
+        g1 = make_tile()
+        g2 = make_tile()
+        g1.move_to([0.0, ground_cy, 0])
+        g2.move_to([tile_w, ground_cy, 0])
+        self.add(g1, g2)
+
+        half_fw = FRAME_W / 2
+
+        def ground_updater(mob, dt):
+            mob.shift(LEFT * SPEED * dt)
+            if mob.get_right()[0] < -half_fw - 1:
+                mob.shift(RIGHT * tile_w * 2)
+
+        g1.add_updater(ground_updater)
+        g2.add_updater(ground_updater)
+
+        # Kilometer markers — marker k passes x=0 at t = k * 1.5 s
+        # so at t=0 it sits at x = SPEED * k * 1.5
+        def make_marker(k):
+            init_x = SPEED * k * 1.5
+
+            bg = Rectangle(
+                width=0.62, height=0.46,
+                fill_color=WHITE, fill_opacity=1,
+                stroke_color=BLACK, stroke_width=2,
+            )
+            num = Text(str(k), font_size=28, color=BLACK)
+            num.move_to(bg.get_center())
+
+            post = Rectangle(
+                width=0.07, height=0.5,
+                fill_color=GRAY, fill_opacity=1, stroke_width=0,
+            )
+            post.next_to(bg, DOWN, buff=0)
+
+            marker = VGroup(bg, num, post)
+            # Plant the post bottom on the ground surface
+            marker.shift(UP * (GROUND_Y_TOP - marker.get_bottom()[1]))
+            marker.set_x(init_x)
+            # Scroll at exactly the same speed as the ground
+            marker.add_updater(lambda mob, dt: mob.shift(LEFT * SPEED * dt))
+            return marker
+
+        for k in range(1, 5):
+            self.add(make_marker(k))
+
+        # Sprite — crisp, 1.5 units tall, feet on the ground surface
+        sprite = ImageMobject("sprite.png")
+        sprite.set_height(1.5)
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite_base_y = GROUND_Y_TOP + 0.75   # center = surface + half height
+        sprite.move_to([0.0, sprite_base_y, 0])
+
+        # Running-in-place bob
+        t_acc = [0.0]
+
+        def bob(mob, dt):
+            t_acc[0] += dt
+            mob.set_y(sprite_base_y + 0.04 * np.sin(t_acc[0] * 10))
+
+        sprite.add_updater(bob)
+        self.add(sprite)
+
+        self.wait(7)
+
+        g1.clear_updaters()
+        g2.clear_updaters()
+        sprite.clear_updaters()
+```

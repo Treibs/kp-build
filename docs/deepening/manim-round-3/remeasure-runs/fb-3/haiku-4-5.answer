@@ -1,0 +1,93 @@
+```python
+from manim import *
+
+class FireworksFinale(Scene):
+    def construct(self):
+        # Skyline strip at bottom - pixelated buildings
+        skyline = VGroup()
+        
+        buildings_spec = [
+            (0.8, 0.5, -4.5),
+            (0.6, 0.7, -3.5),
+            (0.9, 0.4, -2.5),
+            (0.7, 0.8, -1.5),
+            (0.6, 0.3, -0.5),
+            (0.8, 0.6, 0.5),
+            (0.7, 0.5, 1.5),
+            (0.9, 0.7, 2.5),
+            (0.6, 0.4, 3.5),
+        ]
+        
+        skyline_bottom = config.frame_bottom + 0.3
+        
+        for width, height, x in buildings_spec:
+            building = Rectangle(
+                width=width,
+                height=height,
+                fill_color=DARK_GREY,
+                fill_opacity=0.85,
+                stroke_color=BLACK,
+                stroke_width=0.5
+            )
+            building.move_to([x, skyline_bottom + height / 2, 0])
+            skyline.add(building)
+        
+        self.add(skyline)
+        
+        # Rocket specifications: x_position, burst_height, color
+        max_height = config.frame_top - 0.8
+        rockets_specs = [
+            (-3.5, max_height * 0.45, RED),
+            (0, max_height * 0.70, YELLOW),
+            (3.5, max_height * 0.95, BLUE),
+        ]
+        
+        for idx, (x_pos, burst_height, color) in enumerate(rockets_specs):
+            launch = np.array([x_pos, skyline_bottom, 0])
+            peak = np.array([x_pos, skyline_bottom + burst_height, 0])
+            
+            # Rocket trail line
+            rocket_trail = Line(
+                launch,
+                peak,
+                color=GREY_B,
+                stroke_width=2
+            )
+            
+            # Burst - concentric circles with fading opacity
+            burst_group = VGroup()
+            for layer in range(4):
+                circle = Circle(
+                    radius=0.35 + layer * 0.22,
+                    fill_color=color,
+                    fill_opacity=0.5 - layer * 0.12,
+                    stroke_color=color,
+                    stroke_width=1
+                )
+                circle.move_to(peak)
+                burst_group.add(circle)
+            
+            # Animate rocket launch
+            self.play(Create(rocket_trail), run_time=0.75)
+            
+            # Animate burst bloom
+            self.play(
+                *[FadeIn(circle, scale=0.1) for circle in burst_group],
+                run_time=0.5
+            )
+            
+            self.wait(0.25)
+            
+            # Fade out burst and trail
+            self.play(
+                *[FadeOut(circle) for circle in burst_group],
+                FadeOut(rocket_trail),
+                run_time=0.6
+            )
+            
+            # Delay before next rocket
+            if idx < len(rockets_specs) - 1:
+                self.wait(0.4)
+        
+        self.wait(1.5)
+```

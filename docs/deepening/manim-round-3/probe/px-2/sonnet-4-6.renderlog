@@ -1,0 +1,30 @@
+Manim Community v0.20.1
+
+[07/10/26 23:03:08] INFO Caching disabled. cairo_renderer.py:83
+[07/10/26 23:03:09] INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ StarfieldDriftScene/uncach
+ ed_00000.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/StarfieldDriftScene.
+ mp4'
+
+ INFO Rendered StarfieldDriftScene scene.py:278
+ Played 1 animations
+/manim/scene.py:79: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ pilot.set_height(1.0)
+
+Waiting 0: 0%| | 0/90 [00:00<?, ?it/s]
+Waiting 0: 11%|█ | 10/90 [00:00<00:00, 94.58it/s]
+Waiting 0: 23%|██▎ | 21/90 [00:00<00:00, 100.78it/s]
+Waiting 0: 36%|███▌ | 32/90 [00:00<00:00, 101.48it/s]
+Waiting 0: 48%|████▊ | 43/90 [00:00<00:00, 102.67it/s]
+Waiting 0: 60%|██████ | 54/90 [00:00<00:00, 100.40it/s]
+Waiting 0: 72%|███████▏ | 65/90 [00:00<00:00, 100.28it/s]
+Waiting 0: 84%|████████▍ | 76/90 [00:00<00:00, 100.10it/s]
+Waiting 0: 97%|█████████▋| 87/90 [00:00<00:00, 100.46it/s]

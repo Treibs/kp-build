@@ -1,0 +1,40 @@
+```python
+from manim import *
+import numpy as np
+
+class HamsterWheelRun(Scene):
+    def construct(self):
+        # Wheel setup
+        wheel_radius = 3
+        run_radius = wheel_radius - 0.3
+        wheel = Circle(radius=wheel_radius, color=WHITE, stroke_width=2)
+        self.add(wheel)
+        
+        # Progress tracker (0 to 1)
+        progress = ValueTracker(0)
+        
+        # Sprite with always_redraw for continuous update
+        def get_sprite():
+            t = progress.get_value()
+            sprite = ImageMobject("sprite.png")
+            sprite.height = 1.2
+            sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+            
+            # Clockwise position on circle
+            angle = TAU * t
+            x = run_radius * np.cos(angle)
+            y = -run_radius * np.sin(angle)
+            sprite.move_to([x, y, 0])
+            
+            # Rotate so feet point outward, head points inward
+            rotation_angle = -angle + PI / 2
+            sprite.rotate(rotation_angle, about_point=sprite.get_center())
+            
+            return sprite
+        
+        sprite_mob = always_redraw(get_sprite)
+        self.add(sprite_mob)
+        
+        # Animate the lap
+        self.play(progress.animate.set_value(1), run_time=6)
+```

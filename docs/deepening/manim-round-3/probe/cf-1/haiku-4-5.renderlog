@@ -1,0 +1,59 @@
+Manim Community v0.20.1
+
+[07/10/26 20:46:56] INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 0 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WindowShoppingStroll/uncac
+ hed_00000.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 1 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WindowShoppingStroll/uncac
+ hed_00001.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 2 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WindowShoppingStroll/uncac
+ hed_00002.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 3 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WindowShoppingStroll/uncac
+ hed_00003.mp4'
+ INFO Caching disabled. cairo_renderer.py:83
+ INFO Animation 4 : Partial scene_file_writer.py:601
+ movie file written in
+ '/tmp/media/videos/scene/4
+ 80p15/partial_movie_files/
+ WindowShoppingStroll/uncac
+ hed_00004.mp4'
+ INFO Combining to Movie file. scene_file_writer.py:753
+ INFO scene_file_writer.py:904
+ File ready at
+ '/tmp/media/videos/scene/4
+ 80p15/WindowShoppingStroll
+ .mp4'
+
+ INFO Rendered WindowShoppingStroll scene.py:278
+ Played 5 animations
+/manim/scene.py:6: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ self.camera.frame.set_width(config.frame_width / 2)
+/manim/scene.py:47: DeprecationWarning: This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().
+ sprite.set_height(1.5)
+
+Animation 0: _MethodAnimation(ImageMobject), etc.: 0%| | 0/53 [00:00<?, ?it/s]
+Animation 0: _MethodAnimation(ImageMobject), etc.: 79%|███████▉ | 42/53 [00:00<00:00, 415.84it/s]
+
+
+Animation 1: _MethodAnimation(ImageMobject), etc.: 0%| | 0/8 [00:00<?, ?it/s]
+
+
+Animation 3: _MethodAnimation(ImageMobject), etc.: 0%| | 0/18 [00:00<?, ?it/s]

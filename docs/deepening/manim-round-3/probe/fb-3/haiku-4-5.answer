@@ -1,0 +1,109 @@
+```python
+from manim import *
+
+class FireworksFinale(Scene):
+    def construct(self):
+        frame_width = config.frame_width
+        frame_height = config.frame_height
+        
+        # Skyline at bottom
+        skyline_y = -frame_height / 2 + 0.5
+        
+        # Create pixel buildings for skyline
+        skyline = VGroup()
+        building_specs = [
+            (1.0, 1.2), (1.5, 1.8), (1.0, 1.5), (1.2, 2.0),
+            (0.8, 1.0), (1.5, 1.6), (1.0, 1.3), (1.3, 1.9)
+        ]
+        
+        x_pos = -frame_width / 2 + 0.5
+        for width, height in building_specs:
+            building = Rectangle(
+                width=width, height=height,
+                fill_color=DARK_GREY, fill_opacity=1,
+                stroke_width=1, stroke_color=BLACK
+            )
+            building.move_to([x_pos + width / 2, skyline_y + height / 2, 0])
+            skyline.add(building)
+            x_pos += width + 0.1
+        
+        self.add(skyline)
+        
+        # Rocket configurations: (x position, burst height, burst color)
+        rocket_configs = [
+            (-2.5, 4.0, RED),
+            (0.0, 6.0, BLUE),
+            (2.5, 3.0, YELLOW)
+        ]
+        
+        particle_spread_radius = 1.0
+        safe_margin = 0.2
+        
+        for launch_x, burst_height, burst_color in rocket_configs:
+            burst_y = skyline_y + burst_height
+            
+            # Rocket trail
+            rocket = Line(
+                [launch_x, skyline_y, 0],
+                [launch_x, burst_y, 0],
+                color=YELLOW,
+                stroke_width=2
+            )
+            self.play(Create(rocket), run_time=0.8, rate_func=linear)
+            
+            # Create burst particles
+            num_particles = 24
+            particles = []
+            spread_anims = []
+            
+            for i in range(num_particles):
+                angle = (i / num_particles) * TAU
+                particle = Dot(radius=0.06, color=burst_color)
+                particle.move_to([launch_x, burst_y, 0])
+                particles.append(particle)
+                self.add(particle)
+                
+                # Calculate target position for particle
+                target_x = launch_x + particle_spread_radius * np.cos(angle)
+                target_y = burst_y + particle_spread_radius * np.sin(angle)
+                
+                # Clamp to frame bounds to keep burst inside frame
+                target_x = np.clip(
+                    target_x,
+                    -frame_width / 2 + safe_margin,
+                    frame_width / 2 - safe_margin
+                )
+                target_y = np.clip(
+                    target_y,
+                    -frame_height / 2 + safe_margin,
+                    frame_height / 2 - safe_margin
+                )
+                
+                spread_anims.append(
+                    particle.animate.move_to([target_x, target_y, 0])
+                )
+            
+            # Animate particle spread
+            self.play(
+                *spread_anims,
+                run_time=0.6,
+                rate_func=ease_out
+            )
+            
+            # Fade out particles
+            fade_anims = [p.animate.set_opacity(0) for p in particles]
+            self.play(
+                AnimationGroup(*fade_anims, lag_ratio=0.05),
+                run_time=0.5
+            )
+            
+            # Remove from scene
+            self.remove(rocket)
+            for particle in particles:
+                self.remove(particle)
+            
+            # Wait before next rocket
+            self.wait(0.4)
+        
+        self.wait(1)
+```

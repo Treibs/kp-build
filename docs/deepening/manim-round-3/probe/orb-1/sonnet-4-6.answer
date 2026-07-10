@@ -1,0 +1,73 @@
+```python
+from manim import *
+import numpy as np
+
+class FerrisWheelScene(Scene):
+    def construct(self):
+        WHEEL_R = 2.5
+        N = 4
+        SUSP = 0.15
+        GONDOLA_W = 0.65
+        GONDOLA_H = 0.90
+
+        rim = Circle(radius=WHEEL_R, color=WHITE, stroke_width=4)
+        hub = Dot(ORIGIN, radius=0.14, color=YELLOW)
+
+        # Support pole
+        pole = Line(
+            np.array([0, -WHEEL_R, 0]),
+            np.array([0, -WHEEL_R - 1.2, 0]),
+            color=GREY, stroke_width=6,
+        )
+        ground = Line(
+            np.array([-1.2, -WHEEL_R - 1.2, 0]),
+            np.array([1.2, -WHEEL_R - 1.2, 0]),
+            color=GREY, stroke_width=4,
+        )
+
+        angle = ValueTracker(PI / 2)  # gondola 0 starts at top
+
+        def rim_pt(i):
+            theta = angle.get_value() + i * TAU / N
+            return WHEEL_R * np.array([np.cos(theta), np.sin(theta), 0])
+
+        def gondola_ctr(i):
+            return rim_pt(i) + np.array([0, -(SUSP + GONDOLA_H / 2), 0])
+
+        spokes = always_redraw(lambda: VGroup(*[
+            Line(ORIGIN, rim_pt(i), color=GREY, stroke_width=2)
+            for i in range(N)
+        ]))
+
+        susps = always_redraw(lambda: VGroup(*[
+            Line(rim_pt(i), rim_pt(i) + DOWN * SUSP, color=GREY, stroke_width=1.5)
+            for i in range(N)
+        ]))
+
+        gondola_boxes = [
+            always_redraw(lambda i=i: Rectangle(
+                width=GONDOLA_W, height=GONDOLA_H,
+                color=BLUE, fill_color=BLUE_E, fill_opacity=0.85,
+                stroke_width=2,
+            ).move_to(gondola_ctr(i)))
+            for i in range(N)
+        ]
+
+        sprite = ImageMobject("sprite.png")
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.set_height(0.70)
+        # Only translate — never rotate — so the sprite stays upright
+        sprite.add_updater(lambda m: m.move_to(gondola_ctr(0)))
+
+        self.add(ground, pole, rim, spokes, susps, hub)
+        for box in gondola_boxes:
+            self.add(box)
+        self.add(sprite)
+
+        self.play(
+            angle.animate.set_value(angle.get_value() + TAU),
+            run_time=6,
+            rate_func=linear,
+        )
+        self.wait(0.5)
+```
