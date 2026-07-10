@@ -1,0 +1,33 @@
+```python
+from manim import *
+
+class HealthBarScene(Scene):
+    def construct(self):
+        sprite = ImageMobject("sprite.png").scale_to_fit_height(1.5)
+        
+        bar_bg = Rectangle(width=2, height=0.2, fill_color=BLACK, fill_opacity=0.3, stroke_color=WHITE)
+        bar_bg.next_to(sprite, UP, buff=0.1)
+        
+        health = ValueTracker(1.0)
+        
+        bar_filled = always_redraw(lambda: 
+            Rectangle(
+                width=2 * health.get_value(),
+                height=0.2,
+                fill_color=GREEN,
+                fill_opacity=1,
+                stroke_color=NONE
+            ).align_to(bar_bg, UP + LEFT)
+        )
+        
+        character_group = VGroup(sprite, bar_bg, bar_filled)
+        character_group.shift(LEFT * 3)
+        self.add(character_group)
+        
+        self.play(character_group.animate.shift(RIGHT * 3), run_time=3)
+        
+        for i in range(3):
+            new_health = (2 - i) / 3
+            self.play(health.animate.set_value(new_health), run_time=0.5)
+            self.wait(0.5)
+```

@@ -1,0 +1,35 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:26 in construct
+
+ 23 # Load and configure sprite
+ 24 sprite = ImageMobject("sprite.png")
+ 25 sprite.height = 1.5
+ ❱ 26 sprite.set_resampling_filter(RESAMPLING_FILTER.BOX)
+ 27
+ 28 self.add(belt, sprite)
+ 29
+
+NameError: name 'RESAMPLING_FILTER' is not defined

@@ -1,0 +1,51 @@
+```python
+from manim import *
+
+class ConveyorBeltScene(Scene):
+    def construct(self):
+        # Belt configuration
+        tile_width = 0.5
+        belt_height = 0.9
+        frame_width = config.frame_width
+        num_tiles = int(frame_width / tile_width) + 4
+        
+        # Create conveyor belt with alternating tiles
+        tiles = VGroup()
+        for i in range(num_tiles):
+            color = LIGHT_GRAY if i % 2 == 0 else DARK_GRAY
+            tile = Rectangle(
+                width=tile_width,
+                height=belt_height,
+                fill_color=color,
+                fill_opacity=1,
+                stroke_width=0
+            )
+            tile.shift(RIGHT * tile_width * i - RIGHT * frame_width / 2)
+            tiles.add(tile)
+        
+        belt = tiles.shift(DOWN * 1.5)
+        
+        # Load character sprite
+        try:
+            character = ImageMobject("sprite.png")
+            character.scale_to_fit_height(1.5)
+        except:
+            # Fallback if sprite not found
+            character = Rectangle(width=0.35, height=1.5, fill_color=YELLOW)
+        
+        self.add(belt, character)
+        
+        # Scrolling updater
+        scroll_speed = 1.5
+        cycle_distance = tile_width * num_tiles
+        
+        def update_scroll(mob, dt):
+            for tile in mob:
+                tile.shift(LEFT * scroll_speed * dt)
+                if tile.get_right()[0] < -frame_width / 2:
+                    tile.shift(RIGHT * cycle_distance)
+        
+        tiles.add_updater(update_scroll)
+        self.wait(4)
+        tiles.remove_updater(update_scroll)
+```

@@ -1,0 +1,34 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:46:9
+   │
+28 │     public fun create_club(epoch_dues: u64, ctx: &mut TxContext) {
+   │                ----------- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+29 │         let librarian = tx_context::sender(ctx);
+   │                         ----------------------- Transaction sender address coming from here
+   ·
+46 │         transfer::transfer(cap, librarian);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:74:49
+   │
+72 │         let _balance = balance::split(&mut club.pool, cost);
+   │             -------- The local variable '_balance' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+73 │         let book = Book { title, cost };
+74 │         vector::push_back(&mut club.shelf, book);
+   │                                                 ^ Invalid return
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:36:15
+   │
+36 │ public struct Balance<phantom T> has store {
+   │               ------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+83 │ public fun split<T>(self: &mut Balance<T>, value: u64): Balance<T> {
+   │                                                         ---------- The type 'sui::balance::Balance<sui::sui::SUI>' does not have the ability 'drop'
+

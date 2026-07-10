@@ -1,0 +1,57 @@
+```move
+module event_passport::passport {
+    use std::vector;
+    use sui::object::ID;
+
+    public struct Passport has key, store {
+        id: UID,
+        stamps: vector<ID>,
+    }
+
+    public struct Badge has key, store {
+        id: UID,
+    }
+
+    public struct VenueCap has key, store {
+        id: UID,
+    }
+
+    public fun create_passport(ctx: &mut TxContext): Passport {
+        Passport {
+            id: object::new(ctx),
+            stamps: vector[],
+        }
+    }
+
+    public fun stamp_passport(passport: &mut Passport, venue: &VenueCap) {
+        let venue_id = object::id(venue);
+        
+        let mut i = 0;
+        let len = vector::length(&passport.stamps);
+        while (i < len) {
+            assert!(*vector::borrow(&passport.stamps, i) != venue_id, 1);
+            i = i + 1;
+        };
+        
+        vector::push_back(&mut passport.stamps, venue_id);
+    }
+
+    public fun redeem_for_badge(passport: Passport, ctx: &mut TxContext): Badge {
+        let Passport { id, stamps } = passport;
+        
+        assert!(vector::length(&stamps) == 5, 2);
+        
+        object::delete(id);
+        
+        Badge {
+            id: object::new(ctx),
+        }
+    }
+
+    public fun create_venue_cap(ctx: &mut TxContext): VenueCap {
+        VenueCap {
+            id: object::new(ctx),
+        }
+    }
+}
+```

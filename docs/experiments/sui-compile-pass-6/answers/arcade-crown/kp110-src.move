@@ -1,0 +1,79 @@
+module arcade::arcade_game {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+    use sui::event;
+
+    const PLAY_FEE: u64 = 1_000_000_000;
+
+    public struct Crown has key, store {
+        id: UID,
+    }
+
+    public struct Machine has key {
+        id: UID,
+        high_score: u64,
+        champion: address,
+    }
+
+    public struct NewChampion has copy, drop {
+        champion: address,
+        score: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let machine = Machine {
+            id: object::new(ctx),
+            high_score: 0,
+            champion: @0x0,
+        };
+
+        transfer::share_object(machine);
+    }
+
+    public fun init_champion(
+        machine: &mut Machine,
+        score: u64,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(machine.high_score == 0, 0);
+        assert!(payment.value() >= PLAY_FEE, 0);
+
+        machine.high_score = score;
+        machine.champion = ctx.sender();
+        
+        let crown = Crown { id: object::new(ctx) };
+        transfer::public_transfer(crown, ctx.sender());
+        
+        event::emit(NewChampion {
+            champion: ctx.sender(),
+            score,
+        });
+    }
+
+    public fun play(
+        machine: &mut Machine,
+        score: u64,
+        crown: Crown,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(payment.value() >= PLAY_FEE, 0);
+
+        if (score > machine.high_score) {
+            machine.high_score = score;
+            machine.champion = ctx.sender();
+            transfer::public_transfer(crown, ctx.sender());
+            
+            event::emit(NewChampion {
+                champion: ctx.sender(),
+                score,
+            });
+        } else {
+            transfer::public_transfer(crown, ctx.sender());
+        }
+    }
+}

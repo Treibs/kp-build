@@ -1,0 +1,105 @@
+```move
+module notary::notary {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::table::{Self, Table};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::clock::Clock;
+
+    public struct Notary has key {
+        id: UID,
+        records: Table<vector<u8>, Record>,
+        total_count: u64,
+    }
+
+    public struct FeeBucket has key {
+        id: UID,
+        balance: Coin<SUI>,
+    }
+
+    public struct Record has store, copy, drop {
+        recorder: address,
+        timestamp_ms: u64,
+    }
+
+    public struct OperatorCap has key, store {
+        id: UID,
+    }
+
+    const FIXED_FEE: u64 = 1_000_000;
+
+    fun init(ctx: &mut TxContext) {
+        let notary = Notary {
+            id: object::new(ctx),
+            records: table::new(ctx),
+            total_count: 0,
+        };
+        
+        let bucket = FeeBucket {
+            id: object::new(ctx),
+            balance: coin::zero(ctx),
+        };
+        
+        let cap = OperatorCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(notary);
+        transfer::share_object(bucket);
+        transfer::transfer(cap, tx_context::sender(ctx));
+    }
+
+    public fun record(
+        notary: &mut Notary,
+        bucket: &mut FeeBucket,
+        digest: vector<u8>,
+        mut payment: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        let payment_amount = coin::value(&payment);
+        assert!(payment_amount >= FIXED_FEE, 0);
+        assert!(!table::contains(&notary.records, digest), 1);
+
+        let recorder = tx_context::sender(ctx);
+        let timestamp_ms = clock.timestamp_ms();
+
+        table::add(&mut notary.records, digest, Record {
+            recorder,
+            timestamp_ms,
+        });
+
+        notary.total_count = notary.total_count + 1;
+
+        let fee_coin = coin::split(&mut payment, FIXED_FEE, ctx);
+        coin::join(&mut bucket.balance, fee_coin);
+
+        if (coin::value(&payment) > 0) {
+            transfer::public_transfer(payment, recorder);
+        };
+    }
+
+    public fun get_record(
+        notary: &Notary,
+        digest: vector<u8>,
+    ): (address, u64) {
+        let record = table::borrow(&notary.records, digest);
+        (record.recorder, record.timestamp_ms)
+    }
+
+    public fun total_recorded(notary: &Notary): u64 {
+        notary.total_count
+    }
+
+    public fun sweep(
+        bucket: &mut FeeBucket,
+        _cap: &OperatorCap,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let amount = coin::value(&bucket.balance);
+        coin::split(&mut bucket.balance, amount, ctx)
+    }
+}
+```

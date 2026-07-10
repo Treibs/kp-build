@@ -1,0 +1,42 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:18:18
+   │
+18 │         balance: Coin<SUI>,
+   │                  ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:79:13
+   │
+53 │     public fun record(
+   │                ------ Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+65 │         let recorder = tx_context::sender(ctx);
+   │                        ----------------------- Transaction sender address coming from here
+   ·
+79 │             transfer::public_transfer(payment, recorder);
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:80:10
+   │
+57 │         mut payment: Coin<SUI>,
+   │             -------  --------- The type 'sui::coin::Coin<sui::sui::SUI>' does not have the ability 'drop'
+   │             │         
+   │             The parameter 'payment' might still contain a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+80 │         };
+   │          ^ Invalid return
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:44:15
+   │
+44 │ public struct Coin<phantom T> has key, store {
+   │               ---- To satisfy the constraint, the 'drop' ability would need to be added here
+

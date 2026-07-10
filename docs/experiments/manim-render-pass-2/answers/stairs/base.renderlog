@@ -1,0 +1,46 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:18 in construct
+
+ 15 stroke_color=BLACK,
+ 16 stroke_width=2
+ 17 )
+ ❱ 18 block.move_to([i * block_size, i * block_size])
+ 19 self.add(block)
+ 20
+ 21 # Create character
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/mobject.py:1892 in
+ move_to
+
+ 1889 else:
+ 1890 target = point_or_mobject
+ 1891 point_to_align = self.get_critical_point(aligned_edge)
+ ❱ 1892 self.shift((target - point_to_align) * coor_mask)
+ 1893 return self
+ 1894
+ 1895 def replace(
+
+ValueError: operands could not be broadcast together with shapes (2,) (3,)

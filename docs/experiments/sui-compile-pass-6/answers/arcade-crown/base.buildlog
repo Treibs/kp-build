@@ -1,0 +1,22 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:49:45
+   │
+40 │         crown_opt: Option<Crown>,
+   │         --------- To use the variable mutably, it must be declared 'mut', e.g. 'mut crown_opt'
+   ·
+49 │                 let crown = option::extract(&mut crown_opt);
+   │                                             ^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'crown_opt'
+
+error[E04024]: invalid usage of immutable variable
+   ┌─ ./sources/module.move:56:45
+   │
+40 │         crown_opt: Option<Crown>,
+   │         --------- To use the variable mutably, it must be declared 'mut', e.g. 'mut crown_opt'
+   ·
+56 │                 let crown = option::extract(&mut crown_opt);
+   │                                             ^^^^^^^^^^^^^^ Invalid mutable borrow of immutable variable 'crown_opt'
+

@@ -1,0 +1,35 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:23:15
+   │
+23 │         fees: Coin<SUI>,
+   │               ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:79:31
+   │
+79 │         notary.total_digests += 1;
+   │                               ^
+   │                               │
+   │                               Unexpected '='
+   │                               Expected an expression term
+
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:81:9
+    │
+ 23 │         fees: Coin<SUI>,
+    │               --------- Given: 'sui::coin::Coin<sui::sui::SUI>'
+    ·
+ 81 │         coin::put(&mut notary.fees, payment);
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid call of 'sui::coin::put'. Invalid argument for parameter 'balance'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:161:33
+    │
+161 │ public fun put<T>(balance: &mut Balance<T>, coin: Coin<T>) {
+    │                                 ---------- Expected: 'sui::balance::Balance<_>'
+

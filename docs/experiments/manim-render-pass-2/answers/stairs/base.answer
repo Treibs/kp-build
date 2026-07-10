@@ -1,0 +1,45 @@
+```python
+from manim import *
+
+class StaircaseClimb(Scene):
+    def construct(self):
+        block_size = 1.5
+        char_height = 1.2
+        
+        # Create staircase
+        for i in range(5):
+            block = Rectangle(
+                width=block_size,
+                height=block_size,
+                fill_color=GREY_C,
+                fill_opacity=1,
+                stroke_color=BLACK,
+                stroke_width=2
+            )
+            block.move_to([i * block_size, i * block_size])
+            self.add(block)
+        
+        # Create character
+        try:
+            character = ImageMobject("sprite.png").scale_to_fit_height(char_height)
+        except:
+            character = Rectangle(width=0.5, height=char_height, fill_color=RED)
+        
+        character.move_to([-2, 0])
+        self.add(character)
+        
+        # Climbing animation
+        for i in range(5):
+            start = character.get_center()
+            end = np.array([
+                i * block_size,
+                i * block_size + block_size / 2 + char_height / 2,
+                0
+            ])
+            
+            path = ArcBetweenPoints(start, end, angle=PI / 2)
+            self.play(MoveAlongPath(character, path, run_time=0.8))
+            self.wait(0.3)
+        
+        self.wait(1)
+```

@@ -1,0 +1,40 @@
+```python
+from manim import *
+
+class ConveyorBeltScene(Scene):
+    def construct(self):
+        # Setup
+        tile_width = 0.5
+        num_tiles = 32
+        cycle_distance = tile_width * num_tiles
+        scroll_speed = cycle_distance / 4
+        
+        # Create conveyor belt tiles
+        tiles = []
+        for i in range(num_tiles):
+            color = LIGHT_GRAY if i % 2 == 0 else DARK_GRAY
+            tile = Rectangle(width=tile_width, height=0.5,
+                           fill_color=color, fill_opacity=1, stroke_width=1)
+            tile.shift(RIGHT * (i - num_tiles // 2) * tile_width)
+            tiles.append(tile)
+        
+        belt = VGroup(*tiles)
+        belt.to_edge(DOWN, buff=0.5)
+        
+        # Load and configure sprite
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.5
+        sprite.set_resampling_filter(RESAMPLING_FILTER.BOX)
+        
+        self.add(belt, sprite)
+        
+        # Animate belt with wrapping
+        def belt_updater(mob, dt):
+            mob.shift(LEFT * scroll_speed * dt)
+            if mob.get_right()[0] < -8:
+                mob.shift(RIGHT * cycle_distance)
+        
+        belt.add_updater(belt_updater)
+        self.wait(4)
+        belt.remove_updater(belt_updater)
+```

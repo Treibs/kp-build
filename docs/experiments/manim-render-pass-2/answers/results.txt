@@ -1,0 +1,23 @@
+# Manim experiment 2 results — render gate (pinned image v0.20.1)
+
+health-bar     base  FAIL Traceback (most recent call last)
+health-bar     kp64  FAIL Traceback (most recent call last)
+health-bar     kp77  PASS
+conveyor       base  FAIL Traceback (most recent call last)
+conveyor       kp64  PASS
+conveyor       kp77  FAIL Traceback (most recent call last)
+speech-bubble  base  FAIL Traceback (most recent call last)
+speech-bubble  kp64  PASS
+speech-bubble  kp77  PASS
+crossing       base  PASS
+crossing       kp64  FAIL Traceback (most recent call last)
+crossing       kp77  PASS
+stairs         base  FAIL Traceback (most recent call last)
+stairs         kp64  PASS
+stairs         kp77  PASS
+minimap        base  PASS
+minimap        kp64  PASS
+minimap        kp77  PASS
+
+# Secondary (pre-registered regex): nearest-neighbor-technique presence
+base 0/6 · kp64 0/6 · kp77 5/6 (health-bar, conveyor, speech-bubble, crossing, stairs)

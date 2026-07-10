@@ -1,0 +1,6 @@
+[package]
+name = "probe_pkg"
+edition = "2024"
+
+[addresses]
+carbon_registry = "0x0"

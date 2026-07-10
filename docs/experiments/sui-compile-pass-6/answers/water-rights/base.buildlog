@@ -1,0 +1,11 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09013]: unused mutable reference '&mut'
+   ┌─ ./sources/module.move:84:29
+   │
+84 │         if (table::contains(&mut water_right.epoch_draws, epoch)) {
+   │                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Mutable reference is never used mutably, consider switching to an immutable reference '&' instead
+   │
+   = This warning can be suppressed with '#[allow(unused_mut_ref)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

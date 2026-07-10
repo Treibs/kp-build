@@ -1,0 +1,61 @@
+```python
+from manim import *
+
+class CharacterWalkScene(Scene):
+    def construct(self):
+        # L-shaped path: right 4 units, then up 3 units
+        start = np.array([-2, -2, 0])
+        mid = np.array([2, -2, 0])
+        end = np.array([2, 1, 0])
+        
+        # Main path
+        path = VMobject()
+        path.set_points_as_corners([start, mid, end])
+        path.set_stroke(width=2, color=BLUE)
+        
+        # Character sprite
+        try:
+            character = ImageMobject("sprite.png")
+            character.scale_to_fit_height(1.2)
+        except:
+            character = Rectangle(width=0.2, height=1.2, color=RED, fill_opacity=1)
+        
+        # Minimap in top-left corner at 1/10 scale
+        minimap_scale = 0.1
+        minimap_center = np.array([-6.5, 3.5, 0])
+        
+        # Minimap path
+        minimap_path = VMobject()
+        minimap_path.set_points_as_corners([p * minimap_scale for p in [start, mid, end]])
+        minimap_path.set_stroke(width=1, color=BLUE)
+        minimap_path.shift(minimap_center)
+        
+        # Minimap character indicator (small dot)
+        minimap_char = Circle(radius=0.05, color=RED, fill_opacity=1)
+        
+        # Position tracker
+        position_tracker = ValueTracker(0)
+        
+        def get_path_position(t):
+            # Interpolate along path: first 50% horizontal, second 50% vertical
+            if t <= 0.5:
+                return start + (mid - start) * (t * 2)
+            else:
+                return mid + (end - mid) * ((t - 0.5) * 2)
+        
+        # Updaters for smooth real-time tracking
+        character.add_updater(lambda m: m.move_to(get_path_position(position_tracker.get_value())))
+        minimap_char.add_updater(lambda m: m.move_to(minimap_center + get_path_position(position_tracker.get_value()) * minimap_scale))
+        
+        # Initialize positions
+        character.move_to(start)
+        minimap_char.move_to(minimap_center + start * minimap_scale)
+        
+        # Add all objects to scene
+        self.add(path, character, minimap_path, minimap_char)
+        
+        # Animate character walking the path over 6 seconds
+        self.play(position_tracker.animate.set_value(1), run_time=6)
+        
+        self.wait()
+```

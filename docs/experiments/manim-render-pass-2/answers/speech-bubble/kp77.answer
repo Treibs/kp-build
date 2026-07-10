@@ -1,0 +1,54 @@
+```python
+from manim import *
+
+class WalkingCharacterScene(Scene):
+    def construct(self):
+        # Load and configure sprite
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.5
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        
+        # Position at left edge
+        left_edge = -config.frame_width / 2 + sprite.width / 2
+        right_edge = config.frame_width / 2 - sprite.width / 2
+        sprite.move_to([left_edge, 0, 0])
+        self.add(sprite)
+        
+        # Create speech bubble
+        bubble = RoundedRectangle(
+            width=0.8,
+            height=0.8,
+            corner_radius=0.1,
+            fill_color=WHITE,
+            fill_opacity=1.0,
+            stroke_color=BLACK,
+            stroke_width=2
+        )
+        bubble_text = Text("!", font_size=36, color=BLACK)
+        bubble.add(bubble_text)
+        bubble_text.move_to(bubble.get_center())
+        bubble.next_to(sprite, UP, buff=0.3)
+        
+        # Phase 1: Walk for 2 seconds (no bubble)
+        distance_2s = (right_edge - left_edge) * (2 / 5)
+        self.play(sprite.animate.shift(RIGHT * distance_2s), run_time=2)
+        
+        # Phase 2: Bubble appears and walks for 1.5 seconds
+        self.add(bubble)
+        
+        def move_bubble_with_sprite(mob):
+            bubble.next_to(sprite, UP, buff=0.3)
+        
+        bubble.add_updater(move_bubble_with_sprite)
+        distance_1_5s = (right_edge - left_edge) * (1.5 / 5)
+        self.play(sprite.animate.shift(RIGHT * distance_1_5s), run_time=1.5)
+        
+        # Phase 3: Bubble fades out, character walks for remaining 1.5 seconds
+        bubble.remove_updater(move_bubble_with_sprite)
+        distance_1_5s_final = (right_edge - left_edge) * (1.5 / 5)
+        self.play(
+            sprite.animate.shift(RIGHT * distance_1_5s_final),
+            bubble.animate.set_opacity(0),
+            run_time=1.5
+        )
+```

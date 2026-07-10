@@ -1,0 +1,108 @@
+Manim Community v0.20.1
+
+ Traceback (most recent call last)
+ /opt/venv/lib/python3.14/site-packages/manim/cli/render/commands.py:125 in
+ render
+
+ 122 try:
+ 123 with tempconfig({}):
+ 124 scene = SceneClass()
+ ❱ 125 scene.render()
+ 126 except Exception:
+ 127 error_console.print_exception()
+ 128 sys.exit(1)
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:259 in render
+
+ 256 """
+ 257 self.setup()
+ 258 try:
+ ❱ 259 self.construct()
+ 260 except EndSceneEarlyException:
+ 261 pass
+ 262 except RerunSceneException:
+
+ /manim/scene.py:43 in construct
+
+ 40 tile.shift(RIGHT * pattern_width)
+ 41
+ 42 belt.add_updater(update_belt)
+ ❱ 43 self.wait(4)
+ 44
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:1237 in wait
+
+ 1234 :class:`.Wait`, :meth:`.should_mobjects_update`
+ 1235 """
+ 1236 duration = self.validate_run_time(duration, self.wait, "durat
+ ❱ 1237 self.play(
+ 1238 Wait(
+ 1239 run_time=duration,
+ 1240 stop_condition=stop_condition,
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:1194 in play
+
+ 1191 return
+ 1192
+ 1193 start_time = self.time
+ ❱ 1194 self.renderer.play(self, *args, **kwargs)
+ 1195 run_time = self.time - start_time
+ 1196 if subcaption:
+ 1197 if subcaption_duration is None:
+
+ /opt/venv/lib/python3.14/site-packages/manim/renderer/cairo_renderer.py:75
+ in play
+
+ 72 self.skip_animations = self._original_skipping_status
+ 73 self.update_skipping_status()
+ 74
+ ❱ 75 scene.compile_animation_data(*args, **kwargs)
+ 76
+ 77 if self.skip_animations:
+ 78 logger.debug(f"Skipping animation {self.num_plays}")
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:1318 in
+ compile_animation_data
+
+ 1315 self.duration = self.get_run_time(self.animations)
+ 1316 if len(self.animations) == 1 and isinstance(self.animations[0
+ 1317 if self.should_update_mobjects():
+ ❱ 1318 self.update_mobjects(dt=0) # Any problems with this?
+ 1319 self.stop_condition = self.animations[0].stop_conditi
+ 1320 else:
+ 1321 # Static image logic when the wait is static is done
+
+ /opt/venv/lib/python3.14/site-packages/manim/scene/scene.py:381 in
+ update_mobjects
+
+ 378 Change in time between updates. Defaults (mostly) to 1/fr
+ 379 """
+ 380 for mobj in self.mobjects:
+ ❱ 381 mobj.update(dt)
+ 382
+ 383 def update_meshes(self, dt: float) -> None:
+ 384 for obj in self.meshes:
+
+ /opt/venv/lib/python3.14/site-packages/manim/mobject/mobject.py:936 in
+ update
+
+ 933 if not self.updating_suspended:
+ 934 for updater in self.updaters:
+ 935 if "dt" in inspect.signature(updater).parameters:
+ ❱ 936 updater(self, dt)
+ 937 else:
+ 938 updater(self)
+ 939 if recursive:
+
+ /manim/scene.py:39 in update_belt
+
+ 36 def update_belt(mob, dt):
+ 37 for tile in mob:
+ 38 tile.shift(LEFT * scroll_speed * dt)
+ ❱ 39 if tile.get_right() < -config.frame_width:
+ 40 tile.shift(RIGHT * pattern_width)
+ 41
+ 42 belt.add_updater(update_belt)
+
+ValueError: The truth value of an array with more than one element is ambiguous.
+Use a.any() or a.all()

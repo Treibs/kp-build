@@ -1,0 +1,107 @@
+```move
+module water_rights::reservoir {
+    use sui::object::{Self, UID, ID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+    use sui::table::{Self, Table};
+
+    public struct Reservoir has key {
+        id: UID,
+        balance: u64,
+        commissioner: address,
+        current_epoch: u64,
+    }
+
+    public struct WaterRight has key {
+        id: UID,
+        owner: address,
+        allocation_per_epoch: u64,
+        epoch_draws: Table<u64, u64>,
+    }
+
+    public fun create_reservoir(ctx: &mut TxContext) {
+        let reservoir = Reservoir {
+            id: object::new(ctx),
+            balance: 0,
+            commissioner: tx_context::sender(ctx),
+            current_epoch: 0,
+        };
+        transfer::share_object(reservoir);
+    }
+
+    public fun issue_water_right(
+        reservoir: &Reservoir,
+        owner: address,
+        allocation: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == reservoir.commissioner, 1);
+        
+        let water_right = WaterRight {
+            id: object::new(ctx),
+            owner,
+            allocation_per_epoch: allocation,
+            epoch_draws: table::new(ctx),
+        };
+        
+        transfer::transfer(water_right, owner);
+    }
+
+    public fun refill_reservoir(
+        reservoir: &mut Reservoir,
+        amount: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == reservoir.commissioner, 1);
+        reservoir.balance = reservoir.balance + amount;
+    }
+
+    public fun advance_epoch(
+        reservoir: &mut Reservoir,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == reservoir.commissioner, 1);
+        reservoir.current_epoch = reservoir.current_epoch + 1;
+    }
+
+    public fun draw_water(
+        reservoir: &mut Reservoir,
+        water_right: &mut WaterRight,
+        amount: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == water_right.owner, 2);
+        assert!(reservoir.balance >= amount, 3);
+        
+        let epoch = reservoir.current_epoch;
+        let current_draw = if (table::contains(&water_right.epoch_draws, epoch)) {
+            *table::borrow(&water_right.epoch_draws, epoch)
+        } else {
+            0
+        };
+        
+        assert!(current_draw + amount <= water_right.allocation_per_epoch, 4);
+        
+        if (table::contains(&mut water_right.epoch_draws, epoch)) {
+            let val = table::borrow_mut(&mut water_right.epoch_draws, epoch);
+            *val = *val + amount;
+        } else {
+            table::add(&mut water_right.epoch_draws, epoch, amount);
+        };
+        
+        reservoir.balance = reservoir.balance - amount;
+    }
+
+    public fun get_balance(reservoir: &Reservoir): u64 {
+        reservoir.balance
+    }
+
+    public fun get_allocation(water_right: &WaterRight): u64 {
+        water_right.allocation_per_epoch
+    }
+
+    public fun get_current_epoch(reservoir: &Reservoir): u64 {
+        reservoir.current_epoch
+    }
+}
+```

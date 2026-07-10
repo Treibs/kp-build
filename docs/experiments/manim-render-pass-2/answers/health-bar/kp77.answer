@@ -1,0 +1,58 @@
+```python
+from manim import *
+
+class HealthBarScene(Scene):
+    def construct(self):
+        # Load sprite with crisp pixels
+        sprite = ImageMobject("sprite.png")
+        sprite.height = 1.5
+        sprite.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        sprite.move_to(LEFT * 3)
+        
+        # Health bar components
+        bar_width = 2
+        bar_height = 0.2
+        health_tracker = ValueTracker(1.0)
+        
+        # Background track (full width, stays constant)
+        bar_track = Rectangle(
+            width=bar_width,
+            height=bar_height,
+            color=DARK_GREY,
+            fill_opacity=0.7,
+            stroke_width=1
+        )
+        
+        # Filled portion (shrinks as health decreases)
+        def make_health_bar():
+            health = health_tracker.get_value()
+            filled = Rectangle(
+                width=bar_width * health,
+                height=bar_height,
+                color=GREEN,
+                fill_opacity=1,
+                stroke_width=0
+            )
+            filled.align_to(bar_track, LEFT)
+            return filled
+        
+        health_bar_filled = always_redraw(make_health_bar)
+        
+        # Group bar components
+        bar_group = Group(bar_track, health_bar_filled)
+        bar_group.next_to(sprite, UP, buff=0.3)
+        
+        # Group sprite and bar together so they move as one
+        character = Group(sprite, bar_group)
+        self.add(character)
+        
+        # Sprite walks from left to center over 3 seconds
+        self.play(character.animate.move_to(ORIGIN), run_time=3)
+        
+        # Three hits: each shrinks bar by 1/3, one per second
+        self.play(health_tracker.animate.set_value(2/3), run_time=1)
+        self.play(health_tracker.animate.set_value(1/3), run_time=1)
+        self.play(health_tracker.animate.set_value(0), run_time=1)
+        
+        self.wait(1)
+```
