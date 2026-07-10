@@ -19,7 +19,7 @@ Per-run verdicts + secondary table in [answers/results.txt](answers/results.txt)
 
 | task | base | kp64 | kp77 |
 |---|---|---|---|
-| health-bar | FAIL `TypeError: Only values of type VMobject can be added as submobjects of VGroup` — **the round-2 taught `image-group` class**, in an arm without the beat | FAIL `NameError: name 'NONE' is not defined` (invented resampling constant) | **PASS** |
+| health-bar | FAIL `TypeError: Only values of type VMobject can be added as submobjects of VGroup` — **the round-2 taught `image-group` class**, in an arm without the beat | FAIL `NameError: name 'NONE' is not defined` — `stroke_color=NONE` on the bar rectangle, a hallucinated color/`None` constant (correction, review round 1: the first version called this an invented *resampling* constant; the answer makes no resampling attempt at all) | **PASS** |
 | conveyor | FAIL `NameError: name 'RESAMPLING_FILTER' is not defined` (invented resampling constant) | PASS | FAIL `ValueError` (numpy truth-value of an array — an updater comparing points; generic coding bug, no taught class) |
 | speech-bubble | FAIL `AttributeError: VGroup object has no attribute 'fade_out'` | PASS | PASS |
 | crossing | PASS | FAIL `TypeError: Mobject.scale() got an unexpected keyword argument 'axis'` (a mirror attempt without `flip` — **the `sprite-facing` corner**, in an arm without the beat) | PASS |
@@ -37,10 +37,11 @@ Per-run verdicts + secondary table in [answers/results.txt](answers/results.txt)
 - **Two round-2 taught classes fired only in arms lacking the beats**: `image-group`
   (health-bar/base, exact pinned message) and the `sprite-facing` corner (crossing/kp64's
   `scale(axis=)` mirror attempt — template-level: an invented-kwarg mirror where the beat
-  teaches `flip(UP)`; kp77's crossing used the taught idiom and passed). Two *invented
-  resampling constants* (`RESAMPLING_FILTER`, `NONE`) appeared in base/kp64 — the
-  image-resampling RED's hallucination family — while kp77's five resampling calls are all
-  the real API.
+  teaches `flip(UP)`; kp77's crossing used the taught idiom and passed). One *invented resampling constant* appeared in a beat-less arm (`RESAMPLING_FILTER.BOX`,
+  conveyor/base) — the image-resampling RED's hallucination family, ×1 this draw (correction,
+  review round 1: the first version also counted kp64's `NONE`, which is a color-constant
+  hallucination unrelated to resampling) — while kp77's five resampling calls are all the
+  real API.
 - **kp77's one failure is not a taught class** (numpy array-truth bug in a conveyor updater).
 - **Zero round-2 taught-class recurrence in kp77.**
 
@@ -70,6 +71,7 @@ All 11 passing videos were frame-checked against their tasks:
 - New composition-tier candidates (render-blind): `frame-bounds` (stairs ×2 — content exceeds
   the visible frame; would need a mechanical bounds check or GREEN+doc) and
   `asset-substitution` (minimap/kp77 ×1 — required asset replaced by a primitive).
-- The invented-resampling-constant family (×2 this draw, both non-kp77 arms) corroborates the
-  image-resampling beat's RED choice.
+- The invented-resampling-constant family (×1 this draw, conveyor/base) corroborates the
+  image-resampling beat's RED choice; kp64's `NONE` NameError is a separate color-constant
+  hallucination (recorded, not counted in the family).
 - Carried: the corrected camera-follow claim's effect; `orbit-phase` (×2, round-2 remeasure).
