@@ -1,0 +1,116 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:3:33
+  │
+3 │     use sui::coin::{Self, Coin, SUI};
+  │                                 ^^^ Invalid 'use'. Unbound member 'SUI' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:4:39
+  │
+4 │     use sui::balance::{Self, Balance, zero, join, withdraw};
+  │                                       ^^^^ Unused 'use' of alias 'zero'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:4:45
+  │
+4 │     use sui::balance::{Self, Balance, zero, join, withdraw};
+  │                                             ^^^^ Unused 'use' of alias 'join'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:4:51
+  │
+4 │     use sui::balance::{Self, Balance, zero, join, withdraw};
+  │                                                   ^^^^^^^^ Invalid 'use'. Unbound member 'withdraw' in module 'sui::balance'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/balance.move:7:13
+  │
+7 │ module sui::balance;
+  │             ------- Module 'sui::balance' declared here
+
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:5:35
+  │
+5 │     use sui::table::{Self, Table, new, add, remove, borrow_mut};
+  │                                   ^^^ Unused 'use' of alias 'new'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:5:40
+  │
+5 │     use sui::table::{Self, Table, new, add, remove, borrow_mut};
+  │                                        ^^^ Unused 'use' of alias 'add'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:5:45
+  │
+5 │     use sui::table::{Self, Table, new, add, remove, borrow_mut};
+  │                                             ^^^^^^ Unused 'use' of alias 'remove'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09001]: unused alias
+  ┌─ ./sources/module.move:5:53
+  │
+5 │     use sui::table::{Self, Table, new, add, remove, borrow_mut};
+  │                                                     ^^^^^^^^^^ Unused 'use' of alias 'borrow_mut'. Consider removing it
+  │
+  = This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:13:28
+   │
+ 3 │     use sui::coin::{Self, Coin, SUI};
+   │                           ---- Similarly named defintion found here
+   ·
+13 │         collected: Balance<SUI>,
+   │                            ^^^
+   │                            │
+   │                            Could not resolve the name 'SUI'
+   │                            Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:50:23
+   │
+ 3 │     use sui::coin::{Self, Coin, SUI};
+   │                           ---- Similarly named defintion found here
+   ·
+50 │         payment: Coin<SUI>,
+   │                       ^^^
+   │                       │
+   │                       Could not resolve the name 'SUI'
+   │                       Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:96:13
+   │
+ 3 │     use sui::coin::{Self, Coin, SUI};
+   │                           ---- Similarly named defintion found here
+   ·
+96 │     ): Coin<SUI> {
+   │             ^^^
+   │             │
+   │             Could not resolve the name 'SUI'
+   │             Did you mean: 'Coin'
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:98:20
+   │
+98 │         let fees = balance::withdraw(&mut garden.collected, amount);
+   │                    ^^^^^^^^^^^^^^^^^ Invalid module access. Unbound function 'withdraw' in module 'sui::balance'
+

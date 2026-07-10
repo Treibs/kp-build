@@ -1,0 +1,119 @@
+module lostpet::notice_board {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use sui::event;
+    use std::string::String;
+    use std::vector;
+
+    public struct NoticePosted has copy, drop {
+        owner: address,
+        reward_amount: u64,
+    }
+
+    public struct ClaimRegistered has copy, drop {
+        finder: address,
+    }
+
+    public struct ClaimConfirmed has copy, drop {
+        finder: address,
+    }
+
+    public struct NoticeCancelled has copy, drop {
+        owner: address,
+    }
+
+    public struct Notice has key, store {
+        id: UID,
+        owner: address,
+        pet_description: String,
+        reward: Coin<SUI>,
+        claims: vector<address>,
+    }
+
+    public fun post_notice(
+        pet_description: String,
+        reward: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let owner = ctx.sender();
+        let reward_amount = coin::value(&reward);
+        
+        let notice = Notice {
+            id: object::new(ctx),
+            owner,
+            pet_description,
+            reward,
+            claims: vector[],
+        };
+
+        event::emit(NoticePosted {
+            owner,
+            reward_amount,
+        });
+
+        transfer::share_object(notice);
+    }
+
+    public fun register_claim(
+        notice: &mut Notice,
+        ctx: &mut TxContext,
+    ) {
+        let finder = ctx.sender();
+        vector::push_back(&mut notice.claims, finder);
+
+        event::emit(ClaimRegistered {
+            finder,
+        });
+    }
+
+    public fun confirm_claim(
+        notice: Notice,
+        claim_index: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(notice.owner == ctx.sender(), 0);
+        assert!(claim_index < vector::length(&notice.claims), 1);
+
+        let Notice {
+            id,
+            owner: _,
+            pet_description: _,
+            reward,
+            claims,
+        } = notice;
+
+        let finder = *vector::borrow(&claims, claim_index);
+
+        event::emit(ClaimConfirmed {
+            finder,
+        });
+
+        object::delete(id);
+        transfer::public_transfer(reward, finder);
+    }
+
+    public fun cancel_notice(
+        notice: Notice,
+        ctx: &mut TxContext,
+    ) {
+        assert!(notice.owner == ctx.sender(), 0);
+
+        let Notice {
+            id,
+            owner,
+            pet_description: _,
+            reward,
+            claims: _,
+        } = notice;
+
+        event::emit(NoticeCancelled {
+            owner,
+        });
+
+        object::delete(id);
+        transfer::public_transfer(reward, owner);
+    }
+}

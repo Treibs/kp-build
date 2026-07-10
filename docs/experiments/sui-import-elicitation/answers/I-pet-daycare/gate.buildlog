@@ -1,0 +1,52 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[Lint W99003]: sub-optimal 'sui::coin::Coin' field type
+   ┌─ ./sources/module.move:15:18
+   │
+15 │         balance: Coin<SUI>,
+   │                  ^^^^^^^^^ Sub-optimal 'sui::coin::Coin' field type. Using 'sui::balance::Balance' instead will be more space efficient
+   │
+   = This warning can be suppressed with '#[allow(lint(coin_field))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[Lint W99001]: non-composable transfer to sender
+   ┌─ ./sources/module.move:69:13
+   │
+56 │     ): Pet {
+   │        --- Returning an object from a function, allows a caller to use the object and enables composability via programmable transactions.
+   ·
+69 │             transfer::public_transfer(payment, ctx.sender());
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │             │                                  │
+   │             │                                  Transaction sender address coming from here
+   │             Transfer of an object to transaction sender address
+   │
+   = This warning can be suppressed with '#[allow(lint(self_transfer))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E05001]: ability constraint not satisfied
+   ┌─ ./sources/module.move:74:9
+   │
+ 9 │     public struct Pet has key, store {
+   │                   --- To satisfy the constraint, the 'copy' ability would need to be added here
+   ·
+20 │         pet: Pet,
+   │              --- The type 'daycare::pet_daycare::Pet' does not have the ability 'copy'
+   ·
+74 │         checked_in.pet
+   │         ^^^^^^^^^^^^^^ Invalid implicit copy of field 'pet' without the 'copy' ability
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:74:9
+   │
+19 │     public struct CheckedInPet has store {
+   │                   ------------ To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+57 │         let checked_in: CheckedInPet = dynamic_field::remove(&mut daycare.id, pet_id);
+   │             ----------  ------------ The type 'daycare::pet_daycare::CheckedInPet' does not have the ability 'drop'
+   │             │            
+   │             The local variable 'checked_in' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+74 │         checked_in.pet
+   │         ^^^^^^^^^^^^^^ Invalid return
+

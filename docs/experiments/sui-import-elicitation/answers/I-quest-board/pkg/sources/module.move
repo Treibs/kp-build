@@ -1,0 +1,151 @@
+module 0x0::quest_board {
+    use sui::coin::{Coin, SUI};
+    use sui::table::{Table, Self};
+    use sui::event;
+    use sui::option::{Option, Self};
+    use sui::tx_context::TxContext;
+    
+    const LISTING_FEE: u64 = 1_000_000;
+    
+    public struct QuestBoard has key {
+        id: UID,
+        quests: Table<u64, Quest>,
+        next_quest_id: u64,
+        coffer: Option<Coin<SUI>>,
+    }
+    
+    public struct Quest has store {
+        xp_reward: u64,
+        creator: address,
+    }
+    
+    public struct Adventurer has key, store {
+        id: UID,
+        xp: u64,
+        active_quest: Option<u64>,
+    }
+    
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+    
+    public struct QuestPosted has copy, drop {
+        quest_id: u64,
+        xp_reward: u64,
+        creator: address,
+    }
+    
+    public struct QuestAccepted has copy, drop {
+        adventurer: address,
+        quest_id: u64,
+    }
+    
+    public struct QuestCompleted has copy, drop {
+        adventurer: address,
+        quest_id: u64,
+        xp_earned: u64,
+    }
+    
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        
+        let board = QuestBoard {
+            id: object::new(ctx),
+            quests: table::new(ctx),
+            next_quest_id: 0,
+            coffer: option::none(),
+        };
+        
+        transfer::transfer(admin_cap, ctx.sender());
+        transfer::share_object(board);
+    }
+    
+    public fun create_adventurer(ctx: &mut TxContext): Adventurer {
+        Adventurer {
+            id: object::new(ctx),
+            xp: 0,
+            active_quest: option::none(),
+        }
+    }
+    
+    public fun post_quest(
+        _cap: &AdminCap,
+        board: &mut QuestBoard,
+        xp_reward: u64,
+        listing_fee: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): u64 {
+        assert!(coin::value(&listing_fee) >= LISTING_FEE, 0);
+        
+        let quest_id = board.next_quest_id;
+        board.next_quest_id = board.next_quest_id + 1;
+        
+        let quest = Quest {
+            xp_reward,
+            creator: ctx.sender(),
+        };
+        
+        table::add(&mut board.quests, quest_id, quest);
+        
+        if (option::is_some(&board.coffer)) {
+            let mut coffer = option::extract(&mut board.coffer);
+            coin::join(&mut coffer, listing_fee);
+            option::fill(&mut board.coffer, coffer);
+        } else {
+            option::fill(&mut board.coffer, listing_fee);
+        };
+        
+        event::emit(QuestPosted {
+            quest_id,
+            xp_reward,
+            creator: ctx.sender(),
+        });
+        
+        quest_id
+    }
+    
+    public fun accept_quest(
+        board: &QuestBoard,
+        adventurer: &mut Adventurer,
+        quest_id: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(table::contains(&board.quests, quest_id), 0);
+        assert!(option::is_none(&adventurer.active_quest), 0);
+        
+        option::fill(&mut adventurer.active_quest, quest_id);
+        
+        event::emit(QuestAccepted {
+            adventurer: ctx.sender(),
+            quest_id,
+        });
+    }
+    
+    public fun complete_quest(
+        _cap: &AdminCap,
+        board: &mut QuestBoard,
+        adventurer: &mut Adventurer,
+        quest_id: u64,
+        adventurer_address: address,
+    ) {
+        let active = option::extract(&mut adventurer.active_quest);
+        assert!(active == quest_id, 0);
+        
+        let quest = table::remove(&mut board.quests, quest_id);
+        let Quest { xp_reward, creator: _ } = quest;
+        
+        adventurer.xp = adventurer.xp + xp_reward;
+        
+        event::emit(QuestCompleted {
+            adventurer: adventurer_address,
+            quest_id,
+            xp_earned: xp_reward,
+        });
+    }
+    
+    public fun xp_balance(adventurer: &Adventurer): u64 {
+        adventurer.xp
+    }
+}

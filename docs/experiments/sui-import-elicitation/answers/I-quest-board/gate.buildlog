@@ -1,0 +1,69 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+  ┌─ ./sources/module.move:2:27
+  │
+2 │     use sui::coin::{Coin, SUI};
+  │                           ^^^ Invalid 'use'. Unbound member 'SUI' in module 'sui::coin'
+  │
+  ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/coin.move:7:13
+  │
+7 │ module sui::coin;
+  │             ---- Module 'sui::coin' declared here
+
+error[E03002]: unbound module
+  ┌─ ./sources/module.move:5:9
+  │
+5 │     use sui::option::{Option, Self};
+  │         ^^^^^^^^^^^ Invalid 'use'. Unbound module: 'sui::option'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:14:29
+   │
+ 2 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+14 │         coffer: Option<Coin<SUI>>,
+   │                             ^^^
+   │                             │
+   │                             Could not resolve the name 'SUI'
+   │                             Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:77:27
+   │
+ 2 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+77 │         listing_fee: Coin<SUI>,
+   │                           ^^^
+   │                           │
+   │                           Could not resolve the name 'SUI'
+   │                           Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:80:17
+   │
+ 2 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+80 │         assert!(coin::value(&listing_fee) >= LISTING_FEE, 0);
+   │                 ^^^^
+   │                 │
+   │                 Could not resolve the name 'coin'
+   │                 Did you mean: 'Coin'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:94:13
+   │
+ 2 │     use sui::coin::{Coin, SUI};
+   │                     ---- Similarly named defintion found here
+   ·
+94 │             coin::join(&mut coffer, listing_fee);
+   │             ^^^^
+   │             │
+   │             Could not resolve the name 'coin'
+   │             Did you mean: 'Coin'
+
