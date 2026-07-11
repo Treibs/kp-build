@@ -1,0 +1,104 @@
+```move
+module marina::marina {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+
+    const E_BERTH_OCCUPIED: u64 = 0;
+    const E_WAITLIST_EMPTY: u64 = 1;
+    const E_NO_ASSIGNEE: u64 = 2;
+    const E_NOT_ASSIGNEE: u64 = 3;
+    const E_WRONG_DEPOSIT: u64 = 4;
+
+    public struct HarbormasterCap has key, store {
+        id: UID,
+    }
+
+    public struct WaitlistEntry has store, copy, drop {
+        applicant: address,
+        boat_length: u64,
+    }
+
+    public struct Waitlist has key {
+        id: UID,
+        entries: vector<WaitlistEntry>,
+    }
+
+    public struct Berth has key {
+        id: UID,
+        length: u64,
+        deposit_required: u64,
+        deposit: Balance<SUI>,
+        assignee: Option<address>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(HarbormasterCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(Waitlist {
+            id: object::new(ctx),
+            entries: vector[],
+        });
+    }
+
+    public fun join(waitlist: &mut Waitlist, boat_length: u64, ctx: &mut TxContext) {
+        waitlist.entries.push_back(WaitlistEntry {
+            applicant: ctx.sender(),
+            boat_length,
+        });
+    }
+
+    public fun open_berth(
+        _cap: &HarbormasterCap,
+        length: u64,
+        deposit_required: u64,
+        ctx: &mut TxContext,
+    ) {
+        transfer::share_object(Berth {
+            id: object::new(ctx),
+            length,
+            deposit_required,
+            deposit: balance::zero(),
+            assignee: option::none(),
+        });
+    }
+
+    public fun free_berth(
+        _cap: &HarbormasterCap,
+        berth: &mut Berth,
+        waitlist: &mut Waitlist,
+    ) {
+        assert!(berth.assignee.is_none(), E_BERTH_OCCUPIED);
+        let mut i = 0;
+        let n = waitlist.entries.length();
+        while (i < n) {
+            if (waitlist.entries.borrow(i).boat_length <= berth.length) {
+                let entry = waitlist.entries.remove(i);
+                berth.assignee.fill(entry.applicant);
+                return
+            };
+            i = i + 1;
+        };
+    }
+
+    public fun pay_deposit(berth: &mut Berth, payment: Coin<SUI>, ctx: &mut TxContext) {
+        assert!(berth.assignee.is_some(), E_NO_ASSIGNEE);
+        assert!(*berth.assignee.borrow() == ctx.sender(), E_NOT_ASSIGNEE);
+        assert!(payment.value() == berth.deposit_required, E_WRONG_DEPOSIT);
+        berth.deposit.join(payment.into_balance());
+    }
+
+    public fun has_next(waitlist: &Waitlist): bool {
+        !waitlist.entries.is_empty()
+    }
+
+    public fun next_entry(waitlist: &Waitlist): (address, u64) {
+        assert!(!waitlist.entries.is_empty(), E_WAITLIST_EMPTY);
+        let e = waitlist.entries.borrow(0);
+        (e.applicant, e.boat_length)
+    }
+
+    public fun deposit_held(berth: &Berth): u64 {
+        berth.deposit.value()
+    }
+}
+```

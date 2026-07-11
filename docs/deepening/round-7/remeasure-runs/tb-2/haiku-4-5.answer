@@ -1,0 +1,86 @@
+```move
+module seed_vault::vault {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+    use std::vector;
+    use std::option::{Self, Option};
+    use sui::event;
+
+    public struct SampleReading has copy, drop, store {
+        year: u64,
+        success_rate: u64,
+    }
+
+    public struct Sample has key {
+        id: UID,
+        readings: vector<SampleReading>,
+    }
+
+    public struct LabCap has key, store {
+        id: UID,
+    }
+
+    public struct ReadingAdded has copy, drop {
+        sample_id: address,
+        year: u64,
+        success_rate: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(
+            LabCap {
+                id: object::new(ctx),
+            },
+            tx_context::sender(ctx),
+        );
+    }
+
+    public fun create_sample(ctx: &mut TxContext): Sample {
+        Sample {
+            id: object::new(ctx),
+            readings: vector[],
+        }
+    }
+
+    public fun append_reading(
+        _cap: &LabCap,
+        sample: &mut Sample,
+        year: u64,
+        success_rate: u64,
+    ) {
+        vector::push_back(&mut sample.readings, SampleReading {
+            year,
+            success_rate,
+        });
+        
+        event::emit(ReadingAdded {
+            sample_id: object::uid_to_address(&sample.id),
+            year,
+            success_rate,
+        });
+    }
+
+    public fun best_reading(sample: &Sample): Option<SampleReading> {
+        if (vector::length(&sample.readings) == 0) {
+            return option::none()
+        };
+
+        let mut best = *vector::borrow(&sample.readings, 0);
+        let mut i = 1;
+        while (i < vector::length(&sample.readings)) {
+            let current = *vector::borrow(&sample.readings, i);
+            if (current.success_rate > best.success_rate) {
+                best = current;
+            };
+            i = i + 1;
+        };
+
+        option::some(best)
+    }
+
+    public fun reading_count(sample: &Sample): u64 {
+        vector::length(&sample.readings)
+    }
+}
+```

@@ -1,0 +1,1 @@
+Invalid call of 'sui::coin::put'. Invalid argument for parameter 'balance'

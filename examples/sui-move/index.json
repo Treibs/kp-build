@@ -939,6 +939,111 @@
       "type": "method",
       "confidence": "high",
       "corroborated_by": []
+    },
+    {
+      "id": "tuple-bleed-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "tuple-bleed-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "tuple-bleed-doc",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-table-path-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-table-path-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-table-path-doc",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "balance-api-on-coin-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "balance-api-on-coin-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "balance-api-on-coin-doc",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-option-path-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-option-path-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "std-option-path-doc",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "moved-value-arg-order-green",
+      "paper": "",
+      "type": "method",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "moved-value-arg-order-red",
+      "paper": "",
+      "type": "finding",
+      "confidence": "high",
+      "corroborated_by": []
+    },
+    {
+      "id": "moved-value-arg-order-doc",
+      "paper": "",
+      "type": "definition",
+      "confidence": "high",
+      "corroborated_by": []
     }
   ],
   "open_problems": [],

@@ -1,0 +1,59 @@
+```move
+module auction_house::consignment {
+    use sui::event;
+
+    public struct ClerkCap has key, store {
+        id: UID,
+    }
+
+    public struct Lot has store {
+        consignor: address,
+        reserve: u64,
+    }
+
+    public struct ReturnedRecord has copy, drop, store {
+        consignor: address,
+        reserve: u64,
+    }
+
+    public struct ConsignmentDesk has key {
+        id: UID,
+        lots: vector<Lot>,
+        returned_this_season: vector<ReturnedRecord>,
+    }
+
+    public struct Returned has copy, drop {
+        consignor: address,
+        reserve: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(ClerkCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(ConsignmentDesk {
+            id: object::new(ctx),
+            lots: vector[],
+            returned_this_season: vector[],
+        });
+    }
+
+    public fun consign(desk: &mut ConsignmentDesk, reserve: u64, ctx: &mut TxContext) {
+        desk.lots.push_back(Lot {
+            consignor: ctx.sender(),
+            reserve,
+        });
+    }
+
+    public fun return_unsold(_cap: &ClerkCap, desk: &mut ConsignmentDesk) {
+        desk.returned_this_season = vector[];
+        while (!desk.lots.is_empty()) {
+            let Lot { consignor, reserve } = desk.lots.pop_back();
+            event::emit(Returned { consignor, reserve });
+            desk.returned_this_season.push_back(ReturnedRecord { consignor, reserve });
+        };
+    }
+
+    public fun lots_returned(desk: &ConsignmentDesk): &vector<ReturnedRecord> {
+        &desk.returned_this_season
+    }
+}
+```

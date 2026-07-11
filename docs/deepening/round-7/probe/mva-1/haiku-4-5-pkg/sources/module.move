@@ -1,0 +1,71 @@
+module ski_valet::desk {
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+    use sui::balance::Balance;
+    use std::vector;
+
+    public struct SkiPair has key, store {
+        id: UID,
+        owner: address,
+        deposit: u64,
+    }
+
+    public struct SkiDesk has key {
+        id: UID,
+        stored_skis: vector<SkiPair>,
+        earnings: Balance<SUI>,
+    }
+
+    public fun check_in(
+        desk: &mut SkiDesk,
+        owner: address,
+        deposit: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let amount = coin::value(&deposit);
+        
+        let ski_pair = SkiPair {
+            id: object::new(ctx),
+            owner,
+            deposit: amount,
+        };
+        
+        vector::push_back(&mut desk.stored_skis, ski_pair);
+        balance::join(&mut desk.earnings, coin::into_balance(deposit));
+    }
+
+    public fun pick_up(
+        desk: &mut SkiDesk,
+        index: u64,
+        fee: u64,
+        ctx: &mut TxContext,
+    ): (SkiPair, Coin<SUI>) {
+        let ski_pair = vector::remove(&mut desk.stored_skis, index);
+        
+        assert!(fee <= ski_pair.deposit, 1);
+        
+        let refund_amount = ski_pair.deposit - fee;
+        let refund = coin::from_balance(
+            balance::split(&mut desk.earnings, refund_amount),
+            ctx
+        );
+        
+        (ski_pair, refund)
+    }
+
+    public fun earnings(desk: &SkiDesk): u64 {
+        balance::value(&desk.earnings)
+    }
+
+    public fun pairs_stored(desk: &SkiDesk): u64 {
+        vector::length(&desk.stored_skis)
+    }
+
+    public fun new(ctx: &mut TxContext): SkiDesk {
+        SkiDesk {
+            id: object::new(ctx),
+            stored_skis: vector[],
+            earnings: balance::zero(),
+        }
+    }
+}

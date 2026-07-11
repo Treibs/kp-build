@@ -1,0 +1,36 @@
+# Round-7 probe gate results (pinned sui 1.74.1-8fc60f1fa966; kp134 payload sha 9d4e6fe8…)
+# Verdicts regenerated from .result files; FAIL error codes from the committed buildlogs
+
+tb-1   haiku-4-5  FAIL error[E06001] x1                    import=CORRECT
+tb-1   sonnet-4-6 PASS CLEAN                               import=CORRECT
+tb-2   haiku-4-5  FAIL error[E04004] x3                    import=NA
+tb-2   sonnet-4-6 PASS CLEAN                               import=NA
+tb-3   haiku-4-5  PASS CLEAN                               import=NA
+tb-3   sonnet-4-6 PASS CLEAN                               import=NA
+stp-1  haiku-4-5  PASS WARN1                               import=CORRECT
+stp-1  sonnet-4-6 PASS WARN1                               import=CORRECT
+stp-2  haiku-4-5  PASS WARN1                               import=CORRECT
+stp-2  sonnet-4-6 PASS CLEAN                               import=CORRECT
+stp-3  haiku-4-5  PASS CLEAN                               import=NA
+stp-3  sonnet-4-6 PASS CLEAN                               import=NA
+bac-1  haiku-4-5  PASS WARN1                               import=CORRECT
+bac-1  sonnet-4-6 PASS CLEAN                               import=CORRECT
+bac-2  haiku-4-5  PASS CLEAN                               import=CORRECT
+bac-2  sonnet-4-6 PASS CLEAN                               import=CORRECT
+bac-3  haiku-4-5  PASS CLEAN                               import=CORRECT
+bac-3  sonnet-4-6 PASS CLEAN                               import=CORRECT
+sop-1  haiku-4-5  PASS CLEAN                               import=NA
+sop-1  sonnet-4-6 PASS CLEAN                               import=NA
+sop-2  haiku-4-5  FAIL error[E06002] x1                    import=NA
+sop-2  sonnet-4-6 PASS CLEAN                               import=NA
+sop-3  haiku-4-5  PASS CLEAN                               import=CORRECT
+sop-3  sonnet-4-6 PASS WARN1                               import=CORRECT
+mva-1  haiku-4-5  FAIL error[E03006] x7                    import=CORRECT
+mva-1  sonnet-4-6 PASS CLEAN                               import=CORRECT
+mva-2  haiku-4-5  PASS CLEAN                               import=NA
+mva-2  sonnet-4-6 PASS CLEAN                               import=NA
+mva-3  haiku-4-5  FAIL error[E04007] x1                    import=NA
+mva-3  sonnet-4-6 PASS CLEAN                               import=NA
+
+haiku:  10/15 gate-pass
+sonnet: 15/15 gate-pass

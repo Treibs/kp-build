@@ -1,0 +1,106 @@
+```move
+module auction_house::consignment {
+    use std::vector;
+    use sui::object::{Self, UID, ID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    use sui::event;
+
+    public struct CONSIGNMENT has drop {}
+
+    public struct ClerkCap has key, store {
+        id: UID,
+    }
+
+    public struct Lot has key, store {
+        id: UID,
+        consignor: address,
+        reserve_price: u64,
+        season: u64,
+    }
+
+    public struct ReturnedLot has store {
+        lot_id: ID,
+        consignor: address,
+        reserve_price: u64,
+    }
+
+    public struct ReturnLog has key {
+        id: UID,
+        season: u64,
+        returned_lots: vector<ReturnedLot>,
+    }
+
+    public struct Returned has copy, drop {
+        consignor: address,
+        reserve: u64,
+        season: u64,
+    }
+
+    fun init(_witness: CONSIGNMENT, ctx: &mut TxContext) {
+        let clerk = ClerkCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(clerk, ctx.sender());
+    }
+
+    public fun create_season(season: u64, ctx: &mut TxContext) {
+        let log = ReturnLog {
+            id: object::new(ctx),
+            season,
+            returned_lots: vector[],
+        };
+        transfer::share_object(log);
+    }
+
+    public fun consign(
+        consignor: address,
+        reserve_price: u64,
+        season: u64,
+        ctx: &mut TxContext,
+    ): Lot {
+        Lot {
+            id: object::new(ctx),
+            consignor,
+            reserve_price,
+            season,
+        }
+    }
+
+    public fun return_lot(
+        _clerk: &ClerkCap,
+        lot: Lot,
+        log: &mut ReturnLog,
+    ) {
+        assert!(lot.season == log.season, 0);
+
+        let lot_id = object::uid_to_inner(&lot.id);
+        let Lot {
+            id,
+            consignor,
+            reserve_price,
+            season,
+        } = lot;
+
+        object::delete(id);
+
+        let returned = ReturnedLot {
+            lot_id,
+            consignor,
+            reserve_price,
+        };
+
+        vector::push_back(&mut log.returned_lots, returned);
+
+        event::emit(Returned {
+            consignor,
+            reserve: reserve_price,
+            season,
+        });
+    }
+
+    public fun get_returned_lots(log: &ReturnLog): &vector<ReturnedLot> {
+        &log.returned_lots
+    }
+}
+```

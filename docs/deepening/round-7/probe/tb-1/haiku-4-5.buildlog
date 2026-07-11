@@ -1,0 +1,19 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:89:36
+   │
+14 │         waitlist: vector<WaitlistEntry>,
+   │                          ------------- The type 'marina::waitlist::WaitlistEntry' does not have the ability 'drop'
+   ·
+24 │     public struct WaitlistEntry has store {
+   │                   ------------- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+83 │         let _entry = vector::remove(&mut marina.waitlist, waitlist_index);
+   │             ------ The local variable '_entry' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+89 │         berth.held_deposit = amount;
+   │                                    ^ Invalid return
+

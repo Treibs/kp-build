@@ -1,0 +1,73 @@
+module cinema::season_pass {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+
+    public struct ManagerCap has key, store {
+        id: UID,
+    }
+
+    public struct Cinema has key {
+        id: UID,
+        till: Balance<SUI>,
+        passes_sold: u64,
+        price: u64,
+        wage: u64,
+    }
+
+    public struct SeasonPass has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(ManagerCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(Cinema {
+            id: object::new(ctx),
+            till: balance::zero(),
+            passes_sold: 0,
+            price: 1_000_000_000,
+            wage: 100_000_000,
+        });
+    }
+
+    public fun buy_pass(
+        cinema: &mut Cinema,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): SeasonPass {
+        assert!(coin::value(&payment) == cinema.price);
+        balance::join(&mut cinema.till, coin::into_balance(payment));
+        cinema.passes_sold = cinema.passes_sold + 1;
+        SeasonPass { id: object::new(ctx) }
+    }
+
+    public fun pay_projectionist(
+        _cap: &ManagerCap,
+        cinema: &mut Cinema,
+        projectionist: address,
+        ctx: &mut TxContext,
+    ) {
+        let wage = cinema.wage;
+        let payout = coin::from_balance(balance::split(&mut cinema.till, wage), ctx);
+        transfer::public_transfer(payout, projectionist);
+    }
+
+    public fun sweep(
+        _cap: &ManagerCap,
+        cinema: &mut Cinema,
+        owner: address,
+        ctx: &mut TxContext,
+    ) {
+        let amount = balance::value(&cinema.till);
+        let payout = coin::from_balance(balance::split(&mut cinema.till, amount), ctx);
+        transfer::public_transfer(payout, owner);
+    }
+
+    public fun till_balance(cinema: &Cinema): u64 {
+        balance::value(&cinema.till)
+    }
+
+    public fun passes_sold(cinema: &Cinema): u64 {
+        cinema.passes_sold
+    }
+}
