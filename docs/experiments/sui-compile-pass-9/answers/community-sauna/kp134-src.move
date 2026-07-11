@@ -1,0 +1,81 @@
+module @0x0::sauna {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    use std::option::{Self, Option};
+
+    public struct Sauna has key {
+        id: UID,
+        price: u64,
+        watcher: Option<address>,
+        sessions_sold: u64,
+        takings: Balance<SUI>,
+    }
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public fun create_sauna(price: u64, ctx: &mut TxContext) {
+        let sauna = Sauna {
+            id: object::new(ctx),
+            price,
+            watcher: option::none(),
+            sessions_sold: 0,
+            takings: balance::zero(),
+        };
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::share_object(sauna);
+        transfer::transfer(admin_cap, ctx.sender());
+    }
+
+    public fun buy_session(sauna: &mut Sauna, mut payment: Coin<SUI>, ctx: &mut TxContext) {
+        assert!(option::is_some(&sauna.watcher), 0);
+        
+        let amount = coin::value(&payment);
+        assert!(amount >= sauna.price, 1);
+        
+        sauna.sessions_sold = sauna.sessions_sold + 1;
+        
+        let change_amount = amount - sauna.price;
+        if (change_amount > 0) {
+            let change_coin = coin::split(&mut payment, change_amount, ctx);
+            transfer::public_transfer(change_coin, ctx.sender());
+        };
+        
+        coin::put(&mut sauna.takings, payment);
+    }
+
+    public fun set_watcher(_admin_cap: &AdminCap, sauna: &mut Sauna, watcher: address) {
+        sauna.watcher = option::some(watcher);
+    }
+
+    public fun end_watch(_admin_cap: &AdminCap, sauna: &mut Sauna) {
+        sauna.watcher = option::none();
+    }
+
+    public fun sweep(_admin_cap: &AdminCap, sauna: &mut Sauna, ctx: &mut TxContext) {
+        let amount = balance::value(&sauna.takings);
+        if (amount > 0) {
+            let takings = coin::take(&mut sauna.takings, amount, ctx);
+            transfer::public_transfer(takings, ctx.sender());
+        };
+    }
+
+    public fun current_watcher(sauna: &Sauna): Option<address> {
+        sauna.watcher
+    }
+
+    public fun sessions_sold(sauna: &Sauna): u64 {
+        sauna.sessions_sold
+    }
+
+    public fun takings_balance(sauna: &Sauna): u64 {
+        balance::value(&sauna.takings)
+    }
+}

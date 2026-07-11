@@ -1,0 +1,151 @@
+module cheese_cave::cave {
+    use sui::object::{Self, UID, ID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::table::{Self, Table};
+    use sui::event;
+    use sui::clock::{Self, Clock};
+    use sui::transfer;
+    use std::option::{Self, Option};
+    use std::vector;
+    
+    public struct Wheel has key, store {
+        id: UID,
+        label: vector<u8>,
+        ready_epoch: u64,
+        maker: address,
+    }
+    
+    public struct Cave has key {
+        id: UID,
+        wheel_ids: vector<ID>,
+        wheels: Table<ID, Wheel>,
+        maker_counts: Table<address, u64>,
+    }
+    
+    public struct OldestWheel has drop {
+        label: vector<u8>,
+        ready_epoch: u64,
+    }
+    
+    public struct Ripened has copy, drop {
+        maker: address,
+        label: vector<u8>,
+    }
+    
+    public struct AffineurCap has key, store {
+        id: UID,
+    }
+    
+    public fun init_cave(ctx: &mut TxContext): (Cave, AffineurCap) {
+        let cave = Cave {
+            id: object::new(ctx),
+            wheel_ids: vector[],
+            wheels: table::new(ctx),
+            maker_counts: table::new(ctx),
+        };
+        
+        let cap = AffineurCap {
+            id: object::new(ctx),
+        };
+        
+        (cave, cap)
+    }
+    
+    public fun shelve_wheel(
+        cave: &mut Cave,
+        label: vector<u8>,
+        ready_epoch: u64,
+        ctx: &mut TxContext,
+    ) {
+        let maker = tx_context::sender(ctx);
+        let wheel = Wheel {
+            id: object::new(ctx),
+            label,
+            ready_epoch,
+            maker,
+        };
+        let wheel_id = object::id(&wheel);
+        vector::push_back(&mut cave.wheel_ids, wheel_id);
+        table::add(&mut cave.wheels, wheel_id, wheel);
+        
+        if (table::contains(&cave.maker_counts, maker)) {
+            let count = table::borrow_mut(&mut cave.maker_counts, maker);
+            *count = *count + 1;
+        } else {
+            table::add(&mut cave.maker_counts, maker, 1);
+        }
+    }
+    
+    public fun release_wheel(
+        cave: &mut Cave,
+        wheel_id: ID,
+        clock: &Clock,
+        _cap: &AffineurCap,
+        ctx: &mut TxContext,
+    ) {
+        let wheel = table::remove(&mut cave.wheels, wheel_id);
+        let current_time_ms = clock::timestamp_ms(clock);
+        let ready_time_ms = (wheel.ready_epoch as u64) * 1000;
+        assert!(current_time_ms >= ready_time_ms, 0);
+        
+        let maker = wheel.maker;
+        let label = wheel.label;
+        
+        let (found, idx) = find_wheel_index(&cave.wheel_ids, wheel_id);
+        assert!(found, 0);
+        let _ = vector::swap_remove(&mut cave.wheel_ids, idx);
+        
+        event::emit(Ripened { maker, label });
+        transfer::public_transfer(wheel, maker);
+        
+        let count = table::borrow_mut(&mut cave.maker_counts, maker);
+        *count = *count - 1;
+    }
+    
+    fun find_wheel_index(wheel_ids: &vector<ID>, wheel_id: ID): (bool, u64) {
+        let mut i = 0;
+        let len = vector::length(wheel_ids);
+        while (i < len) {
+            if (*vector::borrow(wheel_ids, i) == wheel_id) {
+                return (true, i)
+            };
+            i = i + 1;
+        };
+        (false, 0)
+    }
+    
+    public fun resting_count(cave: &Cave, maker: address): u64 {
+        if (table::contains(&cave.maker_counts, maker)) {
+            *table::borrow(&cave.maker_counts, maker)
+        } else {
+            0
+        }
+    }
+    
+    public fun oldest_wheel(cave: &Cave): Option<OldestWheel> {
+        if (vector::is_empty(&cave.wheel_ids)) {
+            return option::none()
+        };
+        
+        let mut oldest_idx = 0;
+        let mut oldest_epoch = table::borrow(&cave.wheels, *vector::borrow(&cave.wheel_ids, 0)).ready_epoch;
+        let mut i = 1;
+        let len = vector::length(&cave.wheel_ids);
+        
+        while (i < len) {
+            let wheel_id = *vector::borrow(&cave.wheel_ids, i);
+            let wheel = table::borrow(&cave.wheels, wheel_id);
+            if (wheel.ready_epoch < oldest_epoch) {
+                oldest_epoch = wheel.ready_epoch;
+                oldest_idx = i;
+            };
+            i = i + 1;
+        };
+        
+        let wheel = table::borrow(&cave.wheels, *vector::borrow(&cave.wheel_ids, oldest_idx));
+        option::some(OldestWheel { 
+            label: wheel.label,
+            ready_epoch: wheel.ready_epoch 
+        })
+    }
+}

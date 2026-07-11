@@ -1,0 +1,19 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06001]: unused value without 'drop'
+    ┌─ ./sources/module.move:111:11
+    │
+ 20 │         current_item: Option<WorkItem>,
+    │                              -------- The type 'repair_cafe::cafe::WorkItem' does not have the ability 'drop'
+    ·
+ 23 │     public struct WorkItem has store {
+    │                   -------- To satisfy the constraint, the 'drop' ability would need to be added here
+    ·
+107 │         let item = option::extract(&mut workbench.current_item);
+    │             ---- The local variable 'item' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+    ·
+111 │         });
+    │           ^ Invalid return
+

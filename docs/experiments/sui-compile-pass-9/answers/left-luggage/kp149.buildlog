@@ -1,0 +1,29 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[Sui E02003]: invalid 'init' function
+   ┌─ ./sources/module.move:31:9
+   │
+31 │     fun init(_witness: OFFICE, ctx: &mut TxContext) {
+   │         ^^^^           ------ Invalid parameter '_witness' of type 'luggage::luggage_office::OFFICE'. Expected a one-time witness type, 'luggage::luggage_office::LUGGAGE_OFFICE
+   │         │               
+   │         Invalid 'init' function declaration
+   │
+   = One-time witness types are structs with the following requirements: their name is the upper-case version of the module's name, they have no fields (or a single boolean field), they have no type parameters, and they have only the 'drop' ability.
+
+error[E06001]: unused value without 'drop'
+   ┌─ ./sources/module.move:84:11
+   │
+10 │     public struct Bag has store {
+   │                   --- To satisfy the constraint, the 'drop' ability would need to be added here
+   ·
+21 │         bags: vector<Bag>,
+   │                      --- The type 'luggage::luggage_office::Bag' does not have the ability 'drop'
+   ·
+76 │         let bag = vector::remove(&mut office.bags, index);
+   │             --- The local variable 'bag' still contains a value. The value does not have the 'drop' ability and must be consumed before the function returns
+   ·
+84 │         });
+   │           ^ Invalid return
+

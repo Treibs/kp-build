@@ -1,0 +1,19 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W04037]: deprecated usage
+   ┌─ ./sources/module.move:33:29
+   │
+33 │             wheels: vector::empty(),
+   │                             ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+   │
+   = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W04037]: deprecated usage
+    ┌─ ./sources/module.move:124:38
+    │
+124 │         let mut label_copy = vector::empty();
+    │                                      ^^^^^ The function 'std::vector::empty' is deprecated: Use `vector[]` literal instead
+    │
+    = This warning can be suppressed with '#[allow(deprecated_usage)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+

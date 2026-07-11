@@ -1,0 +1,13 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01002]: unexpected token
+  ┌─ ./sources/module.move:1:8
+  │
+1 │ module @0x0::sauna {
+  │        ^
+  │        │
+  │        Unexpected '@'
+  │        Expected an address or an identifier
+

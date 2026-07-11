@@ -1,0 +1,128 @@
+module barn_dance::contest {
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use std::vector;
+    use sui::table::{Self, Table};
+
+    public struct Contest has key {
+        id: UID,
+        entry_fee: u64,
+        prize_per_winner: u64,
+        purse: Balance<SUI>,
+        couples: vector<(address, address)>,
+        dancer_partners: Table<address, address>,
+        closed: bool,
+    }
+
+    public struct CallerCap has key {
+        id: UID,
+    }
+
+    public fun create_contest(
+        entry_fee: u64,
+        prize_per_winner: u64,
+        ctx: &mut TxContext,
+    ): (Contest, CallerCap) {
+        let contest = Contest {
+            id: object::new(ctx),
+            entry_fee,
+            prize_per_winner,
+            purse: balance::zero(),
+            couples: vector[],
+            dancer_partners: table::new(ctx),
+            closed: false,
+        };
+
+        let caller_cap = CallerCap {
+            id: object::new(ctx),
+        };
+
+        (contest, caller_cap)
+    }
+
+    public fun enter(
+        contest: &mut Contest,
+        dancer1: address,
+        dancer2: address,
+        payment: Coin<SUI>,
+    ) {
+        assert!(!contest.closed, 1);
+        assert!(coin::value(&payment) == contest.entry_fee, 2);
+        assert!(!table::contains(&contest.dancer_partners, dancer1), 3);
+        assert!(!table::contains(&contest.dancer_partners, dancer2), 4);
+
+        balance::join(&mut contest.purse, coin::into_balance(payment));
+        vector::push_back(&mut contest.couples, (dancer1, dancer2));
+        table::add(&mut contest.dancer_partners, dancer1, dancer2);
+        table::add(&mut contest.dancer_partners, dancer2, dancer1);
+    }
+
+    public fun eliminate(
+        contest: &mut Contest,
+        dancer1: address,
+        dancer2: address,
+        _cap: &CallerCap,
+    ) {
+        assert!(!contest.closed, 5);
+        assert!(vector::length(&contest.couples) > 1, 6);
+
+        let len = vector::length(&contest.couples);
+        let mut i = 0;
+        let mut found = false;
+
+        while (i < len) {
+            let (d1, d2) = *vector::borrow(&contest.couples, i);
+            if ((d1 == dancer1 && d2 == dancer2) || (d1 == dancer2 && d2 == dancer1)) {
+                let (_d1, _d2) = vector::remove(&mut contest.couples, i);
+                found = true;
+                break
+            };
+            i = i + 1;
+        };
+
+        assert!(found, 7);
+        table::remove(&mut contest.dancer_partners, dancer1);
+        table::remove(&mut contest.dancer_partners, dancer2);
+    }
+
+    public fun close(
+        contest: &mut Contest,
+        _cap: &CallerCap,
+        ctx: &mut TxContext,
+    ) {
+        assert!(vector::length(&contest.couples) == 1, 8);
+        assert!(!contest.closed, 9);
+
+        let (winner1, winner2) = *vector::borrow(&contest.couples, 0);
+
+        let purse_balance = balance::value(&contest.purse);
+        assert!(purse_balance >= contest.prize_per_winner * 2, 10);
+
+        let payment1 = coin::take(&mut contest.purse, contest.prize_per_winner, ctx);
+        let payment2 = coin::take(&mut contest.purse, contest.prize_per_winner, ctx);
+
+        transfer::public_transfer(payment1, winner1);
+        transfer::public_transfer(payment2, winner2);
+
+        contest.closed = true;
+    }
+
+    public fun sponsor_top_up(
+        contest: &mut Contest,
+        additional: Coin<SUI>,
+    ) {
+        balance::join(&mut contest.purse, coin::into_balance(additional));
+    }
+
+    public fun couples_standing(contest: &Contest): vector<(address, address)> {
+        contest.couples
+    }
+
+    public fun purse_balance(contest: &Contest): u64 {
+        balance::value(&contest.purse)
+    }
+}

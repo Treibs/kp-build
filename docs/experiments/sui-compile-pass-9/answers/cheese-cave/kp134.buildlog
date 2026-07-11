@@ -1,0 +1,133 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:5:22
+   │
+ 5 │     use sui::table::{self, Table};
+   │                      ^^^^ Invalid 'use'. Unbound member 'self' in module 'sui::table'
+   │
+   ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/table.move:19:13
+   │
+19 │ module sui::table;
+   │             ----- Module 'sui::table' declared here
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:32:29
+   │
+ 5 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+32 │             resting_counts: table::new(ctx),
+   │                             ^^^^^
+   │                             │
+   │                             Could not resolve the name 'table'
+   │                             Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:55:14
+   │
+ 5 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+55 │         if (!table::contains(&cave.resting_counts, maker)) {
+   │              ^^^^^
+   │              │
+   │              Could not resolve the name 'table'
+   │              Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:56:13
+   │
+ 5 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+56 │             table::add(&mut cave.resting_counts, maker, 0);
+   │             ^^^^^
+   │             │
+   │             Could not resolve the name 'table'
+   │             Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:58:21
+   │
+ 5 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+58 │         let count = table::borrow_mut(&mut cave.resting_counts, maker);
+   │                     ^^^^^
+   │                     │
+   │                     Could not resolve the name 'table'
+   │                     Did you mean: 'Table'
+
+warning[W04039]: unable to determine literal's type
+   ┌─ ./sources/module.move:59:27
+   │
+59 │         *count = *count + 1;
+   │                           ^ Could not determine a concrete type for this numeric literal, so defaulting to 'u64'
+   │
+   = To avoid this warning, add an explicit type annotation, e.g., '<num>u64'
+   = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:90:21
+   │
+ 5 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+90 │         let count = table::borrow_mut(&mut cave.resting_counts, maker);
+   │                     ^^^^^
+   │                     │
+   │                     Could not resolve the name 'table'
+   │                     Did you mean: 'Table'
+
+warning[W04039]: unable to determine literal's type
+   ┌─ ./sources/module.move:91:27
+   │
+91 │         *count = *count - 1;
+   │                           ^ Could not determine a concrete type for this numeric literal, so defaulting to 'u64'
+   │
+   = To avoid this warning, add an explicit type annotation, e.g., '<num>u64'
+   = This warning can be suppressed with '#[allow(untyped_literal)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:94:30
+   │
+94 │     public fun resting_count(cave: &CheeseCave, maker: address): u64 {
+   │                              ^^^^ Unused parameter 'cave'. Consider removing or prefixing with an underscore: '_cave'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:94:49
+   │
+94 │     public fun resting_count(cave: &CheeseCave, maker: address): u64 {
+   │                                                 ^^^^^ Unused parameter 'maker'. Consider removing or prefixing with an underscore: '_maker'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:95:13
+   │
+ 5 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+95 │         if (table::contains(&cave.resting_counts, maker)) {
+   │             ^^^^^
+   │             │
+   │             Could not resolve the name 'table'
+   │             Did you mean: 'Table'
+
+error[E03006]: unexpected name in this position
+   ┌─ ./sources/module.move:96:14
+   │
+ 5 │     use sui::table::{self, Table};
+   │                            ----- Similarly named defintion found here
+   ·
+96 │             *table::borrow(&cave.resting_counts, maker)
+   │              ^^^^^
+   │              │
+   │              Could not resolve the name 'table'
+   │              Did you mean: 'Table'
+

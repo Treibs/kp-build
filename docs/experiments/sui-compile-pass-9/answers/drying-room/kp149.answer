@@ -1,0 +1,145 @@
+```move
+module pottery_studio::drying_room {
+    use std::string::String;
+    use sui::table::{Self, Table};
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+    use sui::event;
+
+    const ESlotOccupied: u64 = 1;
+    const EEmptySlot: u64 = 2;
+    const ENotOwner: u64 = 3;
+
+    public struct DryingRoom has key {
+        id: UID,
+        pieces: Table<Slot, Piece>,
+    }
+
+    public struct Slot has copy, drop, store {
+        bay: u64,
+        shelf: u64,
+    }
+
+    public struct Piece has store {
+        title: String,
+        owner: address,
+    }
+
+    public struct PieceSet has copy, drop {
+        bay: u64,
+        shelf: u64,
+        owner: address,
+    }
+
+    public struct PieceMoved has copy, drop {
+        from_bay: u64,
+        from_shelf: u64,
+        to_bay: u64,
+        to_shelf: u64,
+        owner: address,
+    }
+
+    public struct PieceRemoved has copy, drop {
+        bay: u64,
+        shelf: u64,
+        owner: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let drying_room = DryingRoom {
+            id: object::new(ctx),
+            pieces: table::new(ctx),
+        };
+        transfer::share_object(drying_room);
+    }
+
+    public fun set_piece(
+        room: &mut DryingRoom,
+        bay: u64,
+        shelf: u64,
+        title: String,
+        ctx: &mut TxContext,
+    ) {
+        let slot = Slot { bay, shelf };
+        assert!(!table::contains(&room.pieces, slot), ESlotOccupied);
+
+        let owner = tx_context::sender(ctx);
+
+        event::emit(PieceSet {
+            bay,
+            shelf,
+            owner,
+        });
+
+        let piece = Piece {
+            title,
+            owner,
+        };
+        table::add(&mut room.pieces, slot, piece);
+    }
+
+    public fun move_piece(
+        room: &mut DryingRoom,
+        from_bay: u64,
+        from_shelf: u64,
+        to_bay: u64,
+        to_shelf: u64,
+        ctx: &TxContext,
+    ) {
+        let from_slot = Slot { bay: from_bay, shelf: from_shelf };
+        let to_slot = Slot { bay: to_bay, shelf: to_shelf };
+
+        assert!(table::contains(&room.pieces, from_slot), EEmptySlot);
+        assert!(!table::contains(&room.pieces, to_slot), ESlotOccupied);
+
+        let piece = table::remove(&mut room.pieces, from_slot);
+        assert!(piece.owner == tx_context::sender(ctx), ENotOwner);
+
+        let owner = piece.owner;
+
+        event::emit(PieceMoved {
+            from_bay,
+            from_shelf,
+            to_bay,
+            to_shelf,
+            owner,
+        });
+
+        table::add(&mut room.pieces, to_slot, piece);
+    }
+
+    public fun remove_piece(
+        room: &mut DryingRoom,
+        bay: u64,
+        shelf: u64,
+        ctx: &TxContext,
+    ): Piece {
+        let slot = Slot { bay, shelf };
+        assert!(table::contains(&room.pieces, slot), EEmptySlot);
+
+        let piece = table::remove(&mut room.pieces, slot);
+        assert!(piece.owner == tx_context::sender(ctx), ENotOwner);
+
+        event::emit(PieceRemoved {
+            bay,
+            shelf,
+            owner: piece.owner,
+        });
+
+        piece
+    }
+
+    public fun get_piece(room: &DryingRoom, bay: u64, shelf: u64): (&String, address) {
+        let slot = Slot { bay, shelf };
+        assert!(table::contains(&room.pieces, slot), EEmptySlot);
+
+        let piece = table::borrow(&room.pieces, slot);
+        (&piece.title, piece.owner)
+    }
+
+    public fun count_pieces(room: &DryingRoom): u64 {
+        table::length(&room.pieces)
+    }
+}
+```
