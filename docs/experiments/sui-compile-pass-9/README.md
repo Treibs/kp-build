@@ -20,7 +20,7 @@ arms. Gate: pinned `sui 1.74.1-8fc60f1fa966`. Per-run verdicts + import sweep:
 | left-luggage | FAIL E03003 — `use sui::coin::{Coin, self}` (lowercase group-`self`, the `use-self` shape unaided) +cascades | **PASS CLEAN** | FAIL Sui E02003 — `init(_witness: OFFICE, …)` in module `luggage_office`: OTW misnamed (rule "named after the module in all uppercase" is loaded verbatim in this arm — **ignored-while-loaded**), plus an independent E06001: the bag is removed and its fields read into the `Forwarded` event but the delivery to the recorded address is never written (the pre-registered mva bait site was never authored; vcp rule loaded — ignored) |
 | drying-room | FAIL E01003 ×2 (bare `struct`, edition-2024 visibility) + **E04004 `Table<(u32, u32), Slot>` — the tuple-bleed composite-key shape, unaided** | PASS CLEAN | PASS CLEAN |
 | repair-cafe | PASS CLEAN | FAIL E06001 — `option::extract` then event emit; the delivery to the recorded owner never written (vcp rule loaded — ignored) | **PASS CLEAN** |
-| barn-dance | FAIL E01003 ×3 (bare `struct`) | PASS WARN1 — stores a named `Couple has copy, drop, store` struct (the tuple-bleed GREEN idiom, on the doc-tier rule alone) | FAIL E04004 ×4 sites, one rule — `couples: vector<(address, address)>`: **`tuple-bleed`, the round-7 top beat's exact pinned storage shape, firing in the arm that carries the execution-tier beat — first post-teach recurrence, ignored-while-loaded** |
+| barn-dance | FAIL E01003 ×3 (bare `struct`) | PASS WARN1 — stores a named `Couple has copy, drop, store` struct (the tuple-bleed GREEN idiom, on the doc-tier rule alone) | FAIL E04004 ×2 authored sites (+8 cascades; count corrected in review round 1), one rule — `couples: vector<(address, address)>`: **`tuple-bleed`, the round-7 top beat's exact pinned storage shape, firing in the arm that carries the execution-tier beat — first post-teach recurrence, ignored-while-loaded** |
 | cheese-cave | PASS WARN2 | FAIL E03003 — `use sui::table::{self, Table}` (lowercase group-`self`; `use-self` application ledger; note `sui::table` itself is CORRECT — `std-table-path` did not fire) | PASS WARN1 |
 | community-sauna | FAIL E01002 — `+=` (the taught `compound-assignment` class, unaided) + an invented `coin::burn_for_fees` | FAIL E01002 — `module @0x0::sauna`: the `@`-literal module-declaration shape (**×2 cumulative** with round-6 remeasure brm-3; adjacent to taught `module-address-form`, whose pin is the missing-address message, not this) | **PASS CLEAN** |
 
@@ -80,5 +80,8 @@ shows where it always has: the base arm keeps failing on classes no pack arm fai
 **Round-8 ledger updates from this draw:** `tuple-bleed` post-teach recurrence ×1
 (application ledger, execution tier); `event-emission-not-consumption` ×2 (vcp application
 sub-shape, cross-arm); `otw-misnaming` ×1 (application); `@`-literal module declaration ×2
-cumulative (untaught — promotion candidate); `use-self` +2 events (~14); base-only:
-bare-`struct` visibility ×2, `compound-assignment` ×1, tuple composite key ×1.
+cumulative (untaught — promotion candidate); `use-self` +1 application event (~13 —
+cheese-cave/kp134; left-luggage/base's `{Coin, self}` is the same SHAPE but unaided, so it
+is not an ignored-rule event and is recorded here as base composition only; convention
+point settled in review round 1); base-only: bare-`struct` visibility ×2,
+`compound-assignment` ×1, tuple composite key ×1.
