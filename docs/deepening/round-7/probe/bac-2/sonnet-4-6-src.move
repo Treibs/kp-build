@@ -1,0 +1,86 @@
+module dunk_tank::dunk_tank {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+    use sui::event;
+
+    const EInsufficientPayment: u64 = 0;
+    const EInsufficientPool: u64 = 1;
+
+    public struct DunkTank has key {
+        id: UID,
+        pool: Balance<SUI>,
+        throw_price: u64,
+        prize_amount: u64,
+        throws: u64,
+    }
+
+    public struct OperatorCap has key, store {
+        id: UID,
+    }
+
+    public struct HitRecorded has copy, drop {
+        recipient: address,
+        prize_amount: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(DunkTank {
+            id: object::new(ctx),
+            pool: balance::zero(),
+            throw_price: 1_000_000_000,
+            prize_amount: 5_000_000_000,
+            throws: 0,
+        });
+        transfer::transfer(OperatorCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun throw_ball(
+        tank: &mut DunkTank,
+        mut payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        assert!(coin::value(&payment) >= tank.throw_price, EInsufficientPayment);
+        let fee = coin::split(&mut payment, tank.throw_price, ctx);
+        balance::join(&mut tank.pool, coin::into_balance(fee));
+        tank.throws = tank.throws + 1;
+        payment
+    }
+
+    public fun record_hit(
+        tank: &mut DunkTank,
+        _cap: &OperatorCap,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        let prize = tank.prize_amount;
+        assert!(balance::value(&tank.pool) >= prize, EInsufficientPool);
+        let payout = coin::from_balance(balance::split(&mut tank.pool, prize), ctx);
+        event::emit(HitRecorded { recipient, prize_amount: prize });
+        transfer::public_transfer(payout, recipient);
+    }
+
+    public fun seed_pool(
+        tank: &mut DunkTank,
+        _cap: &OperatorCap,
+        funds: Coin<SUI>,
+    ) {
+        balance::join(&mut tank.pool, coin::into_balance(funds));
+    }
+
+    public fun set_prize_amount(
+        tank: &mut DunkTank,
+        _cap: &OperatorCap,
+        new_amount: u64,
+    ) {
+        tank.prize_amount = new_amount;
+    }
+
+    public fun pool_balance(tank: &DunkTank): u64 {
+        balance::value(&tank.pool)
+    }
+
+    public fun throws_count(tank: &DunkTank): u64 {
+        tank.throws
+    }
+}

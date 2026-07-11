@@ -1,0 +1,31 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:42:47
+   │
+42 │     public fun best_reading(sample: &Sample): Option<(u64, u64)> {
+   │                                               ^^^^^^^^^^^^^^^^^^
+   │                                               │      │
+   │                                               │      Expected a single non-reference type, but found: '(u64, u64)'
+   │                                               Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:45:20
+   │
+42 │     public fun best_reading(sample: &Sample): Option<(u64, u64)> {
+   │                                                      ---------- Expected a single non-reference type, but found: '(u64, u64)'
+   ·
+45 │             return option::none()
+   │                    ^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:61:9
+   │
+61 │         option::some((best_year, best_rate))
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │         │            │
+   │         │            Expected a single non-reference type, but found: '(u64, u64)'
+   │         Invalid type argument
+

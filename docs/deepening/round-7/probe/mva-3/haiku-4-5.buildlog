@@ -1,0 +1,18 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:78:24
+    │
+ 25 │         volume_id: address,
+    │                    ------- Expected: 'address'
+    ·
+ 78 │             volume_id: object::uid_to_inner(&volume.id),
+    │                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid argument for field 'volume_id' for 'interlibrary_loan_desk::system::RecalledEvent'
+    │
+    ┌─ ~/.move/git/https___github_com_MystenLabs_sui_git_b124567746b3a78a7e294ac2de265f693401ec9d/crates/sui-framework/packages/sui-framework/sources/object.move:208:37
+    │
+208 │ public fun uid_to_inner(uid: &UID): ID {
+    │                                     -- Given: 'sui::object::ID'
+

@@ -1,0 +1,111 @@
+```move
+module pharmacy_roster::roster {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::event;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+    use std::option::{Self, Option};
+    use std::vector;
+
+    const RETAINER_AMOUNT: u64 = 1_000_000_000;
+
+    public struct Roster has key {
+        id: UID,
+        held_retainer: Balance<SUI>,
+        available: vector<address>,
+        on_call: Option<address>,
+    }
+
+    public struct DutyOfficerCap has key, store {
+        id: UID,
+    }
+
+    public struct Dispatched has copy, drop {
+        pharmacist: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let roster = Roster {
+            id: object::new(ctx),
+            held_retainer: balance::zero(),
+            available: vector[],
+            on_call: option::none(),
+        };
+        transfer::share_object(roster);
+
+        let cap = DutyOfficerCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun join(
+        roster: &mut Roster,
+        payment: Coin<SUI>,
+        ctx: &TxContext,
+    ) {
+        assert!(coin::value(&payment) == RETAINER_AMOUNT, 1001);
+
+        let pharmacist = ctx.sender();
+        assert!(!vector::contains(&roster.available, &pharmacist), 1005);
+
+        vector::push_back(&mut roster.available, pharmacist);
+        balance::join(&mut roster.held_retainer, coin::into_balance(payment));
+    }
+
+    public fun appoint(
+        _cap: &DutyOfficerCap,
+        roster: &mut Roster,
+        pharmacist: address,
+    ) {
+        assert!(vector::contains(&roster.available, &pharmacist), 1002);
+        roster.on_call = option::some(pharmacist);
+    }
+
+    public fun dispatch(
+        _cap: &DutyOfficerCap,
+        roster: &mut Roster,
+    ) {
+        if (option::is_some(&roster.on_call)) {
+            let pharmacist = option::extract(&mut roster.on_call);
+            event::emit(Dispatched { pharmacist });
+        };
+    }
+
+    public fun leave_unappointed(
+        roster: &mut Roster,
+        ctx: &mut TxContext,
+    ): Coin<SUI> {
+        let pharmacist = ctx.sender();
+        let len = vector::length(&roster.available);
+        let mut idx = 0;
+        let mut found = false;
+        while (idx < len) {
+            if (*vector::borrow(&roster.available, idx) == pharmacist) {
+                vector::remove(&mut roster.available, idx);
+                found = true;
+                break
+            };
+            idx = idx + 1;
+        };
+        assert!(found, 1003);
+
+        if (option::is_some(&roster.on_call)) {
+            assert!(*option::borrow(&roster.on_call) != pharmacist, 1004);
+        };
+
+        coin::from_balance(balance::split(&mut roster.held_retainer, RETAINER_AMOUNT), ctx)
+    }
+
+    public fun current_on_call(roster: &Roster): Option<address> {
+        roster.on_call
+    }
+
+    public fun retainer_total(roster: &Roster): u64 {
+        balance::value(&roster.held_retainer)
+    }
+}
+```

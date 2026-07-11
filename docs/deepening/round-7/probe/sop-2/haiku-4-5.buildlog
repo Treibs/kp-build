@@ -1,0 +1,16 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E06002]: use of unassigned variable
+    ┌─ ./sources/module.move:116:25
+    │
+112 │         option::fill(&mut to_tank.exhibit, exhibit);
+    │                                            -------
+    │                                            │
+    │                                            The value of 'exhibit' was previously moved here.
+    │                                            Suggestion: use 'copy exhibit' to avoid the move.
+    ·
+116 │             exhibit_id: exhibit.id,
+    │                         ^^^^^^^^^^ Invalid usage of previously moved variable 'exhibit'.
+

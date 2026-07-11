@@ -1,0 +1,71 @@
+module pharmacy::roster {
+    use std::option;
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::table::{Self, Table};
+    use sui::event;
+
+    public struct DutyOfficerCap has key, store {
+        id: UID,
+    }
+
+    public struct Roster has key {
+        id: UID,
+        retainers: Table<address, u64>,
+        on_call: Option<address>,
+        pool: Balance<SUI>,
+    }
+
+    public struct Dispatched has copy, drop {
+        pharmacist: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(Roster {
+            id: object::new(ctx),
+            retainers: table::new(ctx),
+            on_call: option::none(),
+            pool: balance::zero(),
+        });
+        transfer::transfer(DutyOfficerCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun join(roster: &mut Roster, payment: Coin<SUI>, ctx: &mut TxContext) {
+        let sender = ctx.sender();
+        assert!(!roster.retainers.contains(sender), 0);
+        let amount = coin::value(&payment);
+        balance::join(&mut roster.pool, coin::into_balance(payment));
+        roster.retainers.add(sender, amount);
+    }
+
+    public fun leave(roster: &mut Roster, ctx: &mut TxContext) {
+        let sender = ctx.sender();
+        assert!(roster.retainers.contains(sender), 0);
+        let not_on_call = option::is_none(&roster.on_call) ||
+            *option::borrow(&roster.on_call) != sender;
+        assert!(not_on_call, 1);
+        let amount = roster.retainers.remove(sender);
+        let refund = coin::from_balance(balance::split(&mut roster.pool, amount), ctx);
+        transfer::public_transfer(refund, sender);
+    }
+
+    public fun appoint(_cap: &DutyOfficerCap, roster: &mut Roster, pharmacist: address) {
+        assert!(roster.retainers.contains(pharmacist), 0);
+        roster.on_call = option::some(pharmacist);
+    }
+
+    public fun dispatch(_cap: &DutyOfficerCap, roster: &mut Roster) {
+        assert!(option::is_some(&roster.on_call), 0);
+        let pharmacist = option::extract(&mut roster.on_call);
+        event::emit(Dispatched { pharmacist });
+    }
+
+    public fun view_on_call(roster: &Roster): Option<address> {
+        roster.on_call
+    }
+
+    public fun view_total_held(roster: &Roster): u64 {
+        balance::value(&roster.pool)
+    }
+}

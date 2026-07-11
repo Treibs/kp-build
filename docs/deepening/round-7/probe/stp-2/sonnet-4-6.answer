@@ -1,0 +1,109 @@
+```move
+module transit::transit {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::table::{Self, Table};
+    use sui::sui::SUI;
+
+    public struct TransitAuthority has key {
+        id: UID,
+        per_ride_price: u64,
+        revenue: Balance<SUI>,
+        passes: Table<address, PassRecord>,
+    }
+
+    public struct PassRecord has store {
+        zones: vector<u8>,
+        rides_remaining: u64,
+        valid: bool,
+    }
+
+    public struct CommuterPass has key, store {
+        id: UID,
+        holder: address,
+    }
+
+    public struct InspectorCap has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(TransitAuthority {
+            id: object::new(ctx),
+            per_ride_price: 1_000_000_000,
+            revenue: balance::zero(),
+            passes: table::new(ctx),
+        });
+        transfer::transfer(InspectorCap { id: object::new(ctx) }, ctx.sender());
+    }
+
+    public fun issue_pass(
+        authority: &mut TransitAuthority,
+        zones: vector<u8>,
+        ctx: &mut TxContext,
+    ): CommuterPass {
+        let holder = ctx.sender();
+        assert!(!table::contains(&authority.passes, holder), 0);
+        table::add(&mut authority.passes, holder, PassRecord {
+            zones,
+            rides_remaining: 0,
+            valid: true,
+        });
+        CommuterPass { id: object::new(ctx), holder }
+    }
+
+    public fun top_up(
+        authority: &mut TransitAuthority,
+        pass: &CommuterPass,
+        payment: Coin<SUI>,
+        rides: u64,
+        ctx: &TxContext,
+    ) {
+        let holder = ctx.sender();
+        assert!(pass.holder == holder, 0);
+        assert!(table::contains(&authority.passes, holder), 1);
+        assert!(table::borrow(&authority.passes, holder).valid, 2);
+        let cost = rides * authority.per_ride_price;
+        assert!(coin::value(&payment) == cost, 3);
+        balance::join(&mut authority.revenue, coin::into_balance(payment));
+        let record = table::borrow_mut(&mut authority.passes, holder);
+        record.rides_remaining = record.rides_remaining + rides;
+    }
+
+    public fun use_ride(
+        authority: &mut TransitAuthority,
+        pass: &CommuterPass,
+        ctx: &TxContext,
+    ) {
+        let holder = ctx.sender();
+        assert!(pass.holder == holder, 0);
+        let record = table::borrow_mut(&mut authority.passes, holder);
+        assert!(record.valid, 1);
+        assert!(record.rides_remaining > 0, 2);
+        record.rides_remaining = record.rides_remaining - 1;
+    }
+
+    public fun void_pass(
+        _cap: &InspectorCap,
+        authority: &mut TransitAuthority,
+        holder: address,
+    ) {
+        assert!(table::contains(&authority.passes, holder), 0);
+        let record = table::borrow_mut(&mut authority.passes, holder);
+        record.valid = false;
+    }
+
+    public fun rides_remaining(authority: &TransitAuthority, holder: address): u64 {
+        assert!(table::contains(&authority.passes, holder), 0);
+        table::borrow(&authority.passes, holder).rides_remaining
+    }
+
+    public fun has_valid_pass(authority: &TransitAuthority, holder: address): bool {
+        if (table::contains(&authority.passes, holder)) {
+            table::borrow(&authority.passes, holder).valid
+        } else {
+            false
+        }
+    }
+}
+```

@@ -1,0 +1,56 @@
+```move
+module fishing_boat::catch_box {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::sui::SUI;
+
+    public struct SkipperCap has key, store {
+        id: UID,
+    }
+
+    public struct CatchBox has key {
+        id: UID,
+        balance: Balance<SUI>,
+        crew: vector<address>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(SkipperCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(CatchBox {
+            id: object::new(ctx),
+            balance: balance::zero(),
+            crew: vector[],
+        });
+    }
+
+    public fun pay_for_catch(box: &mut CatchBox, payment: Coin<SUI>) {
+        balance::join(&mut box.balance, coin::into_balance(payment));
+    }
+
+    public fun sign_on(box: &mut CatchBox, ctx: &mut TxContext) {
+        vector::push_back(&mut box.crew, ctx.sender());
+    }
+
+    public fun pay_crew(_cap: &SkipperCap, box: &mut CatchBox, ctx: &mut TxContext) {
+        let crew_size = vector::length(&box.crew);
+        assert!(crew_size > 0);
+        let share = balance::value(&box.balance) / crew_size;
+        let mut i = 0;
+        while (i < crew_size) {
+            let deckhand = *vector::borrow(&box.crew, i);
+            let payout = coin::from_balance(balance::split(&mut box.balance, share), ctx);
+            transfer::public_transfer(payout, deckhand);
+            i = i + 1;
+        };
+        box.crew = vector[];
+    }
+
+    public fun box_balance(box: &CatchBox): u64 {
+        balance::value(&box.balance)
+    }
+
+    public fun crew_size(box: &CatchBox): u64 {
+        vector::length(&box.crew)
+    }
+}
+```

@@ -1,0 +1,117 @@
+```move
+module campground::campground {
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::table::{Self, Table};
+    use sui::sui::SUI;
+    use sui::clock::Clock;
+
+    const MS_PER_NIGHT: u64 = 86_400_000;
+
+    const E_SITE_OCCUPIED: u64 = 0;
+    const E_SITE_VACANT: u64 = 1;
+    const E_INSUFFICIENT_PAYMENT: u64 = 2;
+    const E_NOT_CAMPER: u64 = 3;
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct Booking has store, drop {
+        camper: address,
+        nights_paid: u64,
+        start_ms: u64,
+    }
+
+    public struct Campground has key {
+        id: UID,
+        nightly_rate: u64,
+        till: Balance<SUI>,
+        sites: Table<u64, Booking>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(AdminCap { id: object::new(ctx) }, ctx.sender());
+        transfer::share_object(Campground {
+            id: object::new(ctx),
+            nightly_rate: 1_000_000_000,
+            till: balance::zero(),
+            sites: table::new(ctx),
+        });
+    }
+
+    public fun set_rate(_cap: &AdminCap, ground: &mut Campground, rate: u64) {
+        ground.nightly_rate = rate;
+    }
+
+    public fun book(
+        ground: &mut Campground,
+        site: u64,
+        nights: u64,
+        payment: Coin<SUI>,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(!ground.sites.contains(site), E_SITE_OCCUPIED);
+        let required = ground.nightly_rate * nights;
+        assert!(coin::value(&payment) >= required, E_INSUFFICIENT_PAYMENT);
+
+        let mut payment_balance = coin::into_balance(payment);
+        balance::join(&mut ground.till, balance::split(&mut payment_balance, required));
+
+        if (balance::value(&payment_balance) > 0) {
+            transfer::public_transfer(coin::from_balance(payment_balance, ctx), ctx.sender());
+        } else {
+            balance::destroy_zero(payment_balance);
+        };
+
+        ground.sites.add(site, Booking {
+            camper: ctx.sender(),
+            nights_paid: nights,
+            start_ms: clock.timestamp_ms(),
+        });
+    }
+
+    public fun checkout(
+        ground: &mut Campground,
+        site: u64,
+        clock: &Clock,
+        ctx: &mut TxContext,
+    ) {
+        assert!(ground.sites.contains(site), E_SITE_VACANT);
+
+        let (camper, nights_paid, start_ms) = {
+            let b = ground.sites.borrow(site);
+            assert!(b.camper == ctx.sender(), E_NOT_CAMPER);
+            (b.camper, b.nights_paid, b.start_ms)
+        };
+
+        let now_ms = clock.timestamp_ms();
+        let nights_elapsed = if (now_ms > start_ms) { (now_ms - start_ms) / MS_PER_NIGHT } else { 0 };
+        let nights_used = if (nights_elapsed > nights_paid) { nights_paid } else { nights_elapsed };
+        let refund_nights = nights_paid - nights_used;
+
+        ground.sites.remove(site);
+
+        if (refund_nights > 0) {
+            let refund_amount = refund_nights * ground.nightly_rate;
+            let refund = coin::from_balance(balance::split(&mut ground.till, refund_amount), ctx);
+            transfer::public_transfer(refund, camper);
+        };
+    }
+
+    public fun nights_remaining(ground: &Campground, site: u64, clock: &Clock): u64 {
+        if (!ground.sites.contains(site)) {
+            return 0
+        };
+        let b = ground.sites.borrow(site);
+        let now_ms = clock.timestamp_ms();
+        let nights_elapsed = if (now_ms > b.start_ms) { (now_ms - b.start_ms) / MS_PER_NIGHT } else { 0 };
+        if (nights_elapsed >= b.nights_paid) { 0 } else { b.nights_paid - nights_elapsed }
+    }
+
+    public fun occupied_count(ground: &Campground): u64 {
+        ground.sites.length()
+    }
+}
+```

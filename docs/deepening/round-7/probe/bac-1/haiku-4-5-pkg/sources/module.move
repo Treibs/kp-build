@@ -1,0 +1,78 @@
+module cinema::season_pass {
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::object;
+
+    public struct ManagerCap has key, store {
+        id: UID,
+    }
+
+    public struct CinemaState has key {
+        id: UID,
+        till: Balance<SUI>,
+        passes_sold: u64,
+    }
+
+    public struct SeasonPass has key, store {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let cinema = CinemaState {
+            id: object::new(ctx),
+            till: balance::zero(),
+            passes_sold: 0,
+        };
+        transfer::share_object(cinema);
+
+        let manager_cap = ManagerCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(manager_cap, ctx.sender());
+    }
+
+    public fun buy_pass(
+        cinema: &mut CinemaState,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        let pass = SeasonPass {
+            id: object::new(ctx),
+        };
+        balance::join(&mut cinema.till, coin::into_balance(payment));
+        cinema.passes_sold = cinema.passes_sold + 1;
+        transfer::public_transfer(pass, ctx.sender());
+    }
+
+    public fun pay_projectionist(
+        _cap: &ManagerCap,
+        cinema: &mut CinemaState,
+        amount: u64,
+        recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        let payment = coin::from_balance(balance::split(&mut cinema.till, amount), ctx);
+        transfer::public_transfer(payment, recipient);
+    }
+
+    public fun sweep_remainder(
+        _cap: &ManagerCap,
+        cinema: &mut CinemaState,
+        owner: address,
+        ctx: &mut TxContext,
+    ) {
+        let remaining_amount = balance::value(&cinema.till);
+        let remaining = coin::from_balance(balance::split(&mut cinema.till, remaining_amount), ctx);
+        transfer::public_transfer(remaining, owner);
+    }
+
+    public fun till_balance(cinema: &CinemaState): u64 {
+        balance::value(&cinema.till)
+    }
+
+    public fun passes_sold(cinema: &CinemaState): u64 {
+        cinema.passes_sold
+    }
+}

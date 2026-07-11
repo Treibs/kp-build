@@ -1,0 +1,11 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09002]: unused variable
+   ┌─ ./sources/module.move:27:14
+   │
+27 │     fun init(otw: PASS, ctx: &mut TxContext) {
+   │              ^^^ Unused parameter 'otw'. Consider removing or prefixing with an underscore: '_otw'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
