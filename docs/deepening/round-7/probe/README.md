@@ -72,7 +72,11 @@ before this freeze:
 - **Denominator correction:** the fixture denominator is **47 zones** (87 directories = 40
   red/green pairs + 7 green-only); the draft said 87 zones. Task denominator 164 and all
   five ledger seed citations reviewer-verified against the exp-8 README, round-6
-  triage/remeasure, and the exp-4/6/7 experiment records.
+  triage/remeasure, and the exp-4/6/7 experiment records. **[CORRECTION, post-freeze
+  review round 1: the bac citation was in fact mis-sourced — the second recorded event
+  is exp-8 ferry-manifest's coin::take, not an exp-7 Balance::zero() shape; see the
+  bracketed corrections at territories.md row 3, triage.md, and beat-log round 7.
+  Frozen text preserved above.]**
 - Same-round checks after revision: no internal spine clones (bac payout surfaces differ:
   fixed payroll + sweep / triggered prize + top-up-in / equal division with remainder; tb
   surfaces differ: Option-view / Option-view+scan / event+last-element); nautical crowding
