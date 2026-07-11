@@ -1,0 +1,5 @@
+[package]
+name = "std_table_path_red"
+edition = "2024"
+
+[dependencies]

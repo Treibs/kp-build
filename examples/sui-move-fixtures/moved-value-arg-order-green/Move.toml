@@ -1,0 +1,5 @@
+[package]
+name = "moved_value_arg_order_green"
+edition = "2024"
+
+[dependencies]

@@ -1561,6 +1561,181 @@
         "source": "sui-framework-docs",
         "supporting_passage": "<pre><code><b>public</b> <b>fun</b> <a href=\"../std/vector.md#std_vector_contains\">contains</a>&lt;Element&gt;(v: &<a href=\"../std/vector.md#std_vector\">vector</a>&lt;Element&gt;, e: &Element): <a href=\"../std/bool.md#std_bool\">bool</a>\n"
       }
+    },
+    {
+      "id": "tuple-bleed-green",
+      "statement": "Paired data that must live in a container gets a named struct with `copy, drop, store` as needed — `vector<Entry>` storage and `Option<Entry>` views; a bare tuple RETURN from a plain function stays legal.",
+      "supporting_passage": "sui 1.74.1 builds a module storing vector<Entry> with an Option<Entry> view and a (u64, address) tuple-returning accessor, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/tuple-bleed-green"
+      }
+    },
+    {
+      "id": "tuple-bleed-red",
+      "statement": "A tuple cannot be a type argument: `Option<(u64, address)>` fails on sui 1.74.1 with error[E04004] — \"Expected a single non-reference type, but found: '(u64, address)'\". Tuples are expression/return conveniences, not runtime values; the same class rejects tuples in storage positions (`vector<(A, B)>`, struct fields). Adjacency disclosed: `reference-type-argument-red` pins the reference form under the same E04004 family; this zone pins the tuple form with a distinct fragment.",
+      "supporting_passage": "sui 1.74.1 rejects Option<(u64, address)> as a return type argument with exit 1, error[E04004], Expected a single non-reference type, but found: '(u64, address)'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/tuple-bleed-red"
+      }
+    },
+    {
+      "id": "tuple-bleed-doc",
+      "statement": "Tuples in Move are not runtime values — they exist only in expression and return positions, which is why they cannot instantiate type arguments or be stored.",
+      "supporting_passage": "As mentioned in the [tuples section](./primitive-types/tuples), these tuple \"values\" do not exist as\nruntime values.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "As mentioned in the [tuples section](./primitive-types/tuples), these tuple \"values\" do not exist as\nruntime values."
+      }
+    },
+    {
+      "id": "std-table-path-green",
+      "statement": "`Table` imports from the Sui framework: `use sui::table::{Self, Table};` — constructed with `table::new(ctx)` and stored as an object field.",
+      "supporting_passage": "sui 1.74.1 builds a registry module importing sui::table with table::new/length, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/std-table-path-green"
+      }
+    },
+    {
+      "id": "std-table-path-red",
+      "statement": "There is no `std::table`: `use std::table::{Self, Table};` fails on sui 1.74.1 with error[E03002] — \"Unbound module: 'std::table'\" (and cascades into unbound-type errors at every `Table` use). The std-vs-sui split is per-module: `std::string` is real, `std::table` is not — Table is a Sui object-system container.",
+      "supporting_passage": "sui 1.74.1 rejects use std::table with exit 1, error[E03002], Unbound module: 'std::table'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/std-table-path-red"
+      }
+    },
+    {
+      "id": "std-table-path-doc",
+      "statement": "The map-like `Table` collection is the `sui::table` framework module — its keys and values live in Sui's object system, not inside the `Table` value.",
+      "supporting_passage": "title: Module `sui::table`\n---\n\nA table is a map-like collection.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "title: Module `sui::table`\n---\n\nA table is a map-like collection."
+      }
+    },
+    {
+      "id": "balance-api-on-coin-green",
+      "statement": "An accumulating pool field is a `Balance<T>`; `Coin` is the boundary type — `coin::put(&mut pool, payment)` deposits a `Coin`, `coin::take(&mut pool, amount, ctx)` mints a `Coin` back out.",
+      "supporting_passage": "sui 1.74.1 builds a till module with a Balance<SUI> field, coin::put pay-in and coin::take pay-out, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/balance-api-on-coin-green"
+      }
+    },
+    {
+      "id": "balance-api-on-coin-red",
+      "statement": "`coin::put`/`coin::take` operate on `&mut Balance<T>`, not on `Coin`: storing the pool as `Coin<SUI>` and calling `coin::put(&mut till.funds, payment)` fails on sui 1.74.1 with error[E04007] — \"Invalid call of 'sui::coin::put'. Invalid argument for parameter 'balance'\".",
+      "supporting_passage": "sui 1.74.1 rejects coin::put on a Coin<SUI> field with exit 1, error[E04007], Invalid call of 'sui::coin::put'. Invalid argument for parameter 'balance'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/balance-api-on-coin-red"
+      }
+    },
+    {
+      "id": "balance-api-on-coin-doc",
+      "statement": "`sui::coin::take` takes a `Coin` worth of `value` FROM a `Balance` — its receiver parameter is `&mut sui::balance::Balance<T>`, never a `Coin`.",
+      "supporting_passage": "Take a <code><a href=\"../sui/coin.md#sui_coin_Coin\">Coin</a></code> worth of <code><a href=\"../sui/coin.md#sui_coin_value\">value</a></code> from <code>Balance</code>.",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-framework-docs",
+        "supporting_passage": "Take a <code><a href=\"../sui/coin.md#sui_coin_Coin\">Coin</a></code> worth of <code><a href=\"../sui/coin.md#sui_coin_value\">value</a></code> from <code>Balance</code>."
+      }
+    },
+    {
+      "id": "std-option-path-green",
+      "statement": "`Option<T>`/`option` are implicit `std::option` aliases in edition 2024 — no `use` line is needed, and any explicit path is `std::option`, never `sui::`.",
+      "supporting_passage": "sui 1.74.1 builds a slot module using Option<address>/option::none with no option import, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/std-option-path-green"
+      }
+    },
+    {
+      "id": "std-option-path-red",
+      "statement": "There is no `sui::option`: `use sui::option::{Self, Option};` fails on sui 1.74.1 with error[E03002] — \"Unbound module: 'sui::option'\". The mirror image of the SUI-import class: a crowded `sui::` import block pulls the std module under the wrong prefix.",
+      "supporting_passage": "sui 1.74.1 rejects use sui::option with exit 1, error[E03002], Unbound module: 'sui::option'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/std-option-path-red"
+      }
+    },
+    {
+      "id": "std-option-path-doc",
+      "statement": "`Option<T>` is implemented by the standard library module `std::option` — it is a `std::` module, not a `sui::` one.",
+      "supporting_passage": "| [std::option](https://docs.sui.io/references/framework/std/option)               | Implements `Option<T>`                                                     | [Option](./option)                   |",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-book",
+        "supporting_passage": "| [std::option](https://docs.sui.io/references/framework/std/option)               | Implements `Option<T>`                                                     | [Option](./option)                   |"
+      }
+    },
+    {
+      "id": "moved-value-arg-order-green",
+      "statement": "Read every field you need into locals BEFORE the value moves: `let destination = parcel.addressee;` then `transfer::transfer(parcel, destination)` — arguments evaluate left to right and the move happens first.",
+      "supporting_passage": "sui 1.74.1 builds a dispatch function hoisting the addressee read before the transfer move, exit 0, zero warnings.",
+      "claim_type": "method",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "build_error",
+        "artifact": "sui-move-fixtures/moved-value-arg-order-green"
+      }
+    },
+    {
+      "id": "moved-value-arg-order-red",
+      "statement": "A value moved as an earlier argument cannot be read in a later argument: `transfer::transfer(parcel, parcel.addressee)` fails on sui 1.74.1 with error[E06002] — \"Invalid usage of previously moved variable 'parcel'.\" The read must be hoisted into a local before the move.",
+      "supporting_passage": "sui 1.74.1 rejects transfer::transfer(parcel, parcel.addressee) with exit 1, error[E06002], Invalid usage of previously moved variable 'parcel'.",
+      "claim_type": "finding",
+      "confidence": "high",
+      "execution": {
+        "tool": "sui-move-build",
+        "gate_code": "red_violation",
+        "artifact": "sui-move-fixtures/moved-value-arg-order-red"
+      }
+    },
+    {
+      "id": "moved-value-arg-order-doc",
+      "statement": "After a `move` occurs the local variable is unavailable — even if the value's type has the `copy` ability — so any field read must happen before the value moves.",
+      "supporting_passage": "`move` takes the value out of the local variable _without_ copying the data. After a `move` occurs,\nthe local variable is unavailable, even if the value's type has the `copy` [ability](./abilities).",
+      "claim_type": "definition",
+      "confidence": "high",
+      "grounding": {
+        "source": "sui-move-reference",
+        "supporting_passage": "`move` takes the value out of the local variable _without_ copying the data. After a `move` occurs,\nthe local variable is unavailable, even if the value's type has the `copy` [ability](./abilities)."
+      }
     }
   ]
 }

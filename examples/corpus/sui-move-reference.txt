@@ -3576,3 +3576,47 @@ This is another difference between Move and Rust, which allows references to be 
 structs.
 
 One could imagine a fancier, more expressive, type system that would allow references to be stored
+
+## FILE: reference/variables.md (excerpt: Move and Copy)
+
+## Move and Copy
+
+All local variables in Move can be used in two ways, either by `move` or `copy`. If one or the other
+is not specified, the Move compiler is able to infer whether a `copy` or a `move` should be used.
+This means that in all of the examples above, a `move` or a `copy` would be inserted by the
+compiler. A local variable cannot be used without the use of `move` or `copy`.
+
+`copy` will likely feel the most familiar coming from other programming languages, as it creates a
+new copy of the value inside of the variable to use in that expression. With `copy`, the local
+variable can be used more than once.
+
+```move
+let x = 0;
+let y = copy x + 1;
+let z = copy x + 2;
+```
+
+Any value with the `copy` [ability](./abilities) can be copied in this way, and will be copied
+implicitly unless a `move` is specified.
+
+`move` takes the value out of the local variable _without_ copying the data. After a `move` occurs,
+the local variable is unavailable, even if the value's type has the `copy` [ability](./abilities).
+
+```move
+let x = 1;
+// highlight-error-start
+let y = move x + 1;
+//      ------ Local was moved here
+let z = move x + 2; // Error!
+//      ^^^^^^ Invalid usage of local 'x'
+// highlight-error-end
+y + z
+```
+
+### Safety
+
+Move's type system will prevent a value from being used after it is moved. This is the same safety
+check described in [`let` declaration](#let-bindings) that prevents local variables from being used
+before it is assigned a value.
+
+<!-- For more information, see TODO future section on ownership and move semantics. -->

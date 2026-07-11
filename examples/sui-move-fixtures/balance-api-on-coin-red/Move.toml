@@ -1,0 +1,5 @@
+[package]
+name = "balance_api_on_coin_red"
+edition = "2024"
+
+[dependencies]
