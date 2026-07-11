@@ -96,21 +96,22 @@
     > sui 1.74.1 rejects Option<&Stamp> as a parameter type with exit 1, error[E04004], Expected a single non-reference type.
 - _finding_ — Passing the element by value fails: `vector::contains(blocklist, who)` is rejected on sui 1.74.1 with error[E04007] — "Invalid call of 'std::vector::contains'" (the parameter is `&Element`). Rust's `Vec::contains` has the same by-reference signature; the slip is not borrowing at the call site. *([sui-move-build], high)*
     > sui 1.74.1 rejects vector::contains(blocklist, who) with exit 1, error[E04007]: incompatible types, Invalid call of 'std::vector::contains'.
+- _finding_ — A tuple cannot be a type argument: `Option<(u64, address)>` fails on sui 1.74.1 with error[E04004] — "Expected a single non-reference type, but found: '(u64, address)'". Tuples are expression/return conveniences, not runtime values; the same class rejects tuples in storage positions (`vector<(A, B)>`, struct fields). Adjacency disclosed: `reference-type-argument-red` pins the reference form under the same E04004 family; this zone pins the tuple form with a distinct fragment. *([sui-move-build], high)*
+    > sui 1.74.1 rejects Option<(u64, address)> as a return type argument with exit 1, error[E04004], Expected a single non-reference type, but found: '(u64, address)'.
+- _finding_ — There is no `std::table`: `use std::table::{Self, Table};` fails on sui 1.74.1 with error[E03002] — "Unbound module: 'std::table'" (and cascades into unbound-type errors at every `Table` use). The std-vs-sui split is per-module: `std::string` is real, `std::table` is not — Table is a Sui object-system container. *([sui-move-build], high)*
+    > sui 1.74.1 rejects use std::table with exit 1, error[E03002], Unbound module: 'std::table'.
+- _finding_ — `coin::put`/`coin::take` operate on `&mut Balance<T>`, not on `Coin`: storing the pool as `Coin<SUI>` and calling `coin::put(&mut till.funds, payment)` fails on sui 1.74.1 with error[E04007] — "Invalid call of 'sui::coin::put'. Invalid argument for parameter 'balance'". *([sui-move-build], high)*
+    > sui 1.74.1 rejects coin::put on a Coin<SUI> field with exit 1, error[E04007], Invalid call of 'sui::coin::put'. Invalid argument for parameter 'balance'.
+- _finding_ — There is no `sui::option`: `use sui::option::{Self, Option};` fails on sui 1.74.1 with error[E03002] — "Unbound module: 'sui::option'". The mirror image of the SUI-import class: a crowded `sui::` import block pulls the std module under the wrong prefix. *([sui-move-build], high)*
+    > sui 1.74.1 rejects use sui::option with exit 1, error[E03002], Unbound module: 'sui::option'.
+- _finding_ — A value moved as an earlier argument cannot be read in a later argument: `transfer::transfer(parcel, parcel.addressee)` fails on sui 1.74.1 with error[E06002] — "Invalid usage of previously moved variable 'parcel'." The read must be hoisted into a local before the move. *([sui-move-build], high)*
+    > sui 1.74.1 rejects transfer::transfer(parcel, parcel.addressee) with exit 1, error[E06002], Invalid usage of previously moved variable 'parcel'.
 - _method_ — In Move 2024, declare structs with an explicit visibility modifier: `public struct Counter has key { id: UID, value: u64 }`. `public` is currently the only struct visibility modifier. *([sui-move-build], high)*
     > sui 1.74.1 (edition 2024) builds a module whose struct is declared `public struct Counter has key { id: UID, value: u64 }` with exit 0.
 - _method_ — Move 2024 adds a required visibility modifier to struct declarations; `public` is currently the only available struct visibility modifier, so every struct is written `public struct Name ...`. *([doc-corpus], high)*
     > In Move 2024, structs get a visibility modifier. Currently, the only available visibility modifier is `public`.
-- _method_ — In Move 2024, call functions on their first argument with dot notation: a function `public fun value(self: &Counter): u64` defined in the type's module is automatically usable as `counter.value()`. For package-internal access use `public(package) fun`, not friend declarations. *([sui-move-build], high)*
-    > sui 1.74.1 builds a module that defines `public fun value(self: &Counter): u64` and calls it via method syntax `counter.value()` with exit 0.
-- _method_ — In Move 2024 the `friend` keyword is deprecated; use the `public(package)` visibility modifier to make a function callable from other modules in the same package. *([doc-corpus], high)*
-    > In Move 2024, the `friend` keyword is deprecated. Instead, you can use the `public(package)` visibility modifier to make functions visible to other modules in the same package.
-- _method_ — In edition 2024 with the Sui framework, `UID`, `object`, `transfer`, and `TxContext` are available with no `use` declarations: write `public struct Counter has key { id: UID, ... }`, `object::new(ctx)`, and `transfer::share_object(...)` without any import block. *([sui-move-build], high)*
-    > sui 1.74.1 builds a module that uses UID, object::new, transfer::share_object, and TxContext with zero `use` statements, exit 0.
-- _method_ — Framework staples like `sui::transfer` are implicitly imported in every package that depends on the Sui Framework and need no `use` statement. The legacy `use sui::object::{Self, UID}; use sui::transfer; use sui::tx_context::TxContext;` block still compiles silently on sui 1.74.1 (no warning), but it is dead weight — omit it (triage-observed on sui 1.74.1-8fc60f1fa966; see examples/sui-move-fixtures/beat-log.md). *([doc-corpus], high)*
-    > The module that defines main storage operations is `sui::transfer`. It is implicitly imported in all packages that depend on the [Sui Framework](./../programmability/sui-framework), so, like other implicitly imported modules (e.g. `std::opt
-- _method_ — A struct with the `key` ability must have `id: UID` as its first field: `public struct Item has key { id: UID, value: u64 }`, with the UID created by `object::new(ctx)`. *([sui-move-build], high)*
-    > sui 1.74.1 builds a `key` struct whose first field is `id: UID` (initialized with `object::new(ctx)`) with exit 0.
-*(+87 more — see `claims/`)*
+*(+102 more — see `claims/`)*
+
 ## Toolchain + source pins
 
 - **Toolchain:** `sui mainnet-v1.74.1` (version string `sui 1.74.1-8fc60f1fa966`), release binary sha256 `61aafc28e83a8501947a7f0acb97245b8bdb922672895afef504f60c2422d6b3` (operator-checked; the runner verifies the version string, not the hash).
