@@ -1,0 +1,189 @@
+```move
+module aquarium::tank_hall {
+    use sui::object::{Self, UID};
+    use sui::tx_context::TxContext;
+    use sui::transfer;
+    use sui::event;
+    use sui::clock::Clock;
+    use std::option::{Self, Option};
+    use std::vector;
+
+    public struct WardenCap has key, store {
+        id: UID,
+    }
+
+    public struct Exhibit has store, drop {
+        id: u64,
+        label: vector<u8>,
+    }
+
+    public struct Tank has store {
+        number: u64,
+        exhibit: Option<Exhibit>,
+    }
+
+    public struct TankHall has key {
+        id: UID,
+        tanks: vector<Tank>,
+    }
+
+    public struct Stocked has copy, drop {
+        tank_number: u64,
+        exhibit_id: u64,
+        timestamp_ms: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let tank_hall = TankHall {
+            id: object::new(ctx),
+            tanks: vector[],
+        };
+        
+        let warden_cap = WardenCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(tank_hall);
+        transfer::transfer(warden_cap, ctx.sender());
+    }
+
+    public fun add_tank(_cap: &WardenCap, hall: &mut TankHall, number: u64) {
+        let tank = Tank {
+            number,
+            exhibit: option::none(),
+        };
+        vector::push_back(&mut hall.tanks, tank);
+    }
+
+    public fun stock(
+        _cap: &WardenCap,
+        hall: &mut TankHall,
+        tank_number: u64,
+        exhibit_id: u64,
+        label: vector<u8>,
+        clock: &Clock,
+    ) {
+        let mut i = 0;
+        let len = vector::length(&hall.tanks);
+        
+        while (i < len) {
+            let tank = vector::borrow_mut(&mut hall.tanks, i);
+            if (tank.number == tank_number) {
+                assert!(option::is_none(&tank.exhibit), 0);
+                
+                let exhibit = Exhibit { id: exhibit_id, label };
+                option::fill(&mut tank.exhibit, exhibit);
+                
+                event::emit(Stocked {
+                    tank_number,
+                    exhibit_id,
+                    timestamp_ms: clock.timestamp_ms(),
+                });
+                
+                break
+            };
+            i = i + 1;
+        };
+    }
+
+    public fun retire(
+        _cap: &WardenCap,
+        hall: &mut TankHall,
+        tank_number: u64,
+    ) {
+        let mut i = 0;
+        let len = vector::length(&hall.tanks);
+        
+        while (i < len) {
+            let tank = vector::borrow_mut(&mut hall.tanks, i);
+            if (tank.number == tank_number) {
+                let _exhibit = option::extract(&mut tank.exhibit);
+                break
+            };
+            i = i + 1;
+        };
+    }
+
+    public fun move_exhibit(
+        _cap: &WardenCap,
+        hall: &mut TankHall,
+        from_tank: u64,
+        to_tank: u64,
+        clock: &Clock,
+    ) {
+        let mut exhibit: Option<Exhibit> = option::none();
+        
+        let mut i = 0;
+        let len = vector::length(&hall.tanks);
+        while (i < len) {
+            let tank = vector::borrow_mut(&mut hall.tanks, i);
+            if (tank.number == from_tank) {
+                assert!(option::is_some(&tank.exhibit), 0);
+                exhibit = option::extract(&mut tank.exhibit);
+                break
+            };
+            i = i + 1;
+        };
+
+        let ex_data = option::extract(&mut exhibit);
+        let exhibit_id = ex_data.id;
+        
+        i = 0;
+        while (i < len) {
+            let tank = vector::borrow_mut(&mut hall.tanks, i);
+            if (tank.number == to_tank) {
+                assert!(option::is_none(&tank.exhibit), 0);
+                option::fill(&mut tank.exhibit, ex_data);
+                
+                event::emit(Stocked {
+                    tank_number: to_tank,
+                    exhibit_id,
+                    timestamp_ms: clock.timestamp_ms(),
+                });
+                
+                break
+            };
+            i = i + 1;
+        };
+    }
+
+    public fun exhibit_label(
+        hall: &TankHall,
+        tank_number: u64,
+    ): Option<vector<u8>> {
+        let mut i = 0;
+        let len = vector::length(&hall.tanks);
+
+        while (i < len) {
+            let tank = vector::borrow(&hall.tanks, i);
+            if (tank.number == tank_number) {
+                return if (option::is_some(&tank.exhibit)) {
+                    let exhibit = option::borrow(&tank.exhibit);
+                    option::some(exhibit.label)
+                } else {
+                    option::none()
+                }
+            };
+            i = i + 1;
+        };
+
+        option::none()
+    }
+
+    public fun stocked_count(hall: &TankHall): u64 {
+        let mut count = 0;
+        let mut i = 0;
+        let len = vector::length(&hall.tanks);
+
+        while (i < len) {
+            let tank = vector::borrow(&hall.tanks, i);
+            if (option::is_some(&tank.exhibit)) {
+                count = count + 1;
+            };
+            i = i + 1;
+        };
+
+        count
+    }
+}
+```

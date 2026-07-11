@@ -1,0 +1,16 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04007]: incompatible types
+    ┌─ ./sources/module.move:121:17
+    │
+ 21 │         exhibit: Option<Exhibit>,
+    │                         ------- Given: 'aquarium::tank_hall::Exhibit'
+    ·
+113 │         let mut exhibit: Option<Exhibit> = option::none();
+    │                          --------------- Expected: 'std::option::Option<aquarium::tank_hall::Exhibit>'
+    ·
+121 │                 exhibit = option::extract(&mut tank.exhibit);
+    │                 ^^^^^^^ Invalid assignment to variable 'exhibit'
+

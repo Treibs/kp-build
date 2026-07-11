@@ -1,0 +1,99 @@
+module marina::marina {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use std::vector;
+
+    public struct Marina has key {
+        id: UID,
+        berths: vector<Berth>,
+        waitlist: vector<WaitlistEntry>,
+    }
+
+    public struct Berth has store, copy, drop {
+        id: u64,
+        length: u64,
+        occupied: bool,
+        held_deposit: u64,
+    }
+
+    public struct WaitlistEntry has store, copy, drop {
+        applicant: address,
+        boat_length: u64,
+    }
+
+    public struct ApplicantAssigned has copy, drop {
+        applicant: address,
+        berth_id: u64,
+    }
+
+    public fun create_marina(
+        berth_lengths: vector<u64>,
+        ctx: &mut TxContext,
+    ) {
+        let mut berths = vector[];
+        let mut i = 0;
+        while (i < vector::length(&berth_lengths)) {
+            let length = *vector::borrow(&berth_lengths, i);
+            vector::push_back(&mut berths, Berth {
+                id: i,
+                length,
+                occupied: false,
+                held_deposit: 0,
+            });
+            i = i + 1;
+        };
+
+        let marina = Marina {
+            id: object::new(ctx),
+            berths,
+            waitlist: vector[],
+        };
+        transfer::share_object(marina);
+    }
+
+    public fun apply_for_berth(
+        marina: &mut Marina,
+        boat_length: u64,
+        ctx: &TxContext,
+    ) {
+        let applicant = tx_context::sender(ctx);
+        vector::push_back(&mut marina.waitlist, WaitlistEntry {
+            applicant,
+            boat_length,
+        });
+    }
+
+    public fun free_berth_and_assign(
+        marina: &mut Marina,
+        berth_id: u64,
+        deposit_amount: u64,
+    ) {
+        let berth = vector::borrow_mut(&mut marina.berths, berth_id);
+        berth.held_deposit = deposit_amount;
+        berth.occupied = true;
+
+        let mut i = 0;
+        while (i < vector::length(&marina.waitlist)) {
+            let entry = vector::borrow(&marina.waitlist, i);
+            if (entry.boat_length <= berth.length) {
+                vector::remove(&mut marina.waitlist, i);
+                break
+            };
+            i = i + 1;
+        };
+    }
+
+    public fun next_applicant(marina: &Marina): (address, u64) {
+        if (vector::is_empty(&marina.waitlist)) {
+            return (@0x0, 0)
+        };
+        let entry = vector::borrow(&marina.waitlist, 0);
+        (entry.applicant, entry.boat_length)
+    }
+
+    public fun berth_held_deposit(marina: &Marina, berth_id: u64): u64 {
+        let berth = vector::borrow(&marina.berths, berth_id);
+        berth.held_deposit
+    }
+}

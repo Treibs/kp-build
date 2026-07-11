@@ -1,0 +1,19 @@
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+warning[W09009]: unused struct field
+   ┌─ ./sources/module.move:26:9
+   │
+26 │         applicant: address,
+   │         ^^^^^^^^^ The 'applicant' field of the 'ApplicantAssigned' type is unused
+   │
+   = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+warning[W09009]: unused struct field
+   ┌─ ./sources/module.move:27:9
+   │
+27 │         berth_id: u64,
+   │         ^^^^^^^^ The 'berth_id' field of the 'ApplicantAssigned' type is unused
+   │
+   = This warning can be suppressed with '#[allow(unused_field)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
