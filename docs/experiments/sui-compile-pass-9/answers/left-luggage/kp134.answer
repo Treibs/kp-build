@@ -1,0 +1,110 @@
+```move
+module luggage::office {
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::event;
+    use std::vector;
+
+    public struct Bag has store {
+        label: vector<u8>,
+        forwarding_address: address,
+        courier_fee: u64,
+    }
+
+    public struct ClerkCap has key, store {
+        id: UID,
+    }
+
+    public struct Office has key {
+        id: UID,
+        bags: vector<Bag>,
+        fund: Balance<SUI>,
+    }
+
+    public struct Forwarded has copy, drop {
+        label: vector<u8>,
+        forwarding_address: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let office = Office {
+            id: object::new(ctx),
+            bags: vector[],
+            fund: balance::zero(),
+        };
+        transfer::share_object(office);
+
+        let clerk_cap = ClerkCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(clerk_cap, ctx.sender());
+    }
+
+    public fun deposit_bag(
+        office: &mut Office,
+        label: vector<u8>,
+        forwarding_address: address,
+        courier_fee: u64,
+    ) {
+        let bag = Bag {
+            label,
+            forwarding_address,
+            courier_fee,
+        };
+        vector::push_back(&mut office.bags, bag);
+    }
+
+    public fun top_up_fund(office: &mut Office, payment: Coin<SUI>) {
+        balance::join(&mut office.fund, coin::into_balance(payment));
+    }
+
+    public fun forward_bag(
+        office: &mut Office,
+        _cap: &ClerkCap,
+        index: u64,
+        clerk_fee_recipient: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(index < vector::length(&office.bags), 1);
+        
+        let bag = vector::remove(&mut office.bags, index);
+        let Bag { label, forwarding_address, courier_fee } = bag;
+        
+        assert!(balance::value(&office.fund) >= courier_fee, 2);
+        
+        let payment = coin::from_balance(
+            balance::split(&mut office.fund, courier_fee),
+            ctx
+        );
+        transfer::public_transfer(payment, clerk_fee_recipient);
+        
+        event::emit(Forwarded {
+            label,
+            forwarding_address,
+        });
+    }
+
+    public fun bags_held(office: &Office): u64 {
+        vector::length(&office.bags)
+    }
+
+    public fun fund_covers_next(office: &Office): bool {
+        if (vector::length(&office.bags) == 0) {
+            return false
+        };
+        
+        let mut i = 0;
+        let mut min_fee = 18446744073709551615u64;
+        while (i < vector::length(&office.bags)) {
+            let bag = vector::borrow(&office.bags, i);
+            if (bag.courier_fee < min_fee) {
+                min_fee = bag.courier_fee;
+            };
+            i = i + 1;
+        };
+        
+        balance::value(&office.fund) >= min_fee
+    }
+}
+```

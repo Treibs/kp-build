@@ -1,0 +1,138 @@
+```move
+module repair_cafe::cafe {
+    use std::string::String;
+    use sui::balance::{Self, Balance};
+    use sui::coin::{Self, Coin};
+    use sui::event;
+    use sui::object::{Self, UID};
+    use sui::sui::SUI;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    const EInvalidFee: u64 = 0;
+    const EBenchOccupied: u64 = 1;
+    const ENoBenchFound: u64 = 2;
+
+    public struct CAFE has drop {}
+
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    public struct Cafe has key {
+        id: UID,
+        diagnosis_fee: u64,
+        fund: Balance<SUI>,
+    }
+
+    public struct Workbench has key {
+        id: UID,
+        fixer: address,
+        occupied: bool,
+        item_description: String,
+        item_owner: address,
+    }
+
+    public struct ItemDropped has copy, drop {
+        fixer: address,
+        owner: address,
+    }
+
+    public struct JobFinished has copy, drop {
+        fixer: address,
+        owner: address,
+    }
+
+    fun init(_witness: CAFE, ctx: &mut TxContext) {
+        let admin = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin, tx_context::sender(ctx));
+
+        let cafe = Cafe {
+            id: object::new(ctx),
+            diagnosis_fee: 1_000_000_000,
+            fund: balance::zero(),
+        };
+        transfer::share_object(cafe);
+    }
+
+    public fun register_fixer(
+        _cap: &AdminCap,
+        fixer: address,
+        _cafe: &Cafe,
+        ctx: &mut TxContext,
+    ) {
+        let workbench = Workbench {
+            id: object::new(ctx),
+            fixer,
+            occupied: false,
+            item_description: std::string::utf8(b""),
+            item_owner: @0x0,
+        };
+        transfer::share_object(workbench);
+    }
+
+    public fun drop_off_item(
+        cafe: &mut Cafe,
+        workbench: &mut Workbench,
+        payment: Coin<SUI>,
+        description: String,
+        ctx: &mut TxContext,
+    ) {
+        assert!(coin::value(&payment) == cafe.diagnosis_fee, EInvalidFee);
+        assert!(!workbench.occupied, EBenchOccupied);
+
+        balance::join(&mut cafe.fund, coin::into_balance(payment));
+
+        let owner = tx_context::sender(ctx);
+        workbench.occupied = true;
+        workbench.item_description = description;
+        workbench.item_owner = owner;
+
+        event::emit(ItemDropped {
+            fixer: workbench.fixer,
+            owner,
+        });
+    }
+
+    public fun finish_job(
+        _cap: &AdminCap,
+        workbench: &mut Workbench,
+    ) {
+        assert!(workbench.occupied, ENoBenchFound);
+
+        let owner = workbench.item_owner;
+        workbench.occupied = false;
+
+        event::emit(JobFinished {
+            fixer: workbench.fixer,
+            owner,
+        });
+    }
+
+    public fun get_fund_balance(cafe: &Cafe): u64 {
+        balance::value(&cafe.fund)
+    }
+
+    public fun get_diagnosis_fee(cafe: &Cafe): u64 {
+        cafe.diagnosis_fee
+    }
+
+    public fun is_occupied(workbench: &Workbench): bool {
+        workbench.occupied
+    }
+
+    public fun get_item_description(workbench: &Workbench): &String {
+        &workbench.item_description
+    }
+
+    public fun get_item_owner(workbench: &Workbench): address {
+        workbench.item_owner
+    }
+
+    public fun get_fixer(workbench: &Workbench): address {
+        workbench.fixer
+    }
+}
+```

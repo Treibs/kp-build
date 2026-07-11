@@ -1,0 +1,128 @@
+```move
+module repair_cafe::cafe {
+    use sui::sui::SUI;
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self, Balance};
+    use sui::table::{Self, Table};
+    use sui::event;
+    use std::string::String;
+    use std::option::{Self, Option};
+
+    const DIAGNOSIS_FEE: u64 = 1000000000;
+
+    public struct RepairCafe has key {
+        id: UID,
+        fund: Balance<SUI>,
+        fixers: Table<address, Workbench>,
+        waiting_items: vector<WorkItem>,
+    }
+
+    public struct Workbench has store {
+        current_item: Option<WorkItem>,
+    }
+
+    public struct WorkItem has store {
+        description: String,
+        owner: address,
+    }
+
+    public struct ManagerCap has key, store {
+        id: UID,
+    }
+
+    public struct ItemDelivered has copy, drop {
+        owner: address,
+        description: String,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let cafe = RepairCafe {
+            id: object::new(ctx),
+            fund: balance::zero(),
+            fixers: table::new(ctx),
+            waiting_items: vector[],
+        };
+        transfer::share_object(cafe);
+
+        let manager_cap = ManagerCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(manager_cap, ctx.sender());
+    }
+
+    public fun drop_off_item(
+        cafe: &mut RepairCafe,
+        description: String,
+        owner: address,
+        payment: Coin<SUI>,
+    ) {
+        assert!(coin::value(&payment) == DIAGNOSIS_FEE, 0);
+        
+        let coin_balance = coin::into_balance(payment);
+        balance::join(&mut cafe.fund, coin_balance);
+
+        let item = WorkItem {
+            description,
+            owner,
+        };
+        vector::push_back(&mut cafe.waiting_items, item);
+    }
+
+    public fun register_fixer(
+        cafe: &mut RepairCafe,
+        _manager_cap: &ManagerCap,
+        fixer: address,
+    ) {
+        assert!(!table::contains(&cafe.fixers, fixer), 1);
+        let workbench = Workbench {
+            current_item: option::none(),
+        };
+        table::add(&mut cafe.fixers, fixer, workbench);
+    }
+
+    public fun assign_item(
+        cafe: &mut RepairCafe,
+        _manager_cap: &ManagerCap,
+        fixer: address,
+        item_index: u64,
+    ) {
+        assert!(table::contains(&cafe.fixers, fixer), 1);
+        assert!(item_index < vector::length(&cafe.waiting_items), 2);
+        
+        let workbench = table::borrow_mut(&mut cafe.fixers, fixer);
+        assert!(option::is_none(&workbench.current_item), 3);
+        
+        let item = vector::remove(&mut cafe.waiting_items, item_index);
+        option::fill(&mut workbench.current_item, item);
+    }
+
+    public fun finish_job(
+        cafe: &mut RepairCafe,
+        _manager_cap: &ManagerCap,
+        fixer: address,
+    ) {
+        assert!(table::contains(&cafe.fixers, fixer), 1);
+        let workbench = table::borrow_mut(&mut cafe.fixers, fixer);
+        assert!(option::is_some(&workbench.current_item), 2);
+        
+        let item = option::extract(&mut workbench.current_item);
+        event::emit(ItemDelivered {
+            owner: item.owner,
+            description: item.description,
+        });
+    }
+
+    public fun get_fund_balance(cafe: &RepairCafe): u64 {
+        balance::value(&cafe.fund)
+    }
+
+    public fun is_bench_occupied(cafe: &RepairCafe, fixer: address): bool {
+        if (table::contains(&cafe.fixers, fixer)) {
+            let workbench = table::borrow(&cafe.fixers, fixer);
+            option::is_some(&workbench.current_item)
+        } else {
+            false
+        }
+    }
+}
+```

@@ -1,0 +1,23 @@
+# Experiment 9 results — compile-pass gate + import sweep
+
+left-luggage    base   FAIL error[E03003]: unbound module  import=CORRECT
+left-luggage    kp134  PASS CLEAN   import=CORRECT
+left-luggage    kp149  FAIL error[Sui E02003]: invalid 'in import=CORRECT
+drying-room     base   FAIL error[E01003]: invalid modifie import=NA
+drying-room     kp134  PASS CLEAN   import=NA
+drying-room     kp149  PASS CLEAN   import=NA
+repair-cafe     base   PASS CLEAN   import=CORRECT
+repair-cafe     kp134  FAIL error[E06001]: unused value wi import=CORRECT
+repair-cafe     kp149  PASS CLEAN   import=CORRECT
+barn-dance      base   FAIL error[E01003]: invalid modifie import=CORRECT
+barn-dance      kp134  PASS WARN1   import=CORRECT
+barn-dance      kp149  FAIL error[E04004]: expected a sing import=CORRECT
+cheese-cave     base   PASS WARN2   import=NA
+cheese-cave     kp134  FAIL error[E03003]: unbound module  import=NA
+cheese-cave     kp149  PASS WARN1   import=NA
+community-sauna base   FAIL error[E01002]: unexpected toke import=CORRECT
+community-sauna kp134  FAIL error[E01002]: unexpected toke import=CORRECT
+community-sauna kp149  PASS CLEAN   import=CORRECT
+
+# compile-pass: base 2/6, kp134 3/6, kp149 4/6 | clean-compile: base 1/6, kp134 2/6, kp149 3/6
+# import sweep: 0 fails (12/12 CORRECT on the four SUI carriers x 3 arms; drying-room + cheese-cave NA)

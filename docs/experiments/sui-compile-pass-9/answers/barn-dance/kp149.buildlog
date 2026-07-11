@@ -1,0 +1,94 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:16:18
+   │
+16 │         couples: vector<(address, address)>,
+   │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   │                  │      │
+   │                  │      Expected a single non-reference type, but found: '(address, address)'
+   │                  Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:35:22
+   │
+16 │         couples: vector<(address, address)>,
+   │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+   ·
+35 │             couples: vector[],
+   │                      ^^^^^^^^ Invalid 'vector' type
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:59:9
+   │
+16 │         couples: vector<(address, address)>,
+   │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+   ·
+59 │         vector::push_back(&mut contest.couples, (dancer1, dancer2));
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:71:17
+   │
+16 │         couples: vector<(address, address)>,
+   │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+   ·
+71 │         assert!(vector::length(&contest.couples) > 1, 6);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:73:19
+   │
+16 │         couples: vector<(address, address)>,
+   │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+   ·
+73 │         let len = vector::length(&contest.couples);
+   │                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:78:29
+   │
+16 │         couples: vector<(address, address)>,
+   │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+   ·
+78 │             let (d1, d2) = *vector::borrow(&contest.couples, i);
+   │                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:80:34
+   │
+16 │         couples: vector<(address, address)>,
+   │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+   ·
+80 │                 let (_d1, _d2) = vector::remove(&mut contest.couples, i);
+   │                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:97:17
+   │
+16 │         couples: vector<(address, address)>,
+   │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+   ·
+97 │         assert!(vector::length(&contest.couples) == 1, 8);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:100:35
+    │
+ 16 │         couples: vector<(address, address)>,
+    │                         ------------------ Expected a single non-reference type, but found: '(address, address)'
+    ·
+100 │         let (winner1, winner2) = *vector::borrow(&contest.couples, 0);
+    │                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:121:53
+    │
+121 │     public fun couples_standing(contest: &Contest): vector<(address, address)> {
+    │                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │                                                     │      │
+    │                                                     │      Expected a single non-reference type, but found: '(address, address)'
+    │                                                     Invalid type argument
+

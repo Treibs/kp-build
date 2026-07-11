@@ -1,0 +1,19 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01002]: unexpected token
+   ┌─ ./sources/module.move:47:30
+   │
+47 │         sauna.sessions_sold += 1;
+   │                              ^
+   │                              │
+   │                              Unexpected '='
+   │                              Expected an expression term
+
+error[E03003]: unbound module member
+   ┌─ ./sources/module.move:52:13
+   │
+52 │             coin::burn_for_fees(payment);
+   │             ^^^^^^^^^^^^^^^^^^^ Invalid module access. Unbound function 'burn_for_fees' in module 'sui::coin'
+

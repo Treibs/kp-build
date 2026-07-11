@@ -1,0 +1,110 @@
+module left_luggage::luggage_office {
+    use sui::coin::{Coin, self};
+    use sui::sui::SUI;
+    use sui::event;
+    use std::string::String;
+    use sui::object::{Self, UID, ID};
+    use sui::tx_context::{TxContext, sender};
+    use sui::transfer;
+    use sui::table::{Table, Self};
+
+    public struct Bag has key, store {
+        id: UID,
+        label: String,
+        forwarding_address: address,
+    }
+
+    public struct LuggageOffice has key {
+        id: UID,
+        bags: Table<ID, Bag>,
+        fund: Coin<SUI>,
+        courier_fee: u64,
+    }
+
+    public struct ClerkCapability has key {
+        id: UID,
+    }
+
+    public struct Forwarded has copy, drop {
+        label: String,
+        forwarding_address: address,
+    }
+
+    public fun create_office(
+        coin: Coin<SUI>,
+        courier_fee: u64,
+        ctx: &mut TxContext,
+    ) {
+        let office = LuggageOffice {
+            id: object::new(ctx),
+            bags: table::new(ctx),
+            fund: coin,
+            courier_fee,
+        };
+        
+        let clerk_cap = ClerkCapability {
+            id: object::new(ctx),
+        };
+        
+        transfer::share_object(office);
+        transfer::transfer(clerk_cap, sender(ctx));
+    }
+
+    public fun deposit_bag(
+        office: &mut LuggageOffice,
+        label: String,
+        forwarding_address: address,
+        ctx: &mut TxContext,
+    ) {
+        let bag = Bag {
+            id: object::new(ctx),
+            label,
+            forwarding_address,
+        };
+        let bag_id = object::uid_to_inner(&bag.id);
+        table::add(&mut office.bags, bag_id, bag);
+    }
+
+    public fun top_up_fund(
+        office: &mut LuggageOffice,
+        additional_fund: Coin<SUI>,
+    ) {
+        coin::join(&mut office.fund, additional_fund);
+    }
+
+    public fun forward_bag(
+        office: &mut LuggageOffice,
+        _clerk_cap: &ClerkCapability,
+        bag_id: ID,
+        courier_address: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(coin::value(&office.fund) >= office.courier_fee, 0);
+        
+        let bag = table::remove(&mut office.bags, bag_id);
+        let forwarding_address = bag.forwarding_address;
+        let label = bag.label;
+        
+        transfer::public_transfer(bag, forwarding_address);
+        
+        let payment = coin::split(&mut office.fund, office.courier_fee, ctx);
+        transfer::public_transfer(payment, courier_address);
+        
+        event::emit(Forwarded {
+            label,
+            forwarding_address,
+        });
+    }
+
+    public fun fund_balance(office: &LuggageOffice): u64 {
+        coin::value(&office.fund)
+    }
+
+    public fun can_forward(office: &LuggageOffice): bool {
+        coin::value(&office.fund) >= office.courier_fee
+    }
+
+    public fun bags_count(office: &LuggageOffice): u64 {
+        table::length(&office.bags)
+    }
+}

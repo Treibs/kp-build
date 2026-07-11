@@ -1,0 +1,109 @@
+```move
+module sauna::sauna {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use std::option::{Self, Option};
+
+    const ENotOwner: u64 = 0;
+    const ENoWatcher: u64 = 1;
+    const EInsufficientPayment: u64 = 2;
+
+    public struct Sauna has key {
+        id: UID,
+        owner: address,
+        price: u64,
+        takings: Balance<SUI>,
+        current_watcher: Option<address>,
+        sessions_sold: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let sauna = Sauna {
+            id: object::new(ctx),
+            owner: tx_context::sender(ctx),
+            price: 0,
+            takings: balance::zero(),
+            current_watcher: option::none(),
+            sessions_sold: 0,
+        };
+        transfer::share_object(sauna);
+    }
+
+    public fun buy_session(
+        sauna: &mut Sauna,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(option::is_some(&sauna.current_watcher), ENoWatcher);
+        
+        let amount = coin::value(&payment);
+        assert!(amount >= sauna.price, EInsufficientPayment);
+        
+        let payment_amount = coin::split(&mut payment, sauna.price, ctx);
+        balance::join(&mut sauna.takings, coin::into_balance(payment_amount));
+        sauna.sessions_sold += 1;
+        
+        if (coin::value(&payment) > 0) {
+            transfer::public_transfer(payment, tx_context::sender(ctx));
+        } else {
+            coin::burn_for_fees(payment);
+        }
+    }
+
+    public fun set_watcher(
+        sauna: &mut Sauna,
+        watcher: address,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == sauna.owner, ENotOwner);
+        sauna.current_watcher = option::some(watcher);
+    }
+
+    public fun end_watch(
+        sauna: &mut Sauna,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == sauna.owner, ENotOwner);
+        sauna.current_watcher = option::none();
+    }
+
+    public fun set_price(
+        sauna: &mut Sauna,
+        new_price: u64,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == sauna.owner, ENotOwner);
+        sauna.price = new_price;
+    }
+
+    public fun sweep(
+        sauna: &mut Sauna,
+        ctx: &mut TxContext,
+    ) {
+        assert!(tx_context::sender(ctx) == sauna.owner, ENotOwner);
+        
+        let amount = balance::value(&sauna.takings);
+        if (amount > 0) {
+            let takings = balance::withdraw_all(&mut sauna.takings);
+            let coin = coin::from_balance(takings, ctx);
+            transfer::public_transfer(coin, sauna.owner);
+        };
+    }
+
+    public fun current_watcher(sauna: &Sauna): Option<address> {
+        sauna.current_watcher
+    }
+
+    public fun sessions_sold(sauna: &Sauna): u64 {
+        sauna.sessions_sold
+    }
+
+    public fun takings(sauna: &Sauna): u64 {
+        balance::value(&sauna.takings)
+    }
+}
+```

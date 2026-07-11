@@ -1,0 +1,123 @@
+```move
+module cheese_cave::cave {
+    use std::string::String;
+    use sui::clock::Clock;
+    use sui::event;
+    use sui::table::{self, Table};
+
+    public struct CheeseCave has key {
+        id: UID,
+        wheels: vector<Wheel>,
+        resting_counts: Table<address, u64>,
+    }
+
+    public struct Wheel has store {
+        label: String,
+        ready_epoch: u64,
+        maker: address,
+    }
+
+    public struct AffineurCap has key, store {
+        id: UID,
+    }
+
+    public struct Ripened has copy, drop {
+        maker: address,
+        label: String,
+    }
+
+    public fun create_cave(ctx: &mut TxContext) {
+        let cave = CheeseCave {
+            id: object::new(ctx),
+            wheels: vector[],
+            resting_counts: table::new(ctx),
+        };
+        transfer::share_object(cave);
+    }
+
+    public fun create_affineur_cap(ctx: &mut TxContext) {
+        let cap = AffineurCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(cap, ctx.sender());
+    }
+
+    public fun shelve_wheel(
+        cave: &mut CheeseCave,
+        label: String,
+        ready_epoch: u64,
+        ctx: &mut TxContext,
+    ) {
+        let maker = ctx.sender();
+        let wheel = Wheel { label, ready_epoch, maker };
+        
+        vector::push_back(&mut cave.wheels, wheel);
+        
+        if (!table::contains(&cave.resting_counts, maker)) {
+            table::add(&mut cave.resting_counts, maker, 0);
+        };
+        let count = table::borrow_mut(&mut cave.resting_counts, maker);
+        *count = *count + 1;
+    }
+
+    public fun release_wheel(
+        cave: &mut CheeseCave,
+        _cap: &AffineurCap,
+        maker: address,
+        label: String,
+        clock: &Clock,
+    ) {
+        let current_time = clock.timestamp_ms();
+        let mut found_index = 0;
+        let mut found = false;
+        
+        let mut i = 0;
+        while (i < vector::length(&cave.wheels)) {
+            let wheel = vector::borrow(&cave.wheels, i);
+            if (wheel.maker == maker && wheel.label == label) {
+                assert!(wheel.ready_epoch <= current_time, 1);
+                found_index = i;
+                found = true;
+                break
+            };
+            i = i + 1;
+        };
+        
+        assert!(found, 2);
+        
+        let wheel = vector::remove(&mut cave.wheels, found_index);
+        event::emit(Ripened { maker: wheel.maker, label: wheel.label });
+        
+        let count = table::borrow_mut(&mut cave.resting_counts, maker);
+        *count = *count - 1;
+    }
+
+    public fun resting_count(cave: &CheeseCave, maker: address): u64 {
+        if (table::contains(&cave.resting_counts, maker)) {
+            *table::borrow(&cave.resting_counts, maker)
+        } else {
+            0
+        }
+    }
+
+    public fun oldest_wheel(cave: &CheeseCave): (String, u64) {
+        assert!(!vector::is_empty(&cave.wheels), 3);
+        
+        let mut oldest_idx = 0;
+        let mut oldest_epoch = vector::borrow(&cave.wheels, 0).ready_epoch;
+        let mut i = 1;
+        
+        while (i < vector::length(&cave.wheels)) {
+            let wheel = vector::borrow(&cave.wheels, i);
+            if (wheel.ready_epoch < oldest_epoch) {
+                oldest_epoch = wheel.ready_epoch;
+                oldest_idx = i;
+            };
+            i = i + 1;
+        };
+        
+        let wheel = vector::borrow(&cave.wheels, oldest_idx);
+        (wheel.label, wheel.ready_epoch)
+    }
+}
+```

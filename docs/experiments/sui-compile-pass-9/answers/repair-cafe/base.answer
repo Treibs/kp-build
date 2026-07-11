@@ -1,0 +1,123 @@
+```move
+module repair_cafe::cafe {
+    use sui::coin::{Self, Coin};
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+    use sui::transfer;
+    use sui::event;
+    use std::string::String;
+    use std::option::{Self, Option};
+
+    public struct Cafe has key {
+        id: UID,
+        fund: Balance<SUI>,
+        diagnosis_fee: u64,
+    }
+
+    public struct Item has key {
+        id: UID,
+        description: String,
+        owner: address,
+    }
+
+    public struct Workbench has key {
+        id: UID,
+        fixer: address,
+        item_id: Option<ID>,
+    }
+
+    public struct ManagerCap has key {
+        id: UID,
+    }
+
+    public struct ItemDroppedOff has copy, drop {
+        item_id: ID,
+        owner: address,
+    }
+
+    public struct JobFinished has copy, drop {
+        item_id: ID,
+        owner: address,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        transfer::transfer(
+            ManagerCap { id: object::new(ctx) },
+            tx_context::sender(ctx),
+        );
+
+        transfer::share_object(Cafe {
+            id: object::new(ctx),
+            fund: balance::zero(),
+            diagnosis_fee: 1000000,
+        });
+    }
+
+    public fun register_fixer(
+        _manager_cap: &ManagerCap,
+        fixer: address,
+        ctx: &mut TxContext,
+    ) {
+        transfer::transfer(
+            Workbench {
+                id: object::new(ctx),
+                fixer,
+                item_id: option::none(),
+            },
+            fixer,
+        );
+    }
+
+    public fun drop_off_item(
+        cafe: &mut Cafe,
+        description: String,
+        payment: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        assert!(coin::value(&payment) == cafe.diagnosis_fee, 0);
+        balance::join(&mut cafe.fund, coin::into_balance(payment));
+
+        let item = Item {
+            id: object::new(ctx),
+            description,
+            owner: tx_context::sender(ctx),
+        };
+        let item_id = object::uid_to_inner(&item.id);
+        transfer::share_object(item);
+
+        event::emit(ItemDroppedOff { item_id, owner: tx_context::sender(ctx) });
+    }
+
+    public fun assign_to_bench(
+        _manager_cap: &ManagerCap,
+        workbench: &mut Workbench,
+        item: &Item,
+    ) {
+        assert!(option::is_none(&workbench.item_id), 1);
+        option::fill(&mut workbench.item_id, object::uid_to_inner(&item.id));
+    }
+
+    public fun finish_job(
+        _manager_cap: &ManagerCap,
+        workbench: &mut Workbench,
+        item: Item,
+        _ctx: &mut TxContext,
+    ) {
+        let item_id = object::uid_to_inner(&item.id);
+        assert!(option::extract(&mut workbench.item_id) == item_id, 2);
+        let owner = item.owner;
+        transfer::transfer(item, owner);
+        event::emit(JobFinished { item_id, owner });
+    }
+
+    public fun is_bench_occupied(workbench: &Workbench): bool {
+        option::is_some(&workbench.item_id)
+    }
+
+    public fun get_cafe_fund(cafe: &Cafe): u64 {
+        balance::value(&cafe.fund)
+    }
+}
+```

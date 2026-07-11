@@ -1,0 +1,186 @@
+Failed to build Move modules: Compilation error.
+INCLUDING DEPENDENCY MoveStdlib
+INCLUDING DEPENDENCY Sui
+BUILDING probe_pkg
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:12:5
+   │
+12 │     struct Slot has store {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E01003]: invalid modifier
+   ┌─ ./sources/module.move:19:5
+   │
+19 │     struct DryingRoom has key {
+   │     ^^^^^^ Invalid struct declaration. Internal struct declarations are not yet supported
+   │
+   = Visibility annotations are required on struct declarations from the Move 2024 edition onwards.
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:21:16
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                ^^^^^^^^^^^^^^^^^^^^^^^
+   │                │     │
+   │                │     Expected a single non-reference type, but found: '(u32, u32)'
+   │                Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:28:20
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+28 │             slots: table::new(ctx),
+   │                    ^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:41:13
+   │
+41 │         let key = (bay, shelf);
+   │             ^^^   ------------ Expected a single type, but found expression list type: '(u32, u32)'
+   │             │      
+   │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:42:18
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+42 │         assert!(!table::contains(&drying_room.slots, key), ESlotOccupied);
+   │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:51:9
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+51 │         table::add(&mut drying_room.slots, key, slot);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:63:13
+   │
+63 │         let from_key = (from_bay, from_shelf);
+   │             ^^^^^^^^   ---------------------- Expected a single type, but found expression list type: '(u32, u32)'
+   │             │           
+   │             Invalid type for local
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:64:13
+   │
+64 │         let to_key = (to_bay, to_shelf);
+   │             ^^^^^^   ------------------ Expected a single type, but found expression list type: '(u32, u32)'
+   │             │         
+   │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:66:17
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+66 │         assert!(table::contains(&drying_room.slots, from_key), ESlotEmpty);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:67:18
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+67 │         assert!(!table::contains(&drying_room.slots, to_key), ESlotOccupied);
+   │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:70:24
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+70 │             let slot = table::borrow(&drying_room.slots, from_key);
+   │                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:75:13
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+75 │             table::remove(&mut drying_room.slots, from_key);
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:83:9
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+83 │         table::add(&mut drying_room.slots, to_key, new_slot);
+   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+   ┌─ ./sources/module.move:92:13
+   │
+92 │         let key = (bay, shelf);
+   │             ^^^   ------------ Expected a single type, but found expression list type: '(u32, u32)'
+   │             │      
+   │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:93:17
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+93 │         assert!(table::contains(&drying_room.slots, key), ESlotEmpty);
+   │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+   ┌─ ./sources/module.move:96:24
+   │
+21 │         slots: Table<(u32, u32), Slot>,
+   │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+   ·
+96 │             let slot = table::borrow(&drying_room.slots, key);
+   │                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:100:21
+    │
+ 21 │         slots: Table<(u32, u32), Slot>,
+    │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+    ·
+100 │         let _slot = table::remove(&mut drying_room.slots, key);
+    │                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04005]: expected a single type
+    ┌─ ./sources/module.move:109:13
+    │
+109 │         let key = (bay, shelf);
+    │             ^^^   ------------ Expected a single type, but found expression list type: '(u32, u32)'
+    │             │      
+    │             Invalid type for local
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:110:17
+    │
+ 21 │         slots: Table<(u32, u32), Slot>,
+    │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+    ·
+110 │         assert!(table::contains(&drying_room.slots, key), ESlotEmpty);
+    │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
+error[E04004]: expected a single non-reference type
+    ┌─ ./sources/module.move:112:20
+    │
+ 21 │         slots: Table<(u32, u32), Slot>,
+    │                      ---------- Expected a single non-reference type, but found: '(u32, u32)'
+    ·
+112 │         let slot = table::borrow(&drying_room.slots, key);
+    │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Invalid type argument
+
