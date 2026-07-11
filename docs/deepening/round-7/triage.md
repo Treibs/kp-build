@@ -2,8 +2,10 @@
 
 Inputs: `probe/results.txt` (haiku **10/15**, sonnet **15/15**; verdicts regenerated from
 `.result` files, FAIL codes from committed buildlogs). Import sweep (8 SUI carriers, both
-models): **16/16 CORRECT, 0 wrong-module, 0 absent** — the taught SUI-import beat holds
-through a third consecutive replication draw.
+models): **16/16 CORRECT, 0 wrong-module, 0 absent** — the taught SUI-import beat holds through a
+second consecutive clean replication draw (correction, review round 1: round 5's sweep
+recorded 1/9 haiku import-FAIL and its probe arm predates the beat — rounds 6 and 7 are
+the clean pair).
 
 **Teach rule reminder (frozen at scope):** beats this round are ledger-selected; a clean
 probe territory does NOT decline its beat. Probe evidence below is recorded per class as
@@ -44,7 +46,7 @@ fresh-elicitation confirmation or as a finding — the five beats ship either wa
 |---|---|---|
 | tuple-bleed | green + red + doc | exp-8 ×2 (one loaded-rule-ignored at doc tier) + round-6 opt-1 + **tb-2 live ×3 sites** — doc-tier→execution-tier escalation, adjacency to `reference-type-argument-red` (same E04004 family, distinct fragments) disclosed in the red claim |
 | std-table-path | green + red + doc | exp-6 book-club + exp-8 plant-clinic/kp128 (probe clean) |
-| balance-api-on-coin | green + red + doc | exp-6 coin::put-on-Coin + exp-7 family shape (probe clean — take/put never touched) |
+| balance-api-on-coin | green + red + doc | exp-6 coin::put-on-Coin + exp-8 ferry-manifest coin::take-on-Coin, E04007 (citation corrected in review round 1; the frozen territories.md cited an exp-7 `Balance::zero()` family shape that belongs to the api-arity-ctx family — the ×2 count stands on the exp-6+exp-8 events) (probe clean — take/put never touched) |
 | std-option-path | green + red + doc | exp-4 + exp-7 + round-6 remeasure opt-1 (probe clean) |
 | moved-value-arg-order | green + red + doc | round-5 vde-1 + round-6 remeasure mva-3 + **sop-2 live** (cross-territory) |
 
@@ -62,4 +64,5 @@ grounding the mva doc claim.
 - Ignored-while-loaded events: `missing-module-import` ×1 (mva-1, ×7 sites),
   `uid-vs-id` doc-tier ×1 (mva-3). The application ledger (`use-self` ~12 + these) remains
   beat-unaddressable.
-- Import sweep: three consecutive clean replications (round 5, round 6, round 7).
+- Import sweep: two consecutive clean replications (round 6, round 7) — corrected in
+  review round 1 (round 5's sweep was 1/9 import-FAIL, pre-beat).
